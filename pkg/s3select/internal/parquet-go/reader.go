@@ -17,6 +17,7 @@
 package parquet
 
 import (
+	"context"
 	"encoding/binary"
 	"encoding/json"
 	"io"
@@ -62,7 +63,7 @@ func fileMetadata(getReaderFunc GetReaderFunc) (*parquet.FileMetaData, error) {
 
 	pf := thrift.NewTCompactProtocolFactory()
 	protocol := pf.GetProtocol(thrift.NewStreamTransportR(rc))
-	err = fileMeta.Read(protocol)
+	err = fileMeta.Read(context.Background(), protocol)
 	if err != nil {
 		return nil, err
 	}
