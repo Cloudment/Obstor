@@ -21,7 +21,7 @@ import Alert from "../alert/Alert"
 import * as actionsAlert from "../alert/actions"
 import InputGroup from "./InputGroup"
 import web from "../web"
-import { Redirect, Link } from "react-router-dom"
+import { Navigate, Link } from "react-router-dom"
 import OpenIDLoginButton from './OpenIDLoginButton'
 
 export class Login extends React.Component {
@@ -101,7 +101,7 @@ export class Login extends React.Component {
   render() {
     const { clearAlert, alert } = this.props
     if (web.LoggedIn()) {
-      return <Redirect to={"/"} />
+      return <Navigate to={"/"} replace />
     }
     let alertBox = <Alert {...alert} onDismiss={clearAlert} />
     // Make sure you don't show a fading out alert box on the initial web-page load.

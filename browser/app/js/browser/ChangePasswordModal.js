@@ -19,7 +19,7 @@ import { connect } from "react-redux"
 import web from "../web"
 import * as alertActions from "../alert/actions"
 import { getRandomAccessKey, getRandomSecretKey } from "../utils"
-import jwtDecode from "jwt-decode"
+import { jwtDecode } from "jwt-decode"
 import classNames from "classnames"
 
 import { Modal, ModalBody, ModalHeader } from "react-bootstrap"

@@ -19,7 +19,7 @@ import classNames from "classnames"
 import { connect } from "react-redux"
 import * as actionsBuckets from "./actions"
 import { getCurrentBucket } from "./selectors"
-import Dropdown from "react-bootstrap/lib/Dropdown"
+import Dropdown from "react-bootstrap/Dropdown"
 
 export class BucketDropdown extends React.Component {
   constructor(props) {
@@ -44,13 +44,13 @@ export class BucketDropdown extends React.Component {
   render() {
     const { bucket, showBucketPolicy, deleteBucket, currentBucket } = this.props
     return (
-      <Dropdown 
-        open = {this.state.showBucketDropdown}
+      <Dropdown
+        show = {this.state.showBucketDropdown}
         onToggle = {this.toggleDropdown.bind(this)}
-        className="bucket-dropdown" 
+        className="bucket-dropdown"
         id="bucket-dropdown"
       >
-        <Dropdown.Toggle noCaret>
+        <Dropdown.Toggle>
           <i className="zmdi zmdi-more-vert" />
         </Dropdown.Toggle>
         <Dropdown.Menu className="dropdown-menu-right">

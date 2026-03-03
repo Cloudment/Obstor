@@ -15,7 +15,6 @@
  */
 
 import SuperAgent from 'superagent-es6-promise';
-import url from 'url'
 import Moment from 'moment'
 
 export default class JSONrpc {
@@ -23,22 +22,22 @@ export default class JSONrpc {
     this.endpoint = params.endpoint
     this.namespace = params.namespace
     this.version = '2.0';
-    const parsedUrl = url.parse(this.endpoint)
+    const parsedUrl = new URL(this.endpoint)
     this.host = parsedUrl.hostname
-    this.path = parsedUrl.path
+    this.path = parsedUrl.pathname
     this.port = parsedUrl.port
 
     switch (parsedUrl.protocol) {
       case 'http:': {
         this.scheme = 'http'
-        if (parsedUrl.port === 0) {
+        if (!parsedUrl.port) {
           this.port = 80
         }
         break
       }
       case 'https:': {
         this.scheme = 'https'
-        if (parsedUrl.port === 0) {
+        if (!parsedUrl.port) {
           this.port = 443
         }
         break

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import "babel-polyfill"
+import "core-js/stable"
+import "bootstrap/dist/css/bootstrap.min.css"
 import "./less/main.less"
 import "@fortawesome/fontawesome-free/css/all.css"
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css"
 
 import React from "react"
-import ReactDOM from "react-dom"
-import { Router, Route } from "react-router-dom"
+import { createRoot } from "react-dom/client"
+import { unstable_HistoryRouter as HistoryRouter } from "react-router-dom"
 import { Provider } from "react-redux"
 
 import history from "./js/history"
@@ -31,13 +32,13 @@ import App from "./js/App"
 
 const store = configureStore()
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"))
+root.render(
   <Provider store={store}>
-    <Router history={history}>
+    <HistoryRouter history={history} basename="/minio">
       <App />
-    </Router>
-  </Provider>,
-  document.getElementById("root")
+    </HistoryRouter>
+  </Provider>
 )
 
 hideLoader()

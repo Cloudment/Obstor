@@ -38,9 +38,9 @@ async.waterfall([
     function(cb) {
       rmDir('production');
       rmDir('dev');
-      var cmd = 'webpack -p --config webpack.production.config.js'
+      var cmd = 'npx webpack --config webpack.production.config.js'
       if (!isProduction) {
-        cmd = 'webpack';
+        cmd = 'npx webpack';
       }
       console.log('Running', cmd)
       exec(cmd, cb)
