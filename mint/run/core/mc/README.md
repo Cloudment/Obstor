@@ -2,7 +2,7 @@
 This directory serves as the location for Mint tests using `mc`.  Top level `mint.sh` calls `run.sh` to execute tests.
 
 ## Adding new tests
-New tests is added into `test.sh` as new functions.
+Upstream `mc` tests live in `functional-tests.sh` (fetched from `minio/mc` during the Mint image build).
 
 ## Running tests manually
 - Set environment variables `MINT_DATA_DIR`, `MINT_MODE`, `SERVER_ENDPOINT`, `ACCESS_KEY`, `SECRET_KEY`, `SERVER_REGION` and `ENABLE_HTTPS`

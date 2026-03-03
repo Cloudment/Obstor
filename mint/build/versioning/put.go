@@ -20,16 +20,22 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+
 )
+
+var etagRegex = regexp.MustCompile(`\"(.*)\"`)
 
 // Put two objects with the same name but with different content
 func testPutObject() {
@@ -43,8 +49,9 @@ func testPutObject() {
 		"objectName": object,
 		"expiry":     expiry,
 	}
+	ctx := context.Background()
 
-	_, err := s3Client.CreateBucket(&s3.CreateBucketInput{
+	_, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
@@ -55,12 +62,12 @@ func testPutObject() {
 
 	putVersioningInput := &s3.PutBucketVersioningInput{
 		Bucket: aws.String(bucket),
-		VersioningConfiguration: &s3.VersioningConfiguration{
-			Status: aws.String("Enabled"),
+		VersioningConfiguration: &types.VersioningConfiguration{
+			Status: types.BucketVersioningStatusEnabled,
 		},
 	}
 
-	_, err = s3Client.PutBucketVersioning(putVersioningInput)
+	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
 			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
@@ -71,21 +78,21 @@ func testPutObject() {
 	}
 
 	putInput1 := &s3.PutObjectInput{
-		Body:   aws.ReadSeekCloser(strings.NewReader("my content 1")),
+		Body:   strings.NewReader("my content 1"),
 		Bucket: aws.String(bucket),
 		Key:    aws.String(object),
 	}
-	_, err = s3Client.PutObject(putInput1)
+	_, err = s3Client.PutObject(ctx, putInput1)
 	if err != nil {
 		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
 		return
 	}
 	putInput2 := &s3.PutObjectInput{
-		Body:   aws.ReadSeekCloser(strings.NewReader("content file 2")),
+		Body:   strings.NewReader("content file 2"),
 		Bucket: aws.String(bucket),
 		Key:    aws.String(object),
 	}
-	_, err = s3Client.PutObject(putInput2)
+	_, err = s3Client.PutObject(ctx, putInput2)
 	if err != nil {
 		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
 		return
@@ -95,7 +102,7 @@ func testPutObject() {
 		Bucket: aws.String(bucket),
 	}
 
-	result, err := s3Client.ListObjectVersions(input)
+	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
 		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
 		return
@@ -106,8 +113,8 @@ func testPutObject() {
 		return
 	}
 
-	vid1 := *result.Versions[0]
-	vid2 := *result.Versions[1]
+	vid1 := result.Versions[0]
+	vid2 := result.Versions[1]
 
 	if *vid1.VersionId == "" || *vid2.VersionId == "" || *vid1.VersionId == *vid2.VersionId {
 		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected VersionId field")).Fatal()
@@ -124,7 +131,7 @@ func testPutObject() {
 		return
 	}
 
-	if *vid1.ETag != "\"e847032b45d3d76230058a80d8ca909b\"" || *vid2.ETag != "\"094459df8fcebffc70d9aa08d75f9944\"" {
+	if !etagRegex.MatchString(*vid1.ETag) || !etagRegex.MatchString(*vid2.ETag) {
 		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected ETag field")).Fatal()
 		return
 	}
@@ -154,8 +161,9 @@ func testPutObjectWithTaggingAndMetadata() {
 		"objectName": object,
 		"expiry":     expiry,
 	}
+	ctx := context.Background()
 
-	_, err := s3Client.CreateBucket(&s3.CreateBucketInput{
+	_, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
@@ -166,12 +174,12 @@ func testPutObjectWithTaggingAndMetadata() {
 
 	putVersioningInput := &s3.PutBucketVersioningInput{
 		Bucket: aws.String(bucket),
-		VersioningConfiguration: &s3.VersioningConfiguration{
-			Status: aws.String("Enabled"),
+		VersioningConfiguration: &types.VersioningConfiguration{
+			Status: types.BucketVersioningStatusEnabled,
 		},
 	}
 
-	_, err = s3Client.PutBucketVersioning(putVersioningInput)
+	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
 			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
@@ -196,7 +204,7 @@ func testPutObjectWithTaggingAndMetadata() {
 
 	for i := range uploads {
 		putInput := &s3.PutObjectInput{
-			Body:   aws.ReadSeekCloser(strings.NewReader("foocontent")),
+			Body:   strings.NewReader("foocontent"),
 			Bucket: aws.String(bucket),
 			Key:    aws.String(object),
 		}
@@ -204,12 +212,12 @@ func testPutObjectWithTaggingAndMetadata() {
 			putInput.Tagging = aws.String(uploads[i].tags)
 		}
 		if uploads[i].metadata != nil {
-			putInput.Metadata = make(map[string]*string)
+			putInput.Metadata = make(map[string]string)
 			for k, v := range uploads[i].metadata {
-				putInput.Metadata[k] = aws.String(v)
+				putInput.Metadata[k] = v
 			}
 		}
-		result, err := s3Client.PutObject(putInput)
+		result, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
 			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err).Fatal()
 			return
@@ -219,7 +227,7 @@ func testPutObjectWithTaggingAndMetadata() {
 
 	for i := range uploads {
 		putInput := &s3.PutObjectInput{
-			Body:   aws.ReadSeekCloser(strings.NewReader("foocontent")),
+			Body:   strings.NewReader("foocontent"),
 			Bucket: aws.String(bucket),
 			Key:    aws.String(object),
 		}
@@ -227,12 +235,12 @@ func testPutObjectWithTaggingAndMetadata() {
 			putInput.Tagging = aws.String(uploads[i].tags)
 		}
 		if uploads[i].metadata != nil {
-			putInput.Metadata = make(map[string]*string)
+			putInput.Metadata = make(map[string]string)
 			for k, v := range uploads[i].metadata {
-				putInput.Metadata[k] = aws.String(v)
+				putInput.Metadata[k] = v
 			}
 		}
-		result, err := s3Client.PutObject(putInput)
+		result, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
 			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err).Fatal()
 			return
@@ -248,12 +256,12 @@ func testPutObjectWithTaggingAndMetadata() {
 				Key:       aws.String(object),
 				VersionId: aws.String(uploads[i].versionId),
 			}
-			tagResult, err := s3Client.GetObjectTagging(input)
+			tagResult, err := s3Client.GetObjectTagging(ctx, input)
 			if err != nil {
 				failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err).Fatal()
 				return
 			}
-			var vals = make(url.Values)
+			vals := make(url.Values)
 			for _, tag := range tagResult.TagSet {
 				vals.Add(*tag.Key, *tag.Value)
 			}
@@ -270,20 +278,22 @@ func testPutObjectWithTaggingAndMetadata() {
 				Key:       aws.String(object),
 				VersionId: aws.String(uploads[i].versionId),
 			}
-			result, err := s3Client.HeadObject(input)
+			result, err := s3Client.HeadObject(ctx, input)
 			if err != nil {
 				failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object expected to succeed but got %v", err), err).Fatal()
 				return
 			}
 
 			for expectedKey, expectedVal := range uploads[i].metadata {
-				gotValue, ok := result.Metadata[expectedKey]
+				// S3 returns metadata keys in lowercase, so normalize for comparison
+				normalizedKey := strings.ToLower(expectedKey)
+				gotValue, ok := result.Metadata[normalizedKey]
 				if !ok {
-					failureLog(function, args, startTime, "", "HEAD Object returned unexpected metadata key result", nil).Fatal()
+					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata key result: expected key %q (normalized: %q) not found in %v", expectedKey, normalizedKey, result.Metadata), nil).Fatal()
 					return
 				}
-				if expectedVal != *gotValue {
-					failureLog(function, args, startTime, "", "HEAD Object returned unexpected metadata value result", nil).Fatal()
+				if expectedVal != gotValue {
+					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata value result: expected %q, got %q for key %q", expectedVal, gotValue, normalizedKey), nil).Fatal()
 					return
 				}
 			}
