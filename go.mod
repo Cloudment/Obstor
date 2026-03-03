@@ -148,7 +148,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nats-io/jwt/v2 v2.8.0 // indirect
-	github.com/nats-io/nats-streaming-server v0.21.1 // indirect
+	github.com/nats-io/nats-streaming-server v0.24.6 // indirect
 	github.com/nats-io/nkeys v0.4.15 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.25 // indirect
@@ -168,7 +168,6 @@ require (
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xdg/stringprep v1.0.3 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	go.etcd.io/bbolt v1.3.6 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.6.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.41.0 // indirect
