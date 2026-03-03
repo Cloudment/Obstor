@@ -27,7 +27,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	jwtgo "github.com/dgrijalva/jwt-go"
+	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio/cmd/config"
 	"github.com/minio/minio/cmd/logger"
@@ -35,8 +35,8 @@ import (
 	iampolicy "github.com/minio/minio/pkg/iam/policy"
 	"github.com/minio/minio/pkg/kms"
 	"github.com/minio/minio/pkg/madmin"
-	etcd "go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	etcd "go.etcd.io/etcd/client/v3"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 )
 
 var defaultContextTimeout = 30 * time.Second

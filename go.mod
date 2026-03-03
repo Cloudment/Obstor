@@ -17,7 +17,6 @@ require (
 	github.com/colinmarc/hdfs/v2 v2.4.0
 	github.com/coredns/coredns v1.14.1
 	github.com/dchest/siphash v1.2.3
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/djherbis/atime v1.1.0
 	github.com/dswarbrick/smart v0.0.0-20230625164221-6fe037e2b05f
 	github.com/dustin/go-humanize v1.0.1
@@ -26,6 +25,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/go-ldap/ldap/v3 v3.4.12
 	github.com/go-sql-driver/mysql v1.9.3
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/gomodule/redigo v1.9.3
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/handlers v1.5.2
@@ -73,7 +73,8 @@ require (
 	github.com/valyala/tcplisten v1.0.0
 	github.com/willf/bloom v2.0.3+incompatible
 	github.com/xdg/scram v1.0.5
-	go.etcd.io/etcd v3.3.27+incompatible
+	go.etcd.io/etcd/api/v3 v3.6.8
+	go.etcd.io/etcd/client/v3 v3.6.8
 	go.uber.org/zap v1.27.1
 	golang.org/x/crypto v0.48.0
 	golang.org/x/net v0.51.0
@@ -99,11 +100,8 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
-	github.com/coreos/bbolt v1.3.3 // indirect
-	github.com/coreos/etcd v3.3.27+incompatible // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
-	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
-	github.com/coreos/pkg v0.0.0-20240122114842-bbd7aa9bf6fb // indirect
+	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
@@ -119,17 +117,13 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
-	github.com/google/btree v1.1.3 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.12 // indirect
 	github.com/googleapis/gax-go/v2 v2.17.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -140,7 +134,6 @@ require (
 	github.com/jcmturner/gofork v1.7.6 // indirect
 	github.com/jcmturner/goidentity/v6 v6.0.1 // indirect
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
-	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88 // indirect
@@ -164,20 +157,17 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/shoenig/go-m1cpu v0.1.7 // indirect
 	github.com/shoenig/test v1.12.1 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
-	github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802 // indirect
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xdg/stringprep v1.0.3 // indirect
-	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.6.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.41.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.66.0 // indirect

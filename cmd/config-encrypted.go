@@ -29,7 +29,7 @@ import (
 	"github.com/minio/minio/pkg/auth"
 	"github.com/minio/minio/pkg/kms"
 	"github.com/minio/minio/pkg/madmin"
-	etcd "go.etcd.io/etcd/clientv3"
+	etcd "go.etcd.io/etcd/client/v3"
 )
 
 func handleEncryptedConfigBackend(objAPI ObjectLayer) error {
