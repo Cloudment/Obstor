@@ -1,4 +1,4 @@
-# Deploy ObStor on Docker Compose [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Docker Compose [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 Docker Compose allows defining and running single host, multi-container Docker applications.
 

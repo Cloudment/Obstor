@@ -24,12 +24,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/pkg/bucket/bandwidth"
 	"github.com/cloudment/obstor/pkg/handlers"
 	"github.com/cloudment/obstor/pkg/kms"
+	"github.com/minio/minio-go/v7/pkg/set"
 
-	"github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/config/cache"
 	"github.com/cloudment/obstor/cmd/config/compress"
 	"github.com/cloudment/obstor/cmd/config/dns"
@@ -39,6 +38,7 @@ import (
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/dustin/go-humanize"
 	etcd "go.etcd.io/etcd/client/v3"
 
 	"github.com/cloudment/obstor/pkg/certs"

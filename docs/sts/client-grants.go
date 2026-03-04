@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 /*
@@ -30,8 +31,8 @@ import (
 	"net/url"
 	"strings"
 
-	minio "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	minio "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 // JWTToken - parses the output from IDP access token.

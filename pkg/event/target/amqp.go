@@ -28,7 +28,7 @@ import (
 
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
-	"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 // AMQPArgs - AMQP target arguments.

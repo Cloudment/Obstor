@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
 	minio "github.com/cloudment/obstor/cmd"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
 
 	"github.com/cloudment/obstor/cmd/logger"
 )

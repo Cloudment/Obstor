@@ -30,7 +30,7 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	xnet "github.com/cloudment/obstor/pkg/net"
 
-	minio "github.com/cloudment/obstor-go/v7"
+	minio "github.com/minio/minio-go/v7"
 )
 
 var (

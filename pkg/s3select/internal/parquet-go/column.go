@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 func getColumns(

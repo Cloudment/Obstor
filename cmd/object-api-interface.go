@@ -22,10 +22,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 // CheckPreconditionFn returns true if precondition check failed.

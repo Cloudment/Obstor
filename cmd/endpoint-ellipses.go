@@ -22,10 +22,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/pkg/ellipses"
 	"github.com/cloudment/obstor/pkg/env"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // This file implements and supports ellipses pattern for

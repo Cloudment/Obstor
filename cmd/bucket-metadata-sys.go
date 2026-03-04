@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/crypto"
 	"github.com/cloudment/obstor/cmd/logger"
 	bucketsse "github.com/cloudment/obstor/pkg/bucket/encryption"
@@ -35,6 +34,7 @@ import (
 	"github.com/cloudment/obstor/pkg/event"
 	"github.com/cloudment/obstor/pkg/madmin"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 // BucketMetadataSys captures all bucket metadata for a given cluster.

@@ -25,9 +25,6 @@ import (
 	"sync"
 	"time"
 
-	miniogo "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -36,6 +33,9 @@ import (
 	"github.com/cloudment/obstor/pkg/event"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	miniogo "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 // gets replication config associated to a given bucket name.

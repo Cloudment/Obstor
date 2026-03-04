@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 /*
@@ -35,9 +36,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/credentials"
 	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 // AssumedRoleUser - The identifiers for the temporary security credentials that

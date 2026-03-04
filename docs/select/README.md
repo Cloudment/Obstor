@@ -1,4 +1,4 @@
-# Select API Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Select API Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 Traditional retrieval of objects is always as whole entities, i.e GetObject for a 5 GiB object, will always return 5 GiB of data. S3 Select API allows us to retrieve a subset of data by using simple SQL expressions. By using Select API to retrieve only the data needed by the application, drastic performance improvements can be achieved.
 
 You can use the Select API to query objects with following features:

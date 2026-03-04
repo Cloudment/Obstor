@@ -1,4 +1,4 @@
-# ObStor STS Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor STS Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 The ObStor Security Token Service (STS) is an endpoint service that enables clients to request temporary credentials for ObStor resources. Temporary credentials work almost identically to default admin credentials, with some differences:
 
 - Temporary credentials are short-term, as the name implies. They can be configured to last for anywhere from a few minutes to several hours. After the credentials expire, ObStor no longer recognizes them or allows any kind of access from API requests made with them.

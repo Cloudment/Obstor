@@ -36,10 +36,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // AWS Signature Version '4' constants.

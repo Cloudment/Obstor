@@ -1,8 +1,8 @@
-# AssumeRoleWithLDAPIdentity [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# AssumeRoleWithLDAPIdentity [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 **Table of Contents**
 
-- [AssumeRoleWithLDAPIdentity [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
+- [AssumeRoleWithLDAPIdentity [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
     - [Introduction](#introduction)
     - [Configuring AD/LDAP on ObStor](#configuring-adldap-on-minio)
         - [Supported modes of operation](#supported-modes-of-operation)

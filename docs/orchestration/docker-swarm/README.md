@@ -1,4 +1,4 @@
-# Deploy ObStor on Docker Swarm [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Docker Swarm [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 Docker Engine provides cluster management and orchestration features in Swarm mode. ObStor server can be easily deployed in distributed mode on Swarm to create a multi-tenant, highly-available and scalable object store.
 

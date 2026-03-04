@@ -1,4 +1,4 @@
-# Deploy ObStor on Chrooted Environment [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Chrooted Environment [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 Chroot allows user based namespace isolation on many standard Linux deployments.
 

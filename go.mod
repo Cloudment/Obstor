@@ -44,12 +44,12 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/client_model v0.6.2
 	github.com/prometheus/procfs v0.20.1
+	github.com/rabbitmq/amqp091-go v1.1.0
 	github.com/redis/go-redis/v9 v9.18.0
 	github.com/rjeczalik/notify v0.9.3
 	github.com/rs/cors v1.11.1
 	github.com/secure-io/sio-go v0.3.1
 	github.com/shirou/gopsutil/v3 v3.24.5
-	github.com/streadway/amqp v1.1.0
 	github.com/tinylib/msgp v1.6.3
 	github.com/urfave/cli v1.22.17
 	github.com/xdg-go/scram v1.2.0

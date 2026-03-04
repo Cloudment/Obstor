@@ -31,20 +31,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/colinmarc/hdfs/v2"
-	"github.com/colinmarc/hdfs/v2/hadoopconf"
-	krb "github.com/jcmturner/gokrb5/v8/client"
-	"github.com/jcmturner/gokrb5/v8/config"
-	"github.com/jcmturner/gokrb5/v8/credentials"
-	"github.com/jcmturner/gokrb5/v8/keytab"
-	"github.com/urfave/cli"
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
 	minio "github.com/cloudment/obstor/cmd"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/env"
 	"github.com/cloudment/obstor/pkg/madmin"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/colinmarc/hdfs/v2"
+	"github.com/colinmarc/hdfs/v2/hadoopconf"
+	krb "github.com/jcmturner/gokrb5/v8/client"
+	"github.com/jcmturner/gokrb5/v8/config"
+	"github.com/jcmturner/gokrb5/v8/credentials"
+	"github.com/jcmturner/gokrb5/v8/keytab"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/urfave/cli"
 )
 
 const (

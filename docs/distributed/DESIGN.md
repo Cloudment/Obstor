@@ -1,4 +1,4 @@
-# Distributed Server Design Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Distributed Server Design Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 This document explains the design, architecture and advanced use cases of the ObStor distributed server.
 
 ## Command-line

@@ -27,8 +27,6 @@ import (
 	"sync"
 	"time"
 
-	miniogo "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	sse "github.com/cloudment/obstor/pkg/bucket/encryption"
@@ -37,6 +35,8 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	"github.com/cloudment/obstor/pkg/madmin"
 	"github.com/cloudment/obstor/pkg/s3select"
+	miniogo "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 const (

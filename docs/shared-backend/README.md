@@ -1,4 +1,4 @@
-# Shared Backend ObStor Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Shared Backend ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 ObStor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple ObStor servers. Synchronization among ObStor servers is taken care by design.

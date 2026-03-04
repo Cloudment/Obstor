@@ -36,8 +36,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
@@ -51,6 +49,8 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/minio/minio-go/v7/pkg/set"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 const (

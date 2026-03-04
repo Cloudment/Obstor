@@ -32,14 +32,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dustin/go-humanize"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/config"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/env"
 	"github.com/cloudment/obstor/pkg/mountinfo"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/dustin/go-humanize"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // EndpointType - enum for endpoint type.

@@ -30,9 +30,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/highwayhash"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/logger/message/log"
+	"github.com/minio/highwayhash"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 var (

@@ -260,7 +260,7 @@ Example 1:
 
 	ErrUnexpectedError = newErrFn(
 		"Unexpected error",
-		"Please contact ObStor at https://discord.pgg.net",
+		"Please contact ObStor at https://pgg.net/discord",
 		"",
 	)
 

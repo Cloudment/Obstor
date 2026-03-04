@@ -33,12 +33,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
-	miniogo "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/credentials"
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	"github.com/cloudment/obstor/cmd/crypto"
@@ -57,6 +51,12 @@ import (
 	"github.com/cloudment/obstor/pkg/ioutil"
 	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/cloudment/obstor/pkg/s3select"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	miniogo "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
+	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/sio"
 )
 

@@ -27,14 +27,14 @@ import (
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"google.golang.org/api/googleapi"
 
-	minio "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/crypto"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/bucket/replication"
+	minio "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/tags"
 
 	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
 	"github.com/cloudment/obstor/pkg/bucket/policy"

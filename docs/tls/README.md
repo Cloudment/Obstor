@@ -1,4 +1,4 @@
-# How to secure access to ObStor server with TLS [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# How to secure access to ObStor server with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 This guide explains how to configure ObStor Server with TLS certificates on Linux and Windows platforms.
 

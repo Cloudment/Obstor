@@ -27,16 +27,16 @@ import (
 	"time"
 	"unicode/utf8"
 
-	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/kms"
 	"github.com/cloudment/obstor/pkg/madmin"
-	etcd "go.etcd.io/etcd/client/v3"
+	jwtgo "github.com/golang-jwt/jwt/v4"
+	"github.com/minio/minio-go/v7/pkg/set"
 	"go.etcd.io/etcd/api/v3/mvccpb"
+	etcd "go.etcd.io/etcd/client/v3"
 )
 
 var defaultContextTimeout = 30 * time.Second

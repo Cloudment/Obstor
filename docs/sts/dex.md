@@ -1,4 +1,4 @@
-# Dex Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Dex Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 Dex is an identity service that uses OpenID Connect to drive authentication for apps. Dex acts as a portal to other identity providers through "connectors." This lets dex defer authentication to LDAP servers, SAML providers, or established identity providers like GitHub, Google, and Active Directory. Clients write their authentication logic once to talk to dex, then dex handles the protocols for a given backend.
 

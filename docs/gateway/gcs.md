@@ -1,4 +1,4 @@
-# ObStor GCS Gateway [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor GCS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 ObStor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S3-compatible APIs
 

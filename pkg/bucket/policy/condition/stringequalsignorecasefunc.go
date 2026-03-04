@@ -22,7 +22,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 func toStringEqualsIgnoreCaseFuncString(n name, key Key, values set.StringSet) string {

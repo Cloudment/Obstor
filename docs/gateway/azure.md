@@ -1,4 +1,4 @@
-# ObStor Azure Gateway [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor Azure Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 ObStor Gateway adds Amazon S3 compatibility to Microsoft Azure Blob Storage.
 
 ## Run ObStor Gateway for Microsoft Azure Blob Storage

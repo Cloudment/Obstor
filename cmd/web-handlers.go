@@ -35,10 +35,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
-	"github.com/cloudment/obstor-go/v7"
-	miniogo "github.com/cloudment/obstor-go/v7"
-	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
+	"github.com/minio/minio-go/v7"
+	miniogo "github.com/minio/minio-go/v7"
+	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
 
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/config/identity/openid"

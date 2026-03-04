@@ -1,4 +1,4 @@
-# KMS Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# KMS Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 ObStor uses a key-management-system (KMS) to support SSE-S3. If a client requests SSE-S3, or auto-encryption is enabled, the ObStor server encrypts each object with an unique object key which is protected by a master key managed by the KMS.
 

@@ -26,18 +26,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urfave/cli"
-	miniogo "github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/credentials"
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	minio "github.com/cloudment/obstor/cmd"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	miniogo "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/minio/minio-go/v7/pkg/tags"
+	"github.com/urfave/cli"
 )
 
 func init() {

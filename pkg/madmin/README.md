@@ -1,4 +1,4 @@
-# Golang Admin Client API Reference [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Golang Admin Client API Reference [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 The ObStor Admin Golang Client SDK provides APIs to manage ObStor services.
 
 This quickstart guide will show you how to install the ObStor Admin client SDK, connect to ObStor admin service, and provide a walkthrough of a simple file uploader.

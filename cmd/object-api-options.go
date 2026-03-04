@@ -24,11 +24,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
 )
 
 // set encryption options for pass through to backend in the case of gateway and UserDefined metadata

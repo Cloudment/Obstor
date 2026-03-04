@@ -1,4 +1,4 @@
-# ObStor NAS Gateway [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor NAS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 ObStor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple minio instances on the same shared NAS volume as a distributed object gateway.
 

@@ -28,7 +28,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	"github.com/cloudment/obstor/cmd/crypto"
 	"github.com/cloudment/obstor/cmd/logger"
 	bucketsse "github.com/cloudment/obstor/pkg/bucket/encryption"
@@ -41,6 +40,7 @@ import (
 	"github.com/cloudment/obstor/pkg/fips"
 	"github.com/cloudment/obstor/pkg/kms"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/sio"
 )
 

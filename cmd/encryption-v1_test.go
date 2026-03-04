@@ -22,10 +22,10 @@ import (
 	"net/http"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
-	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/sio"
 )
 

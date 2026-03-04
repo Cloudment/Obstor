@@ -23,14 +23,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/minio/minio-go/v7/pkg/set"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/http/stats"
 	"github.com/cloudment/obstor/cmd/logger"
+	humanize "github.com/dustin/go-humanize"
 )
 
 // Adds limiting body size middleware

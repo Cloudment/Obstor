@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 /*
@@ -24,8 +25,8 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/cloudment/obstor-go/v7"
-	cr "github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7"
+	cr "github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 var (

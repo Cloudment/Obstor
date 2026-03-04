@@ -1,4 +1,4 @@
-# ObStor Security Overview [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor Security Overview [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 ## Server-Side Encryption
 

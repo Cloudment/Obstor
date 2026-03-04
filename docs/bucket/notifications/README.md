@@ -1,4 +1,4 @@
-# ObStor Bucket Notification Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor Bucket Notification Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 Events occurring on objects in a bucket can be monitored using bucket event notifications.
 
@@ -856,7 +856,7 @@ Received a message: {"EventType":"s3:ObjectCreated:Put","Key":"images/myphoto.jp
 >
 > Please make sure this step is carried out, without this step PostgreSQL notification targets will not work,
 > an error message will be shown on the console upon server upgrade/restart, make sure to follow the above
-> instructions appropriately. For further questions please join our https://discord.pgg.net
+> instructions appropriately. For further questions please join our https://pgg.net/discord
 
 Install [PostgreSQL](https://www.postgresql.org/) database server. For illustrative purposes, we have set the "postgres" user password as `password` and created a database called `minio_events` to store the events.
 
@@ -990,7 +990,7 @@ key                 |                      value
 >
 > Please make sure this step is carried out, without this step MySQL notification targets will not work,
 > an error message will be shown on the console upon server upgrade/restart, make sure to follow the above
-> instructions appropriately. For further questions please join our https://discord.pgg.net
+> instructions appropriately. For further questions please join our https://pgg.net/discord
 
 Install MySQL from [here](https://dev.mysql.com/downloads/mysql/). For illustrative purposes, we have set the root password as `password` and created a database called `miniodb` to store the events.
 

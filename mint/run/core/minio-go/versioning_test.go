@@ -1,3 +1,4 @@
+//go:build mint
 // +build mint
 
 /*
@@ -27,8 +28,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7"
-	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 // testBucketVersioningExcludedPrefixes tests that excluded_prefixes are properly

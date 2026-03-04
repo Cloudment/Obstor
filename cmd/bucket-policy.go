@@ -24,11 +24,11 @@ import (
 	"strings"
 	"time"
 
-	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/handlers"
+	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 )
 
 // PolicySys - policy subsystem.

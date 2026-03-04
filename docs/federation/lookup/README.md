@@ -1,6 +1,6 @@
 *Federation feature is deprecated and should be avoided for future deployments*
 
-# Federation Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Federation Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 This document explains how to configure ObStor with `Bucket lookup from DNS` style federation.
 
 ## Get started

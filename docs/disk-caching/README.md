@@ -1,4 +1,4 @@
-# Disk Cache Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Disk Cache Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 Disk caching feature here refers to the use of caching disks to store content closer to the tenants. For instance, if you access an object from a lets say `gateway azure` setup and download the object that gets cached, each subsequent request on the object gets served directly from the cache drives until it expires. This feature allows ObStor users to have
 

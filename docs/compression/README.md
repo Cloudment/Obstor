@@ -1,4 +1,4 @@
-# Compression Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# Compression Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 ObStor server allows streaming compression to ensure efficient disk space usage.
 Compression happens inflight, i.e objects are compressed before being written to disk(s).

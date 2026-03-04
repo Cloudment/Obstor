@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"testing"
 
-	miniogo "github.com/cloudment/obstor-go/v7"
 	"github.com/cloudment/obstor/pkg/hash"
+	miniogo "github.com/minio/minio-go/v7"
 
 	minio "github.com/cloudment/obstor/cmd"
 )

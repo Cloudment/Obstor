@@ -1,4 +1,4 @@
-# Deploy ObStor on Kubernetes [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Kubernetes [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 ObStor is a high performance distributed object storage server, designed for large-scale private cloud infrastructure. ObStor is designed in a cloud-native manner to scale sustainably in multi-tenant environments. Orchestration platforms like Kubernetes provide perfect cloud-native environment to deploy and scale ObStor.
 

@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 func TestGetPoliciesFromClaims(t *testing.T) {

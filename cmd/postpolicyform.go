@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/pkg/s3select/jstream"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // startWithConds - map which indicates if a given condition supports starts-with policy operator

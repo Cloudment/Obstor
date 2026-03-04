@@ -1,4 +1,4 @@
-# etcd V3 Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# etcd V3 Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 etcd is a distributed key value store that provides a reliable way to store data across a cluster of machines.
 
 ## Get started

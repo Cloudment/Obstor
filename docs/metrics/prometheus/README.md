@@ -1,4 +1,4 @@
-# How to monitor ObStor server with Prometheus [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# How to monitor ObStor server with Prometheus [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 [Prometheus](https://prometheus.io) is a cloud-native monitoring platform.
 

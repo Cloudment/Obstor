@@ -38,9 +38,6 @@ import (
 
 	"github.com/Azure/azure-pipeline-go/pipeline"
 	"github.com/Azure/azure-storage-blob-go/azblob"
-	humanize "github.com/dustin/go-humanize"
-	"github.com/urfave/cli"
-	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
 	minio "github.com/cloudment/obstor/cmd"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
@@ -48,6 +45,9 @@ import (
 	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
 	"github.com/cloudment/obstor/pkg/env"
 	"github.com/cloudment/obstor/pkg/madmin"
+	humanize "github.com/dustin/go-humanize"
+	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
+	"github.com/urfave/cli"
 )
 
 const (

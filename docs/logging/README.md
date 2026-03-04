@@ -1,4 +1,4 @@
-# ObStor Logging Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor Logging Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 This document explains how to configure ObStor server to log to different logging targets.
 
 ## Log Targets

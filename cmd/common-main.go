@@ -33,9 +33,6 @@ import (
 	"strings"
 	"time"
 
-	dns2 "github.com/miekg/dns"
-	"github.com/urfave/cli"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
@@ -47,6 +44,9 @@ import (
 	"github.com/cloudment/obstor/pkg/env"
 	"github.com/cloudment/obstor/pkg/handlers"
 	"github.com/cloudment/obstor/pkg/kms"
+	dns2 "github.com/miekg/dns"
+	"github.com/minio/minio-go/v7/pkg/set"
+	"github.com/urfave/cli"
 )
 
 // serverDebugLog will enable debug printing

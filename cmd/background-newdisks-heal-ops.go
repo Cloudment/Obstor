@@ -28,12 +28,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/color"
 	"github.com/cloudment/obstor/pkg/console"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/dustin/go-humanize"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 const (

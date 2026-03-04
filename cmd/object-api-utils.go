@@ -35,10 +35,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/google/uuid"
-	"github.com/klauspost/compress/s2"
-	"github.com/cloudment/obstor/pkg/readahead"
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
 	"github.com/cloudment/obstor/cmd/config/compress"
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
@@ -48,8 +44,12 @@ import (
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/hash"
 	"github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/readahead"
 	"github.com/cloudment/obstor/pkg/trie"
 	"github.com/cloudment/obstor/pkg/wildcard"
+	"github.com/google/uuid"
+	"github.com/klauspost/compress/s2"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
 const (

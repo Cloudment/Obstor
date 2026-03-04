@@ -20,9 +20,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
 // list all errors that can be ignore in a bucket operation.

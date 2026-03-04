@@ -28,7 +28,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
@@ -36,6 +35,7 @@ import (
 	"github.com/cloudment/obstor/pkg/madmin"
 	"github.com/cloudment/obstor/pkg/mimedb"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
 // list all errors which can be ignored in object operations.

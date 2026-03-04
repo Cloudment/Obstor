@@ -30,9 +30,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/klauspost/compress/zip"
-	"github.com/minio/highwayhash"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -43,7 +41,9 @@ import (
 	"github.com/cloudment/obstor/pkg/madmin"
 	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
-	"github.com/bits-and-blooms/bloom/v3"
+	"github.com/klauspost/compress/zip"
+	"github.com/minio/highwayhash"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // NotificationSys - notification system.

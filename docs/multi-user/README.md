@@ -1,4 +1,4 @@
-# ObStor Multi-user Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+# ObStor Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 ObStor supports multiple long term users in addition to default user created during server startup. New users can be added after server starts up, and server can be configured to deny or allow access to buckets and resources to each of these users. This document explains how to add/remove users and modify their access rights.
 
 ## Get started

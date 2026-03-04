@@ -22,11 +22,11 @@ import (
 
 	"github.com/cloudment/obstor/cmd/logger"
 
-	"github.com/cloudment/obstor-go/v7/pkg/tags"
 	bucketsse "github.com/cloudment/obstor/pkg/bucket/encryption"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/bucket/versioning"
+	"github.com/minio/minio-go/v7/pkg/tags"
 
 	"github.com/cloudment/obstor/pkg/madmin"
 )

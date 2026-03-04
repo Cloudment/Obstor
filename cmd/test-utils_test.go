@@ -53,10 +53,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gorilla/mux"
-	color "github.com/cloudment/obstor/pkg/color"
-	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
-	"github.com/cloudment/obstor-go/v7/pkg/signer"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
@@ -64,7 +60,11 @@ import (
 	"github.com/cloudment/obstor/cmd/rest"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
+	color "github.com/cloudment/obstor/pkg/color"
 	"github.com/cloudment/obstor/pkg/hash"
+	"github.com/gorilla/mux"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/minio/minio-go/v7/pkg/signer"
 )
 
 // TestMain to set up global env.

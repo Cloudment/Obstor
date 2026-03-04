@@ -1,4 +1,4 @@
-# ObStor Contribution Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Contribution Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 ``ObStor`` community welcomes your contribution. To make the process as seamless as possible, we recommend you read this contribution guide.
 
@@ -34,7 +34,7 @@ $ git checkout -b my-new-feature
 ### Test ObStor server changes
 After your code changes, make sure
 
-- To add test cases for the new code. If you have questions about how to do it, please ask on our [Discord](https://discord.pgg.net) channel.
+- To add test cases for the new code. If you have questions about how to do it, please ask on our [Discord](https://pgg.net/discord) channel.
 - To run `make verifiers`
 - To squash your commits into a single commit. `git rebase -i`. It's okay to force update your pull request.
 - To run `make test` and `make build` completes.
@@ -65,4 +65,4 @@ To remove a dependency
 - Run `go mod tidy` in the source folder to remove dependency from `go.mod` file.
 
 ### What are the coding guidelines for ObStor?
-``ObStor`` is fully conformant with Golang style. Refer: [Effective Go](https://github.com/golang/go/wiki/CodeReviewComments) article from Golang project. If you observe offending code, please feel free to send a pull request or ping us on [Discord](https://discord.pgg.net).
+``ObStor`` is fully conformant with Golang style. Refer: [Effective Go](https://github.com/golang/go/wiki/CodeReviewComments) article from Golang project. If you observe offending code, please feel free to send a pull request or ping us on [Discord](https://pgg.net/discord).

@@ -1,4 +1,4 @@
-Introduction [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+Introduction [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 ------------
 
 This feature allows ObStor to serve a shared NAS drive across multiple ObStor instances. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default.

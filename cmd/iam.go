@@ -28,12 +28,12 @@ import (
 	"sync"
 	"time"
 
-	humanize "github.com/dustin/go-humanize"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 // UsersSysType - defines the type of users and groups system that is

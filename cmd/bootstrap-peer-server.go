@@ -26,11 +26,11 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/cloudment/obstor-go/v7/pkg/set"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/cmd/rest"
+	"github.com/gorilla/mux"
+	"github.com/minio/minio-go/v7/pkg/set"
 )
 
 const (
