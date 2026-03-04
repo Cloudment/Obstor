@@ -50,7 +50,7 @@ Refer [Prometheus documentation](https://prometheus.io/docs/introduction/first_s
 ObStor supports two authentication modes for Prometheus either `jwt` or `public`, by default ObStor runs in `jwt` mode. To allow public access without authentication for prometheus metrics set environment as follows.
 
 ```
-export MINIO_PROMETHEUS_AUTH_TYPE="public"
+export OBSTOR_PROMETHEUS_AUTH_TYPE="public"
 minio server ~/test
 ```
 

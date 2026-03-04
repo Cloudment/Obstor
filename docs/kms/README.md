@@ -18,17 +18,17 @@ curl -sSL --tlsv1.2 \
 #### 2. Set the ObStor-KES configuration
 
 ```sh
-export MINIO_KMS_KES_ENDPOINT=https://play.pgg.net:7373
-export MINIO_KMS_KES_KEY_FILE=root.key
-export MINIO_KMS_KES_CERT_FILE=root.cert
-export MINIO_KMS_KES_KEY_NAME=my-minio-key
+export OBSTOR_KMS_KES_ENDPOINT=https://play.pgg.net:7373
+export OBSTOR_KMS_KES_KEY_FILE=root.key
+export OBSTOR_KMS_KES_CERT_FILE=root.cert
+export OBSTOR_KMS_KES_KEY_NAME=my-minio-key
 ```
 
 #### 3. Start the ObStor Server
 
 ```sh
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=minio
+export OBSTOR_ROOT_PASSWORD=minio123
 minio server ~/export
 ```
 
@@ -91,7 +91,7 @@ Auto encryption 'sse-s3' is enabled
 
 ObStor automatically encrypts all objects on buckets if KMS is successfully configured and following ENV is enabled:
 ```
-export MINIO_KMS_AUTO_ENCRYPTION=on
+export OBSTOR_KMS_AUTO_ENCRYPTION=on
 ```
 
 ### Verify auto-encryption

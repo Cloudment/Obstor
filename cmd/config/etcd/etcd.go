@@ -25,7 +25,7 @@ import (
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/pkg/env"
 	xnet "github.com/cloudment/obstor/pkg/net"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/namespace"
 	"go.uber.org/zap"
 )
@@ -44,11 +44,11 @@ const (
 	ClientCert    = "client_cert"
 	ClientCertKey = "client_cert_key"
 
-	EnvEtcdEndpoints     = "MINIO_ETCD_ENDPOINTS"
-	EnvEtcdPathPrefix    = "MINIO_ETCD_PATH_PREFIX"
-	EnvEtcdCoreDNSPath   = "MINIO_ETCD_COREDNS_PATH"
-	EnvEtcdClientCert    = "MINIO_ETCD_CLIENT_CERT"
-	EnvEtcdClientCertKey = "MINIO_ETCD_CLIENT_CERT_KEY"
+	EnvEtcdEndpoints     = "OBSTOR_ETCD_ENDPOINTS"
+	EnvEtcdPathPrefix    = "OBSTOR_ETCD_PATH_PREFIX"
+	EnvEtcdCoreDNSPath   = "OBSTOR_ETCD_COREDNS_PATH"
+	EnvEtcdClientCert    = "OBSTOR_ETCD_CLIENT_CERT"
+	EnvEtcdClientCertKey = "OBSTOR_ETCD_CLIENT_CERT_KEY"
 )
 
 // DefaultKVS - default KV settings for etcd.

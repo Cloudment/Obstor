@@ -273,7 +273,7 @@ type Kind string
 
 const (
 	// Minio errors
-	Minio Kind = "MINIO"
+	Minio Kind = "OBSTOR"
 	// Application errors
 	Application Kind = "APPLICATION"
 	// All errors

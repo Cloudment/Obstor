@@ -30,7 +30,7 @@ const (
 	// requires a valid KMS configuration and turns any non-SSE-C
 	// request into an SSE-S3 request.
 	// If present EnvAutoEncryption must be either "on" or "off".
-	EnvKMSAutoEncryption = "MINIO_KMS_AUTO_ENCRYPTION"
+	EnvKMSAutoEncryption = "OBSTOR_KMS_AUTO_ENCRYPTION"
 )
 
 // ParseKESEndpoints parses the given endpoint string and
@@ -73,7 +73,7 @@ func ParseKESEndpoints(endpointStr string) ([]string, error) {
 }
 
 // LookupAutoEncryption returns true if and only if
-// the MINIO_KMS_AUTO_ENCRYPTION env. variable is
+// the OBSTOR_KMS_AUTO_ENCRYPTION env. variable is
 // set to "on".
 func LookupAutoEncryption() bool {
 	auto, _ := config.ParseBool(env.Get(EnvKMSAutoEncryption, config.EnableOff))

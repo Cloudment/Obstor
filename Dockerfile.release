@@ -12,12 +12,12 @@ LABEL name="ObStor" \
       summary="ObStor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
       description="ObStor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. ObStor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
-ENV MINIO_ACCESS_KEY_FILE=access_key \
-    MINIO_SECRET_KEY_FILE=secret_key \
-    MINIO_ROOT_USER_FILE=access_key \
-    MINIO_ROOT_PASSWORD_FILE=secret_key \
-    MINIO_KMS_SECRET_KEY_FILE=kms_master_key \
-    MINIO_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
+ENV OBSTOR_ACCESS_KEY_FILE=access_key \
+    OBSTOR_SECRET_KEY_FILE=secret_key \
+    OBSTOR_ROOT_USER_FILE=access_key \
+    OBSTOR_ROOT_PASSWORD_FILE=secret_key \
+    OBSTOR_KMS_SECRET_KEY_FILE=kms_master_key \
+    OBSTOR_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
 
 COPY dockerscripts/verify-minio.sh /usr/bin/verify-minio.sh
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
@@ -44,4 +44,4 @@ ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
 VOLUME ["/data"]
 
-CMD ["minio"]
+CMD ["obstor"]

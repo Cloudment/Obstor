@@ -131,7 +131,7 @@ var (
 	// This flag is set to 'true' by default
 	globalBrowserEnabled = true
 
-	// This flag is set to 'true' when MINIO_UPDATE env is set to 'off'. Default is false.
+	// This flag is set to 'true' when OBSTOR_UPDATE env is set to 'off'. Default is false.
 	globalInplaceUpdateDisabled = false
 
 	// This flag is set to 'us-east-1' by default

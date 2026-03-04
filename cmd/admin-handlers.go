@@ -35,7 +35,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
@@ -50,6 +49,7 @@ import (
 	"github.com/cloudment/obstor/pkg/madmin"
 	xnet "github.com/cloudment/obstor/pkg/net"
 	trace "github.com/cloudment/obstor/pkg/trace"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -89,7 +89,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	if globalInplaceUpdateDisabled {
-		// if MINIO_UPDATE=off - inplace update is disabled, mostly in containers.
+		// if OBSTOR_UPDATE=off - inplace update is disabled, mostly in containers.
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrMethodNotAllowed), r.URL)
 		return
 	}

@@ -33,7 +33,7 @@ var (
 	ErrOverlappingDomainValue = newErrFn(
 		"Overlapping domain values",
 		"Please check the passed value",
-		"MINIO_DOMAIN only accepts non-overlapping domain values",
+		"OBSTOR_DOMAIN only accepts non-overlapping domain values",
 	)
 
 	ErrInvalidDomainValue = newErrFn(
@@ -57,84 +57,84 @@ var (
 	ErrInvalidCacheDrivesValue = newErrFn(
 		"Invalid cache drive value",
 		"Please check the value in this ENV variable",
-		"MINIO_CACHE_DRIVES: Mounted drives or directories are delimited by `,`",
+		"OBSTOR_CACHE_DRIVES: Mounted drives or directories are delimited by `,`",
 	)
 
 	ErrInvalidCacheExcludesValue = newErrFn(
 		"Invalid cache excludes value",
 		"Please check the passed value",
-		"MINIO_CACHE_EXCLUDE: Cache exclusion patterns are delimited by `,`",
+		"OBSTOR_CACHE_EXCLUDE: Cache exclusion patterns are delimited by `,`",
 	)
 
 	ErrInvalidCacheExpiryValue = newErrFn(
 		"Invalid cache expiry value",
 		"Please check the passed value",
-		"MINIO_CACHE_EXPIRY: Valid cache expiry duration must be in days",
+		"OBSTOR_CACHE_EXPIRY: Valid cache expiry duration must be in days",
 	)
 
 	ErrInvalidCacheQuota = newErrFn(
 		"Invalid cache quota value",
 		"Please check the passed value",
-		"MINIO_CACHE_QUOTA: Valid cache quota value must be between 0-100",
+		"OBSTOR_CACHE_QUOTA: Valid cache quota value must be between 0-100",
 	)
 
 	ErrInvalidCacheAfter = newErrFn(
 		"Invalid cache after value",
 		"Please check the passed value",
-		"MINIO_CACHE_AFTER: Valid cache after value must be 0 or greater",
+		"OBSTOR_CACHE_AFTER: Valid cache after value must be 0 or greater",
 	)
 
 	ErrInvalidCacheWatermarkLow = newErrFn(
 		"Invalid cache low watermark value",
 		"Please check the passed value",
-		"MINIO_CACHE_WATERMARK_LOW: Valid cache low watermark value must be between 0-100",
+		"OBSTOR_CACHE_WATERMARK_LOW: Valid cache low watermark value must be between 0-100",
 	)
 
 	ErrInvalidCacheWatermarkHigh = newErrFn(
 		"Invalid cache high watermark value",
 		"Please check the passed value",
-		"MINIO_CACHE_WATERMARK_HIGH: Valid cache high watermark value must be between 0-100",
+		"OBSTOR_CACHE_WATERMARK_HIGH: Valid cache high watermark value must be between 0-100",
 	)
 
 	ErrInvalidCacheEncryptionKey = newErrFn(
 		"Invalid cache encryption master key value",
 		"Please check the passed value",
-		"MINIO_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/minio-disk-cache-guide",
+		"OBSTOR_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/minio-disk-cache-guide",
 	)
 
 	ErrInvalidCacheRange = newErrFn(
 		"Invalid cache range value",
 		"Please check the passed value",
-		"MINIO_CACHE_RANGE: Valid expected value is `on` or `off`",
+		"OBSTOR_CACHE_RANGE: Valid expected value is `on` or `off`",
 	)
 
 	ErrInvalidCacheCommitValue = newErrFn(
 		"Invalid cache commit value",
 		"Please check the passed value",
-		"MINIO_CACHE_COMMIT: Valid expected value is `writeback` or `writethrough`",
+		"OBSTOR_CACHE_COMMIT: Valid expected value is `writeback` or `writethrough`",
 	)
 
 	ErrInvalidCacheSetting = newErrFn(
 		"Incompatible cache setting",
 		"Please check the passed value",
-		"MINIO_CACHE_AFTER cannot be used with MINIO_CACHE_COMMIT setting",
+		"OBSTOR_CACHE_AFTER cannot be used with OBSTOR_CACHE_COMMIT setting",
 	)
 	ErrInvalidRotatingCredentialsBackendEncrypted = newErrFn(
 		"Invalid rotating credentials",
 		"Please set correct rotating credentials in the environment for decryption",
-		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables MINIO_ROOT_USER_OLD and MINIO_ROOT_PASSWORD_OLD to be able to re-encrypt the ObStor config, user IAM and policies with new credentials`,
+		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables OBSTOR_ROOT_USER_OLD and OBSTOR_ROOT_PASSWORD_OLD to be able to re-encrypt the ObStor config, user IAM and policies with new credentials`,
 	)
 
 	ErrInvalidCredentialsBackendEncrypted = newErrFn(
 		"Invalid credentials",
 		"Please set correct credentials in the environment for decryption",
-		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
 	)
 
 	ErrMissingCredentialsBackendEncrypted = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`Detected encrypted config backend, access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
 	)
 
 	ErrInvalidCredentials = newErrFn(
@@ -146,13 +146,13 @@ var (
 	ErrEnvCredentialsMissingGateway = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`In Gateway mode, access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD respectively`,
+		`In Gateway mode, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD respectively`,
 	)
 
 	ErrEnvCredentialsMissingDistributed = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`In distributed server mode, access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD respectively`,
+		`In distributed server mode, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD respectively`,
 	)
 
 	ErrInvalidErasureEndpoints = newErrFn(
@@ -170,8 +170,8 @@ var (
 	ErrStorageClassValue = newErrFn(
 		"Invalid storage class value",
 		"Please check the value",
-		`MINIO_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
-MINIO_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
+		`OBSTOR_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
+OBSTOR_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
 Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class for more information`,
 	)
 
@@ -236,7 +236,7 @@ Example 1:
 
 	ErrSSLNoPassword = newErrFn(
 		"Missing TLS password",
-		"Please set the password to environment variable `MINIO_CERT_PASSWD` so that the private key can be decrypted",
+		"Please set the password to environment variable `OBSTOR_CERT_PASSWD` so that the private key can be decrypted",
 		"",
 	)
 
@@ -254,7 +254,7 @@ Example 1:
 
 	ErrSSLWrongPassword = newErrFn(
 		"Unable to decrypt the private key using the provided password",
-		"Please set the correct password in environment variable `MINIO_CERT_PASSWD`",
+		"Please set the correct password in environment variable `OBSTOR_CERT_PASSWD`",
 		"",
 	)
 
@@ -267,13 +267,13 @@ Example 1:
 	ErrInvalidCompressionIncludesValue = newErrFn(
 		"Invalid compression include value",
 		"Please check the passed value",
-		"Compress extensions/mime-types are delimited by `,`. For eg, MINIO_COMPRESS_MIME_TYPES=\"A,B,C\"",
+		"Compress extensions/mime-types are delimited by `,`. For eg, OBSTOR_COMPRESS_MIME_TYPES=\"A,B,C\"",
 	)
 
 	ErrInvalidGWSSEValue = newErrFn(
 		"Invalid gateway SSE value",
 		"Please check the passed value",
-		"MINIO_GATEWAY_SSE: Gateway SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
+		"OBSTOR_GATEWAY_SSE: Gateway SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
 	)
 
 	ErrInvalidGWSSEEnvValue = newErrFn(
@@ -285,6 +285,6 @@ Example 1:
 	ErrInvalidReplicationWorkersValue = newErrFn(
 		"Invalid value for replication workers",
 		"",
-		"MINIO_API_REPLICATION_WORKERS: should be > 0",
+		"OBSTOR_API_REPLICATION_WORKERS: should be > 0",
 	)
 )

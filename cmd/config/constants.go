@@ -23,30 +23,30 @@ const (
 
 // Top level common ENVs
 const (
-	EnvAccessKey    = "MINIO_ACCESS_KEY"
-	EnvSecretKey    = "MINIO_SECRET_KEY"
-	EnvRootUser     = "MINIO_ROOT_USER"
-	EnvRootPassword = "MINIO_ROOT_PASSWORD"
+	EnvAccessKey    = "OBSTOR_ACCESS_KEY"
+	EnvSecretKey    = "OBSTOR_SECRET_KEY"
+	EnvRootUser     = "OBSTOR_ROOT_USER"
+	EnvRootPassword = "OBSTOR_ROOT_PASSWORD"
 
-	EnvBrowser    = "MINIO_BROWSER"
-	EnvDomain     = "MINIO_DOMAIN"
-	EnvRegionName = "MINIO_REGION_NAME"
-	EnvPublicIPs  = "MINIO_PUBLIC_IPS"
-	EnvFSOSync    = "MINIO_FS_OSYNC"
-	EnvArgs       = "MINIO_ARGS"
-	EnvDNSWebhook = "MINIO_DNS_WEBHOOK_ENDPOINT"
+	EnvBrowser    = "OBSTOR_BROWSER"
+	EnvDomain     = "OBSTOR_DOMAIN"
+	EnvRegionName = "OBSTOR_REGION_NAME"
+	EnvPublicIPs  = "OBSTOR_PUBLIC_IPS"
+	EnvFSOSync    = "OBSTOR_FS_OSYNC"
+	EnvArgs       = "OBSTOR_ARGS"
+	EnvDNSWebhook = "OBSTOR_DNS_WEBHOOK_ENDPOINT"
 
-	EnvUpdate = "MINIO_UPDATE"
+	EnvUpdate = "OBSTOR_UPDATE"
 
-	EnvKMSMasterKey  = "MINIO_KMS_MASTER_KEY" // legacy
-	EnvKMSSecretKey  = "MINIO_KMS_SECRET_KEY"
-	EnvKESEndpoint   = "MINIO_KMS_KES_ENDPOINT"
-	EnvKESKeyName    = "MINIO_KMS_KES_KEY_NAME"
-	EnvKESClientKey  = "MINIO_KMS_KES_KEY_FILE"
-	EnvKESClientCert = "MINIO_KMS_KES_CERT_FILE"
-	EnvKESServerCA   = "MINIO_KMS_KES_CAPATH"
+	EnvKMSMasterKey  = "OBSTOR_KMS_MASTER_KEY" // legacy
+	EnvKMSSecretKey  = "OBSTOR_KMS_SECRET_KEY"
+	EnvKESEndpoint   = "OBSTOR_KMS_KES_ENDPOINT"
+	EnvKESKeyName    = "OBSTOR_KMS_KES_KEY_NAME"
+	EnvKESClientKey  = "OBSTOR_KMS_KES_KEY_FILE"
+	EnvKESClientCert = "OBSTOR_KMS_KES_CERT_FILE"
+	EnvKESServerCA   = "OBSTOR_KMS_KES_CAPATH"
 
-	EnvEndpoints = "MINIO_ENDPOINTS" // legacy
-	EnvWorm      = "MINIO_WORM"      // legacy
-	EnvRegion    = "MINIO_REGION"    // legacy
+	EnvEndpoints = "OBSTOR_ENDPOINTS" // legacy
+	EnvWorm      = "OBSTOR_WORM"      // legacy
+	EnvRegion    = "OBSTOR_REGION"    // legacy
 )

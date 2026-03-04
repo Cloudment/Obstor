@@ -45,13 +45,13 @@ const (
 	WebhookClientCert = "client_cert"
 	WebhookClientKey  = "client_key"
 
-	EnvWebhookEnable     = "MINIO_NOTIFY_WEBHOOK_ENABLE"
-	EnvWebhookEndpoint   = "MINIO_NOTIFY_WEBHOOK_ENDPOINT"
-	EnvWebhookAuthToken  = "MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN"
-	EnvWebhookQueueDir   = "MINIO_NOTIFY_WEBHOOK_QUEUE_DIR"
-	EnvWebhookQueueLimit = "MINIO_NOTIFY_WEBHOOK_QUEUE_LIMIT"
-	EnvWebhookClientCert = "MINIO_NOTIFY_WEBHOOK_CLIENT_CERT"
-	EnvWebhookClientKey  = "MINIO_NOTIFY_WEBHOOK_CLIENT_KEY"
+	EnvWebhookEnable     = "OBSTOR_NOTIFY_WEBHOOK_ENABLE"
+	EnvWebhookEndpoint   = "OBSTOR_NOTIFY_WEBHOOK_ENDPOINT"
+	EnvWebhookAuthToken  = "OBSTOR_NOTIFY_WEBHOOK_AUTH_TOKEN"
+	EnvWebhookQueueDir   = "OBSTOR_NOTIFY_WEBHOOK_QUEUE_DIR"
+	EnvWebhookQueueLimit = "OBSTOR_NOTIFY_WEBHOOK_QUEUE_LIMIT"
+	EnvWebhookClientCert = "OBSTOR_NOTIFY_WEBHOOK_CLIENT_CERT"
+	EnvWebhookClientKey  = "OBSTOR_NOTIFY_WEBHOOK_CLIENT_KEY"
 )
 
 // WebhookArgs - Webhook target arguments.

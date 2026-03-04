@@ -85,13 +85,13 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} /mnt/data{1...64}
 
   3. Start distributed minio server on an 32 node setup with 32 drives each, run following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}minio
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}minio
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
      {{.Prompt}} {{.HelpName}} http://node{1...32}.example.com/mnt/export{1...32}
 
   4. Start distributed minio server in an expanded setup, run the following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}minio
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}minio
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
      {{.Prompt}} {{.HelpName}} http://node{1...16}.example.com/mnt/export{1...32} \
             http://node{17...64}.example.com/mnt/export{1...64}
 `,
@@ -100,7 +100,7 @@ EXAMPLES:
 func serverCmdArgs(ctx *cli.Context) []string {
 	v := env.Get(config.EnvArgs, "")
 	if v == "" {
-		// Fall back to older ENV MINIO_ENDPOINTS
+		// Fall back to older ENV OBSTOR_ENDPOINTS
 		v = env.Get(config.EnvEndpoints, "")
 	}
 	if v == "" {
@@ -554,7 +554,7 @@ func serverMain(ctx *cli.Context) {
 	printStartupMessage(getAPIEndpoints(), err)
 
 	if globalActiveCred.Equal(auth.DefaultCredentials) {
-		msg := fmt.Sprintf("Detected default credentials '%s', please change the credentials immediately using 'MINIO_ROOT_USER' and 'MINIO_ROOT_PASSWORD'", globalActiveCred)
+		msg := fmt.Sprintf("Detected default credentials '%s', please change the credentials immediately using 'OBSTOR_ROOT_USER' and 'OBSTOR_ROOT_PASSWORD'", globalActiveCred)
 		logger.StartupMessage(color.RedBold(msg))
 	}
 

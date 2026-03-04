@@ -36,7 +36,7 @@ To start a distributed ObStor instance, you just need to pass drive locations as
 
 __NOTE:__
 
-- All the nodes running distributed ObStor need to have same access key and secret key for the nodes to connect. To achieve this, it is __recommended__ to export access key and secret key as environment variables, `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`, on all the nodes before executing ObStor server command.
+- All the nodes running distributed ObStor need to have same access key and secret key for the nodes to connect. To achieve this, it is __recommended__ to export access key and secret key as environment variables, `OBSTOR_ROOT_USER` and `OBSTOR_ROOT_PASSWORD`, on all the nodes before executing ObStor server command.
 - __ObStor creates erasure-coding sets of *4* to *16* drives per set.  The number of drives you provide in total must be a multiple of one of those numbers.__
 - __ObStor chooses the largest EC set size which divides into the total number of drives or total number of nodes given - making sure to keep the uniform distribution i.e each node participates equal number of drives per set__.
 - __Each object is written to a single EC set, and therefore is spread over no more than 16 drives.__
@@ -44,7 +44,7 @@ __NOTE:__
 - ObStor distributed mode requires __fresh directories__. If required, the drives can be shared with other applications. You can do this by using a sub-directory exclusive to ObStor. For example, if you have mounted your volume under `/export`, pass `/export/data` as arguments to ObStor server.
 - The IP addresses and drive paths below are for demonstration purposes only, you need to replace these with the actual IP addresses and drive paths/folders.
 - Servers running distributed ObStor instances should be less than 15 minutes apart. You can enable [NTP](http://www.ntp.org/) service as a best practice to ensure same times across servers.
-- `MINIO_DOMAIN` environment variable should be defined and exported for bucket DNS style support.
+- `OBSTOR_DOMAIN` environment variable should be defined and exported for bucket DNS style support.
 - Running Distributed ObStor on __Windows__ operating system is considered **experimental**. Please proceed with caution.
 
 Example 1: Start distributed ObStor instance on n nodes with m drives each mounted at `/export1` to `/exportm` (pictured below), by running this command on all the n nodes:
@@ -54,8 +54,8 @@ Example 1: Start distributed ObStor instance on n nodes with m drives each mount
 #### GNU/Linux and macOS
 
 ```sh
-export MINIO_ROOT_USER=<ACCESS_KEY>
-export MINIO_ROOT_PASSWORD=<SECRET_KEY>
+export OBSTOR_ROOT_USER=<ACCESS_KEY>
+export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
 minio server http://host{1...n}/export{1...m}
 ```
 
@@ -67,8 +67,8 @@ minio server http://host{1...n}/export{1...m}
 ObStor supports expanding distributed erasure coded clusters by specifying new set of clusters on the command-line as shown below:
 
 ```sh
-export MINIO_ROOT_USER=<ACCESS_KEY>
-export MINIO_ROOT_PASSWORD=<SECRET_KEY>
+export OBSTOR_ROOT_USER=<ACCESS_KEY>
+export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
 minio server http://host{1...n}/export{1...m} http://host{o...z}/export{1...m}
 ```
 

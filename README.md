@@ -1,7 +1,7 @@
 # ObStor Quickstart Guide
 [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
-[![ObStor](https://raw.githubusercontent.com/minio/minio/master/.github/logo.svg?sanitize=true)](https://pgg.net)
+[![ObStor](https://raw.githubusercontent.com/cloudment/obstor/master/.github/logo.svg?sanitize=true)](https://pgg.net)
 
 ObStor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use ObStor to build high performance infrastructure for machine learning, analytics and application data workloads.
 
@@ -22,16 +22,16 @@ for more complete documentation.
 Run the following command to run the latest stable image of ObStor on a Docker container using an ephemeral data volume:
 
 ```sh
-docker run -p 9000:9000 minio/minio server /data
+docker run -p 9000:9000 obstor/obstor server /data
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: To deploy ObStor on Docker with persistent storage, you must map local persistent directories from the host OS to the container using the
@@ -42,16 +42,16 @@ see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to v
 Run the following command to run the bleeding-edge image of ObStor on a Docker container using an ephemeral data volume:
 
 ```
-docker run -p 9000:9000 minio/minio:edge server /data
+docker run -p 9000:9000 cloudment/obstor:edge server /data
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: To deploy ObStor on Docker with persistent storage, you must map local persistent directories from the host OS to the container using the
@@ -82,13 +82,13 @@ brew uninstall minio
 brew install minio/stable/minio
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 ## Binary Download
 
@@ -100,13 +100,13 @@ chmod +x minio
 ./minio server /data
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 # GNU/Linux
@@ -130,13 +130,13 @@ The following table lists supported architectures. Replace the `wget` URL with t
 | 64-bit PowerPC LE (ppc64le)    | https://dl.pgg.net/server/minio/release/linux-ppc64le/minio |
 | IBM Z-Series (S390X)           | https://dl.pgg.net/server/minio/release/linux-s390x/minio   |
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
@@ -158,13 +158,13 @@ Use the following command to run a standalone ObStor server on the Windows host.
 minio.exe server D:\
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
@@ -190,13 +190,13 @@ Use the following commands to compile and run a standalone ObStor server from so
 GO111MODULE=on go get github.com/cloudment/obstor
 ```
 
-The ObStor deployment starts using default root credentials `minioadmin:minioadmin`. You can test the deployment using the ObStor Browser, an embedded
+The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
 [Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://pgg.net/docs/obstor/ and click **MINIO SDKS** in the navigation to view ObStor SDKs for supported languages.
+see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication

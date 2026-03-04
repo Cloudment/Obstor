@@ -73,14 +73,14 @@ Default value for `REDUCED_REDUNDANCY` storage class is `2`.
 
 The format to set storage class environment variables is as follows
 
-`MINIO_STORAGE_CLASS_STANDARD=EC:parity`
-`MINIO_STORAGE_CLASS_RRS=EC:parity`
+`OBSTOR_STORAGE_CLASS_STANDARD=EC:parity`
+`OBSTOR_STORAGE_CLASS_RRS=EC:parity`
 
-For example, set `MINIO_STORAGE_CLASS_RRS` parity 2 and `MINIO_STORAGE_CLASS_STANDARD` parity 3
+For example, set `OBSTOR_STORAGE_CLASS_RRS` parity 2 and `OBSTOR_STORAGE_CLASS_STANDARD` parity 3
 
 ```sh
-export MINIO_STORAGE_CLASS_STANDARD=EC:3
-export MINIO_STORAGE_CLASS_RRS=EC:2
+export OBSTOR_STORAGE_CLASS_STANDARD=EC:3
+export OBSTOR_STORAGE_CLASS_RRS=EC:2
 ```
 
 Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](https://github.com/cloudment/obstor/tree/master/docs/config#storage-class) for

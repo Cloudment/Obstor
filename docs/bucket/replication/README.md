@@ -146,9 +146,9 @@ Replication status can be seen in the metadata on the source and destination obj
 
 To perform bi-directional replication, repeat the above process on the target site - this time setting the source bucket as the replication target. It is recommended that replication be run in a system with atleast two CPU's available to the process, so that replication can run in its own thread.
 
-![put](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/PUT_bucket_replication.png)
+![put](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/PUT_bucket_replication.png)
 
-![head](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/HEAD_bucket_replication.png)
+![head](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/HEAD_bucket_replication.png)
 
 ## ObStor Extension
 ### Replicating Deletes
@@ -171,7 +171,7 @@ Replication configuration applied successfully to myminio/srcbucket.
 
 Status of delete marker replication can be viewed by doing a GET/HEAD on the object version - it will return a `X-Minio-Replication-DeleteMarker-Status` header and http response code of `405`. In the case of permanent deletes, if the delete replication is pending or failed to propagate to the target cluster, GET/HEAD will return additional `X-Minio-Replication-Delete-Status` header and a http response code of `405`.
 
-![delete](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/DELETE_bucket_replication.png)
+![delete](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DELETE_bucket_replication.png)
 
 The status of replication can be monitored by configuring event notifications on the source and target buckets using `mc event add`.On the source side, the `s3:PutObject`, `s3:Replication:OperationCompletedReplication` and `s3:Replication:OperationFailedReplication` events show the status of replication in the `X-Amz-Replication-Status` metadata.
 
@@ -185,6 +185,6 @@ remote replication target using the `mc admin bucket remote add` command
 ```
 
 ## Explore Further
-- [ObStor Bucket Replication Design](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/DESIGN.md)
+- [ObStor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DESIGN.md)
 - [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/minio-bucket-versioning-guide.html)
 - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)

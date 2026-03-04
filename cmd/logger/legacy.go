@@ -20,8 +20,8 @@ import "github.com/cloudment/obstor/cmd/config"
 
 // Legacy envs
 const (
-	legacyEnvAuditLoggerHTTPEndpoint = "MINIO_AUDIT_LOGGER_HTTP_ENDPOINT"
-	legacyEnvLoggerHTTPEndpoint      = "MINIO_LOGGER_HTTP_ENDPOINT"
+	legacyEnvAuditLoggerHTTPEndpoint = "OBSTOR_AUDIT_LOGGER_HTTP_ENDPOINT"
+	legacyEnvLoggerHTTPEndpoint      = "OBSTOR_LOGGER_HTTP_ENDPOINT"
 )
 
 // SetLoggerHTTPAudit - helper for migrating older config to newer KV format.

@@ -66,9 +66,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -95,18 +95,18 @@ const (
 	MySQLQueueDir           = "queue_dir"
 	MySQLMaxOpenConnections = "max_open_connections"
 
-	EnvMySQLEnable             = "MINIO_NOTIFY_MYSQL_ENABLE"
-	EnvMySQLFormat             = "MINIO_NOTIFY_MYSQL_FORMAT"
-	EnvMySQLDSNString          = "MINIO_NOTIFY_MYSQL_DSN_STRING"
-	EnvMySQLTable              = "MINIO_NOTIFY_MYSQL_TABLE"
-	EnvMySQLHost               = "MINIO_NOTIFY_MYSQL_HOST"
-	EnvMySQLPort               = "MINIO_NOTIFY_MYSQL_PORT"
-	EnvMySQLUsername           = "MINIO_NOTIFY_MYSQL_USERNAME"
-	EnvMySQLPassword           = "MINIO_NOTIFY_MYSQL_PASSWORD"
-	EnvMySQLDatabase           = "MINIO_NOTIFY_MYSQL_DATABASE"
-	EnvMySQLQueueLimit         = "MINIO_NOTIFY_MYSQL_QUEUE_LIMIT"
-	EnvMySQLQueueDir           = "MINIO_NOTIFY_MYSQL_QUEUE_DIR"
-	EnvMySQLMaxOpenConnections = "MINIO_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS"
+	EnvMySQLEnable             = "OBSTOR_NOTIFY_MYSQL_ENABLE"
+	EnvMySQLFormat             = "OBSTOR_NOTIFY_MYSQL_FORMAT"
+	EnvMySQLDSNString          = "OBSTOR_NOTIFY_MYSQL_DSN_STRING"
+	EnvMySQLTable              = "OBSTOR_NOTIFY_MYSQL_TABLE"
+	EnvMySQLHost               = "OBSTOR_NOTIFY_MYSQL_HOST"
+	EnvMySQLPort               = "OBSTOR_NOTIFY_MYSQL_PORT"
+	EnvMySQLUsername           = "OBSTOR_NOTIFY_MYSQL_USERNAME"
+	EnvMySQLPassword           = "OBSTOR_NOTIFY_MYSQL_PASSWORD"
+	EnvMySQLDatabase           = "OBSTOR_NOTIFY_MYSQL_DATABASE"
+	EnvMySQLQueueLimit         = "OBSTOR_NOTIFY_MYSQL_QUEUE_LIMIT"
+	EnvMySQLQueueDir           = "OBSTOR_NOTIFY_MYSQL_QUEUE_DIR"
+	EnvMySQLMaxOpenConnections = "OBSTOR_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS"
 )
 
 // MySQLArgs - MySQL target arguments.

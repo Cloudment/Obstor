@@ -12,7 +12,7 @@ Fork [ObStor upstream](https://github.com/cloudment/obstor/fork) source reposito
 ```sh
 $ git clone https://github.com/cloudment/obstor
 $ go install -v
-$ ls /go/bin/minio
+$ ls /go/bin/obstor
 ```
 
 ### Set up git remote as ``upstream``

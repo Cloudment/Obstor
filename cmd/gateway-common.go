@@ -371,12 +371,12 @@ func gatewayHandleEnvVars() {
 			"Unable to validate credentials inherited from the shell environment")
 	}
 
-	gwsseVal := env.Get("MINIO_GATEWAY_SSE", "")
+	gwsseVal := env.Get("OBSTOR_GATEWAY_SSE", "")
 	if gwsseVal != "" {
 		var err error
 		GlobalGatewaySSE, err = parseGatewaySSE(gwsseVal)
 		if err != nil {
-			logger.Fatal(err, "Unable to parse MINIO_GATEWAY_SSE value (`%s`)", gwsseVal)
+			logger.Fatal(err, "Unable to parse OBSTOR_GATEWAY_SSE value (`%s`)", gwsseVal)
 		}
 	}
 }

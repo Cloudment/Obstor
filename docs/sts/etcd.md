@@ -32,13 +32,13 @@ rm -rf /tmp/etcd-data.tmp && mkdir -p /tmp/etcd-data.tmp && \
 You may also setup etcd with TLS following this documentation [here](https://coreos.com/etcd/docs/latest/op-guide/security.html)
 
 ### 3. Setup ObStor with etcd
-ObStor server expects environment variable for etcd as `MINIO_ETCD_ENDPOINTS`, this environment variable takes many comma separated entries.
+ObStor server expects environment variable for etcd as `OBSTOR_ETCD_ENDPOINTS`, this environment variable takes many comma separated entries.
 ```
-export MINIO_ETCD_ENDPOINTS=http://localhost:2379
+export OBSTOR_ETCD_ENDPOINTS=http://localhost:2379
 minio server /data
 ```
 
-NOTE: If `etcd` is configured with `Client-to-server authentication with HTTPS client certificates` then you need to use additional envs such as `MINIO_ETCD_CLIENT_CERT` pointing to path to `etcd-client.crt` and `MINIO_ETCD_CLIENT_CERT_KEY` path to `etcd-client.key` .
+NOTE: If `etcd` is configured with `Client-to-server authentication with HTTPS client certificates` then you need to use additional envs such as `OBSTOR_ETCD_CLIENT_CERT` pointing to path to `etcd-client.crt` and `OBSTOR_ETCD_CLIENT_CERT_KEY` path to `etcd-client.key` .
 
 ### 4. Test with ObStor STS API
 Once etcd is configured, **any STS configuration** will work including Client Grants, Web Identity or AD/LDAP.

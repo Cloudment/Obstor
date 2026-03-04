@@ -44,7 +44,7 @@ import (
 // setsDsyncLockers is encapsulated type for Close()
 type setsDsyncLockers [][]dsync.NetLocker
 
-const envMinioDeleteCleanupInterval = "MINIO_DELETE_CLEANUP_INTERVAL"
+const envMinioDeleteCleanupInterval = "OBSTOR_DELETE_CLEANUP_INTERVAL"
 
 // erasureSets implements ObjectLayer combining a static list of erasure coded
 // object sets. NOTE: There is no dynamic scaling allowed or intended in

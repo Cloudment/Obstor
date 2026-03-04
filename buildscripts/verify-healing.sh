@@ -25,15 +25,15 @@ if [ ! -x "$PWD/minio" ]; then
 fi
 
 WORK_DIR="$PWD/.verify-$RANDOM"
-MINIO_CONFIG_DIR="$WORK_DIR/.minio"
-MINIO=( "$PWD/minio" --config-dir "$MINIO_CONFIG_DIR" server )
+OBSTOR_CONFIG_DIR="$WORK_DIR/.minio"
+OBSTOR=( "$PWD/minio" --config-dir "$OBSTOR_CONFIG_DIR" server )
 
 export GOGC=25
 
 function start_minio_3_node() {
-    export MINIO_ROOT_USER=minio
-    export MINIO_ROOT_PASSWORD=minio123
-    export MINIO_ERASURE_SET_DRIVE_COUNT=6
+    export OBSTOR_ROOT_USER=minio
+    export OBSTOR_ROOT_PASSWORD=minio123
+    export OBSTOR_ERASURE_SET_DRIVE_COUNT=6
 
     start_port=$(shuf -i 10000-65000 -n 1)
     args=""
@@ -41,13 +41,13 @@ function start_minio_3_node() {
         args="$args http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/1/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/2/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/3/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/4/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/5/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/6/"
     done
 
-    "${MINIO[@]}" --address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-minio-server1.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-minio-server1.log" 2>&1 &
     disown $!
 
-    "${MINIO[@]}" --address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-minio-server2.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-minio-server2.log" 2>&1 &
     disown $!
 
-    "${MINIO[@]}" --address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-minio-server3.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-minio-server3.log" 2>&1 &
     disown $!
 
     sleep "$1"
@@ -95,10 +95,10 @@ function __init__()
 {
     echo "Initializing environment"
     mkdir -p "$WORK_DIR"
-    mkdir -p "$MINIO_CONFIG_DIR"
+    mkdir -p "$OBSTOR_CONFIG_DIR"
 
     ## version is purposefully set to '3' for minio to migrate configuration file
-    echo '{"version": "3", "credential": {"accessKey": "minio", "secretKey": "minio123"}, "region": "us-east-1"}' > "$MINIO_CONFIG_DIR/config.json"
+    echo '{"version": "3", "credential": {"accessKey": "minio", "secretKey": "minio123"}, "region": "us-east-1"}' > "$OBSTOR_CONFIG_DIR/config.json"
 }
 
 function perform_test() {

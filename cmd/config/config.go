@@ -166,7 +166,7 @@ const (
 	KvSingleQuote      = madmin.KvSingleQuote
 
 	// Env prefix used for all envs in ObStor
-	EnvPrefix        = "MINIO_"
+	EnvPrefix        = "OBSTOR_"
 	EnvWordDelimiter = `_`
 )
 

@@ -50,7 +50,7 @@ import (
 )
 
 // serverDebugLog will enable debug printing
-var serverDebugLog = env.Get("_MINIO_SERVER_DEBUG", config.EnableOff) == config.EnableOn
+var serverDebugLog = env.Get("_OBSTOR_SERVER_DEBUG", config.EnableOff) == config.EnableOn
 
 func init() {
 	logger.Init(GOPATH, GOROOT)
@@ -97,7 +97,7 @@ func verifyObjectLayerFeatures(name string, objAPI ObjectLayer) {
 
 	if strings.HasPrefix(name, "gateway") {
 		if GlobalGatewaySSE.IsSet() && GlobalKMS == nil {
-			uiErr := config.ErrInvalidGWSSEEnvValue(nil).Msg("MINIO_GATEWAY_SSE set but KMS is not configured")
+			uiErr := config.ErrInvalidGWSSEEnvValue(nil).Msg("OBSTOR_GATEWAY_SSE set but KMS is not configured")
 			logger.Fatal(uiErr, "Unable to start gateway with SSE")
 		}
 	}
@@ -245,17 +245,17 @@ func handleCommonEnvVars() {
 		logger.Fatal(config.ErrInvalidWormValue(err), "Invalid worm configuration")
 	}
 	if wormEnabled {
-		logger.Fatal(errors.New("WORM is deprecated"), "global MINIO_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
+		logger.Fatal(errors.New("WORM is deprecated"), "global OBSTOR_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
 	}
 
 	globalBrowserEnabled, err = config.ParseBool(env.Get(config.EnvBrowser, config.EnableOn))
 	if err != nil {
-		logger.Fatal(config.ErrInvalidBrowserValue(err), "Invalid MINIO_BROWSER value in environment variable")
+		logger.Fatal(config.ErrInvalidBrowserValue(err), "Invalid OBSTOR_BROWSER value in environment variable")
 	}
 
 	globalFSOSync, err = config.ParseBool(env.Get(config.EnvFSOSync, config.EnableOff))
 	if err != nil {
-		logger.Fatal(config.ErrInvalidFSOSyncValue(err), "Invalid MINIO_FS_OSYNC value in environment variable")
+		logger.Fatal(config.ErrInvalidFSOSyncValue(err), "Invalid OBSTOR_FS_OSYNC value in environment variable")
 	}
 
 	domains := env.Get(config.EnvDomain, "")
@@ -263,7 +263,7 @@ func handleCommonEnvVars() {
 		for _, domainName := range strings.Split(domains, config.ValueSeparator) {
 			if _, ok := dns2.IsDomainName(domainName); !ok {
 				logger.Fatal(config.ErrInvalidDomainValue(nil).Msg("Unknown value `%s`", domainName),
-					"Invalid MINIO_DOMAIN value in environment variable")
+					"Invalid OBSTOR_DOMAIN value in environment variable")
 			}
 			globalDomainNames = append(globalDomainNames, domainName)
 		}
@@ -272,7 +272,7 @@ func handleCommonEnvVars() {
 		for _, domainName := range globalDomainNames {
 			if domainName == lcpSuf && len(globalDomainNames) > 1 {
 				logger.Fatal(config.ErrOverlappingDomainValue(nil).Msg("Overlapping domains `%s` not allowed", globalDomainNames),
-					"Invalid MINIO_DOMAIN value in environment variable")
+					"Invalid OBSTOR_DOMAIN value in environment variable")
 			}
 		}
 	}
@@ -286,7 +286,7 @@ func handleCommonEnvVars() {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
-					logger.FatalIf(err, "Unable to initialize ObStor server with [%s] invalid entry found in MINIO_PUBLIC_IPS", endpoint)
+					logger.FatalIf(err, "Unable to initialize ObStor server with [%s] invalid entry found in OBSTOR_PUBLIC_IPS", endpoint)
 				}
 				for _, addr := range addrs {
 					domainIPs.Add(addr)
@@ -305,8 +305,8 @@ func handleCommonEnvVars() {
 		updateDomainIPs(domainIPs)
 	}
 
-	// In place update is true by default if the MINIO_UPDATE is not set
-	// or is not set to 'off', if MINIO_UPDATE is set to 'off' then
+	// In place update is true by default if the OBSTOR_UPDATE is not set
+	// or is not set to 'off', if OBSTOR_UPDATE is set to 'off' then
 	// in-place update is off.
 	globalInplaceUpdateDisabled = strings.EqualFold(env.Get(config.EnvUpdate, config.EnableOn), config.EnableOff)
 

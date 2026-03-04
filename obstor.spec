@@ -11,7 +11,7 @@ Vendor:         MinIO, Inc.
 License:        Apache v2.0
 Group:          Applications/File
 Source0:        https://dl.pgg.net/server/minio/release/linux-amd64/archive/minio.%{tag}
-Source1:        https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/distributed/minio.service
+Source1:        https://raw.githubusercontent.com/cloudment/obstor-service/master/linux-systemd/distributed/minio.service
 URL:            https://pgg.net/
 Requires(pre):  /usr/sbin/useradd, /usr/bin/getent
 Requires(postun): /usr/sbin/userdel
@@ -40,14 +40,14 @@ install -d $RPM_BUILD_ROOT/usr/local/bin
 cat <<EOF >> $RPM_BUILD_ROOT/etc/default/minio
 # Remote volumes to be used for ObStor server.
 # Uncomment line before starting the server.
-# MINIO_VOLUMES=http://node{1...6}/export{1...32}
+# OBSTOR_VOLUMES=http://node{1...6}/export{1...32}
 
 # Root credentials for the server.
 # Uncomment both lines before starting the server.
-# MINIO_ROOT_USER=Server-Root-User
-# MINIO_ROOT_PASSWORD=Server-Root-Password
+# OBSTOR_ROOT_USER=Server-Root-User
+# OBSTOR_ROOT_PASSWORD=Server-Root-Password
 
-MINIO_OPTS="--certs-dir /etc/minio/certs"
+OBSTOR_OPTS="--certs-dir /etc/minio/certs"
 EOF
 
 install %{_sourcedir}/minio.service $RPM_BUILD_ROOT/etc/systemd/system/minio.service

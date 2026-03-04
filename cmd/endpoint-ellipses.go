@@ -328,7 +328,7 @@ func GetAllSets(args ...string) ([][]string, error) {
 
 // Override set drive count for manual distribution.
 const (
-	EnvErasureSetDriveCount = "MINIO_ERASURE_SET_DRIVE_COUNT"
+	EnvErasureSetDriveCount = "OBSTOR_ERASURE_SET_DRIVE_COUNT"
 )
 
 var (

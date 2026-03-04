@@ -28,7 +28,7 @@ import (
 
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
-	"github.com/rabbitmq/amqp091-go"
+	"github.com/streadway/amqp"
 )
 
 // AMQPArgs - AMQP target arguments.
@@ -70,22 +70,22 @@ const (
 	AmqpArguments         = "arguments"
 	AmqpPublishingHeaders = "publishing_headers"
 
-	EnvAMQPEnable            = "MINIO_NOTIFY_AMQP_ENABLE"
-	EnvAMQPURL               = "MINIO_NOTIFY_AMQP_URL"
-	EnvAMQPExchange          = "MINIO_NOTIFY_AMQP_EXCHANGE"
-	EnvAMQPRoutingKey        = "MINIO_NOTIFY_AMQP_ROUTING_KEY"
-	EnvAMQPExchangeType      = "MINIO_NOTIFY_AMQP_EXCHANGE_TYPE"
-	EnvAMQPDeliveryMode      = "MINIO_NOTIFY_AMQP_DELIVERY_MODE"
-	EnvAMQPMandatory         = "MINIO_NOTIFY_AMQP_MANDATORY"
-	EnvAMQPImmediate         = "MINIO_NOTIFY_AMQP_IMMEDIATE"
-	EnvAMQPDurable           = "MINIO_NOTIFY_AMQP_DURABLE"
-	EnvAMQPInternal          = "MINIO_NOTIFY_AMQP_INTERNAL"
-	EnvAMQPNoWait            = "MINIO_NOTIFY_AMQP_NO_WAIT"
-	EnvAMQPAutoDeleted       = "MINIO_NOTIFY_AMQP_AUTO_DELETED"
-	EnvAMQPArguments         = "MINIO_NOTIFY_AMQP_ARGUMENTS"
-	EnvAMQPPublishingHeaders = "MINIO_NOTIFY_AMQP_PUBLISHING_HEADERS"
-	EnvAMQPQueueDir          = "MINIO_NOTIFY_AMQP_QUEUE_DIR"
-	EnvAMQPQueueLimit        = "MINIO_NOTIFY_AMQP_QUEUE_LIMIT"
+	EnvAMQPEnable            = "OBSTOR_NOTIFY_AMQP_ENABLE"
+	EnvAMQPURL               = "OBSTOR_NOTIFY_AMQP_URL"
+	EnvAMQPExchange          = "OBSTOR_NOTIFY_AMQP_EXCHANGE"
+	EnvAMQPRoutingKey        = "OBSTOR_NOTIFY_AMQP_ROUTING_KEY"
+	EnvAMQPExchangeType      = "OBSTOR_NOTIFY_AMQP_EXCHANGE_TYPE"
+	EnvAMQPDeliveryMode      = "OBSTOR_NOTIFY_AMQP_DELIVERY_MODE"
+	EnvAMQPMandatory         = "OBSTOR_NOTIFY_AMQP_MANDATORY"
+	EnvAMQPImmediate         = "OBSTOR_NOTIFY_AMQP_IMMEDIATE"
+	EnvAMQPDurable           = "OBSTOR_NOTIFY_AMQP_DURABLE"
+	EnvAMQPInternal          = "OBSTOR_NOTIFY_AMQP_INTERNAL"
+	EnvAMQPNoWait            = "OBSTOR_NOTIFY_AMQP_NO_WAIT"
+	EnvAMQPAutoDeleted       = "OBSTOR_NOTIFY_AMQP_AUTO_DELETED"
+	EnvAMQPArguments         = "OBSTOR_NOTIFY_AMQP_ARGUMENTS"
+	EnvAMQPPublishingHeaders = "OBSTOR_NOTIFY_AMQP_PUBLISHING_HEADERS"
+	EnvAMQPQueueDir          = "OBSTOR_NOTIFY_AMQP_QUEUE_DIR"
+	EnvAMQPQueueLimit        = "OBSTOR_NOTIFY_AMQP_QUEUE_LIMIT"
 )
 
 // Validate AMQP arguments

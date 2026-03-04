@@ -152,8 +152,8 @@ func TestIsValidStorageClassKind(t *testing.T) {
 		{"", false},
 		{"INVALID", false},
 		{"123", false},
-		{"MINIO_STORAGE_CLASS_RRS", false},
-		{"MINIO_STORAGE_CLASS_STANDARD", false},
+		{"OBSTOR_STORAGE_CLASS_RRS", false},
+		{"OBSTOR_STORAGE_CLASS_STANDARD", false},
 	}
 	for i, tt := range tests {
 		if got := IsValid(tt.sc); got != tt.want {

@@ -34,8 +34,8 @@ const (
 	URL       = "url"
 	AuthToken = "auth_token"
 
-	EnvPolicyOpaURL       = "MINIO_POLICY_OPA_URL"
-	EnvPolicyOpaAuthToken = "MINIO_POLICY_OPA_AUTH_TOKEN"
+	EnvPolicyOpaURL       = "OBSTOR_POLICY_OPA_URL"
+	EnvPolicyOpaAuthToken = "OBSTOR_POLICY_OPA_AUTH_TOKEN"
 )
 
 // DefaultKVS - default config for OPA config

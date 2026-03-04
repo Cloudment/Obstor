@@ -66,7 +66,7 @@ notify_redis          publish bucket notifications to Redis datastores
 > NOTE:
 > - '\*' at the end of arg means its mandatory.
 > - '\*' at the end of the values, means its the default value for the arg.
-> - When configured using environment variables, the `:name` can be specified using this format `MINIO_NOTIFY_WEBHOOK_ENABLE_<name>`.
+> - When configured using environment variables, the `:name` can be specified using this format `OBSTOR_NOTIFY_WEBHOOK_ENABLE_<name>`.
 
 <a name="AMQP"></a>
 
@@ -105,20 +105,20 @@ KEY:
 notify_amqp[:name]  publish bucket notifications to AMQP endpoints
 
 ARGS:
-MINIO_NOTIFY_AMQP_ENABLE*        (on|off)    enable notify_amqp target, default is 'off'
-MINIO_NOTIFY_AMQP_URL*           (url)       AMQP server endpoint e.g. `amqp://myuser:mypassword@localhost:5672`
-MINIO_NOTIFY_AMQP_EXCHANGE       (string)    name of the AMQP exchange
-MINIO_NOTIFY_AMQP_EXCHANGE_TYPE  (string)    AMQP exchange type
-MINIO_NOTIFY_AMQP_ROUTING_KEY    (string)    routing key for publishing
-MINIO_NOTIFY_AMQP_MANDATORY      (on|off)    quietly ignore undelivered messages when set to 'off', default is 'on'
-MINIO_NOTIFY_AMQP_DURABLE        (on|off)    persist queue across broker restarts when set to 'on', default is 'off'
-MINIO_NOTIFY_AMQP_NO_WAIT        (on|off)    non-blocking message delivery when set to 'on', default is 'off'
-MINIO_NOTIFY_AMQP_INTERNAL       (on|off)    set to 'on' for exchange to be not used directly by publishers, but only when bound to other exchanges
-MINIO_NOTIFY_AMQP_AUTO_DELETED   (on|off)    auto delete queue when set to 'on', when there are no consumers
-MINIO_NOTIFY_AMQP_DELIVERY_MODE  (number)    set to '1' for non-persistent or '2' for persistent queue
-MINIO_NOTIFY_AMQP_QUEUE_DIR      (path)      staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_AMQP_QUEUE_LIMIT    (number)    maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_AMQP_COMMENT        (sentence)  optionally add a comment to this setting
+OBSTOR_NOTIFY_AMQP_ENABLE*        (on|off)    enable notify_amqp target, default is 'off'
+OBSTOR_NOTIFY_AMQP_URL*           (url)       AMQP server endpoint e.g. `amqp://myuser:mypassword@localhost:5672`
+OBSTOR_NOTIFY_AMQP_EXCHANGE       (string)    name of the AMQP exchange
+OBSTOR_NOTIFY_AMQP_EXCHANGE_TYPE  (string)    AMQP exchange type
+OBSTOR_NOTIFY_AMQP_ROUTING_KEY    (string)    routing key for publishing
+OBSTOR_NOTIFY_AMQP_MANDATORY      (on|off)    quietly ignore undelivered messages when set to 'off', default is 'on'
+OBSTOR_NOTIFY_AMQP_DURABLE        (on|off)    persist queue across broker restarts when set to 'on', default is 'off'
+OBSTOR_NOTIFY_AMQP_NO_WAIT        (on|off)    non-blocking message delivery when set to 'on', default is 'off'
+OBSTOR_NOTIFY_AMQP_INTERNAL       (on|off)    set to 'on' for exchange to be not used directly by publishers, but only when bound to other exchanges
+OBSTOR_NOTIFY_AMQP_AUTO_DELETED   (on|off)    auto delete queue when set to 'on', when there are no consumers
+OBSTOR_NOTIFY_AMQP_DELIVERY_MODE  (number)    set to '1' for non-persistent or '2' for persistent queue
+OBSTOR_NOTIFY_AMQP_QUEUE_DIR      (path)      staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_AMQP_QUEUE_LIMIT    (number)    maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_AMQP_COMMENT        (sentence)  optionally add a comment to this setting
 ```
 
 ObStor supports persistent event store. The persistent store will backup events when the AMQP broker goes offline and replays it when the broker comes back online. The event store can be configured by setting the directory path in `queue_dir` field and the maximum limit of events in the queue_dir in `queue_limit` field. For eg, the `queue_dir` can be `/home/events` and `queue_limit` can be `1000`. By default, the `queue_limit` is set to 100000.
@@ -239,17 +239,17 @@ KEY:
 notify_mqtt[:name]  publish bucket notifications to MQTT endpoints
 
 ARGS:
-MINIO_NOTIFY_MQTT_ENABLE*              (on|off)    enable notify_mqtt target, default is 'off'
-MINIO_NOTIFY_MQTT_BROKER*              (uri)       MQTT server endpoint e.g. `tcp://localhost:1883`
-MINIO_NOTIFY_MQTT_TOPIC*               (string)    name of the MQTT topic to publish
-MINIO_NOTIFY_MQTT_USERNAME             (string)    MQTT username
-MINIO_NOTIFY_MQTT_PASSWORD             (string)    MQTT password
-MINIO_NOTIFY_MQTT_QOS                  (number)    set the quality of service priority, defaults to '0'
-MINIO_NOTIFY_MQTT_KEEP_ALIVE_INTERVAL  (duration)  keep-alive interval for MQTT connections in s,m,h,d
-MINIO_NOTIFY_MQTT_RECONNECT_INTERVAL   (duration)  reconnect interval for MQTT connections in s,m,h,d
-MINIO_NOTIFY_MQTT_QUEUE_DIR            (path)      staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_MQTT_QUEUE_LIMIT          (number)    maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_MQTT_COMMENT              (sentence)  optionally add a comment to this setting
+OBSTOR_NOTIFY_MQTT_ENABLE*              (on|off)    enable notify_mqtt target, default is 'off'
+OBSTOR_NOTIFY_MQTT_BROKER*              (uri)       MQTT server endpoint e.g. `tcp://localhost:1883`
+OBSTOR_NOTIFY_MQTT_TOPIC*               (string)    name of the MQTT topic to publish
+OBSTOR_NOTIFY_MQTT_USERNAME             (string)    MQTT username
+OBSTOR_NOTIFY_MQTT_PASSWORD             (string)    MQTT password
+OBSTOR_NOTIFY_MQTT_QOS                  (number)    set the quality of service priority, defaults to '0'
+OBSTOR_NOTIFY_MQTT_KEEP_ALIVE_INTERVAL  (duration)  keep-alive interval for MQTT connections in s,m,h,d
+OBSTOR_NOTIFY_MQTT_RECONNECT_INTERVAL   (duration)  reconnect interval for MQTT connections in s,m,h,d
+OBSTOR_NOTIFY_MQTT_QUEUE_DIR            (path)      staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_MQTT_QUEUE_LIMIT          (number)    maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_MQTT_COMMENT              (sentence)  optionally add a comment to this setting
 ```
 
 ObStor supports persistent event store. The persistent store will backup events when the MQTT broker goes offline and replays it when the broker comes back online. The event store can be configured by setting the directory path in `queue_dir` field and the maximum limit of events in the queue_dir in `queue_limit` field. For eg, the `queue_dir` can be `/home/events` and `queue_limit` can be `1000`. By default, the `queue_limit` is set to 100000.
@@ -374,15 +374,15 @@ KEY:
 notify_elasticsearch[:name]  publish bucket notifications to Elasticsearch endpoints
 
 ARGS:
-MINIO_NOTIFY_ELASTICSEARCH_ENABLE*      (on|off)             enable notify_elasticsearch target, default is 'off'
-MINIO_NOTIFY_ELASTICSEARCH_URL*         (url)                Elasticsearch server's address, with optional authentication info
-MINIO_NOTIFY_ELASTICSEARCH_INDEX*       (string)             Elasticsearch index to store/update events, index is auto-created
-MINIO_NOTIFY_ELASTICSEARCH_FORMAT*      (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
-MINIO_NOTIFY_ELASTICSEARCH_QUEUE_DIR    (path)               staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_ELASTICSEARCH_QUEUE_LIMIT  (number)             maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_ELASTICSEARCH_USERNAME     (string)             username for Elasticsearch basic-auth
-MINIO_NOTIFY_ELASTICSEARCH_PASSWORD     (string)             password for Elasticsearch basic-auth
-MINIO_NOTIFY_ELASTICSEARCH_COMMENT      (sentence)           optionally add a comment to this setting
+OBSTOR_NOTIFY_ELASTICSEARCH_ENABLE*      (on|off)             enable notify_elasticsearch target, default is 'off'
+OBSTOR_NOTIFY_ELASTICSEARCH_URL*         (url)                Elasticsearch server's address, with optional authentication info
+OBSTOR_NOTIFY_ELASTICSEARCH_INDEX*       (string)             Elasticsearch index to store/update events, index is auto-created
+OBSTOR_NOTIFY_ELASTICSEARCH_FORMAT*      (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
+OBSTOR_NOTIFY_ELASTICSEARCH_QUEUE_DIR    (path)               staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_ELASTICSEARCH_QUEUE_LIMIT  (number)             maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_ELASTICSEARCH_USERNAME     (string)             username for Elasticsearch basic-auth
+OBSTOR_NOTIFY_ELASTICSEARCH_PASSWORD     (string)             password for Elasticsearch basic-auth
+OBSTOR_NOTIFY_ELASTICSEARCH_COMMENT      (sentence)           optionally add a comment to this setting
 ```
 
 For example: `http://localhost:9200` or with authentication info `http://elastic:MagicWord@127.0.0.1:9200`.
@@ -542,13 +542,13 @@ KEY:
 notify_redis[:name]  publish bucket notifications to Redis datastores
 
 ARGS:
-MINIO_NOTIFY_REDIS_ENABLE*      (on|off)             enable notify_redis target, default is 'off'
-MINIO_NOTIFY_REDIS_KEY*         (string)             Redis key to store/update events, key is auto-created
-MINIO_NOTIFY_REDIS_FORMAT*      (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
-MINIO_NOTIFY_REDIS_PASSWORD     (string)             Redis server password
-MINIO_NOTIFY_REDIS_QUEUE_DIR    (path)               staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_REDIS_QUEUE_LIMIT  (number)             maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_REDIS_COMMENT      (sentence)           optionally add a comment to this setting
+OBSTOR_NOTIFY_REDIS_ENABLE*      (on|off)             enable notify_redis target, default is 'off'
+OBSTOR_NOTIFY_REDIS_KEY*         (string)             Redis key to store/update events, key is auto-created
+OBSTOR_NOTIFY_REDIS_FORMAT*      (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
+OBSTOR_NOTIFY_REDIS_PASSWORD     (string)             Redis server password
+OBSTOR_NOTIFY_REDIS_QUEUE_DIR    (path)               staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_REDIS_QUEUE_LIMIT  (number)             maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_REDIS_COMMENT      (sentence)           optionally add a comment to this setting
 ```
 
 ObStor supports persistent event store. The persistent store will backup events when the Redis broker goes offline and replays it when the broker comes back online. The event store can be configured by setting the directory path in `queue_dir` field and the maximum limit of events in the queue_dir in `queue_limit` field. For eg, the `queue_dir` can be `/home/events` and `queue_limit` can be `1000`. By default, the `queue_limit` is set to 100000.
@@ -653,25 +653,25 @@ KEY:
 notify_nats[:name]  publish bucket notifications to NATS endpoints
 
 ARGS:
-MINIO_NOTIFY_NATS_ENABLE*                           (on|off)    enable notify_nats target, default is 'off'
-MINIO_NOTIFY_NATS_ADDRESS*                          (address)   NATS server address e.g. '0.0.0.0:4222'
-MINIO_NOTIFY_NATS_SUBJECT*                          (string)    NATS subscription subject
-MINIO_NOTIFY_NATS_USERNAME                          (string)    NATS username
-MINIO_NOTIFY_NATS_PASSWORD                          (string)    NATS password
-MINIO_NOTIFY_NATS_TOKEN                             (string)    NATS token
-MINIO_NOTIFY_NATS_TLS                               (on|off)    set to 'on' to enable TLS
-MINIO_NOTIFY_NATS_TLS_SKIP_VERIFY                   (on|off)    trust server TLS without verification, defaults to "on" (verify)
-MINIO_NOTIFY_NATS_PING_INTERVAL                     (duration)  client ping commands interval in s,m,h,d. Disabled by default
-MINIO_NOTIFY_NATS_STREAMING                         (on|off)    set to 'on', to use streaming NATS server
-MINIO_NOTIFY_NATS_STREAMING_ASYNC                   (on|off)    set to 'on', to enable asynchronous publish
-MINIO_NOTIFY_NATS_STREAMING_MAX_PUB_ACKS_IN_FLIGHT  (number)    number of messages to publish without waiting for ACKs
-MINIO_NOTIFY_NATS_STREAMING_CLUSTER_ID              (string)    unique ID for NATS streaming cluster
-MINIO_NOTIFY_NATS_CERT_AUTHORITY                    (string)    path to certificate chain of the target NATS server
-MINIO_NOTIFY_NATS_CLIENT_CERT                       (string)    client cert for NATS mTLS auth
-MINIO_NOTIFY_NATS_CLIENT_KEY                        (string)    client cert key for NATS mTLS auth
-MINIO_NOTIFY_NATS_QUEUE_DIR                         (path)      staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_NATS_QUEUE_LIMIT                       (number)    maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_NATS_COMMENT                           (sentence)  optionally add a comment to this setting
+OBSTOR_NOTIFY_NATS_ENABLE*                           (on|off)    enable notify_nats target, default is 'off'
+OBSTOR_NOTIFY_NATS_ADDRESS*                          (address)   NATS server address e.g. '0.0.0.0:4222'
+OBSTOR_NOTIFY_NATS_SUBJECT*                          (string)    NATS subscription subject
+OBSTOR_NOTIFY_NATS_USERNAME                          (string)    NATS username
+OBSTOR_NOTIFY_NATS_PASSWORD                          (string)    NATS password
+OBSTOR_NOTIFY_NATS_TOKEN                             (string)    NATS token
+OBSTOR_NOTIFY_NATS_TLS                               (on|off)    set to 'on' to enable TLS
+OBSTOR_NOTIFY_NATS_TLS_SKIP_VERIFY                   (on|off)    trust server TLS without verification, defaults to "on" (verify)
+OBSTOR_NOTIFY_NATS_PING_INTERVAL                     (duration)  client ping commands interval in s,m,h,d. Disabled by default
+OBSTOR_NOTIFY_NATS_STREAMING                         (on|off)    set to 'on', to use streaming NATS server
+OBSTOR_NOTIFY_NATS_STREAMING_ASYNC                   (on|off)    set to 'on', to enable asynchronous publish
+OBSTOR_NOTIFY_NATS_STREAMING_MAX_PUB_ACKS_IN_FLIGHT  (number)    number of messages to publish without waiting for ACKs
+OBSTOR_NOTIFY_NATS_STREAMING_CLUSTER_ID              (string)    unique ID for NATS streaming cluster
+OBSTOR_NOTIFY_NATS_CERT_AUTHORITY                    (string)    path to certificate chain of the target NATS server
+OBSTOR_NOTIFY_NATS_CLIENT_CERT                       (string)    client cert for NATS mTLS auth
+OBSTOR_NOTIFY_NATS_CLIENT_KEY                        (string)    client cert key for NATS mTLS auth
+OBSTOR_NOTIFY_NATS_QUEUE_DIR                         (path)      staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_NATS_QUEUE_LIMIT                       (number)    maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_NATS_COMMENT                           (sentence)  optionally add a comment to this setting
 ```
 
 To update the configuration, use `mc admin config get` command to get the current configuration file for the minio deployment.
@@ -896,17 +896,17 @@ KEY:
 notify_postgres[:name]  publish bucket notifications to Postgres databases
 
 ARGS:
-MINIO_NOTIFY_POSTGRES_ENABLE*              (on|off)             enable notify_postgres target, default is 'off'
-MINIO_NOTIFY_POSTGRES_CONNECTION_STRING*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable"
-MINIO_NOTIFY_POSTGRES_TABLE*               (string)             DB table name to store/update events, table is auto-created
-MINIO_NOTIFY_POSTGRES_FORMAT*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
-MINIO_NOTIFY_POSTGRES_QUEUE_DIR            (path)               staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_POSTGRES_QUEUE_LIMIT          (number)             maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_POSTGRES_COMMENT              (sentence)           optionally add a comment to this setting
-MINIO_NOTIFY_POSTGRES_MAX_OPEN_CONNECTIONS (number)             maximum number of open connections to the database, defaults to '2'
+OBSTOR_NOTIFY_POSTGRES_ENABLE*              (on|off)             enable notify_postgres target, default is 'off'
+OBSTOR_NOTIFY_POSTGRES_CONNECTION_STRING*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable"
+OBSTOR_NOTIFY_POSTGRES_TABLE*               (string)             DB table name to store/update events, table is auto-created
+OBSTOR_NOTIFY_POSTGRES_FORMAT*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
+OBSTOR_NOTIFY_POSTGRES_QUEUE_DIR            (path)               staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_POSTGRES_QUEUE_LIMIT          (number)             maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_POSTGRES_COMMENT              (sentence)           optionally add a comment to this setting
+OBSTOR_NOTIFY_POSTGRES_MAX_OPEN_CONNECTIONS (number)             maximum number of open connections to the database, defaults to '2'
 ```
 
-> NOTE: If the `max_open_connections` key or the environment variable `MINIO_NOTIFY_POSTGRES_MAX_OPEN_CONNECTIONS` is set to `0`, There will be no limit set on the number of
+> NOTE: If the `max_open_connections` key or the environment variable `OBSTOR_NOTIFY_POSTGRES_MAX_OPEN_CONNECTIONS` is set to `0`, There will be no limit set on the number of
 > open connections to the database. This setting is generally NOT recommended as the behavior may be inconsistent during recursive deletes in `namespace` format.
 
 ObStor supports persistent event store. The persistent store will backup events when the PostgreSQL connection goes offline and replays it when the broker comes back online. The event store can be configured by setting the directory path in `queue_dir` field and the maximum limit of events in the queue_dir in `queue_limit` field. For eg, the `queue_dir` can be `/home/events` and `queue_limit` can be `1000`. By default, the `queue_limit` is set to 100000.
@@ -1030,17 +1030,17 @@ KEY:
 notify_mysql[:name]  publish bucket notifications to MySQL databases
 
 ARGS:
-MINIO_NOTIFY_MYSQL_ENABLE*              (on|off)             enable notify_mysql target, default is 'off'
-MINIO_NOTIFY_MYSQL_DSN_STRING*          (string)             MySQL data-source-name connection string e.g. "<user>:<password>@tcp(<host>:<port>)/<database>"
-MINIO_NOTIFY_MYSQL_TABLE*               (string)             DB table name to store/update events, table is auto-created
-MINIO_NOTIFY_MYSQL_FORMAT*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
-MINIO_NOTIFY_MYSQL_QUEUE_DIR            (path)               staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_MYSQL_QUEUE_LIMIT          (number)             maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS (number)             maximum number of open connections to the database, defaults to '2'
-MINIO_NOTIFY_MYSQL_COMMENT              (sentence)           optionally add a comment to this setting
+OBSTOR_NOTIFY_MYSQL_ENABLE*              (on|off)             enable notify_mysql target, default is 'off'
+OBSTOR_NOTIFY_MYSQL_DSN_STRING*          (string)             MySQL data-source-name connection string e.g. "<user>:<password>@tcp(<host>:<port>)/<database>"
+OBSTOR_NOTIFY_MYSQL_TABLE*               (string)             DB table name to store/update events, table is auto-created
+OBSTOR_NOTIFY_MYSQL_FORMAT*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
+OBSTOR_NOTIFY_MYSQL_QUEUE_DIR            (path)               staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_MYSQL_QUEUE_LIMIT          (number)             maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS (number)             maximum number of open connections to the database, defaults to '2'
+OBSTOR_NOTIFY_MYSQL_COMMENT              (sentence)           optionally add a comment to this setting
 ```
 
-> NOTE: If the `max_open_connections` key or the environment variable `MINIO_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS` is set to `0`, There will be no limit set on the number of
+> NOTE: If the `max_open_connections` key or the environment variable `OBSTOR_NOTIFY_MYSQL_MAX_OPEN_CONNECTIONS` is set to `0`, There will be no limit set on the number of
 > open connections to the database. This setting is generally NOT recommended as the behavior may be inconsistent during recursive deletes in `namespace` format.
 
 `dsn_string` is required and is of form `"<user>:<password>@tcp(<host>:<port>)/<database>"`
@@ -1146,22 +1146,22 @@ KEY:
 notify_kafka[:name]  publish bucket notifications to Kafka endpoints
 
 ARGS:
-MINIO_NOTIFY_KAFKA_ENABLE*          (on|off)                enable notify_kafka target, default is 'off'
-MINIO_NOTIFY_KAFKA_BROKERS*         (csv)                   comma separated list of Kafka broker addresses
-MINIO_NOTIFY_KAFKA_TOPIC            (string)                Kafka topic used for bucket notifications
-MINIO_NOTIFY_KAFKA_SASL_USERNAME    (string)                username for SASL/PLAIN or SASL/SCRAM authentication
-MINIO_NOTIFY_KAFKA_SASL_PASSWORD    (string)                password for SASL/PLAIN or SASL/SCRAM authentication
-MINIO_NOTIFY_KAFKA_SASL_MECHANISM   (plain*|sha256|sha512)  sasl authentication mechanism, default 'plain'
-MINIO_NOTIFY_KAFKA_TLS_CLIENT_AUTH  (string)                clientAuth determines the Kafka server's policy for TLS client auth
-MINIO_NOTIFY_KAFKA_SASL             (on|off)                set to 'on' to enable SASL authentication
-MINIO_NOTIFY_KAFKA_TLS              (on|off)                set to 'on' to enable TLS
-MINIO_NOTIFY_KAFKA_TLS_SKIP_VERIFY  (on|off)                trust server TLS without verification, defaults to "on" (verify)
-MINIO_NOTIFY_KAFKA_CLIENT_TLS_CERT  (path)                  path to client certificate for mTLS auth
-MINIO_NOTIFY_KAFKA_CLIENT_TLS_KEY   (path)                  path to client key for mTLS auth
-MINIO_NOTIFY_KAFKA_QUEUE_DIR        (path)                  staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_KAFKA_QUEUE_LIMIT      (number)                maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_KAFKA_COMMENT          (sentence)              optionally add a comment to this setting
-MINIO_NOTIFY_KAFKA_VERSION          (string)                specify the version of the Kafka cluster e.g. '2.2.0'
+OBSTOR_NOTIFY_KAFKA_ENABLE*          (on|off)                enable notify_kafka target, default is 'off'
+OBSTOR_NOTIFY_KAFKA_BROKERS*         (csv)                   comma separated list of Kafka broker addresses
+OBSTOR_NOTIFY_KAFKA_TOPIC            (string)                Kafka topic used for bucket notifications
+OBSTOR_NOTIFY_KAFKA_SASL_USERNAME    (string)                username for SASL/PLAIN or SASL/SCRAM authentication
+OBSTOR_NOTIFY_KAFKA_SASL_PASSWORD    (string)                password for SASL/PLAIN or SASL/SCRAM authentication
+OBSTOR_NOTIFY_KAFKA_SASL_MECHANISM   (plain*|sha256|sha512)  sasl authentication mechanism, default 'plain'
+OBSTOR_NOTIFY_KAFKA_TLS_CLIENT_AUTH  (string)                clientAuth determines the Kafka server's policy for TLS client auth
+OBSTOR_NOTIFY_KAFKA_SASL             (on|off)                set to 'on' to enable SASL authentication
+OBSTOR_NOTIFY_KAFKA_TLS              (on|off)                set to 'on' to enable TLS
+OBSTOR_NOTIFY_KAFKA_TLS_SKIP_VERIFY  (on|off)                trust server TLS without verification, defaults to "on" (verify)
+OBSTOR_NOTIFY_KAFKA_CLIENT_TLS_CERT  (path)                  path to client certificate for mTLS auth
+OBSTOR_NOTIFY_KAFKA_CLIENT_TLS_KEY   (path)                  path to client key for mTLS auth
+OBSTOR_NOTIFY_KAFKA_QUEUE_DIR        (path)                  staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_KAFKA_QUEUE_LIMIT      (number)                maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_KAFKA_COMMENT          (sentence)              optionally add a comment to this setting
+OBSTOR_NOTIFY_KAFKA_VERSION          (string)                specify the version of the Kafka cluster e.g. '2.2.0'
 ```
 
 To update the configuration, use `mc admin config get` command to get the current configuration.
@@ -1291,14 +1291,14 @@ KEY:
 notify_webhook[:name]  publish bucket notifications to webhook endpoints
 
 ARGS:
-MINIO_NOTIFY_WEBHOOK_ENABLE*      (on|off)    enable notify_webhook target, default is 'off'
-MINIO_NOTIFY_WEBHOOK_ENDPOINT*    (url)       webhook server endpoint e.g. http://localhost:8080/minio/events
-MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN   (string)    opaque string or JWT authorization token
-MINIO_NOTIFY_WEBHOOK_QUEUE_DIR    (path)      staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_WEBHOOK_QUEUE_LIMIT  (number)    maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_WEBHOOK_COMMENT      (sentence)  optionally add a comment to this setting
-MINIO_NOTIFY_WEBHOOK_CLIENT_CERT  (string)    client cert for Webhook mTLS auth
-MINIO_NOTIFY_WEBHOOK_CLIENT_KEY   (string)    client cert key for Webhook mTLS auth
+OBSTOR_NOTIFY_WEBHOOK_ENABLE*      (on|off)    enable notify_webhook target, default is 'off'
+OBSTOR_NOTIFY_WEBHOOK_ENDPOINT*    (url)       webhook server endpoint e.g. http://localhost:8080/minio/events
+OBSTOR_NOTIFY_WEBHOOK_AUTH_TOKEN   (string)    opaque string or JWT authorization token
+OBSTOR_NOTIFY_WEBHOOK_QUEUE_DIR    (path)      staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_WEBHOOK_QUEUE_LIMIT  (number)    maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_WEBHOOK_COMMENT      (sentence)  optionally add a comment to this setting
+OBSTOR_NOTIFY_WEBHOOK_CLIENT_CERT  (string)    client cert for Webhook mTLS auth
+OBSTOR_NOTIFY_WEBHOOK_CLIENT_KEY   (string)    client cert key for Webhook mTLS auth
 ```
 
 ```sh
@@ -1400,14 +1400,14 @@ KEY:
 notify_nsq[:name]  publish bucket notifications to NSQ endpoints
 
 ARGS:
-MINIO_NOTIFY_NSQ_ENABLE*          (on|off)    enable notify_nsq target, default is 'off'
-MINIO_NOTIFY_NSQ_NSQD_ADDRESS*    (address)   NSQ server address e.g. '127.0.0.1:4150'
-MINIO_NOTIFY_NSQ_TOPIC*           (string)    NSQ topic
-MINIO_NOTIFY_NSQ_TLS              (on|off)    set to 'on' to enable TLS
-MINIO_NOTIFY_NSQ_TLS_SKIP_VERIFY  (on|off)    trust server TLS without verification, defaults to "on" (verify)
-MINIO_NOTIFY_NSQ_QUEUE_DIR        (path)      staging dir for undelivered messages e.g. '/home/events'
-MINIO_NOTIFY_NSQ_QUEUE_LIMIT      (number)    maximum limit for undelivered messages, defaults to '100000'
-MINIO_NOTIFY_NSQ_COMMENT          (sentence)  optionally add a comment to this setting
+OBSTOR_NOTIFY_NSQ_ENABLE*          (on|off)    enable notify_nsq target, default is 'off'
+OBSTOR_NOTIFY_NSQ_NSQD_ADDRESS*    (address)   NSQ server address e.g. '127.0.0.1:4150'
+OBSTOR_NOTIFY_NSQ_TOPIC*           (string)    NSQ topic
+OBSTOR_NOTIFY_NSQ_TLS              (on|off)    set to 'on' to enable TLS
+OBSTOR_NOTIFY_NSQ_TLS_SKIP_VERIFY  (on|off)    trust server TLS without verification, defaults to "on" (verify)
+OBSTOR_NOTIFY_NSQ_QUEUE_DIR        (path)      staging dir for undelivered messages e.g. '/home/events'
+OBSTOR_NOTIFY_NSQ_QUEUE_LIMIT      (number)    maximum limit for undelivered messages, defaults to '100000'
+OBSTOR_NOTIFY_NSQ_COMMENT          (sentence)  optionally add a comment to this setting
 ```
 
 ```sh

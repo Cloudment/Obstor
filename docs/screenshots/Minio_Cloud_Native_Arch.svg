@@ -264,7 +264,7 @@
 	.st258{fill:none;stroke:#9B9B9B;stroke-width:0.474;stroke-miterlimit:10;}
 </style>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="807" height="89" xlink:href="5584C28F7EFCBB3B.png"  transform="matrix(1 0 0 1 264.587 332.3576)">
 	</image>
 	<g>
@@ -272,7 +272,7 @@
 	</g>
 </g>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="810" height="118" xlink:href="5584C28F7EFCBB39.png"  transform="matrix(1 0 0 1 263.4198 430.1904)">
 	</image>
 	<g>
@@ -286,7 +286,7 @@
 <text transform="matrix(1 0 0 1 105.2318 378.5607)" class="st144 st240 st241">Orchestration</text>
 <path class="st44" d="M434.68,252.45h-167V107.68c0-1.78,1.45-3.23,3.23-3.23h160.55c1.78,0,3.23,1.44,3.23,3.23V252.45z"/>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="183" height="74" xlink:href="5584C28F7EFCBB3F.png"  transform="matrix(1 0 0 1 263.5566 248.3272)">
 	</image>
 	<g>
@@ -296,7 +296,7 @@
 </g>
 <path class="st44" d="M642.68,252.45h-167v-87.77c0-1.78,1.44-3.23,3.23-3.23h160.55c1.78,0,3.23,1.44,3.23,3.23V252.45z"/>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="183" height="74" xlink:href="5584C28F7EFCBB38.png"  transform="matrix(1 0 0 1 471.5566 248.3272)">
 	</image>
 	<g>
@@ -306,7 +306,7 @@
 </g>
 <path class="st44" d="M849.68,252.45h-167v-87.77c0-1.78,1.44-3.23,3.23-3.23h160.55c1.78,0,3.23,1.44,3.23,3.23V252.45z"/>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="183" height="74" xlink:href="5584C28F7EFCBB36.png"  transform="matrix(1 0 0 1 678.5566 248.3272)">
 	</image>
 	<g>
@@ -316,7 +316,7 @@
 </g>
 <path class="st44" d="M1057.68,252.45h-167v-87.77c0-1.78,1.44-3.23,3.23-3.23h160.55c1.78,0,3.23,1.44,3.23,3.23V252.45z"/>
 <g>
-	
+
 		<image style="overflow:visible;opacity:0.15;" width="183" height="74" xlink:href="5584C28F7EFCBB37.png"  transform="matrix(1 0 0 1 886.5566 248.3272)">
 	</image>
 	<g>
@@ -326,7 +326,7 @@
 </g>
 <rect x="683.92" y="65.11" class="st243" width="310.24" height="53.24"/>
 <text transform="matrix(1 0 0 1 705.6503 81.9298)"><tspan x="0" y="0" class="st142 st240 st244">Provision object storage as </tspan><tspan x="79.33" y="35.07" class="st142 st240 st244">Containers</tspan></text>
-<text transform="matrix(1 0 0 1 326.2503 226.3781)" class="st0 st240 st241">MINIO</text>
+<text transform="matrix(1 0 0 1 326.2503 226.3781)" class="st0 st240 st241">OBSTOR</text>
 <text transform="matrix(1 0 0 1 531.6703 212.1583)" class="st0 st240 st241">MySQL</text>
 <text transform="matrix(1 0 0 1 743.0184 212.1583)" class="st0 st240 st241">REDIS</text>
 <text transform="matrix(1 0 0 1 939.0199 212.1583)" class="st0 st240 st241">NODE JS</text>
@@ -448,7 +448,7 @@
 	</g>
 </g>
 <g>
-	<polygon class="st245" points="881.68,455.45 881.68,508.45 886.68,508.45 886.68,500.45 899.68,500.45 899.68,508.45 
+	<polygon class="st245" points="881.68,455.45 881.68,508.45 886.68,508.45 886.68,500.45 899.68,500.45 899.68,508.45
 		952.68,508.45 952.68,455.45 	"/>
 	<path class="st250" d="M943.69,492.45h-23.02c-0.55,0-0.99-0.44-0.99-0.99v-26.02c0-0.55,0.44-0.99,0.99-0.99h23.02
 		c0.55,0,0.99,0.44,0.99,0.99v26.02C944.68,492.01,944.24,492.45,943.69,492.45z"/>
@@ -473,19 +473,19 @@
 		<rect x="922.68" y="509.45" class="st254" width="2" height="6"/>
 	</g>
 	<g>
-		
+
 			<rect x="935.68" y="515.45" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 1456.1321 -417.2294)" class="st255" width="2" height="8"/>
 	</g>
 	<g>
-		
+
 			<rect x="935.68" y="517.45" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 1458.1321 -415.2294)" class="st255" width="2" height="8"/>
 	</g>
 	<g>
-		
+
 			<rect x="907.68" y="515.45" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 1428.1321 -389.2294)" class="st255" width="2" height="8"/>
 	</g>
 	<g>
-		
+
 			<rect x="907.68" y="517.45" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 1430.1321 -387.2294)" class="st255" width="2" height="8"/>
 	</g>
 	<path class="st245" d="M875.18,444.45h-3.5v6h4.02c0.72-0.26,0.98,1.04,0.98,1.04v68.96h5v-69.5

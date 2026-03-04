@@ -35,10 +35,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
-	"github.com/google/uuid"
 	"encoding/json"
-	"github.com/cloudment/obstor/pkg/readahead"
+
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -48,6 +46,9 @@ import (
 	"github.com/cloudment/obstor/pkg/disk"
 	"github.com/cloudment/obstor/pkg/env"
 	xioutil "github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/readahead"
+	"github.com/dustin/go-humanize"
+	"github.com/google/uuid"
 )
 
 const (
@@ -219,7 +220,7 @@ func newXLStorage(ep Endpoint) (*xlStorage, error) {
 	}
 
 	var rootDisk bool
-	if env.Get("MINIO_CI_CD", "") != "" {
+	if env.Get("OBSTOR_CI_CD", "") != "" {
 		rootDisk = true
 	} else {
 		if IsDocker() || IsKubernetes() {

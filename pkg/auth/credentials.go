@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/cloudment/obstor/cmd/jwt"
+	jwtgo "github.com/golang-jwt/jwt/v4"
 )
 
 const (
@@ -72,8 +72,8 @@ func IsSecretKeyValid(secretKey string) bool {
 
 // Default access and secret keys.
 const (
-	DefaultAccessKey = "minioadmin"
-	DefaultSecretKey = "minioadmin"
+	DefaultAccessKey = "obstoradmin"
+	DefaultSecretKey = "obstoradmin"
 )
 
 // Default access credentials

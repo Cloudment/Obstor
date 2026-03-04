@@ -10,8 +10,8 @@ Please ensure to replace `/shared/nasvol` with actual mount path.
 
 ```
 docker run -p 9000:9000 --name nas-s3 \
- -e "MINIO_ROOT_USER=minio" \
- -e "MINIO_ROOT_PASSWORD=minio123" \
+ -e "OBSTOR_ROOT_USER=minio" \
+ -e "OBSTOR_ROOT_PASSWORD=minio123" \
  -v /shared/nasvol:/container/vol \
  minio/minio gateway nas /container/vol
 ```
@@ -19,8 +19,8 @@ docker run -p 9000:9000 --name nas-s3 \
 ### Using Binary
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=minio
+export OBSTOR_ROOT_PASSWORD=minio123
 minio gateway nas /shared/nasvol
 ```
 
@@ -28,7 +28,7 @@ minio gateway nas /shared/nasvol
 
 ObStor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://raw.githubusercontent.com/minio/minio/master/docs/screenshots/minio-browser-gateway.png)
+![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/minio-browser-gateway.png)
 
 ## Test using ObStor Client `mc`
 
@@ -72,9 +72,9 @@ notify_webhook:1 endpoint=http://localhost:8080/ auth_token= queue_limit=0 queue
 The corresponding environment variable setting can be
 
 ```
-export MINIO_NOTIFY_WEBHOOK_ENABLE_1=on
-export MINIO_NOTIFY_WEBHOOK_ENDPOINT_1=http://localhost:8080/
-export MINIO_NOTIFY_WEBHOOK_QUEUE_DIR_1=/tmp/webhk
+export OBSTOR_NOTIFY_WEBHOOK_ENABLE_1=on
+export OBSTOR_NOTIFY_WEBHOOK_ENDPOINT_1=http://localhost:8080/
+export OBSTOR_NOTIFY_WEBHOOK_QUEUE_DIR_1=/tmp/webhk
 ```
 
 > NOTE: Please check the docs for the corresponding ENV setting. Alternatively, We can obtain other ENVs in the form `mc admin config set alias/ <sub-sys> --env`

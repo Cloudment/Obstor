@@ -26,9 +26,9 @@ import (
 	"strings"
 	"time"
 
-	ldap "github.com/go-ldap/ldap/v3"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/pkg/env"
+	ldap "github.com/go-ldap/ldap/v3"
 )
 
 const (
@@ -87,18 +87,18 @@ const (
 	ServerInsecure     = "server_insecure"
 	ServerStartTLS     = "server_starttls"
 
-	EnvServerAddr         = "MINIO_IDENTITY_LDAP_SERVER_ADDR"
-	EnvSTSExpiry          = "MINIO_IDENTITY_LDAP_STS_EXPIRY"
-	EnvTLSSkipVerify      = "MINIO_IDENTITY_LDAP_TLS_SKIP_VERIFY"
-	EnvServerInsecure     = "MINIO_IDENTITY_LDAP_SERVER_INSECURE"
-	EnvServerStartTLS     = "MINIO_IDENTITY_LDAP_SERVER_STARTTLS"
-	EnvUsernameFormat     = "MINIO_IDENTITY_LDAP_USERNAME_FORMAT"
-	EnvUserDNSearchBaseDN = "MINIO_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN"
-	EnvUserDNSearchFilter = "MINIO_IDENTITY_LDAP_USER_DN_SEARCH_FILTER"
-	EnvGroupSearchFilter  = "MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER"
-	EnvGroupSearchBaseDN  = "MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN"
-	EnvLookupBindDN       = "MINIO_IDENTITY_LDAP_LOOKUP_BIND_DN"
-	EnvLookupBindPassword = "MINIO_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD"
+	EnvServerAddr         = "OBSTOR_IDENTITY_LDAP_SERVER_ADDR"
+	EnvSTSExpiry          = "OBSTOR_IDENTITY_LDAP_STS_EXPIRY"
+	EnvTLSSkipVerify      = "OBSTOR_IDENTITY_LDAP_TLS_SKIP_VERIFY"
+	EnvServerInsecure     = "OBSTOR_IDENTITY_LDAP_SERVER_INSECURE"
+	EnvServerStartTLS     = "OBSTOR_IDENTITY_LDAP_SERVER_STARTTLS"
+	EnvUsernameFormat     = "OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT"
+	EnvUserDNSearchBaseDN = "OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN"
+	EnvUserDNSearchFilter = "OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_FILTER"
+	EnvGroupSearchFilter  = "OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER"
+	EnvGroupSearchBaseDN  = "OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN"
+	EnvLookupBindDN       = "OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_DN"
+	EnvLookupBindPassword = "OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD"
 )
 
 var removedKeys = []string{

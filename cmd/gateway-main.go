@@ -26,13 +26,13 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/gorilla/mux"
-	"github.com/urfave/cli"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/certs"
 	"github.com/cloudment/obstor/pkg/color"
 	"github.com/cloudment/obstor/pkg/env"
+	"github.com/gorilla/mux"
+	"github.com/urfave/cli"
 )
 
 var (
@@ -156,7 +156,7 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	defer globalDNSCache.Stop()
 
 	// This is only to uniquely identify each gateway deployments.
-	globalDeploymentID = env.Get("MINIO_GATEWAY_DEPLOYMENT_ID", mustGetUUID())
+	globalDeploymentID = env.Get("OBSTOR_GATEWAY_DEPLOYMENT_ID", mustGetUUID())
 	logger.SetDeploymentID(globalDeploymentID)
 
 	if gw == nil {

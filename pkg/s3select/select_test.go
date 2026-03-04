@@ -1157,8 +1157,8 @@ func TestJSONInput(t *testing.T) {
 }
 
 func TestParquetInput(t *testing.T) {
-	os.Setenv("MINIO_API_SELECT_PARQUET", "on")
-	defer os.Setenv("MINIO_API_SELECT_PARQUET", "off")
+	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
 
 	var testTable = []struct {
 		requestXML     []byte
@@ -1274,8 +1274,8 @@ func TestParquetInput(t *testing.T) {
 }
 
 func TestParquetInputSchema(t *testing.T) {
-	os.Setenv("MINIO_API_SELECT_PARQUET", "on")
-	defer os.Setenv("MINIO_API_SELECT_PARQUET", "off")
+	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
 
 	var testTable = []struct {
 		requestXML []byte
@@ -1395,8 +1395,8 @@ func TestParquetInputSchema(t *testing.T) {
 }
 
 func TestParquetInputSchemaCSV(t *testing.T) {
-	os.Setenv("MINIO_API_SELECT_PARQUET", "on")
-	defer os.Setenv("MINIO_API_SELECT_PARQUET", "off")
+	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
 
 	var testTable = []struct {
 		requestXML []byte

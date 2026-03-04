@@ -28,9 +28,9 @@ import (
 	"path/filepath"
 	"time"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 const (
@@ -50,16 +50,16 @@ const (
 	MqttQueueDir          = "queue_dir"
 	MqttQueueLimit        = "queue_limit"
 
-	EnvMQTTEnable            = "MINIO_NOTIFY_MQTT_ENABLE"
-	EnvMQTTBroker            = "MINIO_NOTIFY_MQTT_BROKER"
-	EnvMQTTTopic             = "MINIO_NOTIFY_MQTT_TOPIC"
-	EnvMQTTQoS               = "MINIO_NOTIFY_MQTT_QOS"
-	EnvMQTTUsername          = "MINIO_NOTIFY_MQTT_USERNAME"
-	EnvMQTTPassword          = "MINIO_NOTIFY_MQTT_PASSWORD"
-	EnvMQTTReconnectInterval = "MINIO_NOTIFY_MQTT_RECONNECT_INTERVAL"
-	EnvMQTTKeepAliveInterval = "MINIO_NOTIFY_MQTT_KEEP_ALIVE_INTERVAL"
-	EnvMQTTQueueDir          = "MINIO_NOTIFY_MQTT_QUEUE_DIR"
-	EnvMQTTQueueLimit        = "MINIO_NOTIFY_MQTT_QUEUE_LIMIT"
+	EnvMQTTEnable            = "OBSTOR_NOTIFY_MQTT_ENABLE"
+	EnvMQTTBroker            = "OBSTOR_NOTIFY_MQTT_BROKER"
+	EnvMQTTTopic             = "OBSTOR_NOTIFY_MQTT_TOPIC"
+	EnvMQTTQoS               = "OBSTOR_NOTIFY_MQTT_QOS"
+	EnvMQTTUsername          = "OBSTOR_NOTIFY_MQTT_USERNAME"
+	EnvMQTTPassword          = "OBSTOR_NOTIFY_MQTT_PASSWORD"
+	EnvMQTTReconnectInterval = "OBSTOR_NOTIFY_MQTT_RECONNECT_INTERVAL"
+	EnvMQTTKeepAliveInterval = "OBSTOR_NOTIFY_MQTT_KEEP_ALIVE_INTERVAL"
+	EnvMQTTQueueDir          = "OBSTOR_NOTIFY_MQTT_QUEUE_DIR"
+	EnvMQTTQueueLimit        = "OBSTOR_NOTIFY_MQTT_QUEUE_LIMIT"
 )
 
 // MQTTArgs - MQTT target arguments.

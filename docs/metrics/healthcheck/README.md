@@ -24,7 +24,7 @@ livenessProbe:
 This probe is not useful in almost all cases, this is meant for administrators to see if write quorum is available in any given cluster. The reply is '200 OK' if cluster has write quorum if not it returns '503 Service Unavailable'.
 
 ```
-curl http://minio1:9001/minio/health/cluster
+curl http://obstor1:9001/minio/health/cluster
 HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
@@ -42,7 +42,7 @@ Date: Tue, 21 Jul 2020 00:36:14 GMT
 This probe is not useful in almost all cases, this is meant for administrators to see if read quorum is available in any given cluster. The reply is '200 OK' if cluster has read quorum if not it returns '503 Service Unavailable'.
 
 ```
-curl http://minio1:9001/minio/health/cluster/read
+curl http://obstor1:9001/minio/health/cluster/read
 HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
@@ -60,7 +60,7 @@ Date: Tue, 21 Jul 2020 00:36:14 GMT
 You may query the cluster probe endpoint to check if the node which received the request can be taken down for maintenance, if the server replies back '412 Precondition Failed' this means you will lose HA. '200 OK' means you are okay to proceed.
 
 ```
-curl http://minio1:9001/minio/health/cluster?maintenance=true
+curl http://obstor1:9001/minio/health/cluster?maintenance=true
 HTTP/1.1 412 Precondition Failed
 Accept-Ranges: bytes
 Content-Length: 0

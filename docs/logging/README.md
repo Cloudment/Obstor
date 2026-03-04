@@ -28,9 +28,9 @@ NOTE: `http://endpoint:port/path` is a placeholder value to indicate the URL for
 
 ObStor also honors environment variable for HTTP target logging as shown below, this setting will override the endpoint settings in the ObStor server config.
 ```
-export MINIO_LOGGER_WEBHOOK_ENABLE_target1="on"
-export MINIO_LOGGER_WEBHOOK_AUTH_TOKEN_target1="token"
-export MINIO_LOGGER_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
+export OBSTOR_LOGGER_WEBHOOK_ENABLE_target1="on"
+export OBSTOR_LOGGER_WEBHOOK_AUTH_TOKEN_target1="token"
+export OBSTOR_LOGGER_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
 minio server /mnt/data
 ```
 
@@ -50,11 +50,11 @@ NOTE: `http://endpoint:port/path` is a placeholder value to indicate the URL for
 
 ObStor also honors environment variable for HTTP target Audit logging as shown below, this setting will override the endpoint settings in the ObStor server config.
 ```
-export MINIO_AUDIT_WEBHOOK_ENABLE_target1="on"
-export MINIO_AUDIT_WEBHOOK_AUTH_TOKEN_target1="token"
-export MINIO_AUDIT_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
-export MINIO_AUDIT_WEBHOOK_CLIENT_CERT="/tmp/cert.pem"
-export MINIO_AUDIT_WEBHOOK_CLIENT_KEY=="/tmp/key.pem"
+export OBSTOR_AUDIT_WEBHOOK_ENABLE_target1="on"
+export OBSTOR_AUDIT_WEBHOOK_AUTH_TOKEN_target1="token"
+export OBSTOR_AUDIT_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
+export OBSTOR_AUDIT_WEBHOOK_CLIENT_CERT="/tmp/cert.pem"
+export OBSTOR_AUDIT_WEBHOOK_CLIENT_KEY=="/tmp/key.pem"
 minio server /mnt/data
 ```
 

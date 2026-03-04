@@ -41,13 +41,13 @@ const (
 	RedisQueueDir   = "queue_dir"
 	RedisQueueLimit = "queue_limit"
 
-	EnvRedisEnable     = "MINIO_NOTIFY_REDIS_ENABLE"
-	EnvRedisFormat     = "MINIO_NOTIFY_REDIS_FORMAT"
-	EnvRedisAddress    = "MINIO_NOTIFY_REDIS_ADDRESS"
-	EnvRedisPassword   = "MINIO_NOTIFY_REDIS_PASSWORD"
-	EnvRedisKey        = "MINIO_NOTIFY_REDIS_KEY"
-	EnvRedisQueueDir   = "MINIO_NOTIFY_REDIS_QUEUE_DIR"
-	EnvRedisQueueLimit = "MINIO_NOTIFY_REDIS_QUEUE_LIMIT"
+	EnvRedisEnable     = "OBSTOR_NOTIFY_REDIS_ENABLE"
+	EnvRedisFormat     = "OBSTOR_NOTIFY_REDIS_FORMAT"
+	EnvRedisAddress    = "OBSTOR_NOTIFY_REDIS_ADDRESS"
+	EnvRedisPassword   = "OBSTOR_NOTIFY_REDIS_PASSWORD"
+	EnvRedisKey        = "OBSTOR_NOTIFY_REDIS_KEY"
+	EnvRedisQueueDir   = "OBSTOR_NOTIFY_REDIS_QUEUE_DIR"
+	EnvRedisQueueLimit = "OBSTOR_NOTIFY_REDIS_QUEUE_LIMIT"
 )
 
 // RedisArgs - Redis target arguments.

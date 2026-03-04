@@ -80,19 +80,19 @@ ENDPOINT:
 
 EXAMPLES:
   1. Start minio gateway server for Azure Blob Storage backend on custom endpoint.
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}azureaccountname
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}azureaccountname
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
      {{.Prompt}} {{.HelpName}} https://azureaccountname.blob.custom.azure.endpoint
 
   2. Start minio gateway server for Azure Blob Storage backend with edge caching enabled.
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}azureaccountname
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_EXCLUDE{{.AssignmentOperator}}"bucket1/*,*.png"
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_QUOTA{{.AssignmentOperator}}90
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_AFTER{{.AssignmentOperator}}3
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_WATERMARK_LOW{{.AssignmentOperator}}75
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_WATERMARK_HIGH{{.AssignmentOperator}}85
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}azureaccountname
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_EXCLUDE{{.AssignmentOperator}}"bucket1/*,*.png"
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_QUOTA{{.AssignmentOperator}}90
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_AFTER{{.AssignmentOperator}}3
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_WATERMARK_LOW{{.AssignmentOperator}}75
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_WATERMARK_HIGH{{.AssignmentOperator}}85
      {{.Prompt}} {{.HelpName}}
 
 `
@@ -154,16 +154,16 @@ func (g *Azure) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, erro
 		return nil, err
 	}
 
-	azureUploadChunkSize, err = env.GetInt("MINIO_AZURE_CHUNK_SIZE_MB", azureDefaultUploadChunkSizeMB)
+	azureUploadChunkSize, err = env.GetInt("OBSTOR_AZURE_CHUNK_SIZE_MB", azureDefaultUploadChunkSizeMB)
 	if err != nil {
 		return nil, err
 	}
 	azureUploadChunkSize *= humanize.MiByte
 	if azureUploadChunkSize <= 0 || azureUploadChunkSize > 100*humanize.MiByte {
-		return nil, fmt.Errorf("MINIO_AZURE_CHUNK_SIZE_MB should be an integer value between 0 and 100")
+		return nil, fmt.Errorf("OBSTOR_AZURE_CHUNK_SIZE_MB should be an integer value between 0 and 100")
 	}
 
-	azureUploadConcurrency, err = env.GetInt("MINIO_AZURE_UPLOAD_CONCURRENCY", 4)
+	azureUploadConcurrency, err = env.GetInt("OBSTOR_AZURE_UPLOAD_CONCURRENCY", 4)
 	if err != nil {
 		return nil, err
 	}

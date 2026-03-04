@@ -32,11 +32,11 @@ $ mc tree --files ~/.minio
 You can provide a custom certs directory using `--certs-dir` command line option.
 
 #### Credentials
-On ObStor admin credentials or root credentials are only allowed to be changed using ENVs namely `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`. Using the combination of these two values ObStor encrypts the config stored at the backend.
+On ObStor admin credentials or root credentials are only allowed to be changed using ENVs namely `OBSTOR_ROOT_USER` and `OBSTOR_ROOT_PASSWORD`. Using the combination of these two values ObStor encrypts the config stored at the backend.
 
 ```sh
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio13
+export OBSTOR_ROOT_USER=minio
+export OBSTOR_ROOT_PASSWORD=minio13
 minio server /data
 ```
 
@@ -47,16 +47,16 @@ Additionally if you wish to change the admin credentials, then ObStor will autom
 > Old ENVs are never remembered in memory and are destroyed right after they are used to migrate your existing content with new credentials. You are safe to remove them after the server as successfully started, by restarting the services once again.
 
 ```sh
-export MINIO_ROOT_USER=newminio
-export MINIO_ROOT_PASSWORD=newminio123
-export MINIO_ROOT_USER_OLD=minio
-export MINIO_ROOT_PASSWORD_OLD=minio123
+export OBSTOR_ROOT_USER=newminio
+export OBSTOR_ROOT_PASSWORD=newminio123
+export OBSTOR_ROOT_USER_OLD=minio
+export OBSTOR_ROOT_PASSWORD_OLD=minio123
 minio server /data
 ```
 
-Once the migration is complete, server will automatically unset the `MINIO_ROOT_USER_OLD` and `MINIO_ROOT_PASSWORD_OLD` with in the process namespace.
+Once the migration is complete, server will automatically unset the `OBSTOR_ROOT_USER_OLD` and `OBSTOR_ROOT_PASSWORD_OLD` with in the process namespace.
 
-> **NOTE: Make sure to remove `MINIO_ROOT_USER_OLD` and `MINIO_ROOT_PASSWORD_OLD` in scripts or service files before next service restarts of the server to avoid double encryption of your existing contents.**
+> **NOTE: Make sure to remove `OBSTOR_ROOT_USER_OLD` and `OBSTOR_ROOT_PASSWORD_OLD` in scripts or service files before next service restarts of the server to avoid double encryption of your existing contents.**
 
 #### Region
 ```
@@ -74,14 +74,14 @@ KEY:
 region  label the location of the server
 
 ARGS:
-MINIO_REGION_NAME     (string)    name of the location of the server e.g. "us-west-rack2"
-MINIO_REGION_COMMENT  (sentence)  optionally add a comment to this setting
+OBSTOR_REGION_NAME     (string)    name of the location of the server e.g. "us-west-rack2"
+OBSTOR_REGION_COMMENT  (sentence)  optionally add a comment to this setting
 ```
 
 Example:
 
 ```sh
-export MINIO_REGION_NAME="my_region"
+export OBSTOR_REGION_NAME="my_region"
 minio server /data
 ```
 
@@ -104,9 +104,9 @@ KEY:
 storage_class  define object level redundancy
 
 ARGS:
-MINIO_STORAGE_CLASS_STANDARD  (string)    set the parity count for default standard storage class e.g. "EC:4"
-MINIO_STORAGE_CLASS_RRS       (string)    set the parity count for reduced redundancy storage class e.g. "EC:2"
-MINIO_STORAGE_CLASS_COMMENT   (sentence)  optionally add a comment to this setting
+OBSTOR_STORAGE_CLASS_STANDARD  (string)    set the parity count for default standard storage class e.g. "EC:4"
+OBSTOR_STORAGE_CLASS_RRS       (string)    set the parity count for reduced redundancy storage class e.g. "EC:2"
+OBSTOR_STORAGE_CLASS_COMMENT   (sentence)  optionally add a comment to this setting
 ```
 
 ### Cache
@@ -131,12 +131,12 @@ KEY:
 cache  add caching storage tier
 
 ARGS:
-MINIO_CACHE_DRIVES*  (csv)       comma separated mountpoints e.g. "/optane1,/optane2"
-MINIO_CACHE_EXPIRY   (number)    cache expiry duration in days e.g. "90"
-MINIO_CACHE_QUOTA    (number)    limit cache drive usage in percentage e.g. "90"
-MINIO_CACHE_EXCLUDE  (csv)       comma separated wildcard exclusion patterns e.g. "bucket/*.tmp,*.exe"
-MINIO_CACHE_AFTER    (number)    minimum number of access before caching an object
-MINIO_CACHE_COMMENT  (sentence)  optionally add a comment to this setting
+OBSTOR_CACHE_DRIVES*  (csv)       comma separated mountpoints e.g. "/optane1,/optane2"
+OBSTOR_CACHE_EXPIRY   (number)    cache expiry duration in days e.g. "90"
+OBSTOR_CACHE_QUOTA    (number)    limit cache drive usage in percentage e.g. "90"
+OBSTOR_CACHE_EXCLUDE  (csv)       comma separated wildcard exclusion patterns e.g. "bucket/*.tmp,*.exe"
+OBSTOR_CACHE_AFTER    (number)    minimum number of access before caching an object
+OBSTOR_CACHE_COMMENT  (sentence)  optionally add a comment to this setting
 ```
 
 #### Etcd
@@ -163,12 +163,12 @@ KEY:
 etcd  federate multiple clusters for IAM and Bucket DNS
 
 ARGS:
-MINIO_ETCD_ENDPOINTS*       (csv)       comma separated list of etcd endpoints e.g. "http://localhost:2379"
-MINIO_ETCD_PATH_PREFIX      (path)      namespace prefix to isolate tenants e.g. "customer1/"
-MINIO_ETCD_COREDNS_PATH     (path)      shared bucket DNS records, default is "/skydns"
-MINIO_ETCD_CLIENT_CERT      (path)      client cert for mTLS authentication
-MINIO_ETCD_CLIENT_CERT_KEY  (path)      client cert key for mTLS authentication
-MINIO_ETCD_COMMENT          (sentence)  optionally add a comment to this setting
+OBSTOR_ETCD_ENDPOINTS*       (csv)       comma separated list of etcd endpoints e.g. "http://localhost:2379"
+OBSTOR_ETCD_PATH_PREFIX      (path)      namespace prefix to isolate tenants e.g. "customer1/"
+OBSTOR_ETCD_COREDNS_PATH     (path)      shared bucket DNS records, default is "/skydns"
+OBSTOR_ETCD_CLIENT_CERT      (path)      client cert for mTLS authentication
+OBSTOR_ETCD_CLIENT_CERT_KEY  (path)      client cert key for mTLS authentication
+OBSTOR_ETCD_COMMENT          (sentence)  optionally add a comment to this setting
 ```
 
 ### API
@@ -188,10 +188,10 @@ remote_transport_deadline  (duration)  set the deadline for API requests on remo
 or environment variables
 
 ```
-MINIO_API_REQUESTS_MAX               (number)    set the maximum number of concurrent requests, e.g. "1600"
-MINIO_API_REQUESTS_DEADLINE          (duration)  set the deadline for API requests waiting to be processed e.g. "1m"
-MINIO_API_CORS_ALLOW_ORIGIN          (csv)       set comma separated list of origins allowed for CORS requests e.g. "https://example1.com,https://example2.com"
-MINIO_API_REMOTE_TRANSPORT_DEADLINE  (duration)  set the deadline for API requests on remote transports while proxying between federated instances e.g. "2h"
+OBSTOR_API_REQUESTS_MAX               (number)    set the maximum number of concurrent requests, e.g. "1600"
+OBSTOR_API_REQUESTS_DEADLINE          (duration)  set the deadline for API requests waiting to be processed e.g. "1m"
+OBSTOR_API_CORS_ALLOW_ORIGIN          (csv)       set comma separated list of origins allowed for CORS requests e.g. "https://example1.com,https://example2.com"
+OBSTOR_API_REMOTE_TRANSPORT_DEADLINE  (duration)  set the deadline for API requests on remote transports while proxying between federated instances e.g. "2h"
 ```
 
 #### Notifications
@@ -246,12 +246,12 @@ KEY:
 etcd  federate multiple clusters for IAM and Bucket DNS
 
 ARGS:
-MINIO_ETCD_ENDPOINTS*       (csv)       comma separated list of etcd endpoints e.g. "http://localhost:2379"
-MINIO_ETCD_PATH_PREFIX      (path)      namespace prefix to isolate tenants e.g. "customer1/"
-MINIO_ETCD_COREDNS_PATH     (path)      shared bucket DNS records, default is "/skydns"
-MINIO_ETCD_CLIENT_CERT      (path)      client cert for mTLS authentication
-MINIO_ETCD_CLIENT_CERT_KEY  (path)      client cert key for mTLS authentication
-MINIO_ETCD_COMMENT          (sentence)  optionally add a comment to this setting
+OBSTOR_ETCD_ENDPOINTS*       (csv)       comma separated list of etcd endpoints e.g. "http://localhost:2379"
+OBSTOR_ETCD_PATH_PREFIX      (path)      namespace prefix to isolate tenants e.g. "customer1/"
+OBSTOR_ETCD_COREDNS_PATH     (path)      shared bucket DNS records, default is "/skydns"
+OBSTOR_ETCD_CLIENT_CERT      (path)      client cert for mTLS authentication
+OBSTOR_ETCD_CLIENT_CERT_KEY  (path)      client cert key for mTLS authentication
+OBSTOR_ETCD_COMMENT          (sentence)  optionally add a comment to this setting
 ```
 
 This behavior is consistent across all keys, each key self documents itself with valid examples.
@@ -326,28 +326,28 @@ Once set the healer settings are automatically applied without the need for serv
 
 ### Browser
 
-Enable or disable access to web UI. By default it is set to `on`. You may override this field with `MINIO_BROWSER` environment variable.
+Enable or disable access to web UI. By default it is set to `on`. You may override this field with `OBSTOR_BROWSER` environment variable.
 
 Example:
 
 ```sh
-export MINIO_BROWSER=off
+export OBSTOR_BROWSER=off
 minio server /data
 ```
 
 ### Domain
 
-By default, ObStor supports path-style requests that are of the format http://mydomain.com/bucket/object. `MINIO_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).mydomain.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
+By default, ObStor supports path-style requests that are of the format http://mydomain.com/bucket/object. `OBSTOR_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).mydomain.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
 Example:
 
 ```sh
-export MINIO_DOMAIN=mydomain.com
+export OBSTOR_DOMAIN=mydomain.com
 minio server /data
 ```
 
-For advanced use cases `MINIO_DOMAIN` environment variable supports multiple-domains with comma separated values.
+For advanced use cases `OBSTOR_DOMAIN` environment variable supports multiple-domains with comma separated values.
 ```sh
-export MINIO_DOMAIN=sub1.mydomain.com,sub2.mydomain.com
+export OBSTOR_DOMAIN=sub1.mydomain.com,sub2.mydomain.com
 minio server /data
 ```
 

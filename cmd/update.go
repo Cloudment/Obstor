@@ -46,7 +46,7 @@ const (
 	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
 	minioReleaseURL           = "https://dl.pgg.net/server/minio/release/" + minioOSARCH + SlashSeparator
 
-	envMinisignPubKey = "MINIO_UPDATE_MINISIGN_PUBKEY"
+	envMinisignPubKey = "OBSTOR_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
 )
 
@@ -125,7 +125,7 @@ func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
 //     "/.dockerenv":      "file",
 //
 func IsDocker() bool {
-	if env.Get("MINIO_CI_CD", "") == "" {
+	if env.Get("OBSTOR_CI_CD", "") == "" {
 		_, err := os.Stat("/.dockerenv")
 		if osIsNotExist(err) {
 			return false
@@ -141,7 +141,7 @@ func IsDocker() bool {
 
 // IsDCOS returns true if minio is running in DCOS.
 func IsDCOS() bool {
-	if env.Get("MINIO_CI_CD", "") == "" {
+	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// http://mesos.apache.org/documentation/latest/docker-containerizer/
 		// Mesos docker containerizer sets this value
 		return env.Get("MESOS_CONTAINER_NAME", "") != ""
@@ -156,7 +156,7 @@ func IsKubernetesReplicaSet() bool {
 
 // IsKubernetes returns true if minio is running in kubernetes.
 func IsKubernetes() bool {
-	if env.Get("MINIO_CI_CD", "") == "" {
+	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// Kubernetes env used to validate if we are
 		// indeed running inside a kubernetes pod
 		// is KUBERNETES_SERVICE_HOST
@@ -218,7 +218,7 @@ func IsSourceBuild() bool {
 
 // IsPCFTile returns if server is running in PCF
 func IsPCFTile() bool {
-	return env.Get("MINIO_PCF_TILE_VERSION", "") != ""
+	return env.Get("OBSTOR_PCF_TILE_VERSION", "") != ""
 }
 
 // DO NOT CHANGE USER AGENT STYLE.
@@ -276,18 +276,18 @@ func getUserAgent(mode string) string {
 			uaAppend(" ObStor/helm-", helmChartVersion)
 		}
 		// In Kubernetes environment, try to fetch the Operator, VSPHERE plugin version
-		opVersion := env.Get("MINIO_OPERATOR_VERSION", "")
+		opVersion := env.Get("OBSTOR_OPERATOR_VERSION", "")
 		if opVersion != "" {
 			uaAppend(" ObStor/operator-", opVersion)
 		}
-		vsphereVersion := env.Get("MINIO_VSPHERE_PLUGIN_VERSION", "")
+		vsphereVersion := env.Get("OBSTOR_VSPHERE_PLUGIN_VERSION", "")
 		if vsphereVersion != "" {
 			uaAppend(" ObStor/vsphere-plugin-", vsphereVersion)
 		}
 	}
 
 	if IsPCFTile() {
-		pcfTileVersion := env.Get("MINIO_PCF_TILE_VERSION", "")
+		pcfTileVersion := env.Get("OBSTOR_PCF_TILE_VERSION", "")
 		if pcfTileVersion != "" {
 			uaAppend(" ObStor/pcf-tile-", pcfTileVersion)
 		}
@@ -465,7 +465,7 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 	// Check if we are docker environment, return docker update command
 	if IsDocker() {
 		// Construct release tag name.
-		return fmt.Sprintf("docker pull minio/minio:%s", releaseTag)
+		return fmt.Sprintf("docker pull cloudment/obstor:%s", releaseTag)
 	}
 
 	// For binary only installations, we return link to the latest binary.

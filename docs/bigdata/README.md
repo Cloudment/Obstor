@@ -77,7 +77,7 @@ fs.s3a.committer.staging.unique-filenames=true
 fs.s3a.connection.establish.timeout=5000
 fs.s3a.connection.ssl.enabled=false
 fs.s3a.connection.timeout=200000
-fs.s3a.endpoint=http://minio:9000
+fs.s3a.endpoint=http://obstor:9000
 fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 
 fs.s3a.committer.threads=2048 # Number of threads writing to ObStor
@@ -131,7 +131,7 @@ spark.hadoop.fs.s3a.connection.establish.timeout 5000
 spark.hadoop.fs.s3a.connection.maximum 8192 # maximum number of concurrent conns
 spark.hadoop.fs.s3a.connection.ssl.enabled false
 spark.hadoop.fs.s3a.connection.timeout 200000
-spark.hadoop.fs.s3a.endpoint http://minio:9000
+spark.hadoop.fs.s3a.endpoint http://obstor:9000
 spark.hadoop.fs.s3a.fast.upload.active.blocks 2048 # number of parallel uploads
 spark.hadoop.fs.s3a.fast.upload.buffer disk # use disk as the buffer for uploads
 spark.hadoop.fs.s3a.fast.upload true # turn on fast upload mode

@@ -130,7 +130,7 @@ cd /minio
 make
 ./minio server /data
 ```
-Note `Endpoint` IP (the one which is _not_ `127.0.0.1`), `AccessKey` and `SecretKey` (both default to `minioadmin`) in order to enter them in the browser later.
+Note `Endpoint` IP (the one which is _not_ `127.0.0.1`), `AccessKey` and `SecretKey` (both default to `obstoradmin`) in order to enter them in the browser later.
 
 
 Open another terminal.

@@ -52,7 +52,7 @@ class Web {
           throw new Error("Invalid UI version in the JSON-RPC response")
         }
         if (result.uiVersion !== currentUiVersion
-          && currentUiVersion !== 'MINIO_UI_VERSION') {
+          && currentUiVersion !== 'OBSTOR_UI_VERSION') {
           storage.setItem('newlyUpdated', true)
           location.reload()
         }

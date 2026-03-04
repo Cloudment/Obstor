@@ -27,13 +27,13 @@ import (
 	"reflect"
 	"sync"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/color"
 	xioutil "github.com/cloudment/obstor/pkg/ioutil"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	humanize "github.com/dustin/go-humanize"
 )
 
 const (
@@ -465,7 +465,7 @@ func checkFormatErasureValues(formats []*formatErasureV3, disks []StorageAPI, se
 		// set_drive_count was manually set - we need to honor what is
 		// present on the drives.
 		if globalCustomErasureDriveCount && len(formatErasure.Erasure.Sets[0]) != setDriveCount {
-			return fmt.Errorf("%s disk is already formatted with %d drives per erasure set. This cannot be changed to %d, please revert your MINIO_ERASURE_SET_DRIVE_COUNT setting", disks[i], len(formatErasure.Erasure.Sets[0]), setDriveCount)
+			return fmt.Errorf("%s disk is already formatted with %d drives per erasure set. This cannot be changed to %d, please revert your OBSTOR_ERASURE_SET_DRIVE_COUNT setting", disks[i], len(formatErasure.Erasure.Sets[0]), setDriveCount)
 		}
 	}
 	return nil

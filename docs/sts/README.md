@@ -28,7 +28,7 @@ The access token received is a signed JSON Web Token (JWT). Use a JWT decoder to
 
 | Claim Name | Type                                              | Claim Value                                                                                                                                                                                                        |
 |:----------:|:-------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| policy     | _string_ or _[]string_ or _comma_separated_value_ | Canned policy name to be applied for STS credentials. (Mandatory) - This can be configured to any desired value such as `roles` or `groups` by setting the environment variable `MINIO_IDENTITY_OPENID_CLAIM_NAME` |
+| policy     | _string_ or _[]string_ or _comma_separated_value_ | Canned policy name to be applied for STS credentials. (Mandatory) - This can be configured to any desired value such as `roles` or `groups` by setting the environment variable `OBSTOR_IDENTITY_OPENID_CLAIM_NAME` |
 
 ## Get started
 In this document we will explain in detail on how to configure all the prerequisites.
@@ -43,10 +43,10 @@ In this document we will explain in detail on how to configure all the prerequis
 Make sure we have followed the previous step and configured each software independently, once done we can now proceed to use ObStor STS API and ObStor server to use these credentials to perform object API operations.
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-export MINIO_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
-export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
+export OBSTOR_ROOT_USER=minio
+export OBSTOR_ROOT_PASSWORD=minio123
+export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
+export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 minio server /mnt/data
 ```
 
@@ -56,11 +56,11 @@ Make sure we have followed the previous step and configured each software indepe
 > NOTE: ObStor gateway requires etcd to be configured to use STS API.
 
 ```
-export MINIO_ROOT_USER=aws_access_key
-export MINIO_ROOT_PASSWORD=aws_secret_key
-export MINIO_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
-export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-export MINIO_ETCD_ENDPOINTS=http://localhost:2379
+export OBSTOR_ROOT_USER=aws_access_key
+export OBSTOR_ROOT_PASSWORD=aws_secret_key
+export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
+export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
+export OBSTOR_ETCD_ENDPOINTS=http://localhost:2379
 minio gateway s3
 ```
 

@@ -37,7 +37,7 @@ func GetenvHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "tenant not found", http.StatusNotFound)
 		return
 	}
-	if vars["key"] != "MINIO_ARGS" {
+	if vars["key"] != "OBSTOR_ARGS" {
 		http.Error(w, "key not found", http.StatusNotFound)
 		return
 	}
@@ -70,7 +70,7 @@ func TestWebEnv(t *testing.T) {
 	v, user, pwd, err := getEnvValueFromHTTP(
 		fmt.Sprintf("env://minio:minio123@%s/webhook/v1/getenv/default/minio",
 			u.Host),
-		"MINIO_ARGS")
+		"OBSTOR_ARGS")
 	if err != nil {
 		t.Fatal(err)
 	}

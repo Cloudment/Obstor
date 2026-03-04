@@ -554,8 +554,8 @@ __Example__
 ### GetKeyStatus(ctx context.Context, keyID string) (*KMSKeyStatus, error)
 Requests status information about one particular KMS master key
 from a ObStor server. The keyID is optional and the server will
-use the default master key (configured via `MINIO_KMS_VAULT_KEY_NAME`
-or `MINIO_KMS_MASTER_KEY`) if the keyID is empty.
+use the default master key (configured via `OBSTOR_KMS_VAULT_KEY_NAME`
+or `OBSTOR_KMS_MASTER_KEY`) if the keyID is empty.
 
 __Example__
 

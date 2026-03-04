@@ -109,10 +109,10 @@ Alternatively, use the following command to generate a private RSA key protected
 openssl genrsa -aes256 -passout pass:PASSWORD -out private.key 2048
 ```
 
-**Note:** When using a password-protected private key, the password must be provided through the environment variable `MINIO_CERT_PASSWD` using the following command:
+**Note:** When using a password-protected private key, the password must be provided through the environment variable `OBSTOR_CERT_PASSWD` using the following command:
 
 ```sh
-export MINIO_CERT_PASSWD=<PASSWORD>
+export OBSTOR_CERT_PASSWD=<PASSWORD>
 ```
 
 The default OpenSSL format for private encrypted keys is PKCS-8, but ObStor only supports PKCS-1. An RSA key that has been formatted with PKCS-8 can be converted to PKCS-1 using the following command:

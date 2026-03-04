@@ -31,9 +31,9 @@ const (
 	Sleep   = "max_sleep"
 	IOCount = "max_io"
 
-	EnvBitrot  = "MINIO_HEAL_BITROTSCAN"
-	EnvSleep   = "MINIO_HEAL_MAX_SLEEP"
-	EnvIOCount = "MINIO_HEAL_MAX_IO"
+	EnvBitrot  = "OBSTOR_HEAL_BITROTSCAN"
+	EnvSleep   = "OBSTOR_HEAL_MAX_SLEEP"
+	EnvIOCount = "OBSTOR_HEAL_MAX_IO"
 )
 
 // Config represents the heal settings.

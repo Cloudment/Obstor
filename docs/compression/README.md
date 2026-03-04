@@ -53,9 +53,9 @@ The compression settings may also be set through environment variables.
 When set, environment variables override the defined `compress` config settings in the server config.
 
 ```bash
-export MINIO_COMPRESS="on"
-export MINIO_COMPRESS_EXTENSIONS=".txt,.log,.csv,.json,.tar,.xml,.bin"
-export MINIO_COMPRESS_MIME_TYPES="text/*,application/json,application/xml"
+export OBSTOR_COMPRESS="on"
+export OBSTOR_COMPRESS_EXTENSIONS=".txt,.log,.csv,.json,.tar,.xml,.bin"
+export OBSTOR_COMPRESS_MIME_TYPES="text/*,application/json,application/xml"
 ```
 
 ### 3. Compression + Encryption
@@ -75,7 +75,7 @@ To enable compression+encryption use:
 ~ mc admin config set myminio compression allow_encryption=on
 ```
 
-Or alternatively through the environment variable `MINIO_COMPRESS_ALLOW_ENCRYPTION=on`.
+Or alternatively through the environment variable `OBSTOR_COMPRESS_ALLOW_ENCRYPTION=on`.
 
 ### 4. Excluded Types
 

@@ -15,9 +15,9 @@
 #  limitations under the License.
 #
 
-MINIO_PY_VERSION="7.2.20"
+OBSTOR_PY_VERSION="7.2.20"
 test_run_dir="$MINT_RUN_CORE_DIR/minio-py"
 
 pip3 install --break-system-packages --user faker
-pip3 install --break-system-packages --no-cache-dir minio=="${MINIO_PY_VERSION}"
-$WGET --output-document="$test_run_dir/tests.py" "https://raw.githubusercontent.com/minio/minio-py/${MINIO_PY_VERSION}/tests/functional/tests.py"
+pip3 install --break-system-packages --no-cache-dir minio=="${OBSTOR_PY_VERSION}"
+$WGET --output-document="$test_run_dir/tests.py" "https://raw.githubusercontent.com/cloudment/obstor-py/${OBSTOR_PY_VERSION}/tests/functional/tests.py"

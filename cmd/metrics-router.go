@@ -31,7 +31,7 @@ const (
 
 // Standard env prometheus auth type
 const (
-	EnvPrometheusAuthType = "MINIO_PROMETHEUS_AUTH_TYPE"
+	EnvPrometheusAuthType = "OBSTOR_PROMETHEUS_AUTH_TYPE"
 )
 
 type prometheusAuthType string

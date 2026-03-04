@@ -49,19 +49,19 @@ KEY:
 identity_ldap  enable LDAP SSO support
 
 ARGS:
-MINIO_IDENTITY_LDAP_SERVER_ADDR*            (address)   AD/LDAP server address e.g. "myldapserver.com:636"
-MINIO_IDENTITY_LDAP_STS_EXPIRY              (duration)  temporary credentials validity duration in s,m,h,d. Default is "1h"
-MINIO_IDENTITY_LDAP_LOOKUP_BIND_DN          (string)    DN for LDAP read-only service account used to perform DN and group lookups
-MINIO_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD    (string)    Password for LDAP read-only service account used to perform DN and group lookups
-MINIO_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN  (string)    Base LDAP DN to search for user DN
-MINIO_IDENTITY_LDAP_USER_DN_SEARCH_FILTER   (string)    Search filter to lookup user DN
-MINIO_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of username bind DNs e.g. "uid=%s,cn=accounts,dc=myldapserver,dc=com"
-MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
-MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
-MINIO_IDENTITY_LDAP_TLS_SKIP_VERIFY         (on|off)    trust server TLS without verification, defaults to "off" (verify)
-MINIO_IDENTITY_LDAP_SERVER_INSECURE         (on|off)    allow plain text connection to AD/LDAP server, defaults to "off"
-MINIO_IDENTITY_LDAP_SERVER_STARTTLS         (on|off)    use StartTLS connection to AD/LDAP server, defaults to "off"
-MINIO_IDENTITY_LDAP_COMMENT                 (sentence)  optionally add a comment to this setting
+OBSTOR_IDENTITY_LDAP_SERVER_ADDR*            (address)   AD/LDAP server address e.g. "myldapserver.com:636"
+OBSTOR_IDENTITY_LDAP_STS_EXPIRY              (duration)  temporary credentials validity duration in s,m,h,d. Default is "1h"
+OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_DN          (string)    DN for LDAP read-only service account used to perform DN and group lookups
+OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD    (string)    Password for LDAP read-only service account used to perform DN and group lookups
+OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN  (string)    Base LDAP DN to search for user DN
+OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_FILTER   (string)    Search filter to lookup user DN
+OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of username bind DNs e.g. "uid=%s,cn=accounts,dc=myldapserver,dc=com"
+OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
+OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
+OBSTOR_IDENTITY_LDAP_TLS_SKIP_VERIFY         (on|off)    trust server TLS without verification, defaults to "off" (verify)
+OBSTOR_IDENTITY_LDAP_SERVER_INSECURE         (on|off)    allow plain text connection to AD/LDAP server, defaults to "off"
+OBSTOR_IDENTITY_LDAP_SERVER_STARTTLS         (on|off)    use StartTLS connection to AD/LDAP server, defaults to "off"
+OBSTOR_IDENTITY_LDAP_COMMENT                 (sentence)  optionally add a comment to this setting
 ```
 
 ### Supported modes of operation ###
@@ -79,10 +79,10 @@ This service account is used by the ObStor server to lookup a user's DN given th
 This mode is enabled by setting the following variables:
 
 ```
-MINIO_IDENTITY_LDAP_LOOKUP_BIND_DN          (string)    DN for LDAP read-only service account used to perform DN and group lookups
-MINIO_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD    (string)    Password for LDAP read-only service account used to perform DN and group lookups
-MINIO_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN  (string)    Base LDAP DN to search for user DN
-MINIO_IDENTITY_LDAP_USER_DN_SEARCH_FILTER   (string)    Search filter to lookup user DN
+OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_DN          (string)    DN for LDAP read-only service account used to perform DN and group lookups
+OBSTOR_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD    (string)    Password for LDAP read-only service account used to perform DN and group lookups
+OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_BASE_DN  (string)    Base LDAP DN to search for user DN
+OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_FILTER   (string)    Search filter to lookup user DN
 ```
 
 If you set an empty lookup bind password, the lookup bind will use the unauthenticated authentication mechanism, as described in [RFC 4513 Section 5.1.2](https://tools.ietf.org/html/rfc4513#section-5.1.2).
@@ -96,7 +96,7 @@ The DN to use to login to LDAP is computed from a username format configuration 
 This mode is enabled by setting the following variables:
 
 ```
-MINIO_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of username bind DNs e.g. "uid=%s,cn=accounts,dc=myldapserver,dc=com"
+OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of username bind DNs e.g. "uid=%s,cn=accounts,dc=myldapserver,dc=com"
 ```
 
 ### Group membership search
@@ -104,8 +104,8 @@ MINIO_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of us
 ObStor can be configured to find the groups of a user from AD/LDAP by specifying the folllowing variables:
 
 ```
-MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
-MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
+OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
+OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
 ```
 
 When a user logs in via the STS API, the ObStor server queries the AD/LDAP server with the given search filter and extracts the DN from the search results. These values represent the groups that the user is a member of. On each access ObStor applies the IAM policies attached to these groups in ObStor.
@@ -115,12 +115,12 @@ When a user logs in via the STS API, the ObStor server queries the AD/LDAP serve
 If a self-signed certificate is being used, the certificate can be added to ObStor's certificates directory, so it can be trusted by the server. An example setup for development or experimentation:
 
 ```shell
-export MINIO_IDENTITY_LDAP_SERVER_ADDR=myldapserver.com:636
-export MINIO_IDENTITY_LDAP_USERNAME_FORMAT="uid=%s,cn=accounts,dc=myldapserver,dc=com"
-export MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN="dc=myldapserver,dc=com"
-export MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER="(&(objectclass=groupOfNames)(memberUid=%s)$)"
-export MINIO_IDENTITY_LDAP_STS_EXPIRY=60h
-export MINIO_IDENTITY_LDAP_TLS_SKIP_VERIFY=on
+export OBSTOR_IDENTITY_LDAP_SERVER_ADDR=myldapserver.com:636
+export OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT="uid=%s,cn=accounts,dc=myldapserver,dc=com"
+export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN="dc=myldapserver,dc=com"
+export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER="(&(objectclass=groupOfNames)(memberUid=%s)$)"
+export OBSTOR_IDENTITY_LDAP_STS_EXPIRY=60h
+export OBSTOR_IDENTITY_LDAP_TLS_SKIP_VERIFY=on
 ```
 
 ### Variable substitution in AD/LDAP configuration strings ###
@@ -129,9 +129,9 @@ In the configuration variables, `%s` is substituted with the *username* from the
 
 | Variable                                    | Supported substitutions |
 |---------------------------------------------|-------------------------|
-| `MINIO_IDENTITY_LDAP_USERNAME_FORMAT`       | `%s`                    |
-| `MINIO_IDENTITY_LDAP_USER_DN_SEARCH_FILTER` | `%s`                    |
-| `MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER`   | `%s` and `%d`           |
+| `OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT`       | `%s`                    |
+| `OBSTOR_IDENTITY_LDAP_USER_DN_SEARCH_FILTER` | `%s`                    |
+| `OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER`   | `%s` and `%d`           |
 
 ## Managing User/Group Access Policy
 
@@ -204,7 +204,7 @@ XML error response for this API is similar to [AWS STS AssumeRoleWithWebIdentity
 
 ## Sample `POST` Request
 ```
-http://minio.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser&LDAPPassword=foouserpassword&Version=2011-06-15
+http://obstor.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser&LDAPPassword=foouserpassword&Version=2011-06-15
 ```
 
 ## Sample Response
@@ -231,15 +231,15 @@ http://minio.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser
 
 With multiple OU hierarchies for users, and multiple group search base DN's.
 ```
-$ export MINIO_ROOT_USER=minio
-$ export MINIO_ROOT_PASSWORD=minio123
-$ export MINIO_IDENTITY_LDAP_SERVER_ADDR='my.ldap-active-dir-server.com:636'
-$ export MINIO_IDENTITY_LDAP_USERNAME_FORMAT='cn=%s,ou=Users,ou=BUS1,ou=LOB,dc=somedomain,dc=com;cn=%s,ou=Users,ou=BUS2,ou=LOB,dc=somedomain,dc=com'
-$ export MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=minioad,dc=local;dc=somedomain,dc=com'
-$ export MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=group)(member=%s))'
+$ export OBSTOR_ROOT_USER=minio
+$ export OBSTOR_ROOT_PASSWORD=minio123
+$ export OBSTOR_IDENTITY_LDAP_SERVER_ADDR='my.ldap-active-dir-server.com:636'
+$ export OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT='cn=%s,ou=Users,ou=BUS1,ou=LOB,dc=somedomain,dc=com;cn=%s,ou=Users,ou=BUS2,ou=LOB,dc=somedomain,dc=com'
+$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=minioad,dc=local;dc=somedomain,dc=com'
+$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=group)(member=%s))'
 $ minio server ~/test
 ```
-You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/minio/minio/master/docs/sts/ldap.go):
+You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/master/docs/sts/ldap.go):
 ```
 $ go run ldap.go -u foouser -p foopassword
 

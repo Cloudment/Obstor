@@ -28,12 +28,12 @@ import (
 	"sync"
 	"time"
 
-	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/env"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	jwtgo "github.com/golang-jwt/jwt/v4"
 )
 
 // Config - OpenID Config
@@ -226,12 +226,12 @@ const (
 	ClientID    = "client_id"
 	Scopes      = "scopes"
 
-	EnvIdentityOpenIDClientID    = "MINIO_IDENTITY_OPENID_CLIENT_ID"
-	EnvIdentityOpenIDJWKSURL     = "MINIO_IDENTITY_OPENID_JWKS_URL"
-	EnvIdentityOpenIDURL         = "MINIO_IDENTITY_OPENID_CONFIG_URL"
-	EnvIdentityOpenIDClaimName   = "MINIO_IDENTITY_OPENID_CLAIM_NAME"
-	EnvIdentityOpenIDClaimPrefix = "MINIO_IDENTITY_OPENID_CLAIM_PREFIX"
-	EnvIdentityOpenIDScopes      = "MINIO_IDENTITY_OPENID_SCOPES"
+	EnvIdentityOpenIDClientID    = "OBSTOR_IDENTITY_OPENID_CLIENT_ID"
+	EnvIdentityOpenIDJWKSURL     = "OBSTOR_IDENTITY_OPENID_JWKS_URL"
+	EnvIdentityOpenIDURL         = "OBSTOR_IDENTITY_OPENID_CONFIG_URL"
+	EnvIdentityOpenIDClaimName   = "OBSTOR_IDENTITY_OPENID_CLAIM_NAME"
+	EnvIdentityOpenIDClaimPrefix = "OBSTOR_IDENTITY_OPENID_CLAIM_PREFIX"
+	EnvIdentityOpenIDScopes      = "OBSTOR_IDENTITY_OPENID_SCOPES"
 )
 
 // DiscoveryDoc - parses the output from openid-configuration

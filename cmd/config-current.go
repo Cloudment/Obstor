@@ -453,7 +453,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	globalAutoEncryption = crypto.LookupAutoEncryption() // Enable auto-encryption if enabled
 	if globalAutoEncryption && GlobalKMS == nil {
-		logger.Fatal(errors.New("no KMS configured"), "MINIO_KMS_AUTO_ENCRYPTION requires a valid KMS configuration")
+		logger.Fatal(errors.New("no KMS configured"), "OBSTOR_KMS_AUTO_ENCRYPTION requires a valid KMS configuration")
 	}
 
 	globalOpenIDConfig, err = openid.LookupConfig(s[config.IdentityOpenIDSubSys][config.Default],

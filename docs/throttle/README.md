@@ -14,9 +14,9 @@ If you have traditional spinning (hdd) drives, some applications with high concu
 Example: Limit a ObStor cluster to accept at max 1600 simultaneous S3 API requests across all nodes of the cluster.
 
 ```sh
-export MINIO_API_REQUESTS_MAX=1600
-export MINIO_ROOT_USER=your-access-key
-export MINIO_ROOT_PASSWORD=your-secret-key
+export OBSTOR_API_REQUESTS_MAX=1600
+export OBSTOR_ROOT_USER=your-access-key
+export OBSTOR_ROOT_PASSWORD=your-secret-key
 minio server http://server{1...8}/mnt/hdd{1...16}
 ```
 
@@ -32,15 +32,15 @@ mc admin service restart myminio/
 ### Configuring connection (wait) deadline
 This value works in conjunction with max connection setting, setting this value allows for long waiting requests to quickly time out when there is no slot available to perform the request.
 
-This will reduce the pileup of waiting requests when clients are not configured with timeouts. Default wait time is *10 seconds* if *MINIO_API_REQUESTS_MAX* is enabled. This may need to be tuned to your application needs.
+This will reduce the pileup of waiting requests when clients are not configured with timeouts. Default wait time is *10 seconds* if *OBSTOR_API_REQUESTS_MAX* is enabled. This may need to be tuned to your application needs.
 
 Example: Limit a ObStor cluster to accept at max 1600 simultaneous S3 API requests across 8 servers, and set the wait deadline of *2 minutes* per API operation.
 
 ```sh
-export MINIO_API_REQUESTS_MAX=1600
-export MINIO_API_REQUESTS_DEADLINE=2m
-export MINIO_ROOT_USER=your-access-key
-export MINIO_ROOT_PASSWORD=your-secret-key
+export OBSTOR_API_REQUESTS_MAX=1600
+export OBSTOR_API_REQUESTS_DEADLINE=2m
+export OBSTOR_ROOT_USER=your-access-key
+export OBSTOR_ROOT_PASSWORD=your-secret-key
 minio server http://server{1...8}/mnt/hdd{1...16}
 ```
 
