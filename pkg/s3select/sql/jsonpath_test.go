@@ -26,7 +26,7 @@ import (
 	"testing"
 
 	"github.com/alecthomas/participle"
-	"github.com/minio/minio/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
 )
 
 func getJSONStructs(b []byte) ([]interface{}, error) {

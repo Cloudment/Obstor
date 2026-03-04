@@ -72,7 +72,7 @@ describe("ChangePasswordModal", () => {
         .find("ModalBody")
         .childAt(0)
         .text()
-    ).toBe("Credentials of this user cannot be updated through MinIO Browser.")
+    ).toBe("Credentials of this user cannot be updated through ObStor Browser.")
   })
 
   it("should not allow changing password for STS user", () => {
@@ -86,7 +86,7 @@ describe("ChangePasswordModal", () => {
         .find("ModalBody")
         .childAt(0)
         .text()
-    ).toBe("Credentials of this user cannot be updated through MinIO Browser.")
+    ).toBe("Credentials of this user cannot be updated through ObStor Browser.")
   })
 
   it("should not generate accessKey for IAM User", () => {

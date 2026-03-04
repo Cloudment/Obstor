@@ -15,7 +15,7 @@
 package crypto
 
 import (
-	xhttp "github.com/minio/minio/cmd/http"
+	xhttp "github.com/cloudment/obstor/cmd/http"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 	MetaMultipart = "X-Minio-Internal-Encrypted-Multipart"
 
 	// MetaIV is the random initialization vector (IV) used for
-	// the MinIO-internal key derivation.
+	// the ObStor-internal key derivation.
 	MetaIV = "X-Minio-Internal-Server-Side-Encryption-Iv"
 
 	// MetaAlgorithm is the algorithm used to derive internal keys

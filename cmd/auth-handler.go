@@ -31,15 +31,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	xjwt "github.com/minio/minio/cmd/jwt"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	objectlock "github.com/minio/minio/pkg/bucket/object/lock"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/etag"
-	"github.com/minio/minio/pkg/hash"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	xjwt "github.com/cloudment/obstor/cmd/jwt"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/etag"
+	"github.com/cloudment/obstor/pkg/hash"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 )
 
 // Verify if request has JWT.

@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"testing"
 
-	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio/pkg/hash"
+	miniogo "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor/pkg/hash"
 
-	minio "github.com/minio/minio/cmd"
+	minio "github.com/cloudment/obstor/cmd"
 )
 
 func errResponse(code string) miniogo.ErrorResponse {

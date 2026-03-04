@@ -21,7 +21,7 @@ import (
 	"net/rpc"
 	"sync"
 
-	. "github.com/minio/minio/pkg/dsync"
+	. "github.com/cloudment/obstor/pkg/dsync"
 )
 
 // ReconnectRPCClient is a wrapper type for rpc.Client which provides reconnect on first failure.

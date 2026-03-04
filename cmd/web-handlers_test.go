@@ -35,8 +35,8 @@ import (
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	humanize "github.com/dustin/go-humanize"
-	xjwt "github.com/minio/minio/cmd/jwt"
-	"github.com/minio/minio/pkg/hash"
+	xjwt "github.com/cloudment/obstor/cmd/jwt"
+	"github.com/cloudment/obstor/pkg/hash"
 )
 
 // Implement a dummy flush writer.

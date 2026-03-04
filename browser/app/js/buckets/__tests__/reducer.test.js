@@ -91,7 +91,7 @@ describe("buckets reducer", () => {
     })
     expect(newState.showBucketPolicy).toBeTruthy()
   })
-  
+
   it("should handle SHOW_MAKE_BUCKET_MODAL", () => {
     const newState = reducer(undefined, {
       type: actions.SHOW_MAKE_BUCKET_MODAL,

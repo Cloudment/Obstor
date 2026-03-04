@@ -25,17 +25,17 @@ import (
 	"sync"
 	"time"
 
-	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/encrypt"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/bandwidth"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/event"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/madmin"
+	miniogo "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/bandwidth"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/event"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // gets replication config associated to a given bucket name.
@@ -213,7 +213,7 @@ func checkReplicateDelete(ctx context.Context, bucket string, dobj ObjectToDelet
 }
 
 // replicate deletes to the designated replication target if replication configuration
-// has delete marker replication or delete replication (MinIO extension to allow deletes where version id
+// has delete marker replication or delete replication (ObStor extension to allow deletes where version id
 // is specified) enabled.
 // Similar to bucket replication for PUT operation, soft delete (a.k.a setting delete marker) and
 // permanent deletes (by specifying a version ID in the delete operation) have three states "Pending", "Complete"
@@ -374,8 +374,8 @@ func getCopyObjMetadata(oi ObjectInfo, dest replication.Destination) map[string]
 	if sc != "" {
 		meta[xhttp.AmzStorageClass] = sc
 	}
-	meta[xhttp.MinIOSourceETag] = oi.ETag
-	meta[xhttp.MinIOSourceMTime] = oi.ModTime.Format(time.RFC3339Nano)
+	meta[xhttp.ObStorSourceETag] = oi.ETag
+	meta[xhttp.ObStorSourceMTime] = oi.ModTime.Format(time.RFC3339Nano)
 	meta[xhttp.AmzBucketReplicationStatus] = replication.Replica.String()
 	return meta
 }
@@ -999,7 +999,7 @@ func isProxyable(ctx context.Context, bucket string) bool {
 func proxyHeadToRepTarget(ctx context.Context, bucket, object string, opts ObjectOptions) (tgt *TargetClient, oi ObjectInfo, proxy bool, err error) {
 	// this option is set when active-active replication is in place between site A -> B,
 	// and site B does not have the object yet.
-	if opts.ProxyRequest || (opts.ProxyHeaderSet && !opts.ProxyRequest) { // true only when site B sets MinIOSourceProxyRequest header
+	if opts.ProxyRequest || (opts.ProxyHeaderSet && !opts.ProxyRequest) { // true only when site B sets ObStorSourceProxyRequest header
 		return nil, oi, false, nil
 	}
 	cfg, err := getReplicationConfig(ctx, bucket)

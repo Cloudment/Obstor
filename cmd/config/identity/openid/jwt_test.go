@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	xnet "github.com/minio/minio/pkg/net"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 func TestUpdateClaimsExpiry(t *testing.T) {

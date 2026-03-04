@@ -29,11 +29,11 @@ import (
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // UsersSysType - defines the type of users and groups system that is
@@ -42,8 +42,8 @@ type UsersSysType string
 
 // Types of users configured in the server.
 const (
-	// This mode uses the internal users system in MinIO.
-	MinIOUsersSysType UsersSysType = "MinIOUsersSys"
+	// This mode uses the internal users system in ObStor.
+	ObStorUsersSysType UsersSysType = "ObStorUsersSys"
 
 	// This mode uses users and groups from a configured LDAP
 	// server.
@@ -225,7 +225,7 @@ type IAMSys struct {
 	configLoaded chan struct{}
 }
 
-// IAMUserType represents a user type inside MinIO server
+// IAMUserType represents a user type inside ObStor server
 type IAMUserType int
 
 const (
@@ -452,7 +452,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 	iamPolicyDocsMap := make(map[string]iampolicy.Policy)
 
 	store.rlock()
-	isMinIOUsersSys := sys.usersSysType == MinIOUsersSysType
+	isObStorUsersSys := sys.usersSysType == ObStorUsersSysType
 	store.runlock()
 
 	if err := store.loadPolicyDocs(ctx, iamPolicyDocsMap); err != nil {
@@ -462,7 +462,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 	// Sets default canned policies, if none are set.
 	setDefaultCannedPolicies(iamPolicyDocsMap)
 
-	if isMinIOUsersSys {
+	if isObStorUsersSys {
 		if err := store.loadUsers(ctx, regularUser, iamUsersMap); err != nil {
 			return err
 		}
@@ -503,7 +503,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 	}
 
 	// Merge the new reloaded entries into global map.
-	// See issue https://github.com/minio/minio/issues/9651
+	// See issue https://github.com/cloudment/obstor/issues/9651
 	// where the present list of entries on disk are not yet
 	// latest, there is a small window where this can make
 	// valid users invalid.
@@ -585,7 +585,7 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err := txnLk.GetLock(retryCtx, iamLockTimeout); err != nil {
-			logger.Info("Waiting for all MinIO IAM sub-system to be initialized.. trying to acquire lock")
+			logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. trying to acquire lock")
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
 		}
@@ -604,14 +604,14 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 
 		// These messages only meant primarily for distributed setup, so only log during distributed setup.
 		if globalIsDistErasure {
-			logger.Info("Waiting for all MinIO IAM sub-system to be initialized.. lock acquired")
+			logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. lock acquired")
 		}
 
 		// Migrate IAM configuration, if necessary.
 		if err := sys.doIAMConfigMigration(ctx); err != nil {
 			txnLk.Unlock()
 			if configRetriableErrors(err) {
-				logger.Info("Waiting for all MinIO IAM sub-system to be initialized.. possible cause (%v)", err)
+				logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. possible cause (%v)", err)
 				continue
 			}
 			logger.LogIf(ctx, fmt.Errorf("Unable to migrate IAM users and policies to new format: %w", err))
@@ -627,7 +627,7 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 	for {
 		if err := sys.store.loadAll(ctx, sys); err != nil {
 			if configRetriableErrors(err) {
-				logger.Info("Waiting for all MinIO IAM sub-system to be initialized.. possible cause (%v)", err)
+				logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. possible cause (%v)", err)
 				time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 				continue
 			}
@@ -762,7 +762,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -816,7 +816,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 
 // CurrentPolicies - returns comma separated policy string, from
 // an input policy after validating if there are any current
-// policies which exist on MinIO corresponding to the input.
+// policies which exist on ObStor corresponding to the input.
 func (sys *IAMSys) CurrentPolicies(policyName string) string {
 	if !sys.Initialized() {
 		return ""
@@ -884,7 +884,7 @@ func (sys *IAMSys) ListUsers() (map[string]madmin.UserInfo, error) {
 		return nil, errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return nil, errIAMActionNotAllowed
 	}
 
@@ -966,7 +966,7 @@ func (sys *IAMSys) GetUserInfo(name string) (u madmin.UserInfo, err error) {
 		sys.loadUserFromStore(name)
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		sys.store.rlock()
 		// If the user has a mapped policy or is a member of a group, we
 		// return that info. Otherwise we return error.
@@ -1013,7 +1013,7 @@ func (sys *IAMSys) SetUserStatus(accessKey string, status madmin.AccountStatus) 
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1089,7 +1089,7 @@ func (sys *IAMSys) NewServiceAccount(ctx context.Context, parentUser string, gro
 	cr, ok := sys.iamUsersMap[parentUser]
 	if !ok {
 		// For LDAP users we would need this fallback
-		if sys.usersSysType != MinIOUsersSysType {
+		if sys.usersSysType != ObStorUsersSysType {
 			_, ok = sys.iamUserPolicyMap[parentUser]
 			if !ok {
 				var found bool
@@ -1310,7 +1310,7 @@ func (sys *IAMSys) CreateUser(accessKey string, uinfo madmin.UserInfo) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1352,7 +1352,7 @@ func (sys *IAMSys) SetUserSecretKey(accessKey string, secretKey string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1386,7 +1386,7 @@ func (sys *IAMSys) loadUserFromStore(accessKey string) {
 			sys.store.loadUser(context.Background(), accessKey, srvAccUser, sys.iamUsersMap)
 			if svc, found := sys.iamUsersMap[accessKey]; found {
 				// Found service account, load its parent user and its mapped policies.
-				if sys.usersSysType == MinIOUsersSysType {
+				if sys.usersSysType == ObStorUsersSysType {
 					sys.store.loadUser(context.Background(), svc.ParentUser, regularUser, sys.iamUsersMap)
 				}
 				sys.store.loadMappedPolicy(context.Background(), svc.ParentUser, regularUser, false, sys.iamUserPolicyMap)
@@ -1444,7 +1444,7 @@ func (sys *IAMSys) GetUser(accessKey string) (cred auth.Credentials, ok bool) {
 	defer sys.store.runlock()
 
 	if ok && cred.IsValid() {
-		if cred.ParentUser != "" && sys.usersSysType == MinIOUsersSysType {
+		if cred.ParentUser != "" && sys.usersSysType == ObStorUsersSysType {
 			_, ok = sys.iamUsersMap[cred.ParentUser]
 		}
 		// for LDAP service accounts with ParentUser set
@@ -1468,7 +1468,7 @@ func (sys *IAMSys) AddUsersToGroup(group string, members []string) error {
 		return errInvalidArgument
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1524,7 +1524,7 @@ func (sys *IAMSys) RemoveUsersFromGroup(group string, members []string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1604,7 +1604,7 @@ func (sys *IAMSys) SetGroupStatus(group string, enabled bool) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1646,7 +1646,7 @@ func (sys *IAMSys) GetGroupDescription(group string) (gd madmin.GroupDesc, err e
 
 	policy := strings.Join(ps, ",")
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return madmin.GroupDesc{
 			Name:   group,
 			Policy: policy,
@@ -1675,7 +1675,7 @@ func (sys *IAMSys) ListGroups() (r []string, err error) {
 		return r, errServerNotInitialized
 	}
 
-	if sys.usersSysType != MinIOUsersSysType {
+	if sys.usersSysType != ObStorUsersSysType {
 		return nil, errIAMActionNotAllowed
 	}
 
@@ -1715,7 +1715,7 @@ func (sys *IAMSys) policyDBSet(name, policyName string, userType IAMUserType, is
 		return errInvalidArgument
 	}
 
-	if sys.usersSysType == MinIOUsersSysType {
+	if sys.usersSysType == ObStorUsersSysType {
 		if !isGroup {
 			if _, ok := sys.iamUsersMap[name]; !ok {
 				return errNoSuchUser
@@ -1812,7 +1812,7 @@ func (sys *IAMSys) PolicyDBGet(name string, isGroup bool, groups ...string) ([]s
 // and group map and check the appropriate policy maps directly.
 func (sys *IAMSys) policyDBGet(name string, isGroup bool) (policies []string, err error) {
 	if isGroup {
-		if sys.usersSysType == MinIOUsersSysType {
+		if sys.usersSysType == ObStorUsersSysType {
 			g, ok := sys.iamGroupsMap[name]
 			if !ok {
 				return nil, errNoSuchGroup
@@ -1830,7 +1830,7 @@ func (sys *IAMSys) policyDBGet(name string, isGroup bool) (policies []string, er
 
 	var u auth.Credentials
 	var ok bool
-	if sys.usersSysType == MinIOUsersSysType {
+	if sys.usersSysType == ObStorUsersSysType {
 		// When looking for a user's policies, we also check if the user
 		// and the groups they are member of are enabled.
 
@@ -2258,7 +2258,7 @@ func (sys *IAMSys) EnableLDAPSys() {
 // NewIAMSys - creates new config system object.
 func NewIAMSys() *IAMSys {
 	return &IAMSys{
-		usersSysType:            MinIOUsersSysType,
+		usersSysType:            ObStorUsersSysType,
 		iamUsersMap:             make(map[string]auth.Credentials),
 		iamPolicyDocsMap:        make(map[string]iampolicy.Policy),
 		iamUserPolicyMap:        make(map[string]MappedPolicy),

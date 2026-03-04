@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/minio/minio/pkg/safe"
+	"github.com/cloudment/obstor/pkg/safe"
 	etcd "go.etcd.io/etcd/client/v3"
 )
 

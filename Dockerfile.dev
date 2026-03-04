@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
 ARG TARGETARCH
 
-LABEL maintainer="MinIO Inc <dev@min.io>"
+LABEL maintainer="PGG Inc <oss@pgg.net>"
 
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/
 COPY minio /usr/bin/

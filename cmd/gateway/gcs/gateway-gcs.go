@@ -37,14 +37,14 @@ import (
 	"cloud.google.com/go/storage"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/urfave/cli"
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
-	minio "github.com/minio/minio/cmd"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/policy/condition"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/madmin"
+	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
+	minio "github.com/cloudment/obstor/cmd"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/madmin"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -187,7 +187,7 @@ func (g *GCS) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, error)
 	// Initialize a GCS client.
 	// Send user-agent in this format for Google to obtain usage insights while participating in the
 	// Google Cloud Technology Partners (https://cloud.google.com/partners/)
-	client, err := storage.NewClient(ctx, option.WithUserAgent(fmt.Sprintf("MinIO/%s (GPN:MinIO;)", minio.Version)))
+	client, err := storage.NewClient(ctx, option.WithUserAgent(fmt.Sprintf("ObStor/%s (GPN:ObStor;)", minio.Version)))
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +229,7 @@ func gcsMultipartDataName(uploadID string, partNumber int, etag string) string {
 	return fmt.Sprintf("%s/%s/%05d.%s", gcsMinioMultipartPathV1, uploadID, partNumber, etag)
 }
 
-// Convert MinIO errors to minio object layer errors.
+// Convert ObStor errors to minio object layer errors.
 func gcsToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -271,7 +271,7 @@ func gcsToObjectError(err error, params ...string) error {
 
 	googleAPIErr, ok := err.(*googleapi.Error)
 	if !ok {
-		// We don't interpret non MinIO errors. As minio errors will
+		// We don't interpret non ObStor errors. As minio errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}
@@ -334,7 +334,7 @@ func isValidGCSProjectIDFormat(projectID string) bool {
 	return gcsProjectIDRegex.MatchString(projectID)
 }
 
-// gcsGateway - Implements gateway for MinIO and GCS compatible object storage servers.
+// gcsGateway - Implements gateway for ObStor and GCS compatible object storage servers.
 type gcsGateway struct {
 	minio.GatewayUnsupported
 	client     *storage.Client

@@ -17,8 +17,8 @@
 package iampolicy
 
 import (
-	"github.com/minio/minio/pkg/bucket/policy/condition"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 // Action - policy action.
@@ -77,11 +77,11 @@ const (
 	ListBucketMultipartUploadsAction = "s3:ListBucketMultipartUploads"
 
 	// ListenNotificationAction - ListenNotification Rest API action.
-	// This is MinIO extension.
+	// This is ObStor extension.
 	ListenNotificationAction = "s3:ListenNotification"
 
 	// ListenBucketNotificationAction - ListenBucketNotification Rest API action.
-	// This is MinIO extension.
+	// This is ObStor extension.
 	ListenBucketNotificationAction = "s3:ListenBucketNotification"
 
 	// ListMultipartUploadPartsAction - ListParts Rest API action.

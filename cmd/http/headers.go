@@ -138,37 +138,37 @@ const (
 	MinioDeploymentID = "x-minio-deployment-id"
 
 	// Server-Status
-	MinIOServerStatus = "x-minio-server-status"
+	ObStorServerStatus = "x-minio-server-status"
 
 	// Delete special flag to force delete a bucket
-	MinIOForceDelete = "x-minio-force-delete"
+	ObStorForceDelete = "x-minio-force-delete"
 
 	// Header indicates if the mtime should be preserved by client
-	MinIOSourceMTime = "x-minio-source-mtime"
+	ObStorSourceMTime = "x-minio-source-mtime"
 
 	// Header indicates if the etag should be preserved by client
-	MinIOSourceETag = "x-minio-source-etag"
+	ObStorSourceETag = "x-minio-source-etag"
 
 	// Writes expected write quorum
-	MinIOWriteQuorum = "x-minio-write-quorum"
+	ObStorWriteQuorum = "x-minio-write-quorum"
 
 	// Reports number of drives currently healing
-	MinIOHealingDrives = "x-minio-healing-drives"
+	ObStorHealingDrives = "x-minio-healing-drives"
 
 	// Header indicates if the delete marker should be preserved by client
-	MinIOSourceDeleteMarker = "x-minio-source-deletemarker"
+	ObStorSourceDeleteMarker = "x-minio-source-deletemarker"
 
 	// Header indicates if the delete marker version needs to be purged.
-	MinIOSourceDeleteMarkerDelete = "x-minio-source-deletemarker-delete"
+	ObStorSourceDeleteMarkerDelete = "x-minio-source-deletemarker-delete"
 
 	// Header indicates permanent delete replication status.
-	MinIODeleteReplicationStatus = "X-Minio-Replication-Delete-Status"
+	ObStorDeleteReplicationStatus = "X-Minio-Replication-Delete-Status"
 	// Header indicates delete-marker replication status.
-	MinIODeleteMarkerReplicationStatus = "X-Minio-Replication-DeleteMarker-Status"
+	ObStorDeleteMarkerReplicationStatus = "X-Minio-Replication-DeleteMarker-Status"
 	// Header indicates if its a GET/HEAD proxy request for active-active replication
-	MinIOSourceProxyRequest = "X-Minio-Source-Proxy-Request"
+	ObStorSourceProxyRequest = "X-Minio-Source-Proxy-Request"
 	// Header indicates that this request is a replication request to create a REPLICA
-	MinIOSourceReplicationRequest = "X-Minio-Source-Replication-Request"
+	ObStorSourceReplicationRequest = "X-Minio-Source-Replication-Request"
 )
 
 // Common http query params S3 API

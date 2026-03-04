@@ -27,9 +27,9 @@ import (
 	"strconv"
 	"strings"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
 )
 
 // http Header "x-amz-content-sha256" == "UNSIGNED-PAYLOAD" indicates that the

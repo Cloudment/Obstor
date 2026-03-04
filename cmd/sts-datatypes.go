@@ -19,7 +19,7 @@ package cmd
 import (
 	"encoding/xml"
 
-	"github.com/minio/minio/pkg/auth"
+	"github.com/cloudment/obstor/pkg/auth"
 )
 
 // AssumedRoleUser - The identifiers for the temporary security credentials that
@@ -54,7 +54,7 @@ type AssumeRoleResponse struct {
 
 // AssumeRoleResult - Contains the response to a successful AssumeRole
 // request, including temporary credentials that can be used to make
-// MinIO API requests.
+// ObStor API requests.
 type AssumeRoleResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.
@@ -85,7 +85,7 @@ type AssumeRoleWithWebIdentityResponse struct {
 }
 
 // WebIdentityResult - Contains the response to a successful AssumeRoleWithWebIdentity
-// request, including temporary credentials that can be used to make MinIO API requests.
+// request, including temporary credentials that can be used to make ObStor API requests.
 type WebIdentityResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.
@@ -135,7 +135,7 @@ type AssumeRoleWithClientGrantsResponse struct {
 }
 
 // ClientGrantsResult - Contains the response to a successful AssumeRoleWithClientGrants
-// request, including temporary credentials that can be used to make MinIO API requests.
+// request, including temporary credentials that can be used to make ObStor API requests.
 type ClientGrantsResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.

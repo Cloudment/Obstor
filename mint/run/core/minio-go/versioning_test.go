@@ -27,8 +27,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
 )
 
 // testBucketVersioningExcludedPrefixes tests that excluded_prefixes are properly
@@ -51,7 +51,7 @@ func testBucketVersioningExcludedPrefixes() {
 		Secure: secure,
 	})
 	if err != nil {
-		logError(testName, function, nil, startTime, "", "MinIO client creation failed", err)
+		logError(testName, function, nil, startTime, "", "ObStor client creation failed", err)
 		return
 	}
 

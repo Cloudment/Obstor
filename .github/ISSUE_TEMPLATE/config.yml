@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: MinIO Community Support
-    url: https://slack.min.io
+  - name: ObStor Community Support
+    url: https://discord.pgg.net
     about: Join here for Community Support
-  - name: MinIO SUBNET Support
-    url: https://min.io/pricing
+  - name: ObStor SUBNET Support
+    url: https://pgg.net/pricing
     about: Join here for Enterprise Support

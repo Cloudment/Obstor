@@ -24,7 +24,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/minio/minio-go/v7/pkg/set"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
 )
 
 func TestMustSplitHostPort(t *testing.T) {

@@ -1,4 +1,4 @@
-# Dex Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# Dex Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 
 Dex is an identity service that uses OpenID Connect to drive authentication for apps. Dex acts as a portal to other identity providers through "connectors." This lets dex defer authentication to LDAP servers, SAML providers, or established identity providers like GitHub, Google, and Active Directory. Clients write their authentication logic once to talk to dex, then dex handles the protocols for a given backend.
 
@@ -22,7 +22,7 @@ time="2020-07-12T20:45:50Z" level=info msg="config id tokens valid for: 3h0m0s"
 time="2020-07-12T20:45:50Z" level=info msg="listening (http) on 0.0.0.0:5556"
 ```
 
-### Configure MinIO server with Dex
+### Configure ObStor server with Dex
 ```
 ~ export MINIO_IDENTITY_OPENID_CLAIM_NAME=name
 ~ export MINIO_IDENTITY_OPENID_CONFIG_URL=http://127.0.0.1:5556/dex/.well-known/openid-configuration
@@ -66,7 +66,7 @@ You will be redirected to dex login screen - click "Login with email", enter use
 
 and then click "Grant access"
 
-On the browser now you shall see the list of buckets output, along with your temporary credentials obtained from MinIO.
+On the browser now you shall see the list of buckets output, along with your temporary credentials obtained from ObStor.
 ```
 {
 	"buckets": [
@@ -83,16 +83,16 @@ On the browser now you shall see the list of buckets output, along with your tem
 }
 ```
 
-Now you have successfully configured Dex IdP with MinIO.
+Now you have successfully configured Dex IdP with ObStor.
 
 > NOTE: Dex supports groups with external connectors so you can use `groups` as policy claim instead of `name`.
 ```
 export MINIO_IDENTITY_OPENID_CLAIM_NAME=groups
 ```
 
-and add relevant policies on MinIO using `mc admin policy add myminio/ <group_name> group-access.json`
+and add relevant policies on ObStor using `mc admin policy add myminio/ <group_name> group-access.json`
 
 ## Explore Further
 
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
-- [The MinIO documentation website](https://docs.min.io)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [The ObStor documentation website](https://pgg.net/docs/obstor)

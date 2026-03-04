@@ -16,19 +16,19 @@
 
 /*
  * Below main package has canonical imports for 'go get' and 'go build'
- * to work with all other clones of github.com/minio/minio repository. For
+ * to work with all other clones of github.com/cloudment/obstor repository. For
  * more information refer https://golang.org/doc/go1.4#canonicalimports
  */
 
-package main // import "github.com/minio/minio"
+package main // import "github.com/cloudment/obstor"
 
 import (
 	"os"
 
-	minio "github.com/minio/minio/cmd"
+	minio "github.com/cloudment/obstor/cmd"
 
 	// Import gateway
-	_ "github.com/minio/minio/cmd/gateway"
+	_ "github.com/cloudment/obstor/cmd/gateway"
 )
 
 func main() {

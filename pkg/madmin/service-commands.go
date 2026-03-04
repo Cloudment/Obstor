@@ -25,15 +25,15 @@ import (
 	"strconv"
 	"time"
 
-	trace "github.com/minio/minio/pkg/trace"
+	trace "github.com/cloudment/obstor/pkg/trace"
 )
 
-// ServiceRestart - restarts the MinIO cluster
+// ServiceRestart - restarts the ObStor cluster
 func (adm *AdminClient) ServiceRestart(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionRestart)
 }
 
-// ServiceStop - stops the MinIO cluster
+// ServiceStop - stops the ObStor cluster
 func (adm *AdminClient) ServiceStop(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionStop)
 }

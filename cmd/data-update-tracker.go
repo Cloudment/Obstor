@@ -31,9 +31,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/console"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/console"
 	"github.com/bits-and-blooms/bloom/v3"
 )
 

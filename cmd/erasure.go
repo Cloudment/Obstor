@@ -26,12 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bpool"
-	"github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/dsync"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/sync/errgroup"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bpool"
+	"github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/dsync"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 )
 
 // OfflineDisk represents an unavailable disk.

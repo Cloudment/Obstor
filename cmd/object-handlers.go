@@ -35,28 +35,28 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio-go/v7/pkg/encrypt"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	objectlock "github.com/minio/minio/pkg/bucket/object/lock"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/etag"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/fips"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/hash"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/ioutil"
-	xnet "github.com/minio/minio/pkg/net"
-	"github.com/minio/minio/pkg/s3select"
+	miniogo "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor-go/v7/pkg/encrypt"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/etag"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/fips"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/hash"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/ioutil"
+	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/cloudment/obstor/pkg/s3select"
 	"github.com/minio/sio"
 )
 
@@ -437,10 +437,10 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			if globalBucketVersioningSys.Enabled(bucket) && gr != nil {
 				if !gr.ObjInfo.VersionPurgeStatus.Empty() {
 					// Shows the replication status of a permanent delete of a version
-					w.Header()[xhttp.MinIODeleteReplicationStatus] = []string{string(gr.ObjInfo.VersionPurgeStatus)}
+					w.Header()[xhttp.ObStorDeleteReplicationStatus] = []string{string(gr.ObjInfo.VersionPurgeStatus)}
 				}
 				if !gr.ObjInfo.ReplicationStatus.Empty() && gr.ObjInfo.DeleteMarker {
-					w.Header()[xhttp.MinIODeleteMarkerReplicationStatus] = []string{string(gr.ObjInfo.ReplicationStatus)}
+					w.Header()[xhttp.ObStorDeleteMarkerReplicationStatus] = []string{string(gr.ObjInfo.ReplicationStatus)}
 				}
 
 				// Versioning enabled quite possibly object is deleted might be delete-marker
@@ -630,10 +630,10 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 			if globalBucketVersioningSys.Enabled(bucket) {
 				if !objInfo.VersionPurgeStatus.Empty() {
 					// Shows the replication status of a permanent delete of a version
-					w.Header()[xhttp.MinIODeleteReplicationStatus] = []string{string(objInfo.VersionPurgeStatus)}
+					w.Header()[xhttp.ObStorDeleteReplicationStatus] = []string{string(objInfo.VersionPurgeStatus)}
 				}
 				if !objInfo.ReplicationStatus.Empty() && objInfo.DeleteMarker {
-					w.Header()[xhttp.MinIODeleteMarkerReplicationStatus] = []string{string(objInfo.ReplicationStatus)}
+					w.Header()[xhttp.ObStorDeleteMarkerReplicationStatus] = []string{string(objInfo.ReplicationStatus)}
 				}
 				// Versioning enabled quite possibly object is deleted might be delete-marker
 				// if present set the headers, no idea why AWS S3 sets these headers.

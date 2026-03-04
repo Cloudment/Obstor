@@ -32,17 +32,17 @@ import (
 
 	"github.com/klauspost/compress/zip"
 	"github.com/minio/highwayhash"
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	bandwidth "github.com/minio/minio/pkg/bandwidth"
-	bucketBandwidth "github.com/minio/minio/pkg/bucket/bandwidth"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/madmin"
-	xnet "github.com/minio/minio/pkg/net"
-	"github.com/minio/minio/pkg/sync/errgroup"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	bandwidth "github.com/cloudment/obstor/pkg/bandwidth"
+	bucketBandwidth "github.com/cloudment/obstor/pkg/bucket/bandwidth"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/madmin"
+	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 	"github.com/bits-and-blooms/bloom/v3"
 )
 
@@ -1384,7 +1384,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 
 	respElements := map[string]string{
 		"x-amz-request-id":        args.RespElements["requestId"],
-		"x-minio-origin-endpoint": globalMinioEndpoint, // MinIO specific custom elements.
+		"x-minio-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
@@ -1440,7 +1440,7 @@ func sendEvent(args eventArgs) {
 	args.Object.Size, _ = args.Object.GetActualSize()
 
 	// avoid generating a notification for REPLICA creation event.
-	if _, ok := args.ReqParams[xhttp.MinIOSourceReplicationRequest]; ok {
+	if _, ok := args.ReqParams[xhttp.ObStorSourceReplicationRequest]; ok {
 		return
 	}
 	// remove sensitive encryption entries in metadata.

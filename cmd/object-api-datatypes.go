@@ -22,9 +22,9 @@ import (
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/hash"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/hash"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // BackendType - represents different backend types.
@@ -372,7 +372,7 @@ type ListObjectVersionsInfo struct {
 	// request to get next set of objects.
 	//
 	// NOTE: AWS S3 returns NextMarker only if you have delimiter request parameter specified,
-	//       MinIO always returns NextMarker.
+	//       ObStor always returns NextMarker.
 	NextMarker string
 
 	// NextVersionIDMarker may be set of IsTruncated is true
@@ -398,7 +398,7 @@ type ListObjectsInfo struct {
 	// request to get next set of objects.
 	//
 	// NOTE: AWS S3 returns NextMarker only if you have delimiter request parameter specified,
-	//       MinIO always returns NextMarker.
+	//       ObStor always returns NextMarker.
 	NextMarker string
 
 	// List of objects info for this request.

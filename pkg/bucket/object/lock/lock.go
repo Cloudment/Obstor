@@ -29,8 +29,8 @@ import (
 	"encoding/binary"
 	"net"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/env"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/env"
 )
 
 // RetMode - object retention mode.

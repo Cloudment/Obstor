@@ -24,9 +24,9 @@ import (
 	"net/http"
 	"time"
 
-	minio "github.com/minio/minio/cmd"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/hash"
+	minio "github.com/cloudment/obstor/cmd"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/hash"
 )
 
 var (

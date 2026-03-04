@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 func TestKeyValueMap(t *testing.T) {
@@ -30,7 +30,7 @@ func TestKeyValueMap(t *testing.T) {
 	prefix := "prefix"
 	username := "username"
 	policy := "policy"
-	host := "min.io"
+	host := "pgg.net"
 	objects := []string{object, object}
 
 	km := KeyValueMap{}
@@ -93,7 +93,7 @@ func TestNewWebContext(t *testing.T) {
 		Marker:     "marker",
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://min.io", bytes.NewReader([]byte("nothing")))
+	req, err := http.NewRequest(http.MethodPost, "http://pgg.net", bytes.NewReader([]byte("nothing")))
 	if err != nil {
 		t.Fatal("Unexpected failure while creating a test request")
 	}

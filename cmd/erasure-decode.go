@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // Reads in parallel from readers.

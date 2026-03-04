@@ -22,7 +22,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/minio/minio/pkg/dsync"
+	"github.com/cloudment/obstor/pkg/dsync"
 )
 
 // Helper function to create a lock server for testing

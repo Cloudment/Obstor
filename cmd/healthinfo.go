@@ -25,8 +25,8 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/minio/minio/pkg/disk"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/disk"
+	"github.com/cloudment/obstor/pkg/madmin"
 	cpuhw "github.com/shirou/gopsutil/v3/cpu"
 	memhw "github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/process"

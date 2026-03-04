@@ -99,7 +99,7 @@ var (
 	ErrInvalidCacheEncryptionKey = newErrFn(
 		"Invalid cache encryption master key value",
 		"Please check the passed value",
-		"MINIO_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://docs.min.io/docs/minio-disk-cache-guide",
+		"MINIO_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/minio-disk-cache-guide",
 	)
 
 	ErrInvalidCacheRange = newErrFn(
@@ -122,19 +122,19 @@ var (
 	ErrInvalidRotatingCredentialsBackendEncrypted = newErrFn(
 		"Invalid rotating credentials",
 		"Please set correct rotating credentials in the environment for decryption",
-		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables MINIO_ROOT_USER_OLD and MINIO_ROOT_PASSWORD_OLD to be able to re-encrypt the MinIO config, user IAM and policies with new credentials`,
+		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables MINIO_ROOT_USER_OLD and MINIO_ROOT_PASSWORD_OLD to be able to re-encrypt the ObStor config, user IAM and policies with new credentials`,
 	)
 
 	ErrInvalidCredentialsBackendEncrypted = newErrFn(
 		"Invalid credentials",
 		"Please set correct credentials in the environment for decryption",
-		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the MinIO config, user IAM and policies`,
+		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
 	)
 
 	ErrMissingCredentialsBackendEncrypted = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`Detected encrypted config backend, access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the MinIO config, user IAM and policies`,
+		`Detected encrypted config backend, access and secret keys should be specified via environment variables MINIO_ROOT_USER and MINIO_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
 	)
 
 	ErrInvalidCredentials = newErrFn(
@@ -158,26 +158,26 @@ var (
 	ErrInvalidErasureEndpoints = newErrFn(
 		"Invalid endpoint(s) in erasure mode",
 		"Please provide correct combination of local/remote paths",
-		"For more information, please refer to https://docs.min.io/docs/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
 	)
 
 	ErrInvalidNumberOfErasureEndpoints = newErrFn(
 		"Invalid total number of endpoints for erasure mode",
 		"Please provide an even number of endpoints greater or equal to 4",
-		"For more information, please refer to https://docs.min.io/docs/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
 	)
 
 	ErrStorageClassValue = newErrFn(
 		"Invalid storage class value",
 		"Please check the value",
-		`MINIO_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
-MINIO_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
-Refer to the link https://github.com/minio/minio/tree/master/docs/erasure/storage-class for more information`,
+		`MINIO_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
+MINIO_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
+Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class for more information`,
 	)
 
 	ErrUnexpectedBackendVersion = newErrFn(
 		"Backend version seems to be too recent",
-		"Please update to the latest MinIO version",
+		"Please update to the latest ObStor version",
 		"",
 	)
 
@@ -206,8 +206,8 @@ Example 1:
 
 	ErrUnableToWriteInBackend = newErrFn(
 		"Unable to write to the backend",
-		"Please ensure MinIO binary has write permissions for the backend",
-		`Verify if MinIO binary is running as the same user who has write permissions for the backend`,
+		"Please ensure ObStor binary has write permissions for the backend",
+		`Verify if ObStor binary is running as the same user who has write permissions for the backend`,
 	)
 
 	ErrPortAlreadyInUse = newErrFn(
@@ -218,7 +218,7 @@ Example 1:
 
 	ErrPortAccess = newErrFn(
 		"Unable to use specified port",
-		"Please ensure MinIO binary has 'cap_net_bind_service=+ep' permissions",
+		"Please ensure ObStor binary has 'cap_net_bind_service=+ep' permissions",
 		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/minio' to provide sufficient permissions`,
 	)
 
@@ -243,7 +243,7 @@ Example 1:
 	ErrNoCertsAndHTTPSEndpoints = newErrFn(
 		"HTTPS specified in endpoints, but no TLS certificate is found on the local machine",
 		"Please add TLS certificate or use HTTP endpoints only",
-		"Refer to https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls for information about how to load a TLS certificate in your server",
+		"Refer to https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls for information about how to load a TLS certificate in your server",
 	)
 
 	ErrCertsAndHTTPEndpoints = newErrFn(
@@ -260,7 +260,7 @@ Example 1:
 
 	ErrUnexpectedError = newErrFn(
 		"Unexpected error",
-		"Please contact MinIO at https://slack.min.io",
+		"Please contact ObStor at https://discord.pgg.net",
 		"",
 	)
 
@@ -279,7 +279,7 @@ Example 1:
 	ErrInvalidGWSSEEnvValue = newErrFn(
 		"Invalid gateway SSE configuration",
 		"",
-		"Refer to https://docs.min.io/docs/minio-kms-quickstart-guide.html for setting up SSE",
+		"Refer to https://pgg.net/docs/obstor/minio-kms-quickstart-guide.html for setting up SSE",
 	)
 
 	ErrInvalidReplicationWorkersValue = newErrFn(

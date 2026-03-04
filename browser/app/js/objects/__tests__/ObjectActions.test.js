@@ -85,8 +85,8 @@ describe("ObjectActions", () => {
 
   it("should show PreviewObjectModal when preview action is clicked", () => {
     const wrapper = shallow(
-      <ObjectActions 
-      object={{ name: "obj1", contentType: "image/jpeg"}} 
+      <ObjectActions
+      object={{ name: "obj1", contentType: "image/jpeg"}}
       currentPrefix={"pre1/"} />
     )
     wrapper
@@ -99,7 +99,7 @@ describe("ObjectActions", () => {
 
   it("should hide PreviewObjectModal when cancel button is clicked", () => {
     const wrapper = shallow(
-      <ObjectActions 
+      <ObjectActions
         object={{ name: "obj1" , contentType: "image/jpeg"}}
         currentPrefix={"pre1/"} />
     )
@@ -114,8 +114,8 @@ describe("ObjectActions", () => {
   })
   it("should not show PreviewObjectModal when preview action is clicked if object is not an image", () => {
     const wrapper = shallow(
-      <ObjectActions 
-      object={{ name: "obj1"}} 
+      <ObjectActions
+      object={{ name: "obj1"}}
       currentPrefix={"pre1/"} />
     )
     expect(wrapper

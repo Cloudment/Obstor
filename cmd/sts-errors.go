@@ -21,8 +21,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // writeSTSErrorRespone writes error headers
@@ -136,7 +136,7 @@ var stsErrCodes = stsErrorCodeMap{
 	},
 	ErrSTSInvalidClientGrantsToken: {
 		Code:           "InvalidClientGrantsToken",
-		Description:    "The client grants token that was passed could not be validated by MinIO.",
+		Description:    "The client grants token that was passed could not be validated by ObStor.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrSTSMalformedPolicyDocument: {

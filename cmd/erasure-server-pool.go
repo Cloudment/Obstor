@@ -29,13 +29,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/sync/errgroup"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 type erasureServerPools struct {

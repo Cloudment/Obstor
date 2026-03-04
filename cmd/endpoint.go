@@ -33,13 +33,13 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/cmd/config"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/mountinfo"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/cmd/config"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/mountinfo"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 // EndpointType - enum for endpoint type.
@@ -849,7 +849,7 @@ func getOnlineProxyEndpointIdx() int {
 			if resp.StatusCode != http.StatusOK {
 				return errors.New(resp.Status)
 			}
-			if v := resp.Header.Get(xhttp.MinIOServerStatus); v == unavailable {
+			if v := resp.Header.Get(xhttp.ObStorServerStatus); v == unavailable {
 				return errors.New(v)
 			}
 			return nil

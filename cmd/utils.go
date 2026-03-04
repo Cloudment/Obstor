@@ -42,12 +42,12 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gorilla/mux"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/rest"
-	"github.com/minio/minio/pkg/certs"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/madmin"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/rest"
+	"github.com/cloudment/obstor/pkg/certs"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/madmin"
 	"golang.org/x/net/http2"
 )
 
@@ -456,7 +456,7 @@ func newInternodeHTTPTransport(tlsConfig *tls.Config, dialTimeout time.Duration)
 		WriteBufferSize:       32 << 10, // 32KiB moving up from 4KiB default
 		ReadBufferSize:        32 << 10, // 32KiB moving up from 4KiB default
 		IdleConnTimeout:       15 * time.Second,
-		ResponseHeaderTimeout: 15 * time.Minute, // Set conservative timeouts for MinIO internode.
+		ResponseHeaderTimeout: 15 * time.Minute, // Set conservative timeouts for ObStor internode.
 		TLSHandshakeTimeout:   15 * time.Second,
 		ExpectContinueTimeout: 15 * time.Second,
 		TLSClientConfig:       tlsConfig,
@@ -567,7 +567,7 @@ func newCustomHTTPTransport(tlsConfig *tls.Config, dialTimeout time.Duration) fu
 		WriteBufferSize:       16 << 10, // 16KiB moving up from 4KiB default
 		ReadBufferSize:        16 << 10, // 16KiB moving up from 4KiB default
 		IdleConnTimeout:       15 * time.Second,
-		ResponseHeaderTimeout: 3 * time.Minute, // Set conservative timeouts for MinIO internode.
+		ResponseHeaderTimeout: 3 * time.Minute, // Set conservative timeouts for ObStor internode.
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 10 * time.Second,
 		TLSClientConfig:       tlsConfig,
@@ -853,7 +853,7 @@ func lcp(strs []string, pre bool) string {
 	return xfix
 }
 
-// Returns the mode in which MinIO is running
+// Returns the mode in which ObStor is running
 func getMinioMode() string {
 	mode := globalMinioModeFS
 	if globalIsDistErasure {
@@ -938,7 +938,7 @@ func (t *timedValue) update(v interface{}) {
 	t.lastUpdate = time.Now()
 }
 
-// On MinIO a directory object is stored as a regular object with "__XLDIR__" suffix.
+// On ObStor a directory object is stored as a regular object with "__XLDIR__" suffix.
 // For ex. "prefix/" is stored as "prefix__XLDIR__"
 func encodeDirObject(object string) string {
 	if HasSuffix(object, slashSeparator) {

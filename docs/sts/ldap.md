@@ -1,10 +1,10 @@
-# AssumeRoleWithLDAPIdentity [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# AssumeRoleWithLDAPIdentity [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 
 **Table of Contents**
 
-- [AssumeRoleWithLDAPIdentity [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
+- [AssumeRoleWithLDAPIdentity [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
     - [Introduction](#introduction)
-    - [Configuring AD/LDAP on MinIO](#configuring-adldap-on-minio)
+    - [Configuring AD/LDAP on ObStor](#configuring-adldap-on-minio)
         - [Supported modes of operation](#supported-modes-of-operation)
             - [Lookup-Bind Mode](#lookup-bind-mode)
             - [Username-Format Mode](#username-format-mode)
@@ -26,20 +26,20 @@
 
 ## Introduction
 
-MinIO provides a custom STS API that allows integration with LDAP based corporate environments including Microsoft Active Directory. The MinIO server can be configured in two possible modes: either using a LDAP separate service account, called lookup-bind mode or in username-format mode. In either case the login flow for a user is the same as the STS flow:
+ObStor provides a custom STS API that allows integration with LDAP based corporate environments including Microsoft Active Directory. The ObStor server can be configured in two possible modes: either using a LDAP separate service account, called lookup-bind mode or in username-format mode. In either case the login flow for a user is the same as the STS flow:
 
 1. User provides their AD/LDAP username and password to the STS API.
-2. MinIO verifies the login credentials with the AD/LDAP server.
-3. On success, MinIO queries the AD/LDAP server for a list of groups that the user is a member of.
+2. ObStor verifies the login credentials with the AD/LDAP server.
+3. On success, ObStor queries the AD/LDAP server for a list of groups that the user is a member of.
    - This is done via a customizable AD/LDAP search query.
-4. MinIO then generates temporary credentials for the user storing the list of groups in a cryptographically secure session token. The temporary access key, secret key and session token are returned to the user.
-5. The user can now use these credentials to make requests to the MinIO server.
+4. ObStor then generates temporary credentials for the user storing the list of groups in a cryptographically secure session token. The temporary access key, secret key and session token are returned to the user.
+5. The user can now use these credentials to make requests to the ObStor server.
 
-The administrator will associate IAM access policies with each group and if required with the user too. The MinIO server then evaluates applicable policies on a user (these are the policies associated with the groups along with the policy on the user if any) to check if the request should be allowed or denied.
+The administrator will associate IAM access policies with each group and if required with the user too. The ObStor server then evaluates applicable policies on a user (these are the policies associated with the groups along with the policy on the user if any) to check if the request should be allowed or denied.
 
-## Configuring AD/LDAP on MinIO
+## Configuring AD/LDAP on ObStor
 
-LDAP STS configuration can be performed via MinIO's standard configuration API (i.e. using `mc admin config set/get` commands) or equivalently via environment variables. For brevity we refer to environment variables here.
+LDAP STS configuration can be performed via ObStor's standard configuration API (i.e. using `mc admin config set/get` commands) or equivalently via environment variables. For brevity we refer to environment variables here.
 
 LDAP is configured via the following environment variables:
 
@@ -66,15 +66,15 @@ MINIO_IDENTITY_LDAP_COMMENT                 (sentence)  optionally add a comment
 
 ### Supported modes of operation ###
 
-The two supported modes of LDAP configuration differ in how the MinIO server derives the Distinguished Name (DN) of the user from their username provided in the STS API. _Exactly one must be used in a valid configuration_.
+The two supported modes of LDAP configuration differ in how the ObStor server derives the Distinguished Name (DN) of the user from their username provided in the STS API. _Exactly one must be used in a valid configuration_.
 
 Once a unique DN for the user is derived, the server verifies the user's credentials with the LDAP server and on success, looks up the user's groups via a configured group search query and finally temporary object storage credentials are generated and returned.
 
 #### Lookup-Bind Mode ####
 
-In this mode, the a low-privilege read-only LDAP service account is configured in the MinIO server by providing the account's Distinguished Name (DN) and password. It is the new and preferred mode for LDAP integration.
+In this mode, the a low-privilege read-only LDAP service account is configured in the ObStor server by providing the account's Distinguished Name (DN) and password. It is the new and preferred mode for LDAP integration.
 
-This service account is used by the MinIO server to lookup a user's DN given their username. The lookup is performed via an LDAP search filter query that is also configured by the administrator.
+This service account is used by the ObStor server to lookup a user's DN given their username. The lookup is performed via an LDAP search filter query that is also configured by the administrator.
 
 This mode is enabled by setting the following variables:
 
@@ -91,7 +91,7 @@ If you set an empty lookup bind password, the lookup bind will use the unauthent
 
 In this mode, the server does not use a separate LDAP service account. Instead, the username and password provided in the STS API call are used to login to the LDAP server and also to lookup the user's groups. This mode preserves older behavior for compatibility, but users are encouraged to use the Lookup-Bind mode.
 
-The DN to use to login to LDAP is computed from a username format configuration parameter. This is a list of possible DN templates to be used. For each such template, the username is substituted and the DN is generated. Each generated DN is tried by the MinIO server to login to LDAP. If exactly one successful DN is found, it is used to perform the groups lookup as well.
+The DN to use to login to LDAP is computed from a username format configuration parameter. This is a list of possible DN templates to be used. For each such template, the username is substituted and the DN is generated. Each generated DN is tried by the ObStor server to login to LDAP. If exactly one successful DN is found, it is used to perform the groups lookup as well.
 
 This mode is enabled by setting the following variables:
 
@@ -101,18 +101,18 @@ MINIO_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of us
 
 ### Group membership search
 
-MinIO can be configured to find the groups of a user from AD/LDAP by specifying the folllowing variables:
+ObStor can be configured to find the groups of a user from AD/LDAP by specifying the folllowing variables:
 
 ```
 MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
 MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
 ```
 
-When a user logs in via the STS API, the MinIO server queries the AD/LDAP server with the given search filter and extracts the DN from the search results. These values represent the groups that the user is a member of. On each access MinIO applies the IAM policies attached to these groups in MinIO.
+When a user logs in via the STS API, the ObStor server queries the AD/LDAP server with the given search filter and extracts the DN from the search results. These values represent the groups that the user is a member of. On each access ObStor applies the IAM policies attached to these groups in ObStor.
 
-**MinIO sends LDAP credentials to LDAP server for validation. So we _strongly recommend_ to use MinIO with AD/LDAP server over TLS or StartTLS _only_. Using plain-text connection between MinIO and LDAP server means _credentials can be compromised_ by anyone listening to network traffic.**
+**ObStor sends LDAP credentials to LDAP server for validation. So we _strongly recommend_ to use ObStor with AD/LDAP server over TLS or StartTLS _only_. Using plain-text connection between ObStor and LDAP server means _credentials can be compromised_ by anyone listening to network traffic.**
 
-If a self-signed certificate is being used, the certificate can be added to MinIO's certificates directory, so it can be trusted by the server. An example setup for development or experimentation:
+If a self-signed certificate is being used, the certificate can be added to ObStor's certificates directory, so it can be trusted by the server. An example setup for development or experimentation:
 
 ```shell
 export MINIO_IDENTITY_LDAP_SERVER_ADDR=myldapserver.com:636
@@ -135,7 +135,7 @@ In the configuration variables, `%s` is substituted with the *username* from the
 
 ## Managing User/Group Access Policy
 
-Access policies may be configured on a group or on a user directly. Access policies are first defined on the MinIO server using IAM policy JSON syntax. The `mc` tool is used to issue the necessary commands.
+Access policies may be configured on a group or on a user directly. Access policies are first defined on the ObStor server using IAM policy JSON syntax. The `mc` tool is used to issue the necessary commands.
 
 **Note that by default no policy is set on a user**. Thus even if they successfully authenticate with AD/LDAP credentials, they have no access to object storage as the default access policy is to deny all access.
 
@@ -155,7 +155,7 @@ mc admin policy set myminio mypolicy user='uid=james,cn=accounts,dc=myldapserver
 mc admin policy set myminio mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
 ```
 
-**Please note that when AD/LDAP is configured, MinIO will not support long term users defined internally.** Only AD/LDAP users are allowed. In addition to this, the server will not support operations on users or groups using `mc admin user` or `mc admin group` commands except `mc admin user info` and `mc admin group info` to list set policies for users and groups. This is because users and groups are defined externally in AD/LDAP.
+**Please note that when AD/LDAP is configured, ObStor will not support long term users defined internally.** Only AD/LDAP users are allowed. In addition to this, the server will not support operations on users or groups using `mc admin user` or `mc admin group` commands except `mc admin user info` and `mc admin group info` to list set policies for users and groups. This is because users and groups are defined externally in AD/LDAP.
 
 
 ## API Request Parameters
@@ -253,8 +253,8 @@ $ go run ldap.go -u foouser -p foopassword
 ```
 
 ## Caveats
-**LDAP STS credentials are not yet supported on MinIO Browser UI, we may add this feature in future releases.**
+**LDAP STS credentials are not yet supported on ObStor Browser UI, we may add this feature in future releases.**
 
 ## Explore Further
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
-- [The MinIO documentation website](https://docs.min.io)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [The ObStor documentation website](https://pgg.net/docs/obstor)

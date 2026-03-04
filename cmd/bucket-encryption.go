@@ -20,7 +20,7 @@ import (
 	"errors"
 	"io"
 
-	bucketsse "github.com/minio/minio/pkg/bucket/encryption"
+	bucketsse "github.com/cloudment/obstor/pkg/bucket/encryption"
 )
 
 // BucketSSEConfigSys - in-memory cache of bucket encryption config
@@ -45,7 +45,7 @@ func (sys *BucketSSEConfigSys) Get(bucket string) (*bucketsse.BucketSSEConfig, e
 	return globalBucketMetadataSys.GetSSEConfig(bucket)
 }
 
-// validateBucketSSEConfig parses bucket encryption configuration and validates if it is supported by MinIO.
+// validateBucketSSEConfig parses bucket encryption configuration and validates if it is supported by ObStor.
 func validateBucketSSEConfig(r io.Reader) (*bucketsse.BucketSSEConfig, error) {
 	encConfig, err := bucketsse.ParseBucketSSEConfig(r)
 	if err != nil {

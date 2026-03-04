@@ -67,7 +67,7 @@ export class ObjectsBulkActions extends React.Component {
           <button id="download-checked" onClick={this.handleDownload.bind(this)}>
             {" "}
             Download
-            {(checkedObjects.length === 1 && !checkedObjects[0].endsWith('/')) ? 
+            {(checkedObjects.length === 1 && !checkedObjects[0].endsWith('/')) ?
             " object" : " all as zip" }{" "}
           </button>
         </span>

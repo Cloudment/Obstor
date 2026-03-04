@@ -1,8 +1,8 @@
-# MinIO NAS Gateway [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# ObStor NAS Gateway [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 
-MinIO Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple minio instances on the same shared NAS volume as a distributed object gateway.
+ObStor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple minio instances on the same shared NAS volume as a distributed object gateway.
 
-## Run MinIO Gateway for NAS Storage
+## Run ObStor Gateway for NAS Storage
 
 ### Using Docker
 
@@ -24,13 +24,13 @@ export MINIO_ROOT_PASSWORD=minio123
 minio gateway nas /shared/nasvol
 ```
 
-## Test using MinIO Browser
+## Test using ObStor Browser
 
-MinIO Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
+ObStor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
 ![Screenshot](https://raw.githubusercontent.com/minio/minio/master/docs/screenshots/minio-browser-gateway.png)
 
-## Test using MinIO Client `mc`
+## Test using ObStor Client `mc`
 
 `mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
 
@@ -97,6 +97,6 @@ NAS gateway implementation allows symlinks on regular files,
 *Directory symlinks is not and will not be supported as there are no safe ways to handle them.*
 
 ## Explore Further
-- [`mc` command-line interface](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://docs.min.io/docs/aws-cli-with-minio)
-- [`minio-go` Go SDK](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [`mc` command-line interface](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
+- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [`minio-go` Go SDK](https://pgg.net/docs/obstor/golang-client-quickstart-guide)

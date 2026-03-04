@@ -21,8 +21,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/pkg/wildcard"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/pkg/wildcard"
 	"github.com/rs/cors"
 )
 
@@ -421,7 +421,7 @@ func registerAPIRouter(router *mux.Router) {
 		// DeleteBucket
 		router.Methods(http.MethodDelete).HandlerFunc(
 			collectAPIStats("deletebucket", maxClients(httpTraceAll(api.DeleteBucketHandler))))
-		// MinIO extension API for replication.
+		// ObStor extension API for replication.
 		//
 		// GetBucketReplicationMetrics
 		router.Methods(http.MethodGet).HandlerFunc(

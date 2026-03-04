@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/pkg/bandwidth"
+	"github.com/cloudment/obstor/pkg/bandwidth"
 )
 
 // throttleBandwidth gets the throttle for bucket with the configured value

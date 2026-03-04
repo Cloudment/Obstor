@@ -32,7 +32,7 @@ export const AboutModal = ({ serverInfo, hideAbout }) => {
       </button>
       <div className="ma-inner">
         <div className="mai-item hidden-xs">
-          <a href="https://min.io" target="_blank">
+          <a href="https://pgg.net" target="_blank">
             <img className="maii-logo" src={logo} alt="" />
           </a>
         </div>

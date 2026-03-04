@@ -1,18 +1,18 @@
-# Select API Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# Select API Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 Traditional retrieval of objects is always as whole entities, i.e GetObject for a 5 GiB object, will always return 5 GiB of data. S3 Select API allows us to retrieve a subset of data by using simple SQL expressions. By using Select API to retrieve only the data needed by the application, drastic performance improvements can be achieved.
 
 You can use the Select API to query objects with following features:
 
-- Objects must be in CSV, JSON, or Parquet(*) format. 
+- Objects must be in CSV, JSON, or Parquet(*) format.
 - UTF-8 is the only encoding type the Select API supports.
 - GZIP or BZIP2 - CSV and JSON files can be compressed using GZIP or BZIP2. The Select API supports columnar compression for Parquet using GZIP, Snappy, LZ4. Whole object compression is not supported for Parquet objects.
 - Server-side encryption - The Select API supports querying objects that are protected with server-side encryption.
 
 Type inference and automatic conversion of values is performed based on the context when the value is un-typed (such as when reading CSV data). If present, the CAST function overrides automatic conversion.
 
-The [mc sql](https://docs.min.io/docs/minio-client-complete-guide.html#sql) command can be used for executing queries using the command line. 
+The [mc sql](https://pgg.net/docs/obstor/minio-client-complete-guide.html#sql) command can be used for executing queries using the command line.
 
-(*) Parquet is disabled on the MinIO server by default. See below how to enable it.
+(*) Parquet is disabled on the ObStor server by default. See below how to enable it.
 
 ## Enabling Parquet Format
 
@@ -21,10 +21,10 @@ Parquet is DISABLED by default since hostile crafted input can easily crash the 
 If you are in a controlled environment where it is safe to assume no hostile content can be uploaded to your cluster you can safely enable Parquet.
 To enable Parquet set the environment variable `MINIO_API_SELECT_PARQUET=on`.
 
-# Example using Python API 
+# Example using Python API
 
 ## 1. Prerequisites
-- Install MinIO Server from [here](http://docs.min.io/docs/minio-quickstart-guide).
+- Install ObStor Server from [here](http://pgg.net/docs/obstor/minio-quickstart-guide).
 - Familiarity with AWS S3 API.
 - Familiarity with Python and installing dependencies.
 
@@ -73,7 +73,7 @@ for event in r['Payload']:
 ```
 
 ## 4. Run the Program
-Upload a sample dataset to MinIO using the following commands.
+Upload a sample dataset to ObStor using the following commands.
 ```sh
 $ curl "https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv" > TotalPopulation.csv
 $ mc mb myminio/mycsvbucket
@@ -104,12 +104,12 @@ Stats details bytesProcessed:
 For a more detailed SELECT SQL reference, please see [here](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-glacier-select-sql-reference-select.html)
 
 ## 5. Explore Further
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `mc sql` with MinIO Server](https://docs.min.io/docs/minio-client-complete-guide.html#sql)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
-- [The MinIO documentation website](https://docs.min.io)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
+- [Use `mc sql` with ObStor Server](https://pgg.net/docs/obstor/minio-client-complete-guide.html#sql)
+- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [The ObStor documentation website](https://pgg.net/docs/obstor)
 
 ## 6. Implementation Status
 - Full AWS S3 [SELECT SQL](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-glacier-select-sql-reference-select.html) syntax is supported.

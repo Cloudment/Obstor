@@ -24,8 +24,8 @@ import (
 	"hash"
 	"io"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/ioutil"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/ioutil"
 )
 
 type errHashMismatch struct {

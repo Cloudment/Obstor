@@ -1,10 +1,10 @@
-# MinIO Server Config Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Server Config Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
 
 ## Configuration Directory
 
-Till MinIO release `RELEASE.2018-08-02T23-11-36Z`, MinIO server configuration file (`config.json`) was stored in the configuration directory specified by `--config-dir` or defaulted to `${HOME}/.minio`. However from releases after `RELEASE.2018-08-18T03-49-57Z`, the configuration file (only), has been migrated to the storage backend (storage backend is the directory passed to MinIO server while starting the server).
+Till ObStor release `RELEASE.2018-08-02T23-11-36Z`, ObStor server configuration file (`config.json`) was stored in the configuration directory specified by `--config-dir` or defaulted to `${HOME}/.minio`. However from releases after `RELEASE.2018-08-18T03-49-57Z`, the configuration file (only), has been migrated to the storage backend (storage backend is the directory passed to ObStor server while starting the server).
 
-You can specify the location of your existing config using `--config-dir`, MinIO will migrate the `config.json` to your backend storage. Your current `config.json` will be renamed upon successful migration as `config.json.deprecated` in your current `--config-dir`. All your existing configurations are honored after this migration.
+You can specify the location of your existing config using `--config-dir`, ObStor will migrate the `config.json` to your backend storage. Your current `config.json` will be renamed upon successful migration as `config.json.deprecated` in your current `--config-dir`. All your existing configurations are honored after this migration.
 
 Additionally `--config-dir` is now a legacy option which will is scheduled for removal in future, so please update your local startup, ansible scripts accordingly.
 
@@ -12,13 +12,13 @@ Additionally `--config-dir` is now a legacy option which will is scheduled for r
 minio server /data
 ```
 
-MinIO also encrypts all the config, IAM and policies content with admin credentials.
+ObStor also encrypts all the config, IAM and policies content with admin credentials.
 
 ### Certificate Directory
 
-TLS certificates by default are stored under ``${HOME}/.minio/certs`` directory. You need to place certificates here to enable `HTTPS` based access. Read more about [How to secure access to MinIO server with TLS](https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls).
+TLS certificates by default are stored under ``${HOME}/.minio/certs`` directory. You need to place certificates here to enable `HTTPS` based access. Read more about [How to secure access to ObStor server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls).
 
-Following is the directory structure for MinIO server with TLS certificates.
+Following is the directory structure for ObStor server with TLS certificates.
 
 ```sh
 $ mc tree --files ~/.minio
@@ -32,7 +32,7 @@ $ mc tree --files ~/.minio
 You can provide a custom certs directory using `--certs-dir` command line option.
 
 #### Credentials
-On MinIO admin credentials or root credentials are only allowed to be changed using ENVs namely `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`. Using the combination of these two values MinIO encrypts the config stored at the backend.
+On ObStor admin credentials or root credentials are only allowed to be changed using ENVs namely `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`. Using the combination of these two values ObStor encrypts the config stored at the backend.
 
 ```sh
 export MINIO_ROOT_USER=minio
@@ -42,7 +42,7 @@ minio server /data
 
 ##### Rotating encryption with new credentials
 
-Additionally if you wish to change the admin credentials, then MinIO will automatically detect this and re-encrypt with new credentials as shown below. For one time only special ENVs as shown below needs to be set for rotating the encryption config.
+Additionally if you wish to change the admin credentials, then ObStor will automatically detect this and re-encrypt with new credentials as shown below. For one time only special ENVs as shown below needs to be set for rotating the encryption config.
 
 > Old ENVs are never remembered in memory and are destroyed right after they are used to migrate your existing content with new credentials. You are safe to remove them after the server as successfully started, by restarting the services once again.
 
@@ -86,7 +86,7 @@ minio server /data
 ```
 
 ### Storage Class
-By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in MinIO server [here](https://github.com/minio/minio/blob/master/docs/erasure/storage-class/README.md).
+By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in ObStor server [here](https://github.com/cloudment/obstor/blob/master/docs/erasure/storage-class/README.md).
 
 ```
 KEY:
@@ -110,7 +110,7 @@ MINIO_STORAGE_CLASS_COMMENT   (sentence)  optionally add a comment to this setti
 ```
 
 ### Cache
-MinIO provides caching storage tier for primarily gateway deployments, allowing you to cache content for faster reads, cost savings on repeated downloads from the cloud.
+ObStor provides caching storage tier for primarily gateway deployments, allowing you to cache content for faster reads, cost savings on repeated downloads from the cloud.
 
 ```
 KEY:
@@ -140,9 +140,9 @@ MINIO_CACHE_COMMENT  (sentence)  optionally add a comment to this setting
 ```
 
 #### Etcd
-MinIO supports storing encrypted IAM assets and bucket DNS records on etcd.
+ObStor supports storing encrypted IAM assets and bucket DNS records on etcd.
 
-> NOTE: if *path_prefix* is set then MinIO will not federate your buckets, namespaced IAM assets are assumed as isolated tenants, only buckets are considered globally unique but performing a lookup with a *bucket* which belongs to a different tenant will fail unlike federated setups where MinIO would port-forward and route the request to relevant cluster accordingly. This is a special feature, federated deployments should not need to set *path_prefix*.
+> NOTE: if *path_prefix* is set then ObStor will not federate your buckets, namespaced IAM assets are assumed as isolated tenants, only buckets are considered globally unique but performing a lookup with a *bucket* which belongs to a different tenant will fail unlike federated setups where ObStor would port-forward and route the request to relevant cluster accordingly. This is a special feature, federated deployments should not need to set *path_prefix*.
 
 ```
 KEY:
@@ -172,7 +172,7 @@ MINIO_ETCD_COMMENT          (sentence)  optionally add a comment to this setting
 ```
 
 ### API
-By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in MinIO server [here](https://github.com/minio/minio/blob/master/docs/throttle/README.md).
+By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in ObStor server [here](https://github.com/cloudment/obstor/blob/master/docs/throttle/README.md).
 
 ```
 KEY:
@@ -195,7 +195,7 @@ MINIO_API_REMOTE_TRANSPORT_DEADLINE  (duration)  set the deadline for API reques
 ```
 
 #### Notifications
-Notification targets supported by MinIO are in the following list. To configure individual targets please refer to more detailed documentation [here](https://docs.min.io/docs/minio-bucket-notification-guide.html)
+Notification targets supported by ObStor are in the following list. To configure individual targets please refer to more detailed documentation [here](https://pgg.net/docs/obstor/minio-bucket-notification-guide.html)
 
 ```
 notify_webhook        publish bucket notifications to webhook endpoints
@@ -337,7 +337,7 @@ minio server /data
 
 ### Domain
 
-By default, MinIO supports path-style requests that are of the format http://mydomain.com/bucket/object. `MINIO_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).mydomain.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
+By default, ObStor supports path-style requests that are of the format http://mydomain.com/bucket/object. `MINIO_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).mydomain.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
 Example:
 
 ```sh
@@ -352,5 +352,5 @@ minio server /data
 ```
 
 ## Explore Further
-* [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide)
-* [Configure MinIO Server with TLS](https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls)
+* [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+* [Configure ObStor Server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls)

@@ -28,7 +28,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/minio/minio/cmd/config"
+	"github.com/cloudment/obstor/cmd/config"
 )
 
 // Tests validate bucket LocationConstraint.

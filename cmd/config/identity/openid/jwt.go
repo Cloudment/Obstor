@@ -29,11 +29,11 @@ import (
 	"time"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/env"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/env"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 // Config - OpenID Config

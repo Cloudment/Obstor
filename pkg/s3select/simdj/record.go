@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"io"
 
-	csv "github.com/minio/minio/pkg/csvparser"
+	csv "github.com/cloudment/obstor/pkg/csvparser"
 
-	"github.com/minio/minio/pkg/s3select/jstream"
-	"github.com/minio/minio/pkg/s3select/json"
-	"github.com/minio/minio/pkg/s3select/sql"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/json"
+	"github.com/cloudment/obstor/pkg/s3select/sql"
 	"github.com/minio/simdjson-go"
 )
 

@@ -24,7 +24,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/minio/minio/pkg/disk"
+	"github.com/cloudment/obstor/pkg/disk"
 )
 
 func TestFree(t *testing.T) {

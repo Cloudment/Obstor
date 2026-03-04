@@ -133,19 +133,19 @@ func TestUserAgent(t *testing.T) {
 			envName:     "",
 			envValue:    "",
 			mode:        globalMinioModeFS,
-			expectedStr: fmt.Sprintf("MinIO (%s; %s; %s; source) MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
+			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
 		},
 		{
 			envName:     "MESOS_CONTAINER_NAME",
 			envValue:    "mesos-11111",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("MinIO (%s; %s; %s; %s; source) MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET MinIO/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
+			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
 		},
 		{
 			envName:     "KUBERNETES_SERVICE_HOST",
 			envValue:    "10.11.148.5",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("MinIO (%s; %s; %s; %s; source) MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET MinIO/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
+			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
 		},
 	}
 

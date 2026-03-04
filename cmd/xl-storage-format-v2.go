@@ -27,8 +27,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/minio/highwayhash"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/tinylib/msgp/msgp"
 )
 

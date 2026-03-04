@@ -19,7 +19,7 @@
 //
 // * Namespace format
 //
-// On each create or update object event in MinIO Object storage
+// On each create or update object event in ObStor Object storage
 // server, a row is created or updated in the table in Postgres. On
 // each object removal, the corresponding row is deleted from the
 // table.
@@ -68,8 +68,8 @@ import (
 
 	_ "github.com/lib/pq" // Register postgres driver
 
-	"github.com/minio/minio/pkg/event"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/pkg/event"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 const (

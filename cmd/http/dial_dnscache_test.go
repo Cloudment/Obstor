@@ -43,7 +43,7 @@ func testDNSCache(t *testing.T) *DNSCache {
 func TestDialContextWithDNSCache(t *testing.T) {
 	resolver := &DNSCache{
 		cache: map[string][]string{
-			"play.min.io": {
+			"play.pgg.net": {
 				"127.0.0.1",
 				"127.0.0.2",
 				"127.0.0.3",
@@ -98,7 +98,7 @@ func TestDialContextWithDNSCache(t *testing.T) {
 	for _, tc := range cases {
 		t.Run("", func(t *testing.T) {
 			randPerm = tc.permF
-			if _, err := DialContextWithDNSCache(resolver, tc.dialF)(context.Background(), "tcp", "play.min.io:443"); err != nil {
+			if _, err := DialContextWithDNSCache(resolver, tc.dialF)(context.Background(), "tcp", "play.pgg.net:443"); err != nil {
 				t.Fatalf("err: %s", err)
 			}
 		})
@@ -114,7 +114,7 @@ func TestDialContextWithDNSCacheRand(t *testing.T) {
 
 	resolver := &DNSCache{
 		cache: map[string][]string{
-			"play.min.io": {
+			"play.pgg.net": {
 				"127.0.0.1",
 				"127.0.0.2",
 				"127.0.0.3",
@@ -129,7 +129,7 @@ func TestDialContextWithDNSCacheRand(t *testing.T) {
 	}
 
 	for i := 0; i < 100; i++ {
-		if _, err := DialContextWithDNSCache(resolver, dialF)(context.Background(), "tcp", "play.min.io:443"); err != nil {
+		if _, err := DialContextWithDNSCache(resolver, dialF)(context.Background(), "tcp", "play.pgg.net:443"); err != nil {
 			t.Fatalf("err: %s", err)
 		}
 	}
@@ -145,7 +145,7 @@ func TestDialContextWithDNSCacheRand(t *testing.T) {
 // Verify without port Dial fails, Go stdlib net.Dial expects port
 func TestDialContextWithDNSCacheScenario1(t *testing.T) {
 	resolver := testDNSCache(t)
-	if _, err := DialContextWithDNSCache(resolver, nil)(context.Background(), "tcp", "play.min.io"); err == nil {
+	if _, err := DialContextWithDNSCache(resolver, nil)(context.Background(), "tcp", "play.pgg.net"); err == nil {
 		t.Fatalf("expect to fail") // expected port
 	}
 }
@@ -162,7 +162,7 @@ func TestDialContextWithDNSCacheScenario2(t *testing.T) {
 		return nil, fmt.Errorf("err")
 	}
 
-	if _, err := DialContextWithDNSCache(res, nil)(context.Background(), "tcp", "min.io:443"); err == nil {
+	if _, err := DialContextWithDNSCache(res, nil)(context.Background(), "tcp", "pgg.net:443"); err == nil {
 		t.Fatalf("exect to fail")
 	}
 }
@@ -171,7 +171,7 @@ func TestDialContextWithDNSCacheScenario2(t *testing.T) {
 func TestDialContextWithDNSCacheScenario3(t *testing.T) {
 	resolver := &DNSCache{
 		cache: map[string][]string{
-			"min.io": {
+			"pgg.net": {
 				"1.1.1.1",
 				"2.2.2.2",
 				"3.3.3.3",
@@ -201,7 +201,7 @@ func TestDialContextWithDNSCacheScenario3(t *testing.T) {
 		return nil, nil
 	}
 
-	_, got := DialContextWithDNSCache(resolver, dialF)(context.Background(), "tcp", "min.io:443")
+	_, got := DialContextWithDNSCache(resolver, dialF)(context.Background(), "tcp", "pgg.net:443")
 	if got != want {
 		t.Fatalf("got error %v, want %v", got, want)
 	}

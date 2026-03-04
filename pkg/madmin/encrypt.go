@@ -23,8 +23,8 @@ import (
 	"errors"
 	"io"
 
-	"github.com/minio/minio/pkg/argon2"
-	"github.com/minio/minio/pkg/fips"
+	"github.com/cloudment/obstor/pkg/argon2"
+	"github.com/cloudment/obstor/pkg/fips"
 	"github.com/secure-io/sio-go"
 	"github.com/secure-io/sio-go/sioutil"
 	"golang.org/x/crypto/pbkdf2"

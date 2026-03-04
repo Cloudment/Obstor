@@ -28,12 +28,12 @@ import (
 	"sync"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/color"
-	xioutil "github.com/minio/minio/pkg/ioutil"
-	"github.com/minio/minio/pkg/sync/errgroup"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/color"
+	xioutil "github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 )
 
 const (
@@ -912,7 +912,7 @@ func makeFormatErasureMetaVolumes(disk StorageAPI) error {
 	if disk == nil {
 		return errDiskNotFound
 	}
-	// Attempt to create MinIO internal buckets.
+	// Attempt to create ObStor internal buckets.
 	return disk.MakeVolBulk(context.TODO(), minioMetaBucket, minioMetaTmpBucket, minioMetaMultipartBucket, minioMetaTmpDeletedBucket, dataUsageBucket, minioMetaTmpBucket+"-old")
 }
 

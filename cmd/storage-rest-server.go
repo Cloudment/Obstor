@@ -36,11 +36,11 @@ import (
 
 	jwtreq "github.com/golang-jwt/jwt/v4/request"
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/cmd/config"
-	xhttp "github.com/minio/minio/cmd/http"
-	xjwt "github.com/minio/minio/cmd/jwt"
-	"github.com/minio/minio/cmd/logger"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/cmd/config"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	xjwt "github.com/cloudment/obstor/cmd/jwt"
+	"github.com/cloudment/obstor/cmd/logger"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 var errDiskStale = errors.New("disk stale")
@@ -973,17 +973,17 @@ func logFatalErrs(err error, endpoint Endpoint, exit bool) {
 	} else if errors.Is(err, errUnsupportedDisk) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, MinIO erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
 		} else {
-			hint = "Disks do not support O_DIRECT flags, MinIO erasure coding requires filesystems with O_DIRECT support"
+			hint = "Disks do not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support"
 		}
 		logger.Fatal(config.ErrUnsupportedBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errDiskNotDir) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' is not a directory, MinIO erasure coding needs a directory", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' is not a directory, ObStor erasure coding needs a directory", endpoint.Path)
 		} else {
-			hint = "Disks are not directories, MinIO erasure coding needs directories"
+			hint = "Disks are not directories, ObStor erasure coding needs directories"
 		}
 		logger.Fatal(config.ErrUnableToWriteInBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errFileAccessDenied) {

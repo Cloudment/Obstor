@@ -19,18 +19,18 @@ package cmd
 import (
 	"sync"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/config/cache"
-	"github.com/minio/minio/cmd/config/compress"
-	xldap "github.com/minio/minio/cmd/config/identity/ldap"
-	"github.com/minio/minio/cmd/config/identity/openid"
-	"github.com/minio/minio/cmd/config/notify"
-	"github.com/minio/minio/cmd/config/policy/opa"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/event/target"
-	"github.com/minio/minio/pkg/quick"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/config/cache"
+	"github.com/cloudment/obstor/cmd/config/compress"
+	xldap "github.com/cloudment/obstor/cmd/config/identity/ldap"
+	"github.com/cloudment/obstor/cmd/config/identity/openid"
+	"github.com/cloudment/obstor/cmd/config/notify"
+	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/event/target"
+	"github.com/cloudment/obstor/pkg/quick"
 )
 
 /////////////////// Config V1 ///////////////////

@@ -19,8 +19,8 @@ package policy
 import (
 	"encoding/json"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 // Principal - policy principal.

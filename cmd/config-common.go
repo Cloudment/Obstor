@@ -23,7 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/minio/minio/pkg/hash"
+	"github.com/cloudment/obstor/pkg/hash"
 )
 
 var errConfigNotFound = errors.New("config file not found")

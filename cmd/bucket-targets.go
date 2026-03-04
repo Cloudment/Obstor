@@ -27,12 +27,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio/cmd/crypto"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/versioning"
-	"github.com/minio/minio/pkg/madmin"
+	miniogo "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor/cmd/crypto"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/versioning"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 const (

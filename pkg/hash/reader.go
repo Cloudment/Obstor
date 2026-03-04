@@ -24,7 +24,7 @@ import (
 	"hash"
 	"io"
 
-	"github.com/minio/minio/pkg/etag"
+	"github.com/cloudment/obstor/pkg/etag"
 )
 
 // A Reader wraps an io.Reader and computes the MD5 checksum

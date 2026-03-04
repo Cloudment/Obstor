@@ -20,7 +20,7 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	xhttp "github.com/minio/minio/cmd/http"
+	xhttp "github.com/cloudment/obstor/cmd/http"
 )
 
 // RemoveSensitiveHeaders removes confidential encryption

@@ -39,7 +39,7 @@ describe("Policy", () => {
   it("should call web.setBucketPolicy and fetchPolicies on submit", () => {
     const fetchPolicies = jest.fn()
     const wrapper = shallow(
-      <Policy 
+      <Policy
         currentBucket={"bucket"}
         prefix={"foo"}
         policy={READ_ONLY}
@@ -53,7 +53,7 @@ describe("Policy", () => {
       prefix: "foo",
       policy: "none"
     })
-    
+
     setImmediate(() => {
       expect(fetchPolicies).toHaveBeenCalledWith("bucket")
     })

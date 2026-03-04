@@ -54,17 +54,17 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	color "github.com/minio/minio/pkg/color"
-	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio-go/v7/pkg/signer"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/rest"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/hash"
+	color "github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
+	"github.com/cloudment/obstor-go/v7/pkg/signer"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/rest"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/hash"
 )
 
 // TestMain to set up global env.
@@ -285,7 +285,7 @@ func isSameType(obj1, obj2 interface{}) bool {
 	return reflect.TypeOf(obj1) == reflect.TypeOf(obj2)
 }
 
-// TestServer encapsulates an instantiation of a MinIO instance with a temporary backend.
+// TestServer encapsulates an instantiation of a ObStor instance with a temporary backend.
 // Example usage:
 //   s := StartTestServer(t,"Erasure")
 //   defer s.Stop()
@@ -687,7 +687,7 @@ func newTestStreamingRequest(method, urlStr string, dataLength, chunkSize int64,
 
 	if body == nil {
 		// this is added to avoid panic during ioutil.ReadAll(req.Body).
-		// th stack trace can be found here  https://github.com/minio/minio/pull/2074 .
+		// th stack trace can be found here  https://github.com/cloudment/obstor/pull/2074 .
 		// This is very similar to https://github.com/golang/go/issues/7527.
 		req.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
 	}
@@ -1186,7 +1186,7 @@ func newWebRPCRequest(methodRPC, authorization string, body io.ReadSeeker) (*htt
 		req.Body = ioutil.NopCloser(body)
 	} else {
 		// this is added to avoid panic during ioutil.ReadAll(req.Body).
-		// th stack trace can be found here  https://github.com/minio/minio/pull/2074 .
+		// th stack trace can be found here  https://github.com/cloudment/obstor/pull/2074 .
 		// This is very similar to https://github.com/golang/go/issues/7527.
 		req.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
 	}
@@ -1671,7 +1671,7 @@ func ExecObjectLayerAPIAnonTest(t *testing.T, obj ObjectLayer, testName, bucketN
 	// simple function which returns a message which gives the context of the test
 	// and then followed by the the actual error message.
 	failTestStr := func(testType, failMsg string) string {
-		return fmt.Sprintf("MinIO %s: %s fail for \"%s\": \n<Error> %s", instanceType, testType, testName, failMsg)
+		return fmt.Sprintf("ObStor %s: %s fail for \"%s\": \n<Error> %s", instanceType, testType, testName, failMsg)
 	}
 
 	// httptest Recorder to capture all the response by the http handler.
@@ -1791,20 +1791,20 @@ func ExecObjectLayerAPINilTest(t TestErrHandler, bucketName, objectName, instanc
 		// read the response body.
 		actualContent, err := ioutil.ReadAll(rec.Body)
 		if err != nil {
-			t.Fatalf("MinIO %s: Failed parsing response body: <ERROR> %v", instanceType, err)
+			t.Fatalf("ObStor %s: Failed parsing response body: <ERROR> %v", instanceType, err)
 		}
 
 		actualError := &APIErrorResponse{}
 		if err = xml.Unmarshal(actualContent, actualError); err != nil {
-			t.Errorf("MinIO %s: error response failed to parse error XML", instanceType)
+			t.Errorf("ObStor %s: error response failed to parse error XML", instanceType)
 		}
 
 		if actualError.BucketName != bucketName {
-			t.Errorf("MinIO %s: error response bucket name differs from expected value", instanceType)
+			t.Errorf("ObStor %s: error response bucket name differs from expected value", instanceType)
 		}
 
 		if actualError.Key != objectName {
-			t.Errorf("MinIO %s: error response object name differs from expected value", instanceType)
+			t.Errorf("ObStor %s: error response object name differs from expected value", instanceType)
 		}
 	}
 }

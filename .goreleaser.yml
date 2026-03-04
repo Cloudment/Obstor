@@ -1,7 +1,7 @@
 project_name: minio
 
 release:
-   name_template: "Version {{.MinIO.Version}}"
+   name_template: "Version {{.ObStor.Version}}"
    disable: true
    github:
     owner: minio
@@ -67,7 +67,7 @@ builds:
       - -trimpath
 
     ldflags:
-      - "-s -w -X github.com/minio/minio/cmd.Version={{.Version}} -X github.com/minio/minio/cmd.ReleaseTag={{.Tag}} -X github.com/minio/minio/cmd.CommitID={{.FullCommit}} -X github.com/minio/minio/cmd.ShortCommitID={{.ShortCommit}}"
+      - "-s -w -X github.com/cloudment/obstor/cmd.Version={{.Version}} -X github.com/cloudment/obstor/cmd.ReleaseTag={{.Tag}} -X github.com/cloudment/obstor/cmd.CommitID={{.FullCommit}} -X github.com/cloudment/obstor/cmd.ShortCommitID={{.ShortCommit}}"
 
 archives:
   -
@@ -76,12 +76,12 @@ archives:
 
 nfpms:
   -
-    id: minio
-    package_name: minio
-    vendor: MinIO, Inc.
-    homepage: https://min.io/
-    maintainer: dev@min.io
-    description: MinIO is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use MinIO to build high performance infrastructure for machine learning, analytics and application data workloads.
+    id: obstor
+    package_name: obstor
+    vendor: PGG, Inc.
+    homepage: https://pgg.net/
+    maintainer: oss@pgg.net
+    description: ObStor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use ObStor to build high performance infrastructure for machine learning, analytics and application data workloads.
     license: Apache 2.0
     bindir: /usr/bin
     formats:

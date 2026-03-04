@@ -34,17 +34,17 @@ import (
 	"strings"
 	"time"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/env"
-	xnet "github.com/minio/minio/pkg/net"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/env"
+	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/minio/selfupdate"
 )
 
 const (
 	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
 	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.min.io/server/minio/release/" + minioOSARCH + SlashSeparator
+	minioReleaseURL           = "https://dl.pgg.net/server/minio/release/" + minioOSARCH + SlashSeparator
 
 	envMinisignPubKey = "MINIO_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
@@ -56,7 +56,7 @@ var (
 )
 
 // minioVersionToReleaseTime - parses a standard official release
-// MinIO version string.
+// ObStor version string.
 //
 // An official binary's version string is the release time formatted
 // with RFC3339 (in UTC) - e.g. `2017-09-29T19:16:56Z`
@@ -65,7 +65,7 @@ func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error
 }
 
 // releaseTimeToReleaseTag - converts a time to a string formatted as
-// an official MinIO release tag.
+// an official ObStor release tag.
 //
 // An official minio release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
@@ -180,14 +180,14 @@ func IsBOSH() bool {
 	return err == nil
 }
 
-// MinIO Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
+// ObStor Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
 // More info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#store-pod-fields
 // Check if this is Helm package installation and report helm chart version
 func getHelmVersion(helmInfoFilePath string) string {
 	// Read the file exists.
 	helmInfoFile, err := os.Open(helmInfoFilePath)
 	if err != nil {
-		// Log errors and return "" as MinIO can be deployed
+		// Log errors and return "" as ObStor can be deployed
 		// without Helm charts as well.
 		if !osIsNotExist(err) {
 			reqInfo := (&logger.ReqInfo{}).AppendTags("helmInfoFilePath", helmInfoFilePath)
@@ -224,10 +224,10 @@ func IsPCFTile() bool {
 // DO NOT CHANGE USER AGENT STYLE.
 // The style should be
 //
-//   MinIO (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) MinIO/<VERSION> MinIO/<RELEASE-TAG> MinIO/<COMMIT-ID> [MinIO/universe-<PACKAGE-NAME>] [MinIO/helm-<HELM-VERSION>]
+//   ObStor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) ObStor/<VERSION> ObStor/<RELEASE-TAG> ObStor/<COMMIT-ID> [ObStor/universe-<PACKAGE-NAME>] [ObStor/helm-<HELM-VERSION>]
 //
 // Any change here should be discussed by opening an issue at
-// https://github.com/minio/minio/issues.
+// https://github.com/cloudment/obstor/issues.
 func getUserAgent(mode string) string {
 
 	userAgentParts := []string{}
@@ -237,7 +237,7 @@ func getUserAgent(mode string) string {
 		userAgentParts = append(userAgentParts, p, q)
 	}
 
-	uaAppend("MinIO (", runtime.GOOS)
+	uaAppend("ObStor (", runtime.GOOS)
 	uaAppend("; ", runtime.GOARCH)
 	if mode != "" {
 		uaAppend("; ", mode)
@@ -258,14 +258,14 @@ func getUserAgent(mode string) string {
 		uaAppend("; ", "source")
 	}
 
-	uaAppend(") MinIO/", Version)
-	uaAppend(" MinIO/", ReleaseTag)
-	uaAppend(" MinIO/", CommitID)
+	uaAppend(") ObStor/", Version)
+	uaAppend(" ObStor/", ReleaseTag)
+	uaAppend(" ObStor/", CommitID)
 	if IsDCOS() {
 		universePkgVersion := env.Get("MARATHON_APP_LABEL_DCOS_PACKAGE_VERSION", "")
 		// On DC/OS environment try to the get universe package version.
 		if universePkgVersion != "" {
-			uaAppend(" MinIO/universe-", universePkgVersion)
+			uaAppend(" ObStor/universe-", universePkgVersion)
 		}
 	}
 
@@ -273,23 +273,23 @@ func getUserAgent(mode string) string {
 		// In Kubernetes environment, try to fetch the helm package version
 		helmChartVersion := getHelmVersion("/podinfo/labels")
 		if helmChartVersion != "" {
-			uaAppend(" MinIO/helm-", helmChartVersion)
+			uaAppend(" ObStor/helm-", helmChartVersion)
 		}
 		// In Kubernetes environment, try to fetch the Operator, VSPHERE plugin version
 		opVersion := env.Get("MINIO_OPERATOR_VERSION", "")
 		if opVersion != "" {
-			uaAppend(" MinIO/operator-", opVersion)
+			uaAppend(" ObStor/operator-", opVersion)
 		}
 		vsphereVersion := env.Get("MINIO_VSPHERE_PLUGIN_VERSION", "")
 		if vsphereVersion != "" {
-			uaAppend(" MinIO/vsphere-plugin-", vsphereVersion)
+			uaAppend(" ObStor/vsphere-plugin-", vsphereVersion)
 		}
 	}
 
 	if IsPCFTile() {
 		pcfTileVersion := env.Get("MINIO_PCF_TILE_VERSION", "")
 		if pcfTileVersion != "" {
-			uaAppend(" MinIO/pcf-tile-", pcfTileVersion)
+			uaAppend(" ObStor/pcf-tile-", pcfTileVersion)
 		}
 	}
 
@@ -443,10 +443,10 @@ func getLatestReleaseTime(u *url.URL, timeout time.Duration, mode string) (sha25
 
 const (
 	// Kubernetes deployment doc link.
-	kubernetesDeploymentDoc = "https://docs.min.io/docs/deploy-minio-on-kubernetes"
+	kubernetesDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-kubernetes"
 
 	// Mesos deployment doc link.
-	mesosDeploymentDoc = "https://docs.min.io/docs/deploy-minio-on-dc-os"
+	mesosDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-dc-os"
 )
 
 func getDownloadURL(releaseTag string) (downloadURL string) {

@@ -25,10 +25,10 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/minio/minio/pkg/disk"
-	"github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/pkg/disk"
+	"github.com/cloudment/obstor/pkg/net"
 
-	smart "github.com/minio/minio/pkg/smart"
+	smart "github.com/cloudment/obstor/pkg/smart"
 	"github.com/shirou/gopsutil/v3/cpu"
 	diskhw "github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
@@ -36,7 +36,7 @@ import (
 	"github.com/shirou/gopsutil/v3/process"
 )
 
-// HealthInfo - MinIO cluster's health Info
+// HealthInfo - ObStor cluster's health Info
 type HealthInfo struct {
 	TimeStamp time.Time       `json:"timestamp,omitempty"`
 	Error     string          `json:"error,omitempty"`
@@ -45,7 +45,7 @@ type HealthInfo struct {
 	Sys       SysHealthInfo   `json:"sys,omitempty"`
 }
 
-// SysHealthInfo - Includes hardware and system information of the MinIO cluster
+// SysHealthInfo - Includes hardware and system information of the ObStor cluster
 type SysHealthInfo struct {
 	CPUInfo    []ServerCPUInfo    `json:"cpus,omitempty"`
 	DiskHwInfo []ServerDiskHwInfo `json:"drives,omitempty"`
@@ -111,7 +111,7 @@ type ServerOsInfo struct {
 	Error   string                 `json:"error,omitempty"`
 }
 
-// ServerCPUInfo - Includes cpu and timer stats of each node of the MinIO cluster
+// ServerCPUInfo - Includes cpu and timer stats of each node of the ObStor cluster
 type ServerCPUInfo struct {
 	Addr     string          `json:"addr"`
 	CPUStat  []cpu.InfoStat  `json:"cpu,omitempty"`
@@ -119,7 +119,7 @@ type ServerCPUInfo struct {
 	Error    string          `json:"error,omitempty"`
 }
 
-// MinioHealthInfo - Includes MinIO confifuration information
+// MinioHealthInfo - Includes ObStor confifuration information
 type MinioHealthInfo struct {
 	Info   InfoMessage `json:"info,omitempty"`
 	Config interface{} `json:"config,omitempty"`
@@ -144,7 +144,7 @@ type PartitionStat struct {
 	SmartInfo  smart.Info `json:"smartInfo,omitempty"`
 }
 
-// PerfInfo - Includes Drive and Net perf info for the entire MinIO cluster
+// PerfInfo - Includes Drive and Net perf info for the entire ObStor cluster
 type PerfInfo struct {
 	DriveInfo   []ServerDrivesInfo    `json:"drives,omitempty"`
 	Net         []ServerNetHealthInfo `json:"net,omitempty"`
@@ -152,7 +152,7 @@ type PerfInfo struct {
 	Error       string                `json:"error,omitempty"`
 }
 
-// ServerDrivesInfo - Drive info about all drives in a single MinIO node
+// ServerDrivesInfo - Drive info about all drives in a single ObStor node
 type ServerDrivesInfo struct {
 	Addr     string          `json:"addr"`
 	Serial   []DrivePerfInfo `json:"serial,omitempty"`   // Drive perf info collected one drive at a time
@@ -160,7 +160,7 @@ type ServerDrivesInfo struct {
 	Error    string          `json:"error,omitempty"`
 }
 
-// DrivePerfInfo - Stats about a single drive in a MinIO node
+// DrivePerfInfo - Stats about a single drive in a ObStor node
 type DrivePerfInfo struct {
 	Path       string          `json:"endpoint"`
 	Latency    disk.Latency    `json:"latency,omitempty"`
@@ -168,14 +168,14 @@ type DrivePerfInfo struct {
 	Error      string          `json:"error,omitempty"`
 }
 
-// ServerNetHealthInfo - Network health info about a single MinIO node
+// ServerNetHealthInfo - Network health info about a single ObStor node
 type ServerNetHealthInfo struct {
 	Addr  string        `json:"addr"`
 	Net   []NetPerfInfo `json:"net,omitempty"`
 	Error string        `json:"error,omitempty"`
 }
 
-// NetPerfInfo - one-to-one network connectivity Stats between 2 MinIO nodes
+// NetPerfInfo - one-to-one network connectivity Stats between 2 ObStor nodes
 type NetPerfInfo struct {
 	Addr       string         `json:"remote"`
 	Latency    net.Latency    `json:"latency,omitempty"`

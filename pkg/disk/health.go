@@ -78,7 +78,7 @@ func GetHealthInfo(ctx context.Context, drive, fsPath string) (Latency, Throughp
 		if n, err := w.Write(data); err != nil {
 			return Latency{}, Throughput{}, err
 		} else if n != blockSize {
-			return Latency{}, Throughput{}, fmt.Errorf("expected to write %d, but only wrote %d", blockSize, n)
+			return Latency{}, Throughput{}, fmt.Errorf("Expected to write %d, but only wrote %d", blockSize, n)
 		}
 		latencyInSecs := time.Since(startTime).Seconds()
 		latencies[i] = latencyInSecs

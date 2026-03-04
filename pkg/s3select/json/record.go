@@ -25,9 +25,9 @@ import (
 	"strconv"
 	"strings"
 
-	csv "github.com/minio/minio/pkg/csvparser"
-	"github.com/minio/minio/pkg/s3select/jstream"
-	"github.com/minio/minio/pkg/s3select/sql"
+	csv "github.com/cloudment/obstor/pkg/csvparser"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/sql"
 )
 
 // RawJSON is a byte-slice that contains valid JSON

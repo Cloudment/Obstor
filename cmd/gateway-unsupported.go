@@ -20,15 +20,15 @@ import (
 	"context"
 	"errors"
 
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 
-	"github.com/minio/minio-go/v7/pkg/tags"
-	bucketsse "github.com/minio/minio/pkg/bucket/encryption"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/versioning"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	bucketsse "github.com/cloudment/obstor/pkg/bucket/encryption"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/versioning"
 
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // GatewayUnsupported list of unsupported call stubs for gateway.

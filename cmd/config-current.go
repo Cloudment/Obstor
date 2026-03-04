@@ -23,26 +23,26 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/config/api"
-	"github.com/minio/minio/cmd/config/cache"
-	"github.com/minio/minio/cmd/config/compress"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/config/etcd"
-	"github.com/minio/minio/cmd/config/heal"
-	xldap "github.com/minio/minio/cmd/config/identity/ldap"
-	"github.com/minio/minio/cmd/config/identity/openid"
-	"github.com/minio/minio/cmd/config/notify"
-	"github.com/minio/minio/cmd/config/policy/opa"
-	"github.com/minio/minio/cmd/config/scanner"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/logger/target/http"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/kms"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/config/api"
+	"github.com/cloudment/obstor/cmd/config/cache"
+	"github.com/cloudment/obstor/cmd/config/compress"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/config/etcd"
+	"github.com/cloudment/obstor/cmd/config/heal"
+	xldap "github.com/cloudment/obstor/cmd/config/identity/ldap"
+	"github.com/cloudment/obstor/cmd/config/identity/openid"
+	"github.com/cloudment/obstor/cmd/config/notify"
+	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/scanner"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger/target/http"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/kms"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 func initHelp() {
@@ -105,7 +105,7 @@ func initHelp() {
 		},
 		config.HelpKV{
 			Key:         config.KmsKesSubSys,
-			Description: "enable external MinIO key encryption service",
+			Description: "enable external ObStor key encryption service",
 		},
 		config.HelpKV{
 			Key:         config.APISubSys,

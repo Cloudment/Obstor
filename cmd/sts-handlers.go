@@ -25,12 +25,12 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/cmd/config/identity/openid"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor/cmd/config/identity/openid"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 const (
@@ -240,7 +240,7 @@ func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Notify all other MinIO peers to reload temp users
+	// Notify all other ObStor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -322,7 +322,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithSSO(w http.ResponseWriter, r *http.Requ
 	}
 
 	// JWT has requested a custom claim with policy value set.
-	// This is a MinIO STS API specific value, this value should
+	// This is a ObStor STS API specific value, this value should
 	// be set and configured on your identity provider as part of
 	// JWT custom claims.
 	var policyName string
@@ -381,7 +381,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithSSO(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Notify all other MinIO peers to reload temp users
+	// Notify all other ObStor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -539,7 +539,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithLDAPIdentity(w http.ResponseWriter, r *
 		return
 	}
 
-	// Notify all other MinIO peers to reload temp users
+	// Notify all other ObStor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())

@@ -28,14 +28,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/tags"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/mimedb"
-	"github.com/minio/minio/pkg/sync/errgroup"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/mimedb"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 )
 
 // list all errors which can be ignored in object operations.

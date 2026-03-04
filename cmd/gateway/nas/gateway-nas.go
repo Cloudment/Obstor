@@ -20,9 +20,9 @@ import (
 	"context"
 
 	"github.com/urfave/cli"
-	minio "github.com/minio/minio/cmd"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/madmin"
+	minio "github.com/cloudment/obstor/cmd"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 func init() {
@@ -112,7 +112,7 @@ func (n *nasObjects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ [
 	return si, errs
 }
 
-// nasObjects implements gateway for MinIO and S3 compatible object storage servers.
+// nasObjects implements gateway for ObStor and S3 compatible object storage servers.
 type nasObjects struct {
 	minio.ObjectLayer
 }

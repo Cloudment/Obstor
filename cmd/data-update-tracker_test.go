@@ -28,8 +28,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/logger/message/log"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger/message/log"
 )
 
 type testLoggerI interface {

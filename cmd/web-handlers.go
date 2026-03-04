@@ -35,28 +35,28 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
-	"github.com/minio/minio-go/v7"
-	miniogo "github.com/minio/minio-go/v7"
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
-	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/cloudment/obstor-go/v7"
+	miniogo "github.com/cloudment/obstor-go/v7"
+	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
+	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
 
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/config/identity/openid"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	objectlock "github.com/minio/minio/pkg/bucket/object/lock"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/etag"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/hash"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/ioutil"
-	"github.com/minio/minio/pkg/rpc/json2"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/config/identity/openid"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/etag"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/hash"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/rpc/json2"
 )
 
 func extractBucketObject(args reflect.Value) (bucketName, objectName string) {
@@ -2257,7 +2257,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 	}
 
 	// JWT has requested a custom claim with policy value set.
-	// This is a MinIO STS API specific value, this value should
+	// This is a ObStor STS API specific value, this value should
 	// be set and configured on your identity provider as part of
 	// JWT custom claims.
 	var policyName string
@@ -2281,7 +2281,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 		return toJSONError(ctx, err)
 	}
 
-	// Notify all other MinIO peers to reload temp users
+	// Notify all other ObStor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())

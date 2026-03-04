@@ -28,12 +28,12 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/config/api"
-	"github.com/minio/minio/pkg/certs"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/fips"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/config/api"
+	"github.com/cloudment/obstor/pkg/certs"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/fips"
 )
 
 const (

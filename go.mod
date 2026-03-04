@@ -1,4 +1,4 @@
-module github.com/minio/minio
+module github.com/cloudment/obstor
 
 go 1.25.0
 

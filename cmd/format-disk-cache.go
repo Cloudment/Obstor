@@ -29,7 +29,7 @@ import (
 	"strings"
 
 	"encoding/json"
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/minio/sio"
 )
 
@@ -426,7 +426,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 			}
 			// marshal cache metadata after adding version and stat info
 			meta := &cacheMeta{}
-	
+
 			if err = json.Unmarshal(metaBytes, &meta); err != nil {
 				return err
 			}

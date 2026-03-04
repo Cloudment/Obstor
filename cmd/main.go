@@ -22,9 +22,9 @@ import (
 	"sort"
 
 	"github.com/urfave/cli"
-	"github.com/minio/minio/pkg/console"
-	"github.com/minio/minio/pkg/trie"
-	"github.com/minio/minio/pkg/words"
+	"github.com/cloudment/obstor/pkg/console"
+	"github.com/cloudment/obstor/pkg/trie"
+	"github.com/cloudment/obstor/pkg/words"
 )
 
 // GlobalFlags - global flags for minio.
@@ -136,7 +136,7 @@ func newApp(name string) *cli.App {
 	app.Author = "MinIO, Inc."
 	app.Version = ReleaseTag
 	app.Usage = "High Performance Object Storage"
-	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with MinIO`
+	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with ObStor`
 	app.Flags = GlobalFlags
 	app.HideHelp = true // Hide `help, h` command, we already have `minio --help`.
 	app.Commands = commands

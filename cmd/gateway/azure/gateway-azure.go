@@ -40,14 +40,14 @@ import (
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/urfave/cli"
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
-	minio "github.com/minio/minio/cmd"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/policy/condition"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/madmin"
+	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
+	minio "github.com/cloudment/obstor/cmd"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 const (
@@ -184,7 +184,7 @@ func (g *Azure) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, erro
 	}
 
 	httpClient := &http.Client{Transport: t}
-	userAgent := fmt.Sprintf("APN/1.0 MinIO/1.0 MinIO/%s", minio.Version)
+	userAgent := fmt.Sprintf("APN/1.0 ObStor/1.0 ObStor/%s", minio.Version)
 
 	pipeline := azblob.NewPipeline(credential, azblob.PipelineOptions{
 		Retry: azblob.RetryOptions{
@@ -701,7 +701,7 @@ func (a *azureObjects) ListObjects(ctx context.Context, bucket, prefix, marker, 
 			// or through the AWS Management Console, and are encrypted by SSE-S3
 			// or plaintext, have ETags that are an MD5 digest of their object data.
 			//
-			// Some applications depend on this behavior refer https://github.com/minio/minio/issues/6550
+			// Some applications depend on this behavior refer https://github.com/cloudment/obstor/issues/6550
 			// So we handle it here and make this consistent.
 			etag := minio.ToS3ETag(string(blob.Properties.Etag))
 			switch {
@@ -857,7 +857,7 @@ func (a *azureObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 	// or through the AWS Management Console, and are encrypted by SSE-S3
 	// or plaintext, have ETags that are an MD5 digest of their object data.
 	//
-	// Some applications depend on this behavior refer https://github.com/minio/minio/issues/6550
+	// Some applications depend on this behavior refer https://github.com/cloudment/obstor/issues/6550
 	// So we handle it here and make this consistent.
 	etag := minio.ToS3ETag(realETag)
 	metadata := blob.NewMetadata()

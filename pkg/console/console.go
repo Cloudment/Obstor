@@ -24,7 +24,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/minio/minio/pkg/color"
+	"github.com/cloudment/obstor/pkg/color"
 	"golang.org/x/term"
 )
 

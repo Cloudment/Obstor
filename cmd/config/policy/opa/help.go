@@ -16,7 +16,7 @@
 
 package opa
 
-import "github.com/minio/minio/cmd/config"
+import "github.com/cloudment/obstor/cmd/config"
 
 // Help template for OPA policy feature.
 var (

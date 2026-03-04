@@ -19,7 +19,7 @@ package compress
 import (
 	"strings"
 
-	"github.com/minio/minio/cmd/config"
+	"github.com/cloudment/obstor/cmd/config"
 )
 
 // Legacy envs.

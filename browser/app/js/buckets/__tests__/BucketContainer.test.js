@@ -31,7 +31,7 @@ describe("BucketContainer", () => {
     })
     store.dispatch = jest.fn()
   })
-  
+
   it("should render without crashing", () => {
     shallow(<BucketContainer store={store}/>)
   })

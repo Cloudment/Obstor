@@ -37,31 +37,31 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/klauspost/compress/s2"
-	"github.com/minio/minio/pkg/readahead"
-	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio/cmd/config/compress"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	"github.com/minio/minio/pkg/hash"
-	"github.com/minio/minio/pkg/ioutil"
-	"github.com/minio/minio/pkg/trie"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor/pkg/readahead"
+	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
+	"github.com/cloudment/obstor/cmd/config/compress"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/pkg/hash"
+	"github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/trie"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 const (
-	// MinIO meta bucket.
+	// ObStor meta bucket.
 	minioMetaBucket = ".minio.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
-	// MinIO Multipart meta prefix.
+	// ObStor Multipart meta prefix.
 	minioMetaMultipartBucket = minioMetaBucket + SlashSeparator + mpartMetaPrefix
-	// MinIO tmp meta prefix.
+	// ObStor tmp meta prefix.
 	minioMetaTmpBucket = minioMetaBucket + "/tmp"
-	// MinIO tmp meta prefix for deleted objects.
+	// ObStor tmp meta prefix for deleted objects.
 	minioMetaTmpDeletedBucket = minioMetaTmpBucket + "/.trash"
 
 	// DNS separator (period), used for bucket name validation.
@@ -74,7 +74,7 @@ const (
 	compReadAheadBufSize = 1 << 20
 )
 
-// isMinioBucket returns true if given bucket is a MinIO internal
+// isMinioBucket returns true if given bucket is a ObStor internal
 // bucket and false otherwise.
 func isMinioMetaBucketName(bucket string) bool {
 	return bucket == minioMetaBucket ||

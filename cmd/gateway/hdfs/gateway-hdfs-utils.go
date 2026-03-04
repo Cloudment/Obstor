@@ -19,8 +19,8 @@ package hdfs
 import (
 	"strings"
 
-	"github.com/minio/minio-go/v7/pkg/s3utils"
-	minio "github.com/minio/minio/cmd"
+	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
+	minio "github.com/cloudment/obstor/cmd"
 )
 
 const (

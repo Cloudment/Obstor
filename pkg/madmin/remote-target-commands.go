@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/pkg/auth"
+	"github.com/cloudment/obstor/pkg/auth"
 )
 
 // ServiceType represents service type

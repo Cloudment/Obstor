@@ -26,9 +26,9 @@ import (
 	"testing"
 
 	"github.com/klauspost/compress/s2"
-	"github.com/minio/minio/cmd/config/compress"
-	"github.com/minio/minio/cmd/crypto"
-	"github.com/minio/minio/pkg/trie"
+	"github.com/cloudment/obstor/cmd/config/compress"
+	"github.com/cloudment/obstor/cmd/crypto"
+	"github.com/cloudment/obstor/pkg/trie"
 )
 
 // Tests validate bucket name.
@@ -182,17 +182,17 @@ func TestIsMinioMetaBucketName(t *testing.T) {
 		bucket string
 		result bool
 	}{
-		// MinIO meta bucket.
+		// ObStor meta bucket.
 		{
 			bucket: minioMetaBucket,
 			result: true,
 		},
-		// MinIO meta bucket.
+		// ObStor meta bucket.
 		{
 			bucket: minioMetaMultipartBucket,
 			result: true,
 		},
-		// MinIO meta bucket.
+		// ObStor meta bucket.
 		{
 			bucket: minioMetaTmpBucket,
 			result: true,

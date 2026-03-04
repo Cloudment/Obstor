@@ -37,10 +37,10 @@ export class PolicyInput extends React.Component {
   handlePolicySubmit(e) {
     e.preventDefault()
     const { currentBucket, fetchPolicies, showAlert } = this.props
-    
+
     if (this.prefix.value === "*")
       this.prefix.value = ""
-    
+
     let policyAlreadyExists = this.props.policies.some(
       elem => this.prefix.value === elem.prefix && this.policy.value === elem.policy
     )
@@ -48,7 +48,7 @@ export class PolicyInput extends React.Component {
       showAlert("danger", "Policy for this prefix already exists.")
       return
     }
-    
+
     web.
       SetBucketPolicy({
         bucketName: currentBucket,
@@ -66,7 +66,7 @@ export class PolicyInput extends React.Component {
     return (
       <header className="pmb-list">
         <div className="pmbl-item">
-          <input 
+          <input
             type="text"
             ref={ prefix => this.prefix = prefix }
             className="form-control"

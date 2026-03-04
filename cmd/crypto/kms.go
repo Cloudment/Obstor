@@ -15,7 +15,7 @@
 package crypto
 
 import (
-	"github.com/minio/minio/pkg/kms"
+	"github.com/cloudment/obstor/pkg/kms"
 )
 
 // Context is a list of key-value pairs cryptographically

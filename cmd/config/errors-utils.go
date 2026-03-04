@@ -22,7 +22,7 @@ import (
 	"net"
 	"syscall"
 
-	"github.com/minio/minio/pkg/color"
+	"github.com/cloudment/obstor/pkg/color"
 )
 
 // Err is a structure which contains all information
@@ -75,7 +75,7 @@ type ErrFn func(err error) Err
 
 // Create a UI error generator, this is needed to simplify
 // the update of the detailed error message in several places
-// in MinIO code
+// in ObStor code
 func newErrFn(msg, action, hint string) ErrFn {
 	return func(err error) Err {
 		u := Err{

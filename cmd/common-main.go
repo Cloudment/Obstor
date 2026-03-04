@@ -35,18 +35,18 @@ import (
 
 	dns2 "github.com/miekg/dns"
 	"github.com/urfave/cli"
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/certs"
-	color "github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/console"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/kms"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/certs"
+	color "github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/console"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/kms"
 )
 
 // serverDebugLog will enable debug printing
@@ -245,7 +245,7 @@ func handleCommonEnvVars() {
 		logger.Fatal(config.ErrInvalidWormValue(err), "Invalid worm configuration")
 	}
 	if wormEnabled {
-		logger.Fatal(errors.New("WORM is deprecated"), "global MINIO_WORM support is removed, please downgrade your server or migrate to https://github.com/minio/minio/tree/master/docs/retention")
+		logger.Fatal(errors.New("WORM is deprecated"), "global MINIO_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
 	}
 
 	globalBrowserEnabled, err = config.ParseBool(env.Get(config.EnvBrowser, config.EnableOn))
@@ -286,7 +286,7 @@ func handleCommonEnvVars() {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
-					logger.FatalIf(err, "Unable to initialize MinIO server with [%s] invalid entry found in MINIO_PUBLIC_IPS", endpoint)
+					logger.FatalIf(err, "Unable to initialize ObStor server with [%s] invalid entry found in MINIO_PUBLIC_IPS", endpoint)
 				}
 				for _, addr := range addrs {
 					domainIPs.Add(addr)
@@ -402,7 +402,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 		return nil, nil, false, err
 	}
 
-	// MinIO has support for multiple certificates. It expects the following structure:
+	// ObStor has support for multiple certificates. It expects the following structure:
 	//  certs/
 	//   │
 	//   ├─ public.crt

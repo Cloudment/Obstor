@@ -23,8 +23,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/minio/minio/pkg/s3select/jstream"
-	"github.com/minio/minio/pkg/s3select/sql"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/sql"
 )
 
 // PReader - JSON record reader for S3Select.

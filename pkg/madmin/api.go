@@ -36,9 +36,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio-go/v7/pkg/signer"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor-go/v7/pkg/s3utils"
+	"github.com/cloudment/obstor-go/v7/pkg/signer"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -82,9 +82,9 @@ const (
 // User Agent should always following the below style.
 // Please open an issue to discuss any new changes here.
 //
-//	MinIO (OS; ARCH) LIB/VER APP/VER
+//	ObStor (OS; ARCH) LIB/VER APP/VER
 const (
-	libraryUserAgentPrefix = "MinIO (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
+	libraryUserAgentPrefix = "ObStor (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
 	libraryUserAgent       = libraryUserAgentPrefix + libraryName + "/" + libraryVersion
 )
 

@@ -21,11 +21,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/logger/message/log"
-	"github.com/minio/minio/cmd/logger/target/console"
-	xnet "github.com/minio/minio/pkg/net"
-	"github.com/minio/minio/pkg/pubsub"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger/message/log"
+	"github.com/cloudment/obstor/cmd/logger/target/console"
+	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
 // number of log messages to buffer

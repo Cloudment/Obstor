@@ -18,7 +18,7 @@
 package cmd
 
 import (
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // GetTotalCapacity gets the total capacity in the cluster.

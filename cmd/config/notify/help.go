@@ -17,8 +17,8 @@
 package notify
 
 import (
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/event/target"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/event/target"
 )
 
 const (

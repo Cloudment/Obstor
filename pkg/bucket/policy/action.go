@@ -19,7 +19,7 @@ package policy
 import (
 	"encoding/json"
 
-	"github.com/minio/minio/pkg/bucket/policy/condition"
+	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
 )
 
 // Action - policy action.
@@ -78,11 +78,11 @@ const (
 	ListBucketVersionsAction = "s3:ListBucketVersions"
 
 	// ListenNotificationAction - ListenNotification Rest API action.
-	// This is MinIO extension.
+	// This is ObStor extension.
 	ListenNotificationAction = "s3:ListenNotification"
 
 	// ListenBucketNotificationAction - ListenBucketNotification Rest API action.
-	// This is MinIO extension.
+	// This is ObStor extension.
 	ListenBucketNotificationAction = "s3:ListenBucketNotification"
 
 	// ListMultipartUploadPartsAction - ListParts Rest API action.

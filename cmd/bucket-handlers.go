@@ -36,21 +36,21 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	objectlock "github.com/minio/minio/pkg/bucket/object/lock"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/replication"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/hash"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/sync/errgroup"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/hash"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 )
 
 const (
@@ -1084,7 +1084,7 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 }
 
 // GetBucketPolicyStatusHandler -  Retrieves the policy status
-// for an MinIO bucket, indicating whether the bucket is public.
+// for an ObStor bucket, indicating whether the bucket is public.
 func (api objectAPIHandlers) GetBucketPolicyStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetBucketPolicyStatus")
 
@@ -1198,7 +1198,7 @@ func (api objectAPIHandlers) DeleteBucketHandler(w http.ResponseWriter, r *http.
 	}
 
 	forceDelete := false
-	if value := r.Header.Get(xhttp.MinIOForceDelete); value != "" {
+	if value := r.Header.Get(xhttp.ObStorForceDelete); value != "" {
 		var err error
 		forceDelete, err = strconv.ParseBool(value)
 		if err != nil {

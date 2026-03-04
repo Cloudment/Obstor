@@ -24,10 +24,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // Error config error type
@@ -165,7 +165,7 @@ const (
 	KvDoubleQuote      = madmin.KvDoubleQuote
 	KvSingleQuote      = madmin.KvSingleQuote
 
-	// Env prefix used for all envs in MinIO
+	// Env prefix used for all envs in ObStor
 	EnvPrefix        = "MINIO_"
 	EnvWordDelimiter = `_`
 )
@@ -299,7 +299,7 @@ func (kvs KVS) Lookup(key string) (string, bool) {
 	return "", false
 }
 
-// Config - MinIO server config structure.
+// Config - ObStor server config structure.
 type Config map[string]map[string]KVS
 
 // DelFrom - deletes all keys in the input reader.

@@ -2007,7 +2007,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 	function := "testBasicObjectOperations"
 	bucket := randString(60, rand.NewSource(time.Now().UnixNano()), "aws-sdk-go-test-")
 	object := "test-object.txt"
-	content := "Hello, MinIO with AWS SDK Go v2!"
+	content := "Hello, ObStor with AWS SDK Go v2!"
 	args := map[string]interface{}{
 		"bucketName": bucket,
 		"objectName": object,
@@ -2226,7 +2226,7 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 
 	// PUT Object with custom metadata
 	metadata := map[string]string{
-		"author":      "MinIO Test Suite",
+		"author":      "ObStor Test Suite",
 		"environment": "testing",
 		"version":     "1.0",
 	}
@@ -2253,8 +2253,8 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 	}
 
 	// Verify metadata
-	if headResult.Metadata["author"] != "MinIO Test Suite" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'author' mismatch: expected 'MinIO Test Suite', got '%s'", headResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
+	if headResult.Metadata["author"] != "ObStor Test Suite" {
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'author' mismatch: expected 'ObStor Test Suite', got '%s'", headResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
 		return
 	}
 	if headResult.Metadata["environment"] != "testing" {
@@ -2278,8 +2278,8 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 	defer getResult.Body.Close()
 
 	// Verify metadata from GET
-	if getResult.Metadata["author"] != "MinIO Test Suite" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GET Metadata 'author' mismatch: expected 'MinIO Test Suite', got '%s'", getResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
+	if getResult.Metadata["author"] != "ObStor Test Suite" {
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GET Metadata 'author' mismatch: expected 'ObStor Test Suite', got '%s'", getResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
 		return
 	}
 

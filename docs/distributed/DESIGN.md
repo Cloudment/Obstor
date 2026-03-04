@@ -1,5 +1,5 @@
-# Distributed Server Design Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
-This document explains the design, architecture and advanced use cases of the MinIO distributed server.
+# Distributed Server Design Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
+This document explains the design, architecture and advanced use cases of the ObStor distributed server.
 
 ## Command-line
 ```
@@ -34,11 +34,11 @@ minio server http://host{1...16}/export{1...64}
 
 ## Architecture
 
-Expansion of ellipses and choice of erasure sets based on this expansion is an automated process in MinIO. Here are some of the details of our underlying erasure coding behavior.
+Expansion of ellipses and choice of erasure sets based on this expansion is an automated process in ObStor. Here are some of the details of our underlying erasure coding behavior.
 
-- Erasure coding used by MinIO is [Reed-Solomon](https://github.com/klauspost/reedsolomon) erasure coding scheme, which has a total shard maximum of 256 i.e 128 data and 128 parity. MinIO design goes beyond this limitation by doing some practical architecture choices.
+- Erasure coding used by ObStor is [Reed-Solomon](https://github.com/klauspost/reedsolomon) erasure coding scheme, which has a total shard maximum of 256 i.e 128 data and 128 parity. ObStor design goes beyond this limitation by doing some practical architecture choices.
 
-- Erasure set is a single erasure coding unit within a MinIO deployment. An object is sharded within an erasure set. Erasure set size is automatically calculated based on the number of disks. MinIO supports unlimited number of disks but each erasure set can be upto 16 disks and a minimum of 4 disks.
+- Erasure set is a single erasure coding unit within a ObStor deployment. An object is sharded within an erasure set. Erasure set size is automatically calculated based on the number of disks. ObStor supports unlimited number of disks but each erasure set can be upto 16 disks and a minimum of 4 disks.
 
 - We limited the number of drives to 16 for erasure set because, erasure code shards more than 16 can become chatty and do not have any performance advantages. Additionally since 16 drive erasure set gives you tolerance of 8 disks per object by default which is plenty in any practical scenario.
 
@@ -48,7 +48,7 @@ Expansion of ellipses and choice of erasure sets based on this expansion is an a
 
 - *If total number of nodes are of odd number then GCD algorithm provides affinity towards odd number erasure sets to provide for uniform distribution across nodes*. This is to ensure that same number of disks are pariticipating in any erasure set. For example if you have 2 nodes with 180 drives then GCD is 15 but this would lead to uneven distribution, one of the nodes would participate more drives. To avoid this the affinity is given towards nodes which leads to next best GCD factor of 12 which provides uniform distribution.
 
-- In this algorithm, we also make sure that we spread the disks out evenly. MinIO server expands ellipses passed as arguments. Here is a sample expansion to demonstrate the process.
+- In this algorithm, we also make sure that we spread the disks out evenly. ObStor server expands ellipses passed as arguments. Here is a sample expansion to demonstrate the process.
 
 ```
 minio server http://host{1...2}/export{1...8}
@@ -92,9 +92,9 @@ Input for the key is the object name specified in `PutObject()`, returns a uniqu
 
 - Write and Read quorum are required to be satisfied only across the erasure set for an object. Healing is also done per object within the erasure set which contains the object.
 
-- MinIO does erasure coding at the object level not at the volume level, unlike other object storage vendors. This allows applications to choose different storage class by setting `x-amz-storage-class=STANDARD/REDUCED_REDUNDANCY` for each object uploads so effectively utilizing the capacity of the cluster. Additionally these can also be enforced using IAM policies to make sure the client uploads with correct HTTP headers.
+- ObStor does erasure coding at the object level not at the volume level, unlike other object storage vendors. This allows applications to choose different storage class by setting `x-amz-storage-class=STANDARD/REDUCED_REDUNDANCY` for each object uploads so effectively utilizing the capacity of the cluster. Additionally these can also be enforced using IAM policies to make sure the client uploads with correct HTTP headers.
 
-- MinIO also supports expansion of existing clusters in server pools. Each pool is a self contained entity with same SLA's (read/write quorum) for each object as original cluster. By using the existing namespace for lookup validation MinIO ensures conflicting objects are not created. When no such object exists then MinIO simply uses the least used pool to place new objects.
+- ObStor also supports expansion of existing clusters in server pools. Each pool is a self contained entity with same SLA's (read/write quorum) for each object as original cluster. By using the existing namespace for lookup validation ObStor ensures conflicting objects are not created. When no such object exists then ObStor simply uses the least used pool to place new objects.
 
 __There are no limits on how many server pools can be combined__
 
@@ -109,9 +109,9 @@ In above example there are two server pools
 
 > Notice the requirement of common SLA here original cluster had 1024 drives with 16 drives per erasure set with default parity of '4', second pool is expected to have a minimum of 8 drives per erasure set to match the original cluster SLA (parity count) of '4'. '12' drives stripe per erasure set in the second pool satisfies the original pool's parity count.
 
-Refer to the sizing guide with details on the default parity count chosen for different erasure stripe sizes [here](https://github.com/minio/minio/blob/master/docs/distributed/SIZING.md)
+Refer to the sizing guide with details on the default parity count chosen for different erasure stripe sizes [here](https://github.com/cloudment/obstor/blob/master/docs/distributed/SIZING.md)
 
-MinIO places new objects in server pools based on proportionate free space, per pool. Following pseudo code demonstrates this behavior.
+ObStor places new objects in server pools based on proportionate free space, per pool. Following pseudo code demonstrates this behavior.
 ```go
 func getAvailablePoolIdx(ctx context.Context) int {
         serverPools := z.getServerPoolsAvailableSpace(ctx)

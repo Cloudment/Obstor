@@ -1,19 +1,19 @@
-# How to secure access to MinIO server with TLS [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# How to secure access to ObStor server with TLS [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 
-This guide explains how to configure MinIO Server with TLS certificates on Linux and Windows platforms.
+This guide explains how to configure ObStor Server with TLS certificates on Linux and Windows platforms.
 
-1. [Install MinIO Server](#install-minio-server) 
-2. [Use an Existing Key and Certificate with MinIO](#use-an-existing-key-and-certificate-with-minio) 
-3. [Generate and use Self-signed Keys and Certificates with MinIO](#generate-use-self-signed-keys-certificates) 
+1. [Install ObStor Server](#install-minio-server)
+2. [Use an Existing Key and Certificate with ObStor](#use-an-existing-key-and-certificate-with-minio)
+3. [Generate and use Self-signed Keys and Certificates with ObStor](#generate-use-self-signed-keys-certificates)
 4. [Install Certificates from Third-party CAs](#install-certificates-from-third-party-cas)
 
-## <a name="install-minio-server"></a>1. Install MinIO Server
+## <a name="install-minio-server"></a>1. Install ObStor Server
 
-Install MinIO Server using the instructions in the [MinIO Quickstart Guide](http://docs.min.io/docs/minio-quickstart-guide).
+Install ObStor Server using the instructions in the [ObStor Quickstart Guide](http://pgg.net/docs/obstor/minio-quickstart-guide).
 
-## <a name="use-an-existing-key-and-certificate-with-minio"></a>2. Use an Existing Key and Certificate with MinIO 
+## <a name="use-an-existing-key-and-certificate-with-minio"></a>2. Use an Existing Key and Certificate with ObStor
 
-This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for MinIO](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-minio.html).
+This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for ObStor](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-minio.html).
 
 Copy the existing private key and public certificate to the `certs` directory. The default certs directory is:
 * **Linux:** `${HOME}/.minio/certs`
@@ -24,18 +24,18 @@ Copy the existing private key and public certificate to the `certs` directory. T
 * Inside the `certs` directory, the private key must by named `private.key` and the public key must be named `public.crt`.
 * A certificate signed by a CA contains information about the issued identity (e.g. name, expiry, public key) and any intermediate certificates. The root CA is not included.
 
-## <a name="generate-use-self-signed-keys-certificates"></a>3. Generate and use Self-signed Keys and Certificates with MinIO
+## <a name="generate-use-self-signed-keys-certificates"></a>3. Generate and use Self-signed Keys and Certificates with ObStor
 
 This section describes how to generate a self-signed certificate using various tools:
 
-* 3.1 [Use generate_cert.go to Generate a Certificate](#using-go) 
-* 3.2 [Use OpenSSL to Generate a Certificate](#using-open-ssl) 
-* 3.3 [Use OpenSSL (with IP address) to Generate a Certificate](#using-open-ssl-with-ip) 
-* 3.4 [Use GnuTLS (for Windows) to Generate a Certificate](#using-gnu-tls) 
+* 3.1 [Use generate_cert.go to Generate a Certificate](#using-go)
+* 3.2 [Use OpenSSL to Generate a Certificate](#using-open-ssl)
+* 3.3 [Use OpenSSL (with IP address) to Generate a Certificate](#using-open-ssl-with-ip)
+* 3.4 [Use GnuTLS (for Windows) to Generate a Certificate](#using-gnu-tls)
 
 **Note:**
-* MinIO only supports keys and certificates in PEM format on Linux and Windows.
-* MinIO doesn't currently support PFX certificates.
+* ObStor only supports keys and certificates in PEM format on Linux and Windows.
+* ObStor doesn't currently support PFX certificates.
 
 ### <a name="using-go"></a>3.1 Use generate_cert.go to Generate a Certificate
 
@@ -60,7 +60,7 @@ Rename `cert.pem` to `public.crt` and `key.pem` to `private.key`.
 
 Use one of the following methods to generate a certificate using `openssl`:
 
-* 3.2.1 [Generate a private key with ECDSA](#generate-private-key-with-ecdsa) 
+* 3.2.1 [Generate a private key with ECDSA](#generate-private-key-with-ecdsa)
 * 3.2.2 [Generate a private key with RSA](#generate-private-key-with-rsa)
 * 3.2.3 [Generate a self-signed certificate](#generate-a-self-signed-certificate)
 
@@ -115,7 +115,7 @@ openssl genrsa -aes256 -passout pass:PASSWORD -out private.key 2048
 export MINIO_CERT_PASSWD=<PASSWORD>
 ```
 
-The default OpenSSL format for private encrypted keys is PKCS-8, but MinIO only supports PKCS-1. An RSA key that has been formatted with PKCS-8 can be converted to PKCS-1 using the following command:
+The default OpenSSL format for private encrypted keys is PKCS-8, but ObStor only supports PKCS-1. An RSA key that has been formatted with PKCS-8 can be converted to PKCS-1 using the following command:
 
 ```sh
 openssl rsa -in private-pkcs8-key.key -aes256 -passout pass:PASSWORD -out private.key
@@ -228,12 +228,12 @@ certtool.exe --generate-self-signed --load-privkey private.key --template cert.c
 
 ## <a name="install-certificates-from-third-party-cas"></a>4. Install Certificates from Third-party CAs
 
-MinIO can connect to other servers, including MinIO nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to MinIO Server by placing these certificates under one of the following MinIO configuration paths:
+ObStor can connect to other servers, including ObStor nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to ObStor Server by placing these certificates under one of the following ObStor configuration paths:
 * **Linux:** `~/.minio/certs/CAs/`
 * **Windows**: `C:\Users\<Username>\.minio\certs\CAs`
 
 # Explore Further
-* [TLS Configuration for MinIO server on Kubernetes](https://github.com/minio/minio/tree/master/docs/tls/kubernetes)
-* [MinIO Client Complete Guide](https://docs.min.io/docs/minio-client-complete-guide)
-* [Generate Let's Encrypt Certificate](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-minio)
-* [Setup nginx Proxy with MinIO Server](https://docs.min.io/docs/setup-nginx-proxy-with-minio)
+* [TLS Configuration for ObStor server on Kubernetes](https://github.com/cloudment/obstor/tree/master/docs/tls/kubernetes)
+* [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
+* [Generate Let's Encrypt Certificate](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-minio)
+* [Setup nginx Proxy with ObStor Server](https://pgg.net/docs/obstor/setup-nginx-proxy-with-minio)

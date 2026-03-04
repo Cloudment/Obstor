@@ -19,7 +19,7 @@ package sql
 import (
 	"errors"
 
-	"github.com/minio/minio/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
 	"github.com/minio/simdjson-go"
 )
 

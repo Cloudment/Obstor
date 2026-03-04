@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/env"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/env"
 )
 
 // Config represents the compression settings.

@@ -36,20 +36,20 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/logger/message/log"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bandwidth"
-	"github.com/minio/minio/pkg/dsync"
-	"github.com/minio/minio/pkg/handlers"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/kms"
-	"github.com/minio/minio/pkg/madmin"
-	xnet "github.com/minio/minio/pkg/net"
-	trace "github.com/minio/minio/pkg/trace"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger/message/log"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bandwidth"
+	"github.com/cloudment/obstor/pkg/dsync"
+	"github.com/cloudment/obstor/pkg/handlers"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/kms"
+	"github.com/cloudment/obstor/pkg/madmin"
+	xnet "github.com/cloudment/obstor/pkg/net"
+	trace "github.com/cloudment/obstor/pkg/trace"
 )
 
 const (
@@ -172,7 +172,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 
 	writeSuccessResponseJSON(w, jsonBytes)
 
-	// Notify all other MinIO peers signal service.
+	// Notify all other ObStor peers signal service.
 	for _, nerr := range globalNotificationSys.SignalService(serviceRestart) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -217,7 +217,7 @@ func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Notify all other MinIO peers signal service.
+	// Notify all other ObStor peers signal service.
 	for _, nerr := range globalNotificationSys.SignalService(serviceSig) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -225,7 +225,7 @@ func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	// Reply to the client before restarting, stopping MinIO server.
+	// Reply to the client before restarting, stopping ObStor server.
 	writeSuccessResponseHeadersOnly(w)
 
 	globalServiceSignalCh <- serviceSig
@@ -1275,7 +1275,7 @@ func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Req
 		KeyID: keyID,
 	}
 
-	kmsContext := kms.Context{"MinIO admin API": "KMSKeyStatusHandler"} // Context for a test key operation
+	kmsContext := kms.Context{"ObStor admin API": "KMSKeyStatusHandler"} // Context for a test key operation
 	// 1. Generate a new key using the KMS.
 	key, err := GlobalKMS.GenerateKey(keyID, kmsContext)
 	if err != nil {
@@ -1452,7 +1452,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 			healthInfo.Perf.DriveInfo = append(healthInfo.Perf.DriveInfo, driveInfo)
 			partialWrite(healthInfo)
 
-			// Notify all other MinIO peers to report drive perf numbers
+			// Notify all other ObStor peers to report drive perf numbers
 			driveInfos := globalNotificationSys.DrivePerfInfoChan(deadlinedCtx)
 			for obd := range driveInfos {
 				healthInfo.Perf.DriveInfo = append(healthInfo.Perf.DriveInfo, obd)
@@ -1764,7 +1764,7 @@ func fetchKMSStatus() madmin.KMS {
 	}
 	kmsStat.Status = string(madmin.ItemOnline)
 
-	kmsContext := kms.Context{"MinIO admin API": "ServerInfoHandler"} // Context for a test key operation
+	kmsContext := kms.Context{"ObStor admin API": "ServerInfoHandler"} // Context for a test key operation
 	// 1. Generate a new key using the KMS.
 	key, err := GlobalKMS.GenerateKey("", kmsContext)
 	if err != nil {

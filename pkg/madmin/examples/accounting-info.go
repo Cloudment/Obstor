@@ -23,7 +23,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	// dummy values, please replace them with original values.
 
 	// API requests are secure (HTTPS) if secure=true and insecure (HTTPS) otherwise.
-	// New returns an MinIO Admin client object.
+	// New returns an ObStor Admin client object.
 	madmClnt, err := madmin.New("your-minio.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 	if err != nil {
 		log.Fatalln(err)

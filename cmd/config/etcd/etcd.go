@@ -22,9 +22,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/env"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/env"
+	xnet "github.com/cloudment/obstor/pkg/net"
 	"go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/namespace"
 	"go.uber.org/zap"

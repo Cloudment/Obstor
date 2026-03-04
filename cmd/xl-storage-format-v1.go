@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // XL constants.
@@ -61,7 +61,7 @@ type xlMetaV1Object struct {
 	Stat    StatInfo `json:"stat"`    // Stat of the current object `xl.meta`.
 	// Erasure coded info for the current object `xl.meta`.
 	Erasure ErasureInfo `json:"erasure"`
-	// MinIO release tag for current object `xl.meta`.
+	// ObStor release tag for current object `xl.meta`.
 	Minio struct {
 		Release string `json:"release"`
 	} `json:"minio"`

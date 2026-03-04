@@ -17,7 +17,7 @@
 package storageclass
 
 import (
-	"github.com/minio/minio/cmd/config"
+	"github.com/cloudment/obstor/cmd/config"
 )
 
 // SetStorageClass - One time migration code needed, for migrating from older config to new for StorageClass.

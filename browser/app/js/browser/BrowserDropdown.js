@@ -83,17 +83,17 @@ export class BrowserDropdown extends React.Component {
               )}
             </li>
             <li>
-              <a target="_blank" href="https://docs.min.io/?ref=ob">
+              <a target="_blank" href="https://pgg.net/docs/obstor/?ref=ob">
                 Documentation <i className="fas fa-book" />
               </a>
             </li>
             <li>
-              <a target="_blank" href="https://github.com/minio/minio">
+              <a target="_blank" href="https://github.com/cloudment/obstor">
                 GitHub <i className="fab fa-github" />
               </a>
             </li>
             <li>
-              <a target="_blank" href="https://min.io/pricing?ref=ob">
+              <a target="_blank" href="https://pgg.net/pricing?ref=ob">
                 Get Support <i className="fas fa-question-circle" />
               </a>
             </li>

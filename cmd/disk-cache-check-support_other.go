@@ -25,7 +25,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/minio/minio/pkg/atime"
+	"github.com/cloudment/obstor/pkg/atime"
 )
 
 // Return error if Atime is disabled on the O/S

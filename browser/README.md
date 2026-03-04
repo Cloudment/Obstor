@@ -1,6 +1,6 @@
-# MinIO File Browser
+# ObStor File Browser
 
-``MinIO Browser`` provides minimal set of UI to manage buckets and objects on ``minio`` server. ``MinIO Browser`` is written in javascript and released under [Apache 2.0 License](./LICENSE).
+``ObStor Browser`` provides minimal set of UI to manage buckets and objects on ``minio`` server. ``ObStor Browser`` is written in javascript and released under [Apache 2.0 License](./LICENSE).
 
 
 ## Installation
@@ -23,12 +23,12 @@ npm install
 npm run release
 ```
 
-This generates `production` in the current directory. 
+This generates `production` in the current directory.
 
 
-## Run MinIO Browser with live reload
+## Run ObStor Browser with live reload
 
-### Run MinIO Browser with live reload
+### Run ObStor Browser with live reload
 
 ```sh
 npm run dev
@@ -36,7 +36,7 @@ npm run dev
 
 Open [http://localhost:8080/minio/](http://localhost:8080/minio/) in your browser to play with the application.
 
-### Run MinIO Browser with live reload on custom port
+### Run ObStor Browser with live reload on custom port
 
 Edit `browser/webpack.config.js`
 
@@ -70,7 +70,7 @@ npm run dev
 
 Open [http://localhost:8888/minio/](http://localhost:8888/minio/) in your browser to play with the application.
 
-### Run MinIO Browser with live reload on any IP
+### Run ObStor Browser with live reload on any IP
 
 Edit `browser/webpack.config.js`
 

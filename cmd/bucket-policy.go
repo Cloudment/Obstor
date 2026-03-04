@@ -24,11 +24,11 @@ import (
 	"strings"
 	"time"
 
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/handlers"
+	miniogopolicy "github.com/cloudment/obstor-go/v7/pkg/policy"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/handlers"
 )
 
 // PolicySys - policy subsystem.
@@ -181,7 +181,7 @@ func getConditionValues(r *http.Request, lc string, username string, claims map[
 	return args
 }
 
-// PolicyToBucketAccessPolicy converts a MinIO policy into a minio-go policy data structure.
+// PolicyToBucketAccessPolicy converts a ObStor policy into a minio-go policy data structure.
 func PolicyToBucketAccessPolicy(bucketPolicy *policy.Policy) (*miniogopolicy.BucketAccessPolicy, error) {
 	// Return empty BucketAccessPolicy for empty bucket policy.
 	if bucketPolicy == nil {

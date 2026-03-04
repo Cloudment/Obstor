@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# MinIO Python Library for Amazon S3 Compatible Cloud Storage,
+# ObStor Python Library for Amazon S3 Compatible Cloud Storage,
 # (C) 2015-2020 MinIO, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,9 +39,9 @@ def main():
         access_key = os.getenv('ACCESS_KEY', 'Q3AM3UQ867SPQQA43P2F')
         secret_key = os.getenv('SECRET_KEY',
                                'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG')
-        server_endpoint = os.getenv('SERVER_ENDPOINT', 'play.min.io')
+        server_endpoint = os.getenv('SERVER_ENDPOINT', 'play.pgg.net')
         secure = os.getenv('ENABLE_HTTPS', '1') == '1'
-        if server_endpoint == 'play.min.io':
+        if server_endpoint == 'play.pgg.net':
             access_key = 'Q3AM3UQ867SPQQA43P2F'
             secret_key = 'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG'
             secure = True

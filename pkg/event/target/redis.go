@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/pkg/event"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/pkg/event"
+	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -252,7 +252,7 @@ func NewRedisTarget(id string, args RedisArgs, doneCh <-chan struct{}, loggerOnc
 		Password:        args.Password,
 		MaxIdleConns:    3,
 		ConnMaxIdleTime: 2 * 60 * time.Second,
-		ClientName:      "MinIO",
+		ClientName:      "ObStor",
 	})
 
 	var store Store

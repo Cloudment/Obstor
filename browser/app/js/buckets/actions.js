@@ -133,7 +133,7 @@ export const deleteBucket = bucket => {
         dispatch(removeBucket(bucket))
         dispatch(fetchBuckets())
       })
-      .catch(err => { 
+      .catch(err => {
         dispatch(
           alertActions.set({
             type: "danger",

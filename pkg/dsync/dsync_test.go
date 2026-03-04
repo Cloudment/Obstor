@@ -32,9 +32,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudment/obstor/pkg/dsync"
+	. "github.com/cloudment/obstor/pkg/dsync"
 	"github.com/google/uuid"
-	"github.com/minio/minio/pkg/dsync"
-	. "github.com/minio/minio/pkg/dsync"
 )
 
 const numberOfNodes = 5
@@ -339,7 +339,7 @@ func BenchmarkMutex(b *testing.B) {
 	benchmarkMutex(b, false, false)
 }
 
-func BenchmarkMutexSlack(b *testing.B) {
+func BenchmarkMutexDiscord(b *testing.B) {
 	benchmarkMutex(b, true, false)
 }
 
@@ -347,7 +347,7 @@ func BenchmarkMutexWork(b *testing.B) {
 	benchmarkMutex(b, false, true)
 }
 
-func BenchmarkMutexWorkSlack(b *testing.B) {
+func BenchmarkMutexWorkDiscord(b *testing.B) {
 	benchmarkMutex(b, true, true)
 }
 

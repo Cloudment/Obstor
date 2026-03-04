@@ -168,7 +168,7 @@ describe("Buckets actions", () => {
     })
   })
 
-  it("creates alert/SET, buckets/REMOVE, buckets/SET_LIST and buckets/SET_CURRENT_BUCKET " + 
+  it("creates alert/SET, buckets/REMOVE, buckets/SET_LIST and buckets/SET_CURRENT_BUCKET " +
      "after deleting the bucket", () => {
     const store = mockStore()
     const expectedActions = [

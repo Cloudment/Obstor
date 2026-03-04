@@ -21,7 +21,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/minio/minio/pkg/bucket/replication"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
 )
 
 func (b *BucketReplicationStats) hasReplicationUsage() bool {

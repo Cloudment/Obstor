@@ -24,7 +24,7 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
-	minio "github.com/minio/minio/cmd"
+	minio "github.com/cloudment/obstor/cmd"
 )
 
 func TestParseStorageEndpoint(t *testing.T) {

@@ -24,10 +24,10 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-	"github.com/minio/minio/browser"
-	"github.com/minio/minio/cmd/logger"
-	jsonrpc "github.com/minio/minio/pkg/rpc"
-	"github.com/minio/minio/pkg/rpc/json2"
+	"github.com/cloudment/obstor/browser"
+	"github.com/cloudment/obstor/cmd/logger"
+	jsonrpc "github.com/cloudment/obstor/pkg/rpc"
+	"github.com/cloudment/obstor/pkg/rpc/json2"
 )
 
 // webAPI container for Web API.
@@ -62,7 +62,7 @@ func registerWebRouter(router *mux.Router) error {
 	// Initialize a new json2 codec.
 	codec := json2.NewCodec()
 
-	// MinIO browser router.
+	// ObStor browser router.
 	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
 
 	// Initialize json rpc handlers.

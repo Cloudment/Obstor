@@ -23,14 +23,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/cmd/config"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/hash"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/cmd/config"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/hash"
+	xnet "github.com/cloudment/obstor/pkg/net"
 
-	minio "github.com/minio/minio-go/v7"
+	minio "github.com/cloudment/obstor-go/v7"
 )
 
 var (
@@ -270,7 +270,7 @@ func IsBackendOnline(ctx context.Context, host string) bool {
 	return true
 }
 
-// ErrorRespToObjectError converts MinIO errors to minio object layer errors.
+// ErrorRespToObjectError converts ObStor errors to minio object layer errors.
 func ErrorRespToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -291,7 +291,7 @@ func ErrorRespToObjectError(err error, params ...string) error {
 
 	minioErr, ok := err.(minio.ErrorResponse)
 	if !ok {
-		// We don't interpret non MinIO errors. As minio errors will
+		// We don't interpret non ObStor errors. As minio errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}

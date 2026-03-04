@@ -24,9 +24,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/kms"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/kms"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 const (
@@ -37,7 +37,7 @@ const (
 	// Captures all the previous SetKV operations and allows rollback.
 	minioConfigHistoryPrefix = minioConfigPrefix + "/history"
 
-	// MinIO configuration file.
+	// ObStor configuration file.
 	minioConfigFile = "config.json"
 )
 

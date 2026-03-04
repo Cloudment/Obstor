@@ -24,8 +24,8 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/minio/minio-go/v7"
-	cr "github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor-go/v7"
+	cr "github.com/cloudment/obstor-go/v7/pkg/credentials"
 )
 
 var (
@@ -67,7 +67,7 @@ func main() {
 	}
 
 	fmt.Println(li.Get())
-	// Use generated credentials to authenticate with MinIO server
+	// Use generated credentials to authenticate with ObStor server
 	minioClient, err := minio.New(stsEndpointURL.Host, opts)
 	if err != nil {
 		log.Fatalln(err)

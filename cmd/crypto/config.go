@@ -18,10 +18,10 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/pkg/ellipses"
-	"github.com/minio/minio/pkg/env"
-	xnet "github.com/minio/minio/pkg/net"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/pkg/ellipses"
+	"github.com/cloudment/obstor/pkg/env"
+	xnet "github.com/cloudment/obstor/pkg/net"
 )
 
 const (

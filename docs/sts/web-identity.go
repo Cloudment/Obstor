@@ -35,9 +35,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio/pkg/auth"
+	"github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
+	"github.com/cloudment/obstor/pkg/auth"
 )
 
 // AssumedRoleUser - The identifiers for the temporary security credentials that
@@ -58,7 +58,7 @@ type AssumeRoleWithWebIdentityResponse struct {
 }
 
 // WebIdentityResult - Contains the response to a successful AssumeRoleWithWebIdentity
-// request, including temporary credentials that can be used to make MinIO API requests.
+// request, including temporary credentials that can be used to make ObStor API requests.
 type WebIdentityResult struct {
 	AssumedRoleUser             AssumedRoleUser  `xml:",omitempty"`
 	Audience                    string           `xml:",omitempty"`

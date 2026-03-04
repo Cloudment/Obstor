@@ -24,26 +24,26 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/pkg/bucket/bandwidth"
-	"github.com/minio/minio/pkg/handlers"
-	"github.com/minio/minio/pkg/kms"
+	"github.com/cloudment/obstor-go/v7/pkg/set"
+	"github.com/cloudment/obstor/pkg/bucket/bandwidth"
+	"github.com/cloudment/obstor/pkg/handlers"
+	"github.com/cloudment/obstor/pkg/kms"
 
 	"github.com/dustin/go-humanize"
-	"github.com/minio/minio/cmd/config/cache"
-	"github.com/minio/minio/cmd/config/compress"
-	"github.com/minio/minio/cmd/config/dns"
-	xldap "github.com/minio/minio/cmd/config/identity/ldap"
-	"github.com/minio/minio/cmd/config/identity/openid"
-	"github.com/minio/minio/cmd/config/policy/opa"
-	"github.com/minio/minio/cmd/config/storageclass"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/pkg/auth"
+	"github.com/cloudment/obstor/cmd/config/cache"
+	"github.com/cloudment/obstor/cmd/config/compress"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	xldap "github.com/cloudment/obstor/cmd/config/identity/ldap"
+	"github.com/cloudment/obstor/cmd/config/identity/openid"
+	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/pkg/auth"
 	etcd "go.etcd.io/etcd/client/v3"
 
-	"github.com/minio/minio/pkg/certs"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/pubsub"
+	"github.com/cloudment/obstor/pkg/certs"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
 // minio configuration related constants.
@@ -137,9 +137,9 @@ var (
 	// This flag is set to 'us-east-1' by default
 	globalServerRegion = globalMinioDefaultRegion
 
-	// MinIO local server address (in `host:port` format)
+	// ObStor local server address (in `host:port` format)
 	globalMinioAddr = ""
-	// MinIO default port, can be changed through command line.
+	// ObStor default port, can be changed through command line.
 	globalMinioPort = GlobalMinioDefaultPort
 	// Holds the host that was passed using --address
 	globalMinioHost = ""
@@ -220,7 +220,7 @@ var (
 	globalPublicCerts []*x509.Certificate
 
 	globalDomainNames []string      // Root domains for virtual host style requests
-	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed MinIO deployment
+	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed ObStor deployment
 
 	globalOperationTimeout       = newDynamicTimeout(10*time.Minute, 5*time.Minute) // default timeout for general ops
 	globalDeleteOperationTimeout = newDynamicTimeout(5*time.Minute, 1*time.Minute)  // default time for delete ops

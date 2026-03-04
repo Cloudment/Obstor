@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // Target implements logger.Target and sends the json
@@ -71,7 +71,7 @@ func (h *Target) Validate() error {
 
 	req.Header.Set(xhttp.ContentType, "application/json")
 
-	// Set user-agent to indicate MinIO release
+	// Set user-agent to indicate ObStor release
 	// version to the configured log endpoint
 	req.Header.Set("User-Agent", h.userAgent)
 
@@ -119,7 +119,7 @@ func (h *Target) startHTTPLogger() {
 			}
 			req.Header.Set(xhttp.ContentType, "application/json")
 
-			// Set user-agent to indicate MinIO release
+			// Set user-agent to indicate ObStor release
 			// version to the configured log endpoint
 			req.Header.Set("User-Agent", h.userAgent)
 

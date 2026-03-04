@@ -38,16 +38,16 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/google/uuid"
 	"encoding/json"
-	"github.com/minio/minio/pkg/readahead"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/config/storageclass"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	"github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/console"
-	"github.com/minio/minio/pkg/disk"
-	"github.com/minio/minio/pkg/env"
-	xioutil "github.com/minio/minio/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/readahead"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/config/storageclass"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/console"
+	"github.com/cloudment/obstor/pkg/disk"
+	"github.com/cloudment/obstor/pkg/env"
+	xioutil "github.com/cloudment/obstor/pkg/ioutil"
 )
 
 const (
@@ -1943,7 +1943,7 @@ func (s *xlStorage) RenameData(ctx context.Context, srcVolume, srcPath string, f
 		} else {
 			// This code-path is to preserve the legacy data.
 			xlMetaLegacy := &xlMetaV1Object{}
-		
+
 			if err := json.Unmarshal(dstBuf, xlMetaLegacy); err != nil {
 				logger.LogIf(s.ctx, err)
 				return errFileCorrupt

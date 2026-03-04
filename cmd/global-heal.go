@@ -23,11 +23,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/console"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/console"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 const (

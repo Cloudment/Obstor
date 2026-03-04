@@ -1,6 +1,6 @@
-# Keycloak Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
+# Keycloak Quickstart Guide [![Discord](https://discord.pgg.net/discord?type=svg)](https://discord.pgg.net)
 
-Keycloak is an open source Identity and Access Management solution aimed at modern applications and services, this document covers configuring Keycloak identity provider support with MinIO.
+Keycloak is an open source Identity and Access Management solution aimed at modern applications and services, this document covers configuring Keycloak identity provider support with ObStor.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Configure and install keycloak server by following [Keycloak Installation Guide]
 
 - Go to Users
   - Click on the user
-  - Attribute, add a new attribute `Key` is `policy`, `Value` is name of the `policy` on MinIO (ex: `readwrite`)
+  - Attribute, add a new attribute `Key` is `policy`, `Value` is name of the `policy` on ObStor (ex: `readwrite`)
   - Add and Save
 
 - Go to Clients
@@ -36,7 +36,7 @@ Configure and install keycloak server by following [Keycloak Installation Guide]
 
 - Open http://localhost:8080/auth/realms/minio/.well-known/openid-configuration to verify OpenID discovery document, verify it has `authorization_endpoint` and `jwks_uri`
 
-### Configure MinIO
+### Configure ObStor
 ```
 $ export MINIO_ROOT_USER=minio
 $ export MINIO_ROOT_PASSWORD=minio123
@@ -75,13 +75,13 @@ MINIO_IDENTITY_OPENID_SCOPES        (csv)       Comma separated list of OpenID s
 MINIO_IDENTITY_OPENID_COMMENT       (sentence)  optionally add a comment to this setting
 ```
 
-Set `identity_openid` config with `config_url`, `client_id` and restart MinIO
+Set `identity_openid` config with `config_url`, `client_id` and restart ObStor
 ```
 ~ mc admin config set myminio identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
 ```
 > NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by minio to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
 
-Once successfully set restart the MinIO instance.
+Once successfully set restart the ObStor instance.
 ```
 mc admin service restart myminio
 ```
@@ -112,17 +112,17 @@ This will open the login page of keycloak, upon successful login, STS credential
 
 > NOTE: You can use the `-cscopes` parameter to restrict the requested scopes, for example to `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak.
 
-These credentials can now be used to perform MinIO API operations.
+These credentials can now be used to perform ObStor API operations.
 
-### Using MinIO Browser
+### Using ObStor Browser
 
-- Open MinIO URL on the browser, lets say http://localhost:9000
+- Open ObStor URL on the browser, lets say http://localhost:9000
 - Click on `Log in with OpenID`
-- Provide `Client ID` and press ENTER, if `client_id` is already configured for MinIO this page will automatically redirect to Keycloak user login page.
-- User will be redirected to the Keycloak user login page, upon successful login the user will be redirected to MinIO page and logged in automatically,
+- Provide `Client ID` and press ENTER, if `client_id` is already configured for ObStor this page will automatically redirect to Keycloak user login page.
+- User will be redirected to the Keycloak user login page, upon successful login the user will be redirected to ObStor page and logged in automatically,
   the user should see now the buckets and objects they have access to.
 
 ## Explore Further
 
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
-- [The MinIO documentation website](https://docs.min.io)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [The ObStor documentation website](https://pgg.net/docs/obstor)

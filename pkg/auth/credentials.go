@@ -28,21 +28,21 @@ import (
 	"time"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/minio/cmd/jwt"
+	"github.com/cloudment/obstor/cmd/jwt"
 )
 
 const (
-	// Minimum length for MinIO access key.
+	// Minimum length for ObStor access key.
 	accessKeyMinLen = 3
 
-	// Maximum length for MinIO access key.
+	// Maximum length for ObStor access key.
 	// There is no max length enforcement for access keys
 	accessKeyMaxLen = 20
 
-	// Minimum length for MinIO secret key for both server and gateway mode.
+	// Minimum length for ObStor secret key for both server and gateway mode.
 	secretKeyMinLen = 8
 
-	// Maximum secret key length for MinIO, this
+	// Maximum secret key length for ObStor, this
 	// is used when autogenerating new credentials.
 	// There is no max length enforcement for secret keys
 	secretKeyMaxLen = 40

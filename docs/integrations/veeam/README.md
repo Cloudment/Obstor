@@ -1,13 +1,13 @@
-# Using MinIO with Veeam
+# Using ObStor with Veeam
 
-When using Veeam Backup and Replication, you can use S3 compatible object storage such as MinIO as a capacity tier for backups.  This disaggregates storage for the Veeam infrastructure and allows you to retain control of your data. With the ease of use of setup and administration of MinIO, it allows a Veeam backup admin to easily deploy their own object store for capacity tiering.
+When using Veeam Backup and Replication, you can use S3 compatible object storage such as ObStor as a capacity tier for backups.  This disaggregates storage for the Veeam infrastructure and allows you to retain control of your data. With the ease of use of setup and administration of ObStor, it allows a Veeam backup admin to easily deploy their own object store for capacity tiering.
 
 __Prerequisites__
 - One or both of Veeam Backup and Replication with support for S3 compatible object store (e.g. 9.5.4) and Veeam Backup for Office365 (VBO)
-- MinIO object storage set up per https://docs.min.io/docs/minio-quickstart-guide.html
-- Veeam requires TLS connections to the object storage.  This can be configured per https://docs.minio.io/docs/how-to-secure-access-to-minio-server-with-tls.html
+- ObStor object storage set up per https://pgg.net/docs/obstor/minio-quickstart-guide.html
+- Veeam requires TLS connections to the object storage.  This can be configured per https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls.html
 - The S3 bucket, Access Key and Secret Key have to be created before and outside of Veeam.
-- Configure the minio client for the Veeam MinIO endpoint - https://docs.min.io/docs/minio-client-quickstart-guide.html
+- Configure the minio client for the Veeam ObStor endpoint - https://pgg.net/docs/obstor/minio-client-quickstart-guide.html
 
 ## Setting up an S3 compatible object store for Veeam Backup and Replication
 ### Create a bucket for Veeam backups
@@ -23,10 +23,10 @@ mc mb myminio/veeambackup
 mc mb -l myminio/veeambackup
 ```
 
-> Object locking requires erasure coding enabled on the minio server. For more information see https://docs.minio.io/docs/minio-erasure-code-quickstart-guide.html.
+> Object locking requires erasure coding enabled on the minio server. For more information see https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html.
 
-### Add MinIO as an object store for Veeam
-Follow the steps from the Veeam documentation for adding MinIO as an object store - https://helpcenter.veeam.com/docs/backup/vsphere/adding_s3c_object_storage.html?ver=100
+### Add ObStor as an object store for Veeam
+Follow the steps from the Veeam documentation for adding ObStor as an object store - https://helpcenter.veeam.com/docs/backup/vsphere/adding_s3c_object_storage.html?ver=100
 
 For Veeam Backup with Immutability, choose the amount of days you want to make backups immutable for
 
@@ -70,14 +70,14 @@ mc mb -l myminio/vbo
 
 - Under Backup Infrastructure -> Backup Repositories, right click and "Add Backup Repository"
 
-- Follow the wizard.  Under the "Object Storage Backup Repository" section, choose the MinIO object storage you created above
+- Follow the wizard.  Under the "Object Storage Backup Repository" section, choose the ObStor object storage you created above
 
 ![Adding Object Storage to VBO Backup Repository](https://raw.githubusercontent.com/minio/minio/master/docs/integrations/veeam/screenshots/6_add_sobr_with_object_store.png)
 
 - When you create your backup job, choose the backup repository you created above.
 
 ## Test the setup
-The next time the backup job runs, you can use the  `mc admin trace myminio` command and verify traffic is flowing to the MinIO nodes. For Veeam Backup and Replication you will need to wait for the backup to complete to the performance tier before it migrates data to the capacity tier (i.e., MinIO).
+The next time the backup job runs, you can use the  `mc admin trace myminio` command and verify traffic is flowing to the ObStor nodes. For Veeam Backup and Replication you will need to wait for the backup to complete to the performance tier before it migrates data to the capacity tier (i.e., ObStor).
 
 ```
 20:09:10.216 [200 OK] s3.GetObject veeam-minio01:9000/vbo/Veeam/Backup365/vbotest/Organizations/6571606ecbc4455dbfe23b83f6f45597/Webs/ca2d0986229b4ec88e3a217ef8f04a1d/Items/efaa67764b304e77badb213d131beab6/f4f0cf600f494c3eb702d8eafe0fabcc.aac07493e6cd4c71845d2495a4e1e19b 139.178.68.158    9.789ms      ↑ 90 B ↓ 8.5 KiB

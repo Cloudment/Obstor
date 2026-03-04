@@ -23,22 +23,22 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/logger"
+	color "github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/madmin"
+	xnet "github.com/cloudment/obstor/pkg/net"
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/logger"
-	color "github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/madmin"
-	xnet "github.com/minio/minio/pkg/net"
 )
 
 // Documentation links, these are part of message printing code.
 const (
-	mcQuickStartGuide     = "https://docs.min.io/docs/minio-client-quickstart-guide"
-	goQuickStartGuide     = "https://docs.min.io/docs/golang-client-quickstart-guide"
-	jsQuickStartGuide     = "https://docs.min.io/docs/javascript-client-quickstart-guide"
-	javaQuickStartGuide   = "https://docs.min.io/docs/java-client-quickstart-guide"
-	pyQuickStartGuide     = "https://docs.min.io/docs/python-client-quickstart-guide"
-	dotnetQuickStartGuide = "https://docs.min.io/docs/dotnet-client-quickstart-guide"
+	mcQuickStartGuide     = "https://pgg.net/docs/obstor/minio-client-quickstart-guide"
+	goQuickStartGuide     = "https://pgg.net/docs/obstor/golang-client-quickstart-guide"
+	jsQuickStartGuide     = "https://pgg.net/docs/obstor/javascript-client-quickstart-guide"
+	javaQuickStartGuide   = "https://pgg.net/docs/obstor/java-client-quickstart-guide"
+	pyQuickStartGuide     = "https://pgg.net/docs/obstor/python-client-quickstart-guide"
+	dotnetQuickStartGuide = "https://pgg.net/docs/obstor/dotnet-client-quickstart-guide"
 )
 
 // generates format string depending on the string length and padding.

@@ -1,7 +1,7 @@
 {
   "name": "browser",
   "version": "0.0.1",
-  "description": "MinIO Browser",
+  "description": "ObStor Browser",
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest",

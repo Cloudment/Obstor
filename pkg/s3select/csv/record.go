@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"io"
 
-	csv "github.com/minio/minio/pkg/csvparser"
-	"github.com/minio/minio/pkg/s3select/jstream"
-	"github.com/minio/minio/pkg/s3select/sql"
+	csv "github.com/cloudment/obstor/pkg/csvparser"
+	"github.com/cloudment/obstor/pkg/s3select/jstream"
+	"github.com/cloudment/obstor/pkg/s3select/sql"
 )
 
 // Record - is a CSV record.

@@ -27,20 +27,20 @@ import (
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"google.golang.org/api/googleapi"
 
-	minio "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/crypto"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
-	"github.com/minio/minio/pkg/bucket/replication"
+	minio "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/tags"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/crypto"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/pkg/bucket/replication"
 
-	objectlock "github.com/minio/minio/pkg/bucket/object/lock"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/bucket/versioning"
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/hash"
+	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/bucket/versioning"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/hash"
 )
 
 // APIError structure
@@ -225,7 +225,7 @@ const (
 
 	// Add new extended error codes here.
 
-	// MinIO extended errors.
+	// ObStor extended errors.
 	ErrReadQuorum
 	ErrWriteQuorum
 	ErrParentIsObject
@@ -240,11 +240,11 @@ const (
 	ErrClientDisconnected
 	ErrOperationMaxedOut
 	ErrInvalidRequest
-	// MinIO storage class error codes
+	// ObStor storage class error codes
 	ErrInvalidStorageClass
 	ErrBackendDown
 	// Add new extended error codes here.
-	// Please open a https://github.com/minio/minio/issues before adding
+	// Please open a https://github.com/cloudment/obstor/issues before adding
 	// new error codes here.
 
 	ErrMalformedJSON
@@ -990,7 +990,7 @@ var errorCodes = errorCodeMap{
 	},
 	ErrUnsupportedNotification: {
 		Code:           "UnsupportedNotification",
-		Description:    "MinIO server does not support Topic or Cloud Function based notifications.",
+		Description:    "ObStor server does not support Topic or Cloud Function based notifications.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrInvalidCopyPartRange: {
@@ -1096,7 +1096,7 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 
-	/// MinIO extensions.
+	/// ObStor extensions.
 	ErrStorageFull: {
 		Code:           "XMinioStorageFull",
 		Description:    "Storage backend has reached its minimum free disk threshold. Please delete a few objects to proceed.",
@@ -2121,7 +2121,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 			}
 		case crypto.Error:
 			apiErr = APIError{
-				Code:           "XMinIOEncryptionError",
+				Code:           "XObStorEncryptionError",
 				Description:    e.Error(),
 				HTTPStatusCode: http.StatusBadRequest,
 			}

@@ -24,11 +24,11 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/minio/minio/cmd/config"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/kms"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/cmd/config"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/kms"
+	"github.com/cloudment/obstor/pkg/madmin"
 	etcd "go.etcd.io/etcd/client/v3"
 )
 
@@ -92,9 +92,9 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 			if err != nil {
 				return err
 			}
-			logger.Info("Attempting to re-encrypt config, IAM users and policies on MinIO with %q (%s)", stat.DefaultKey, stat.Name)
+			logger.Info("Attempting to re-encrypt config, IAM users and policies on ObStor with %q (%s)", stat.DefaultKey, stat.Name)
 		} else {
-			logger.Info("Attempting to migrate encrypted config, IAM users and policies on MinIO to a plaintext format. To encrypt all MinIO config data a KMS is needed")
+			logger.Info("Attempting to migrate encrypted config, IAM users and policies on ObStor to a plaintext format. To encrypt all ObStor config data a KMS is needed")
 		}
 	}
 
@@ -156,9 +156,9 @@ func migrateConfigPrefixToEncrypted(objAPI ObjectLayer, encrypted bool) error {
 			if err != nil {
 				return err
 			}
-			logger.Info("Attempting to re-encrypt config, IAM users and policies on MinIO with %q (%s)", stat.DefaultKey, stat.Name)
+			logger.Info("Attempting to re-encrypt config, IAM users and policies on ObStor with %q (%s)", stat.DefaultKey, stat.Name)
 		} else {
-			logger.Info("Attempting to migrate encrypted config, IAM users and policies on MinIO to a plaintext format. To encrypt all MinIO config data a KMS is needed")
+			logger.Info("Attempting to migrate encrypted config, IAM users and policies on ObStor to a plaintext format. To encrypt all ObStor config data a KMS is needed")
 		}
 	}
 

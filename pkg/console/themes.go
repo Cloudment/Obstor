@@ -16,7 +16,7 @@
 
 package console
 
-import "github.com/minio/minio/pkg/color"
+import "github.com/cloudment/obstor/pkg/color"
 
 var (
 	// Theme contains default color mapping.

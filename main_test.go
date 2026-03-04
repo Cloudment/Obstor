@@ -26,8 +26,8 @@ import (
 	"syscall"
 	"testing"
 
-	minio "github.com/minio/minio/cmd"
-	_ "github.com/minio/minio/cmd/gateway"
+	minio "github.com/cloudment/obstor/cmd"
+	_ "github.com/cloudment/obstor/cmd/gateway"
 )
 
 // TestRunMain takes arguments from APP_ARGS env variable and calls minio.Main(args)

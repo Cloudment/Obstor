@@ -27,7 +27,7 @@ import (
 	"sync"
 
 	"github.com/klauspost/compress/s2"
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/tinylib/msgp/msgp"
 )
 

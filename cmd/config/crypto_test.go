@@ -21,7 +21,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/minio/minio/pkg/kms"
+	"github.com/cloudment/obstor/pkg/kms"
 )
 
 var encryptDecryptTests = []struct {

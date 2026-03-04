@@ -17,7 +17,7 @@
 package iampolicy
 
 import (
-	"github.com/minio/minio/pkg/bucket/policy/condition"
+	"github.com/cloudment/obstor/pkg/bucket/policy/condition"
 )
 
 // AdminAction - admin policy action.
@@ -56,19 +56,19 @@ const (
 	// BandwidthMonitorAction - allow monitoring bandwidth usage
 	BandwidthMonitorAction = "admin:BandwidthMonitor"
 
-	// ServerUpdateAdminAction - allow MinIO binary update
+	// ServerUpdateAdminAction - allow ObStor binary update
 	ServerUpdateAdminAction = "admin:ServerUpdate"
-	// ServiceRestartAdminAction - allow restart of MinIO service.
+	// ServiceRestartAdminAction - allow restart of ObStor service.
 	ServiceRestartAdminAction = "admin:ServiceRestart"
-	// ServiceStopAdminAction - allow stopping MinIO service.
+	// ServiceStopAdminAction - allow stopping ObStor service.
 	ServiceStopAdminAction = "admin:ServiceStop"
 
-	// ConfigUpdateAdminAction - allow MinIO config management
+	// ConfigUpdateAdminAction - allow ObStor config management
 	ConfigUpdateAdminAction = "admin:ConfigUpdate"
 
-	// CreateUserAdminAction - allow creating MinIO user
+	// CreateUserAdminAction - allow creating ObStor user
 	CreateUserAdminAction = "admin:CreateUser"
-	// DeleteUserAdminAction - allow deleting MinIO user
+	// DeleteUserAdminAction - allow deleting ObStor user
 	DeleteUserAdminAction = "admin:DeleteUser"
 	// ListUsersAdminAction - allow list users permission
 	ListUsersAdminAction = "admin:ListUsers"

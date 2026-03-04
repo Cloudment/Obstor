@@ -22,9 +22,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/hash"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/hash"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 const (

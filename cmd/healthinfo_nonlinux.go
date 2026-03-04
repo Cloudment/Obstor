@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 func getLocalDiskHwInfo(ctx context.Context, r *http.Request) madmin.ServerDiskHwInfo {

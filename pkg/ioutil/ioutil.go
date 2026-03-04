@@ -25,7 +25,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/minio/minio/pkg/disk"
+	"github.com/cloudment/obstor/pkg/disk"
 )
 
 // WriteOnCloser implements io.WriteCloser and always

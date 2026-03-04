@@ -29,9 +29,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
-	xioutil "github.com/minio/minio/pkg/ioutil"
-	"github.com/minio/minio/pkg/trie"
+	"github.com/cloudment/obstor/cmd/logger"
+	xioutil "github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/trie"
 )
 
 // Returns EXPORT/.minio.sys/multipart/SHA256/UPLOADID

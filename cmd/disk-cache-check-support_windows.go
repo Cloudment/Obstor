@@ -23,7 +23,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/minio/minio/pkg/atime"
+	"github.com/cloudment/obstor/pkg/atime"
 	"golang.org/x/sys/windows/registry"
 )
 

@@ -19,7 +19,7 @@ package event
 import (
 	"strings"
 
-	"github.com/minio/minio/pkg/wildcard"
+	"github.com/cloudment/obstor/pkg/wildcard"
 )
 
 // NewPattern - create new pattern for prefix/suffix.

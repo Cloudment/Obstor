@@ -27,10 +27,10 @@ import (
 	pathutil "path"
 	"time"
 
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/lock"
-	"github.com/minio/minio/pkg/mimedb"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/lock"
+	"github.com/cloudment/obstor/pkg/mimedb"
 )
 
 // FS format, and object metadata.
@@ -48,7 +48,7 @@ const (
 	fsMetaVersion101 = "1.0.1"
 
 	// FS backend meta 1.0.2
-	// Removed the fields "Format" and "MinIO" from fsMetaV1 as they were unused. Added "Checksum" field - to be used in future for bit-rot protection.
+	// Removed the fields "Format" and "ObStor" from fsMetaV1 as they were unused. Added "Checksum" field - to be used in future for bit-rot protection.
 	fsMetaVersion = "1.0.2"
 
 	// Add more constants here.

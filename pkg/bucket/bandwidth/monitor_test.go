@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minio/minio/pkg/bandwidth"
+	"github.com/cloudment/obstor/pkg/bandwidth"
 )
 
 const (

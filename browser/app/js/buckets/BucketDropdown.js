@@ -55,7 +55,7 @@ export class BucketDropdown extends React.Component {
         </Dropdown.Toggle>
         <Dropdown.Menu className="dropdown-menu-right">
           <li>
-            <a 
+            <a
               onClick={e => {
                 e.stopPropagation()
                 this.toggleDropdown()
@@ -66,7 +66,7 @@ export class BucketDropdown extends React.Component {
             </a>
           </li>
           <li>
-            <a 
+            <a
               onClick={e => {
                 e.stopPropagation()
                 this.toggleDropdown()

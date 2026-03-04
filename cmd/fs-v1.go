@@ -33,18 +33,19 @@ import (
 	"time"
 
 	"encoding/json"
+
+	"github.com/cloudment/obstor/cmd/config"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/cloudment/obstor/pkg/color"
+	xioutil "github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/lock"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/mimedb"
+	"github.com/cloudment/obstor/pkg/mountinfo"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/cmd/config"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/bucket/policy"
-	"github.com/minio/minio/pkg/color"
-	xioutil "github.com/minio/minio/pkg/ioutil"
-	"github.com/minio/minio/pkg/lock"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/mimedb"
-	"github.com/minio/minio/pkg/mountinfo"
 )
 
 // Default etag is used for pre-existing objects.
@@ -340,7 +341,7 @@ func (fs *FSObjects) scanBucket(ctx context.Context, bucket string, cache dataUs
 		fsMeta := newFSMetaV1()
 		metaOk := false
 		if len(fsMetaBytes) > 0 {
-		
+
 			if err = json.Unmarshal(fsMetaBytes, &fsMeta); err == nil {
 				metaOk = true
 			}
@@ -897,7 +898,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 		fsMetaBuf, rerr := ioutil.ReadAll(rc)
 		rc.Close()
 		if rerr == nil {
-		
+
 			if rerr = json.Unmarshal(fsMetaBuf, &fsMeta); rerr != nil {
 				// For any error to read fsMeta, set default ETag and proceed.
 				fsMeta = fs.defaultFsJSON(object)

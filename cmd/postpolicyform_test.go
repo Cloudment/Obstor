@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	minio "github.com/minio/minio-go/v7"
+	minio "github.com/cloudment/obstor-go/v7"
 )
 
 func TestParsePostPolicyForm(t *testing.T) {

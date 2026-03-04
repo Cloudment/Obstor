@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/minio/minio/pkg/s3select/internal/parquet-go/gen-go/parquet"
-	"github.com/minio/minio/pkg/s3select/internal/parquet-go/schema"
+	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
+	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/schema"
 )
 
 func TestPopulatePrimitiveType(t *testing.T) {

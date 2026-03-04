@@ -30,19 +30,19 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/cloudment/obstor/cmd/config"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/cmd/rest"
+	"github.com/cloudment/obstor/pkg/auth"
+	"github.com/cloudment/obstor/pkg/bucket/bandwidth"
+	"github.com/cloudment/obstor/pkg/certs"
+	"github.com/cloudment/obstor/pkg/color"
+	"github.com/cloudment/obstor/pkg/env"
+	"github.com/cloudment/obstor/pkg/fips"
+	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/sync/errgroup"
 	"github.com/urfave/cli"
-	"github.com/minio/minio/cmd/config"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/cmd/rest"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/bucket/bandwidth"
-	"github.com/minio/minio/pkg/certs"
-	"github.com/minio/minio/pkg/color"
-	"github.com/minio/minio/pkg/env"
-	"github.com/minio/minio/pkg/fips"
-	"github.com/minio/minio/pkg/madmin"
-	"github.com/minio/minio/pkg/sync/errgroup"
 )
 
 // ServerFlags - server command specific flags
@@ -297,7 +297,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err = txnLk.GetLock(ctx, lockTimeout); err != nil {
-			logger.Info("Waiting for all MinIO sub-systems to be initialized.. trying to acquire lock")
+			logger.Info("Waiting for all ObStor sub-systems to be initialized.. trying to acquire lock")
 
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
@@ -305,7 +305,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 
 		// These messages only meant primarily for distributed setup, so only log during distributed setup.
 		if globalIsDistErasure {
-			logger.Info("Waiting for all MinIO sub-systems to be initialized.. lock acquired")
+			logger.Info("Waiting for all ObStor sub-systems to be initialized.. lock acquired")
 		}
 
 		// Migrate all backend configs to encrypted backend configs, optionally
@@ -319,7 +319,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 				// All successful return.
 				if globalIsDistErasure {
 					// These messages only meant primarily for distributed setup, so only log during distributed setup.
-					logger.Info("All MinIO sub-systems initialized successfully")
+					logger.Info("All ObStor sub-systems initialized successfully")
 				}
 				return nil
 			}
@@ -328,7 +328,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		txnLk.Unlock() // Unlock the transaction lock and allow other nodes to acquire the lock if possible.
 
 		if configRetriableErrors(err) {
-			logger.Info("Waiting for all MinIO sub-systems to be initialized.. possible cause (%v)", err)
+			logger.Info("Waiting for all ObStor sub-systems to be initialized.. possible cause (%v)", err)
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
 		}
@@ -456,7 +456,7 @@ func serverMain(ctx *cli.Context) {
 	}
 
 	if !globalCLIContext.Quiet && !globalInplaceUpdateDisabled {
-		// Check for new updates from dl.min.io.
+		// Check for new updates from dl.pgg.net.
 		checkUpdate(getMinioMode())
 	}
 

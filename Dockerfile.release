@@ -4,13 +4,13 @@ ARG TARGETARCH
 
 ARG RELEASE
 
-LABEL name="MinIO" \
-      vendor="MinIO Inc <dev@min.io>" \
-      maintainer="MinIO Inc <dev@min.io>" \
+LABEL name="ObStor" \
+      vendor="PGG Inc <oss@pgg.net>" \
+      maintainer="PGG Inc <oss@pgg.net>" \
       version="${RELEASE}" \
       release="${RELEASE}" \
-      summary="MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
-      description="MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
+      summary="ObStor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
+      description="ObStor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. ObStor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
 ENV MINIO_ACCESS_KEY_FILE=access_key \
     MINIO_SECRET_KEY_FILE=secret_key \
@@ -29,9 +29,9 @@ RUN \
      microdnf install curl ca-certificates shadow-utils util-linux --nodocs && \
      rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
      microdnf install minisign --nodocs && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE} -o /usr/bin/minio && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.sha256sum -o /usr/bin/minio.sha256sum && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.minisig -o /usr/bin/minio.minisig && \
+     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE} -o /usr/bin/minio && \
+     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.sha256sum -o /usr/bin/minio.sha256sum && \
+     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.minisig -o /usr/bin/minio.minisig && \
      microdnf clean all && \
      chmod +x /usr/bin/minio && \
      chmod +x /usr/bin/docker-entrypoint.sh && \

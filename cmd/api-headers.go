@@ -27,9 +27,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/pkg/bucket/lifecycle"
+	"github.com/cloudment/obstor/cmd/crypto"
+	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 )
 
 // Returns a hexadecimal representation of time at the
@@ -48,7 +48,7 @@ func setEventStreamHeaders(w http.ResponseWriter) {
 // Write http common headers
 func setCommonHeaders(w http.ResponseWriter) {
 	// Set the "Server" http header.
-	w.Header().Set(xhttp.ServerInfo, "MinIO")
+	w.Header().Set(xhttp.ServerInfo, "ObStor")
 
 	// Set `x-amz-bucket-region` only if region is set on the server
 	// by default minio uses an empty region.

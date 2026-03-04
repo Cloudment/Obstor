@@ -28,9 +28,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/dsync"
-	"github.com/minio/minio/pkg/lsync"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/dsync"
+	"github.com/cloudment/obstor/pkg/lsync"
 )
 
 // local lock servers
@@ -272,7 +272,7 @@ func getSource(n int) string {
 	if ok {
 		filename = pathutil.Base(filename)
 		funcName = strings.TrimPrefix(runtime.FuncForPC(pc).Name(),
-			"github.com/minio/minio/cmd.")
+			"github.com/cloudment/obstor/cmd.")
 	} else {
 		filename = "<unknown>"
 		lineNum = 0

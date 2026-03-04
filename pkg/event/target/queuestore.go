@@ -25,8 +25,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/minio/minio/pkg/event"
-	"github.com/minio/minio/pkg/sys"
+	"github.com/cloudment/obstor/pkg/event"
+	"github.com/cloudment/obstor/pkg/sys"
 )
 
 const (

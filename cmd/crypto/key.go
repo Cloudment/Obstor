@@ -25,8 +25,8 @@ import (
 	"io"
 	"path"
 
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/fips"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/fips"
 	"github.com/minio/sio"
 )
 

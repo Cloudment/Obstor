@@ -30,8 +30,8 @@ import (
 	"net/url"
 	"strings"
 
-	minio "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
+	minio "github.com/cloudment/obstor-go/v7"
+	"github.com/cloudment/obstor-go/v7/pkg/credentials"
 )
 
 // JWTToken - parses the output from IDP access token.
@@ -100,7 +100,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Uncomment this to use MinIO API operations by initializing minio
+	// Uncomment this to use ObStor API operations by initializing minio
 	// client with obtained credentials.
 
 	opts := &minio.Options{

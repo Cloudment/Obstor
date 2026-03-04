@@ -26,11 +26,11 @@ import (
 	"sort"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/cmd/config/dns"
-	"github.com/minio/minio/cmd/logger"
-	"github.com/minio/minio/pkg/auth"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/cmd/config/dns"
+	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/auth"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 func validateAdminUsersReq(ctx context.Context, w http.ResponseWriter, r *http.Request, action iampolicy.AdminAction) (ObjectLayer, auth.Credentials) {
@@ -83,7 +83,7 @@ func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Notify all other MinIO peers to delete user.
+	// Notify all other ObStor peers to delete user.
 	for _, nerr := range globalNotificationSys.DeleteUser(accessKey) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -219,7 +219,7 @@ func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Notify all other MinIO peers to load group.
+	// Notify all other ObStor peers to load group.
 	for _, nerr := range globalNotificationSys.LoadGroup(updReq.Group) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -311,7 +311,7 @@ func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Notify all other MinIO peers to reload user.
+	// Notify all other ObStor peers to reload user.
 	for _, nerr := range globalNotificationSys.LoadGroup(group) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -346,7 +346,7 @@ func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Notify all other MinIO peers to reload user.
+	// Notify all other ObStor peers to reload user.
 	for _, nerr := range globalNotificationSys.LoadUser(accessKey, false) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -998,7 +998,7 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 	accountName := cred.AccessKey
 	var policies []string
 	switch globalIAMSys.usersSysType {
-	case MinIOUsersSysType:
+	case ObStorUsersSysType:
 		policies, err = globalIAMSys.PolicyDBGet(accountName, false)
 	case LDAPUsersSysType:
 		parentUser := accountName
@@ -1187,7 +1187,7 @@ func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Notify all other MinIO peers to delete policy
+	// Notify all other ObStor peers to delete policy
 	for _, nerr := range globalNotificationSys.DeletePolicy(policyName) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -1239,7 +1239,7 @@ func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Notify all other MinIO peers to reload policy
+	// Notify all other ObStor peers to reload policy
 	for _, nerr := range globalNotificationSys.LoadPolicy(policyName) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -1281,7 +1281,7 @@ func (a adminAPIHandlers) SetPolicyForUserOrGroup(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Notify all other MinIO peers to reload policy
+	// Notify all other ObStor peers to reload policy
 	for _, nerr := range globalNotificationSys.LoadPolicyMapping(entityName, isGroup) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())

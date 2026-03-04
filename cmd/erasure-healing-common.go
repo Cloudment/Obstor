@@ -21,7 +21,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/minio/minio/pkg/madmin"
+	"github.com/cloudment/obstor/pkg/madmin"
 )
 
 // commonTime returns a maximally occurring time from a list of time.
@@ -222,7 +222,7 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 	erasureDistributionReliable := true
 	if inconsistent > len(partsMetadata)/2 {
 		// If there are too many inconsistent files, then we can't trust erasure.Distribution (most likely
-		// because of bugs found in CopyObject/PutObjectTags) https://github.com/minio/minio/pull/10772
+		// because of bugs found in CopyObject/PutObjectTags) https://github.com/cloudment/obstor/pull/10772
 		erasureDistributionReliable = false
 	}
 

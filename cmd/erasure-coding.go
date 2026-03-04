@@ -27,7 +27,7 @@ import (
 
 	"github.com/klauspost/reedsolomon"
 	"github.com/minio/highwayhash"
-	"github.com/minio/minio/cmd/logger"
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // Erasure - erasure encoding details.

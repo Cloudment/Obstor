@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/minio/minio/pkg/rpc"
+	"github.com/cloudment/obstor/pkg/rpc"
 )
 
 var null = json.RawMessage([]byte("null"))
@@ -162,7 +162,7 @@ func (c *CodecRequest) ReadRequest(args interface{}) error {
 	if c.err == nil && c.request.Params != nil {
 		// Note: if c.request.Params is nil it's not an error, it's an optional member.
 		// JSON params structured object. Unmarshal to the args object.
-	
+
 		if err := json.Unmarshal(*c.request.Params, args); err != nil {
 			// Clearly JSON params is not a structured object,
 			// fallback and attempt an unmarshal with JSON params as
@@ -220,7 +220,7 @@ func (c *CodecRequest) writeServerResponse(w http.ResponseWriter, res *serverRes
 	// case we can't know whether it was intended to be a notification
 	if c.request.ID != nil || isParseErrorResponse(res) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	
+
 		encoder := json.NewEncoder(c.encoder.Encode(w))
 		err := encoder.Encode(res)
 

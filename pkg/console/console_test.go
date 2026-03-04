@@ -19,7 +19,7 @@ package console
 import (
 	"testing"
 
-	"github.com/minio/minio/pkg/color"
+	"github.com/cloudment/obstor/pkg/color"
 )
 
 func TestSetColor(t *testing.T) {
