@@ -92,13 +92,13 @@ http://obstor.cluster:9000?Action=AssumeRoleWithWebIdentity&DurationSeconds=3600
 
 ## Using WebIdentity API
 ```
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor123
 export OBSTOR_IDENTITY_OPENID_CONFIG_URL=https://accounts.google.com/.well-known/openid-configuration
 export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 # Optional: Allow to specify the requested OpenID scopes (OpenID only requires the `openid` scope)
 #export OBSTOR_IDENTITY_OPENID_SCOPES="openid,profile,email"
-minio server /mnt/export
+obstor server /mnt/export
 ```
 
 or using `mc`

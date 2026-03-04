@@ -38,9 +38,9 @@ Configure and install keycloak server by following [Keycloak Installation Guide]
 
 ### Configure ObStor
 ```
-$ export OBSTOR_ROOT_USER=minio
-$ export OBSTOR_ROOT_PASSWORD=minio123
-$ minio server /mnt/export
+$ export OBSTOR_ROOT_USER=obstor
+$ export OBSTOR_ROOT_PASSWORD=obstor123
+$ obstor server /mnt/export
 ```
 
 Here are all the available options to configure OpenID connect

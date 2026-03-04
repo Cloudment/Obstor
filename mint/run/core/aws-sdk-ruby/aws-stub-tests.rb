@@ -22,12 +22,12 @@ require 'multipart_body'
 
 # For aws-sdk ruby tests to run, setting the following
 # environment variables is mandatory.
-# SERVER_ENDPOINT: <ip:port> address of the minio server tests will run against
-# ACCESS_KEY: access key for the minio server
-# SECRET_KEY: secreet key for the minio server
-# SERVER_REGION: region minio server is setup to run
+# SERVER_ENDPOINT: <ip:port> address of the obstor server tests will run against
+# ACCESS_KEY: access key for the obstor server
+# SECRET_KEY: secreet key for the obstor server
+# SERVER_REGION: region obstor server is setup to run
 # ENABLE_HTTPS: (1|0) turn on/off to specify https or
-#                 http services minio server is running on
+#                 http services obstor server is running on
 # MINT_DATA_DIR: Data directory where test data files are stored
 
 class AwsSdkRubyTest

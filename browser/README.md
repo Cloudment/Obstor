@@ -128,7 +128,7 @@ npm install
 npm run release
 cd /minio
 make
-./minio server /data
+./obstor server /data
 ```
 Note `Endpoint` IP (the one which is _not_ `127.0.0.1`), `AccessKey` and `SecretKey` (both default to `obstoradmin`) in order to enter them in the browser later.
 

@@ -234,7 +234,7 @@ var HealthDataTypesList = []HealthDataType{
 	HealthDataTypeSysProcess,
 }
 
-// ServerHealthInfo - Connect to a minio server and call Health Info Management API
+// ServerHealthInfo - Connect to a obstor server and call Health Info Management API
 // to fetch server's information represented by HealthInfo structure
 func (adm *AdminClient) ServerHealthInfo(ctx context.Context, healthDataTypes []HealthDataType, deadline time.Duration) <-chan HealthInfo {
 	respChan := make(chan HealthInfo)

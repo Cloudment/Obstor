@@ -231,13 +231,13 @@ http://obstor.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouse
 
 With multiple OU hierarchies for users, and multiple group search base DN's.
 ```
-$ export OBSTOR_ROOT_USER=minio
-$ export OBSTOR_ROOT_PASSWORD=minio123
+$ export OBSTOR_ROOT_USER=obstor
+$ export OBSTOR_ROOT_PASSWORD=obstor123
 $ export OBSTOR_IDENTITY_LDAP_SERVER_ADDR='my.ldap-active-dir-server.com:636'
 $ export OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT='cn=%s,ou=Users,ou=BUS1,ou=LOB,dc=somedomain,dc=com;cn=%s,ou=Users,ou=BUS2,ou=LOB,dc=somedomain,dc=com'
-$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=minioad,dc=local;dc=somedomain,dc=com'
+$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=obstorad,dc=local;dc=somedomain,dc=com'
 $ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=group)(member=%s))'
-$ minio server ~/test
+$ obstor server ~/test
 ```
 You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/master/docs/sts/ldap.go):
 ```

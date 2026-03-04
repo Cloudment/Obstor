@@ -115,7 +115,7 @@ The ObStor server requests a new data key from the KMS for each uploaded object 
 
 #### Key rotation - Basic Operation
 
-The ObStor server supports key rotation for SSE-S3 encrypted objects. The minio server decrypts the OEK using the current encrypted data key and the master key ID of the object metadata. If this succeeds, the server requests a new data key from the KMS using the master key ID of the **current ObStor KMS configuration** and re-wraps the *OEK* with a new *KEK* derived from the new data key / EK:
+The ObStor server supports key rotation for SSE-S3 encrypted objects. The obstor server decrypts the OEK using the current encrypted data key and the master key ID of the object metadata. If this succeeds, the server requests a new data key from the KMS using the master key ID of the **current ObStor KMS configuration** and re-wraps the *OEK* with a new *KEK* derived from the new data key / EK:
 
 ```
               object metadata                                         KMS

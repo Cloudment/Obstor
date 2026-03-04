@@ -195,7 +195,7 @@ Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/s
 		"Please check the FS endpoint",
 		`FS mode requires only one writable disk path
 Example 1:
-   $ minio server /data/minio/`,
+   $ obstor server /data/minio/`,
 	)
 
 	ErrUnsupportedBackend = newErrFn(

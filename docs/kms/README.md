@@ -27,9 +27,9 @@ export OBSTOR_KMS_KES_KEY_NAME=my-minio-key
 #### 3. Start the ObStor Server
 
 ```sh
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio123
-minio server ~/export
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor123
+obstor server ~/export
 ```
 
 > The KES instance at `https://play.pgg.net:7373` is meant to experiment and provides a way to get started quickly.

@@ -91,9 +91,9 @@ http://obstor:9000/?Action=AssumeRole&DurationSeconds=3600&Version=2011-06-15&Po
 
 ## Using AssumeRole API
 ```
-$ export OBSTOR_ROOT_USER=minio
-$ export OBSTOR_ROOT_PASSWORD=minio123
-$ minio server ~/test
+$ export OBSTOR_ROOT_USER=obstor
+$ export OBSTOR_ROOT_PASSWORD=obstor123
+$ obstor server ~/test
 ```
 
 Create new users following the multi-user guide [here](https://pgg.net/docs/obstor/minio-multi-user-quickstart-guide.html)

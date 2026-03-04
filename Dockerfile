@@ -23,9 +23,9 @@ ENV OBSTOR_ACCESS_KEY_FILE=access_key \
 EXPOSE 9000
 
 COPY --from=builder /go/bin/obstor /usr/bin/minio
-COPY --from=builder /go/minio/CREDITS /licenses/CREDITS
-COPY --from=builder /go/minio/LICENSE /licenses/LICENSE
-COPY --from=builder /go/minio/dockerscripts/docker-entrypoint.sh /usr/bin/
+COPY --from=builder /go/obstor/CREDITS /licenses/CREDITS
+COPY --from=builder /go/obstor/LICENSE /licenses/LICENSE
+COPY --from=builder /go/obstor/dockerscripts/docker-entrypoint.sh /usr/bin/
 
 RUN  \
      microdnf update --nodocs && \

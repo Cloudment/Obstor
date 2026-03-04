@@ -71,7 +71,7 @@ ObStor server expects environment variable for OpenID configuration url as `OBST
 ```
 export OBSTOR_IDENTITY_OPENID_CONFIG_URL=https://localhost:9443/oauth2/oidcdiscovery/.well-known/openid-configuration
 export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-minio server /mnt/data
+obstor server /mnt/data
 ```
 
 Assuming that ObStor server is configured to support STS API by following the doc [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide), execute the following command to temporary credentials from ObStor server.

@@ -77,7 +77,7 @@ func updateServer(u *url.URL, sha256Sum []byte, lrTime time.Time, releaseInfo st
 
 // ServerUpdateHandler - POST /minio/admin/v3/update?updateURL={updateURL}
 // ----------
-// updates all minio servers and restarts them gracefully.
+// updates all obstor servers and restarts them gracefully.
 func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ServerUpdate")
 
@@ -185,7 +185,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 
 // ServiceHandler - POST /minio/admin/v3/service?action={action}
 // ----------
-// restarts/stops minio server gracefully. In a distributed setup,
+// restarts/stops obstor server gracefully. In a distributed setup,
 func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "Service")
 

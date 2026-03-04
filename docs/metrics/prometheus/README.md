@@ -51,7 +51,7 @@ ObStor supports two authentication modes for Prometheus either `jwt` or `public`
 
 ```
 export OBSTOR_PROMETHEUS_AUTH_TYPE="public"
-minio server ~/test
+obstor server ~/test
 ```
 
 ### 3. Configuring Prometheus

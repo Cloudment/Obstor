@@ -881,7 +881,7 @@ KEY:
 notify_postgres[:name]  publish bucket notifications to Postgres databases
 
 ARGS:
-connection_string*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable"
+connection_string*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=obstor_events user=postgres password=password sslmode=disable"
 table*               (string)             DB table name to store/update events, table is auto-created
 format*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
 queue_dir            (path)               staging dir for undelivered messages e.g. '/home/events'
@@ -897,7 +897,7 @@ notify_postgres[:name]  publish bucket notifications to Postgres databases
 
 ARGS:
 OBSTOR_NOTIFY_POSTGRES_ENABLE*              (on|off)             enable notify_postgres target, default is 'off'
-OBSTOR_NOTIFY_POSTGRES_CONNECTION_STRING*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable"
+OBSTOR_NOTIFY_POSTGRES_CONNECTION_STRING*   (string)             Postgres server connection-string e.g. "host=localhost port=5432 dbname=obstor_events user=postgres password=password sslmode=disable"
 OBSTOR_NOTIFY_POSTGRES_TABLE*               (string)             DB table name to store/update events, table is auto-created
 OBSTOR_NOTIFY_POSTGRES_FORMAT*              (namespace*|access)  'namespace' reflects current bucket/object list and 'access' reflects a journal of object operations, defaults to 'namespace'
 OBSTOR_NOTIFY_POSTGRES_QUEUE_DIR            (path)               staging dir for undelivered messages e.g. '/home/events'
@@ -922,7 +922,7 @@ notify_postgres:1 queue_dir="" connection_string="" queue_limit="0"  table="" fo
 Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:postgresql` at start-up if there were no errors.
 
 ```sh
-$ mc admin config set myminio notify_postgres:1 connection_string="host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable" table="bucketevents" format="namespace"
+$ mc admin config set myminio notify_postgres:1 connection_string="host=localhost port=5432 dbname=obstor_events user=postgres password=password sslmode=disable" table="bucketevents" format="namespace"
 ```
 
 Note that, you can add as many PostgreSQL server endpoint configurations as needed by providing an identifier (like "1" in the example above) for the PostgreSQL instance and an object of per-server configuration parameters.

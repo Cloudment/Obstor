@@ -309,7 +309,7 @@ var (
 	HelpPostgres = config.HelpKVS{
 		config.HelpKV{
 			Key:         target.PostgresConnectionString,
-			Description: `Postgres server connection-string e.g. "host=localhost port=5432 dbname=minio_events user=postgres password=password sslmode=disable"`,
+			Description: `Postgres server connection-string e.g. "host=localhost port=5432 dbname=obstor_events user=postgres password=password sslmode=disable"`,
 			Type:        "string",
 		},
 		config.HelpKV{

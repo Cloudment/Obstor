@@ -23,7 +23,7 @@ mc mb myminio/veeambackup
 mc mb -l myminio/veeambackup
 ```
 
-> Object locking requires erasure coding enabled on the minio server. For more information see https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html.
+> Object locking requires erasure coding enabled on the obstor server. For more information see https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html.
 
 ### Add ObStor as an object store for Veeam
 Follow the steps from the Veeam documentation for adding ObStor as an object store - https://helpcenter.veeam.com/docs/backup/vsphere/adding_s3c_object_storage.html?ver=100

@@ -29,7 +29,7 @@ import (
 )
 
 // This file implements and supports ellipses pattern for
-// `minio server` command line arguments.
+// `obstor server` command line arguments.
 
 // Endpoint set represents parsed ellipses values, also provides
 // methods to get the sets of endpoints.

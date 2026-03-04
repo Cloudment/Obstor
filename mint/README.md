@@ -58,8 +58,8 @@ To test Minio server virtual style access with Mint, follow these steps:
 - Start Minio server.
 - Execute Mint against Minio server (with `OBSTOR_DOMAIN` set to `myminio.com`) using this command
 ```sh
-$ podman run -e "SERVER_ENDPOINT=192.168.86.133:9000" -e "DOMAIN=minio.com"  \
-	     -e "ACCESS_KEY=minio" -e "SECRET_KEY=minio123" -e "ENABLE_HTTPS=0" \
+$ podman run -e "SERVER_ENDPOINT=192.168.86.133:9000" -e "DOMAIN=obstor.com"  \
+	     -e "ACCESS_KEY=obstor" -e "SECRET_KEY=obstor123" -e "ENABLE_HTTPS=0" \
 	     -e "ENABLE_VIRTUAL_STYLE=1" minio/mint
 ```
 

@@ -21,10 +21,10 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/urfave/cli"
 	"github.com/cloudment/obstor/pkg/console"
 	"github.com/cloudment/obstor/pkg/trie"
 	"github.com/cloudment/obstor/pkg/words"
+	"github.com/urfave/cli"
 )
 
 // GlobalFlags - global flags for minio.
@@ -158,7 +158,7 @@ func newApp(name string) *cli.App {
 	return app
 }
 
-// Main main for minio server.
+// Main main for obstor server.
 func Main(args []string) {
 	// Set the minio app name.
 	appName := filepath.Base(args[0])

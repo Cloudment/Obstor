@@ -28,9 +28,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 // adminErasureTestBed - encapsulates subsystems that need to be setup for
@@ -58,7 +58,7 @@ func prepareAdminErasureTestBed(ctx context.Context) (*adminErasureTestBed, erro
 		return nil, xlErr
 	}
 
-	// Initialize minio server config.
+	// Initialize obstor server config.
 	if err := newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
 		return nil, err
 	}

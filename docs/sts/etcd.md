@@ -35,7 +35,7 @@ You may also setup etcd with TLS following this documentation [here](https://cor
 ObStor server expects environment variable for etcd as `OBSTOR_ETCD_ENDPOINTS`, this environment variable takes many comma separated entries.
 ```
 export OBSTOR_ETCD_ENDPOINTS=http://localhost:2379
-minio server /data
+obstor server /data
 ```
 
 NOTE: If `etcd` is configured with `Client-to-server authentication with HTTPS client certificates` then you need to use additional envs such as `OBSTOR_ETCD_CLIENT_CERT` pointing to path to `etcd-client.crt` and `OBSTOR_ETCD_CLIENT_CERT_KEY` path to `etcd-client.key` .

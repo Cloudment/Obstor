@@ -43,11 +43,11 @@ In this document we will explain in detail on how to configure all the prerequis
 Make sure we have followed the previous step and configured each software independently, once done we can now proceed to use ObStor STS API and ObStor server to use these credentials to perform object API operations.
 
 ```
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor123
 export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
 export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-minio server /mnt/data
+obstor server /mnt/data
 ```
 
 ### Setup ObStor Gateway with Keycloak and Etcd

@@ -10,8 +10,8 @@ Please ensure to replace `/shared/nasvol` with actual mount path.
 
 ```
 docker run -p 9000:9000 --name nas-s3 \
- -e "OBSTOR_ROOT_USER=minio" \
- -e "OBSTOR_ROOT_PASSWORD=minio123" \
+ -e "OBSTOR_ROOT_USER=obstor" \
+ -e "OBSTOR_ROOT_PASSWORD=obstor123" \
  -v /shared/nasvol:/container/vol \
  minio/minio gateway nas /container/vol
 ```
@@ -19,8 +19,8 @@ docker run -p 9000:9000 --name nas-s3 \
 ### Using Binary
 
 ```
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor123
 minio gateway nas /shared/nasvol
 ```
 

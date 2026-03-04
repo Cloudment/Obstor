@@ -24,8 +24,8 @@ ObStor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S
 docker run -p 9000:9000 --name gcs-s3 \
  -v /path/to/credentials.json:/credentials.json \
  -e "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json" \
- -e "OBSTOR_ROOT_USER=minioaccountname" \
- -e "OBSTOR_ROOT_PASSWORD=minioaccountkey" \
+ -e "OBSTOR_ROOT_USER=obstoraccountname" \
+ -e "OBSTOR_ROOT_PASSWORD=obstoraccountkey" \
  minio/minio gateway gcs yourprojectid
 ```
 
@@ -33,8 +33,8 @@ docker run -p 9000:9000 --name gcs-s3 \
 
 ```sh
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
-export OBSTOR_ROOT_USER=minioaccesskey
-export OBSTOR_ROOT_PASSWORD=miniosecretkey
+export OBSTOR_ROOT_USER=obstoraccesskey
+export OBSTOR_ROOT_PASSWORD=obstorsecretkey
 minio gateway gcs yourprojectid
 ```
 

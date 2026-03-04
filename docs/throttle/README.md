@@ -17,7 +17,7 @@ Example: Limit a ObStor cluster to accept at max 1600 simultaneous S3 API reques
 export OBSTOR_API_REQUESTS_MAX=1600
 export OBSTOR_ROOT_USER=your-access-key
 export OBSTOR_ROOT_PASSWORD=your-secret-key
-minio server http://server{1...8}/mnt/hdd{1...16}
+obstor server http://server{1...8}/mnt/hdd{1...16}
 ```
 
 or
@@ -41,7 +41,7 @@ export OBSTOR_API_REQUESTS_MAX=1600
 export OBSTOR_API_REQUESTS_DEADLINE=2m
 export OBSTOR_ROOT_USER=your-access-key
 export OBSTOR_ROOT_PASSWORD=your-secret-key
-minio server http://server{1...8}/mnt/hdd{1...16}
+obstor server http://server{1...8}/mnt/hdd{1...16}
 ```
 
 or

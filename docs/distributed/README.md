@@ -32,7 +32,7 @@ Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-qui
 
 ## 2. Run distributed ObStor
 
-To start a distributed ObStor instance, you just need to pass drive locations as parameters to the minio server command. Then, you’ll need to run the same command on all the participating nodes.
+To start a distributed ObStor instance, you just need to pass drive locations as parameters to the obstor server command. Then, you’ll need to run the same command on all the participating nodes.
 
 __NOTE:__
 
@@ -56,7 +56,7 @@ Example 1: Start distributed ObStor instance on n nodes with m drives each mount
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio server http://host{1...n}/export{1...m}
+obstor server http://host{1...n}/export{1...m}
 ```
 
 > __NOTE:__ In above example `n` and `m` represent positive integers, *do not copy paste and expect it work make the changes according to local deployment and setup*.
@@ -69,12 +69,12 @@ ObStor supports expanding distributed erasure coded clusters by specifying new s
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio server http://host{1...n}/export{1...m} http://host{o...z}/export{1...m}
+obstor server http://host{1...n}/export{1...m} http://host{o...z}/export{1...m}
 ```
 
 For example:
 ```
-minio server http://host{1...4}/export{1...16} http://host{5...12}/export{1...16}
+obstor server http://host{1...4}/export{1...16} http://host{5...12}/export{1...16}
 ```
 
 Now the server has expanded total storage by _(newly_added_servers\*m)_ more disks, taking the total count to _(existing_servers\*m)+(newly_added_servers\*m)_ disks. New object upload requests automatically start using the least used cluster. This expansion strategy works endlessly, so you can perpetually expand your clusters as needed.  When you restart, it is immediate and non-disruptive to the applications. Each group of servers in the command-line is called a pool. There are 2 server pools in this example. New objects are placed in server pools in proportion to the amount of free space in each pool. Within each pool, the location of the erasure-set of drives is determined based on a deterministic hashing algorithm.

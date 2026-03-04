@@ -116,10 +116,10 @@ var globalCLIContext = struct {
 }{}
 
 var (
-	// Indicates if the running minio server is distributed setup.
+	// Indicates if the running obstor server is distributed setup.
 	globalIsDistErasure = false
 
-	// Indicates if the running minio server is an erasure-code backend.
+	// Indicates if the running obstor server is an erasure-code backend.
 	globalIsErasure = false
 
 	// Indicates if the running minio is in gateway mode.

@@ -92,11 +92,11 @@ http://obstor.cluster:9000?Action=AssumeRoleWithClientGrants&DurationSeconds=360
 
 ## Using ClientGrants API
 ```
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio123
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor123
 export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
 export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-minio server /mnt/export
+obstor server /mnt/export
 ```
 
 Testing with an example

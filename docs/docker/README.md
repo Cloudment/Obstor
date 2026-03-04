@@ -10,7 +10,7 @@ ObStor needs a persistent volume to store configuration and application data. Ho
 docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 To create a ObStor container with persistent storage, you need to map local persistent directories from the host OS to virtual config `~/.minio` and export `/data` directories. To do this, run the below commands
@@ -22,7 +22,7 @@ docker run -p 9000:9000 \
   -v /mnt/data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 #### Windows
@@ -32,7 +32,7 @@ docker run -p 9000:9000 \
   -v D:\data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 ## Run Distributed ObStor on Docker
@@ -51,7 +51,7 @@ docker run -p 9000:9000 --name minio1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v /mnt/data:/data \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 #### Windows
@@ -60,7 +60,7 @@ docker run -p 9000:9000 --name minio1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 ### Run ObStor Docker as a regular user
@@ -78,7 +78,7 @@ docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v ${HOME}/data:/data \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 #### Windows
@@ -93,7 +93,7 @@ docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 
 ### ObStor Custom Access and Secret Keys using Docker secrets
@@ -106,7 +106,7 @@ echo "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" | docker secret create secret_ke
 
 Create a ObStor service using `docker service` to read from Docker secrets.
 ```
-docker service create --name="minio-service" --secret="access_key" --secret="secret_key" minio/minio server /data
+docker service create --name="minio-service" --secret="access_key" --secret="secret_key" minio/obstor server /data
 ```
 
 Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/)
@@ -119,7 +119,7 @@ docker service create --name="minio-service" \
   --secret="my_secret_key" \
   --env="OBSTOR_ROOT_USER_FILE=my_access_key" \
   --env="OBSTOR_ROOT_PASSWORD_FILE=my_secret_key" \
-  minio/minio server /data
+  minio/obstor server /data
 ```
 `OBSTOR_ROOT_USER_FILE` and `OBSTOR_ROOT_PASSWORD_FILE` also support custom absolute paths, in case Docker secrets are mounted to custom locations or other tools are used to mount secrets into the container. For example, HashiCorp Vault injects secrets to `/vault/secrets`. With the custom names above, set the environment variables to
 ```

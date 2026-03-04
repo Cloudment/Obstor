@@ -31,8 +31,8 @@ OBSTOR=( "$PWD/minio" --config-dir "$OBSTOR_CONFIG_DIR" server )
 export GOGC=25
 
 function start_minio_3_node() {
-    export OBSTOR_ROOT_USER=minio
-    export OBSTOR_ROOT_PASSWORD=minio123
+    export OBSTOR_ROOT_USER=obstor
+    export OBSTOR_ROOT_PASSWORD=obstor123
     export OBSTOR_ERASURE_SET_DRIVE_COUNT=6
 
     start_port=$(shuf -i 10000-65000 -n 1)

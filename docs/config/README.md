@@ -9,7 +9,7 @@ You can specify the location of your existing config using `--config-dir`, ObSto
 Additionally `--config-dir` is now a legacy option which will is scheduled for removal in future, so please update your local startup, ansible scripts accordingly.
 
 ```sh
-minio server /data
+obstor server /data
 ```
 
 ObStor also encrypts all the config, IAM and policies content with admin credentials.
@@ -35,9 +35,9 @@ You can provide a custom certs directory using `--certs-dir` command line option
 On ObStor admin credentials or root credentials are only allowed to be changed using ENVs namely `OBSTOR_ROOT_USER` and `OBSTOR_ROOT_PASSWORD`. Using the combination of these two values ObStor encrypts the config stored at the backend.
 
 ```sh
-export OBSTOR_ROOT_USER=minio
-export OBSTOR_ROOT_PASSWORD=minio13
-minio server /data
+export OBSTOR_ROOT_USER=obstor
+export OBSTOR_ROOT_PASSWORD=obstor13
+obstor server /data
 ```
 
 ##### Rotating encryption with new credentials
@@ -49,9 +49,9 @@ Additionally if you wish to change the admin credentials, then ObStor will autom
 ```sh
 export OBSTOR_ROOT_USER=newminio
 export OBSTOR_ROOT_PASSWORD=newminio123
-export OBSTOR_ROOT_USER_OLD=minio
-export OBSTOR_ROOT_PASSWORD_OLD=minio123
-minio server /data
+export OBSTOR_ROOT_USER_OLD=obstor
+export OBSTOR_ROOT_PASSWORD_OLD=obstor123
+obstor server /data
 ```
 
 Once the migration is complete, server will automatically unset the `OBSTOR_ROOT_USER_OLD` and `OBSTOR_ROOT_PASSWORD_OLD` with in the process namespace.
@@ -82,7 +82,7 @@ Example:
 
 ```sh
 export OBSTOR_REGION_NAME="my_region"
-minio server /data
+obstor server /data
 ```
 
 ### Storage Class
@@ -332,7 +332,7 @@ Example:
 
 ```sh
 export OBSTOR_BROWSER=off
-minio server /data
+obstor server /data
 ```
 
 ### Domain
@@ -342,13 +342,13 @@ Example:
 
 ```sh
 export OBSTOR_DOMAIN=mydomain.com
-minio server /data
+obstor server /data
 ```
 
 For advanced use cases `OBSTOR_DOMAIN` environment variable supports multiple-domains with comma separated values.
 ```sh
 export OBSTOR_DOMAIN=sub1.mydomain.com,sub2.mydomain.com
-minio server /data
+obstor server /data
 ```
 
 ## Explore Further

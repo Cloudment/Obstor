@@ -27,10 +27,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/dustin/go-humanize"
 )
 
 var printEndpointError = func() func(Endpoint, error, bool) {
@@ -115,7 +115,7 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 			//  |__ e870a2c1-d09c-450c-a69c-6eaa54a89b3e
 			//
 			// In this example, `33a58b40-aecc-4c9f-a22f-ff17bfa33b62` directory contains
-			// temporary objects from one of the previous runs of minio server.
+			// temporary objects from one of the previous runs of obstor server.
 			tmpOld := pathJoin(epPath, minioMetaTmpBucket+"-old", mustGetUUID())
 			if err := renameAll(pathJoin(epPath, minioMetaTmpBucket),
 				tmpOld); err != nil && err != errFileNotFound {
@@ -265,7 +265,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 		}
 
 		// Assign globalDeploymentID on first run for the
-		// minio server managing the first disk
+		// obstor server managing the first disk
 		globalDeploymentID = format.ID
 		return storageDisks, format, nil
 	}

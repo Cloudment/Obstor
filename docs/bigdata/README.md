@@ -63,8 +63,8 @@ It was found that the directory staging committer was the fastest among the thre
 ```
 cat ${HADOOP_CONF_DIR}/core-site.xml | kv-pairify | grep "s3a"
 
-fs.s3a.access.key=minio
-fs.s3a.secret.key=minio123
+fs.s3a.access.key=obstor
+fs.s3a.secret.key=obstor123
 fs.s3a.path.style.access=true
 fs.s3a.block.size=512M
 fs.s3a.buffer.dir=${hadoop.tmp.dir}/s3a

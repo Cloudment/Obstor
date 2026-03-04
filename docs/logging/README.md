@@ -31,7 +31,7 @@ ObStor also honors environment variable for HTTP target logging as shown below, 
 export OBSTOR_LOGGER_WEBHOOK_ENABLE_target1="on"
 export OBSTOR_LOGGER_WEBHOOK_AUTH_TOKEN_target1="token"
 export OBSTOR_LOGGER_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
-minio server /mnt/data
+obstor server /mnt/data
 ```
 
 ## Audit Targets
@@ -55,7 +55,7 @@ export OBSTOR_AUDIT_WEBHOOK_AUTH_TOKEN_target1="token"
 export OBSTOR_AUDIT_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
 export OBSTOR_AUDIT_WEBHOOK_CLIENT_CERT="/tmp/cert.pem"
 export OBSTOR_AUDIT_WEBHOOK_CLIENT_KEY=="/tmp/key.pem"
-minio server /mnt/data
+obstor server /mnt/data
 ```
 
 Setting this environment variable automatically enables audit logging to the HTTP target. The audit logging is in JSON format as described below.
@@ -85,7 +85,7 @@ NOTE:
   "requestID": "15BA4A72C0C70AFC",
   "userAgent": "ObStor (linux; amd64) minio-go/v6.0.32 mc/2019-08-12T18:27:13Z",
   "requestHeader": {
-    "Authorization": "AWS4-HMAC-SHA256 Credential=minio/20190812/us-east-1/s3/aws4_request,SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-decoded-content-length,Signature=d3f02a6aeddeb29b06e1773b6a8422112890981269f2463a26f307b60423177c",
+    "Authorization": "AWS4-HMAC-SHA256 Credential=obstor/20190812/us-east-1/s3/aws4_request,SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-decoded-content-length,Signature=d3f02a6aeddeb29b06e1773b6a8422112890981269f2463a26f307b60423177c",
     "Content-Length": "686",
     "Content-Type": "application/octet-stream",
     "User-Agent": "ObStor (linux; amd64) minio-go/v6.0.32 mc/2019-08-12T18:27:13Z",

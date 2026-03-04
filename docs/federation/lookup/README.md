@@ -53,7 +53,7 @@ hosts passed to the ObStor server startup and use them for DNS entries.
 export OBSTOR_ETCD_ENDPOINTS="http://remote-etcd1:2379,http://remote-etcd2:4001"
 export OBSTOR_DOMAIN=domain.com
 export OBSTOR_PUBLIC_IPS=44.35.2.1,44.35.2.2,44.35.2.3,44.35.2.4
-minio server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
+obstor server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
 ```
 
 > cluster2
@@ -62,7 +62,7 @@ minio server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
 export OBSTOR_ETCD_ENDPOINTS="http://remote-etcd1:2379,http://remote-etcd2:4001"
 export OBSTOR_DOMAIN=domain.com
 export OBSTOR_PUBLIC_IPS=44.35.1.1,44.35.1.2,44.35.1.3,44.35.1.4
-minio server http://rack{5...8}.host{5...8}.domain.com/mnt/export{1...32}
+obstor server http://rack{5...8}.host{5...8}.domain.com/mnt/export{1...32}
 ```
 
 In this configuration you can see `OBSTOR_ETCD_ENDPOINTS` points to the etcd backend which manages ObStor's

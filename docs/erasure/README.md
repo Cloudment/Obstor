@@ -41,7 +41,7 @@ Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-qui
 Example: Start ObStor server in a 12 drives setup, using ObStor binary.
 
 ```sh
-minio server /data{1...12}
+obstor server /data{1...12}
 ```
 
 Example: Start ObStor server in a 8 drives setup, using ObStor Docker image.
@@ -56,7 +56,7 @@ docker run -p 9000:9000 --name minio \
   -v /mnt/data6:/data6 \
   -v /mnt/data7:/data7 \
   -v /mnt/data8:/data8 \
-  minio/minio server /data{1...8}
+  minio/obstor server /data{1...8}
 ```
 
 ### 3. Test your setup

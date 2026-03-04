@@ -72,7 +72,7 @@ Run the following command to install the latest stable ObStor package using [Hom
 
 ```sh
 brew install minio/stable/minio
-minio server /data
+obstor server /data
 ```
 
 > NOTE: If you previously installed minio using `brew install minio` then it is recommended that you reinstall minio from `minio/stable/minio` official repo instead.
@@ -97,7 +97,7 @@ Use the following command to download and run a standalone ObStor server on macO
 ```sh
 wget https://dl.pgg.net/server/minio/release/darwin-amd64/minio
 chmod +x minio
-./minio server /data
+./obstor server /data
 ```
 
 The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
@@ -116,7 +116,7 @@ Use the following command to run a standalone ObStor server on Linux hosts runni
 ```sh
 wget https://dl.pgg.net/server/minio/release/linux-amd64/minio
 chmod +x minio
-./minio server /data
+./obstor server /data
 ```
 
 Replace ``/data`` with the path to the drive or directory in which you want ObStor to store data.
@@ -264,7 +264,7 @@ service iptables restart
 ```
 
 ## Pre-existing data
-When deployed on a single drive, ObStor server lets clients access any pre-existing data in the data directory. For example, if ObStor is started with the command  `minio server /mnt/data`, any pre-existing data in the `/mnt/data` directory would be accessible to the clients.
+When deployed on a single drive, ObStor server lets clients access any pre-existing data in the data directory. For example, if ObStor is started with the command  `obstor server /mnt/data`, any pre-existing data in the `/mnt/data` directory would be accessible to the clients.
 
 The above statement is also valid for all gateway backends.
 

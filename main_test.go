@@ -56,7 +56,7 @@ func TestRunMain(t *testing.T) {
 	// catch SIGETRM or SIGINTERRUPT. The test must gracefully end to complete the test coverage.
 	signal.Notify(cancelChan, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
-		// start minio server with params from env variable APP_ARGS
+		// start obstor server with params from env variable APP_ARGS
 		args := os.Getenv("APP_ARGS")
 		if args == "" {
 			log.Printf("No environment variable APP_ARGS found. Starting minio without parameters ...")

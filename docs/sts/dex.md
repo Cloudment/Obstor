@@ -26,7 +26,7 @@ time="2020-07-12T20:45:50Z" level=info msg="listening (http) on 0.0.0.0:5556"
 ```
 ~ export OBSTOR_IDENTITY_OPENID_CLAIM_NAME=name
 ~ export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://127.0.0.1:5556/dex/.well-known/openid-configuration
-~ minio server ~/test
+~ obstor server ~/test
 ```
 
 ### Run the `web-identity.go`
