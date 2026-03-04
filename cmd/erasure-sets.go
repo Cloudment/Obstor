@@ -18,7 +18,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -28,9 +27,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dchest/siphash"
 	"github.com/dustin/go-humanize"
 	"github.com/google/uuid"
+	"github.com/minio/highwayhash"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/minio/cmd/logger"
@@ -714,10 +713,12 @@ func sipHashMod(key string, cardinality int, id [16]byte) int {
 	if cardinality <= 0 {
 		return -1
 	}
-	// use the faster version as per siphash docs
-	// https://github.com/dchest/siphash#usage
-	k0, k1 := binary.LittleEndian.Uint64(id[0:8]), binary.LittleEndian.Uint64(id[8:16])
-	sum64 := siphash.Hash(k0, k1, []byte(key))
+	// Use HighwayHash as a keyed hash replacement for SipHash.
+	// Pad the 16-byte id to the required 32-byte HighwayHash key.
+	var hhKey [32]byte
+	copy(hhKey[:16], id[:])
+	copy(hhKey[16:], id[:])
+	sum64 := highwayhash.Sum64([]byte(key), hhKey[:])
 	return int(sum64 % uint64(cardinality))
 }
 

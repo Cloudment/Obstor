@@ -40,7 +40,7 @@ import (
 	"github.com/minio/minio/pkg/event"
 	"github.com/minio/minio/pkg/hash"
 	"github.com/minio/minio/pkg/madmin"
-	"github.com/willf/bloom"
+	"github.com/bits-and-blooms/bloom/v3"
 )
 
 const (

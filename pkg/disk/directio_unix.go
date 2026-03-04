@@ -21,14 +21,17 @@ package disk
 import (
 	"os"
 	"syscall"
+	"unsafe"
 
-	"github.com/ncw/directio"
 	"golang.org/x/sys/unix"
 )
 
+// alignment returns the alignment of the block device.
+const alignment = 4096
+
 // OpenFileDirectIO - bypass kernel cache.
 func OpenFileDirectIO(filePath string, flag int, perm os.FileMode) (*os.File, error) {
-	return directio.OpenFile(filePath, flag, perm)
+	return os.OpenFile(filePath, flag|syscall.O_DIRECT, perm)
 }
 
 // DisableDirectIO - disables directio mode.
@@ -43,7 +46,9 @@ func DisableDirectIO(f *os.File) error {
 	return err
 }
 
-// AlignedBlock - pass through to directio implementation.
+// AlignedBlock returns a block of the given size aligned to the device block size.
 func AlignedBlock(BlockSize int) []byte {
-	return directio.AlignedBlock(BlockSize)
+	block := make([]byte, BlockSize+alignment)
+	a := alignment - int(uintptr(unsafe.Pointer(&block[0]))&uintptr(alignment-1))
+	return block[a : a+BlockSize]
 }

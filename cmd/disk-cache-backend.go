@@ -33,7 +33,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/djherbis/atime"
+	"github.com/minio/minio/pkg/atime"
 	"github.com/minio/minio/cmd/config/cache"
 	"github.com/minio/minio/cmd/crypto"
 	xhttp "github.com/minio/minio/cmd/http"

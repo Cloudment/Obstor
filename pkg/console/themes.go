@@ -16,18 +16,18 @@
 
 package console
 
-import "github.com/fatih/color"
+import "github.com/minio/minio/pkg/color"
 
 var (
 	// Theme contains default color mapping.
 	Theme = map[string]*color.Color{
-		"Debug":  color.New(color.FgWhite, color.Faint, color.Italic),
-		"Fatal":  color.New(color.FgRed, color.Italic, color.Bold),
+		"Debug":  color.New(color.AttrFgWhite, color.Faint, color.Italic),
+		"Fatal":  color.New(color.AttrFgRed, color.Italic, color.AttrBold),
 		"Error":  color.New(color.FgYellow, color.Italic),
-		"Info":   color.New(color.FgGreen, color.Bold),
+		"Info":   color.New(color.FgGreen, color.AttrBold),
 		"Print":  color.New(),
-		"PrintB": color.New(color.FgBlue, color.Bold),
-		"PrintC": color.New(color.FgGreen, color.Bold),
+		"PrintB": color.New(color.FgBlue, color.AttrBold),
+		"PrintC": color.New(color.FgGreen, color.AttrBold),
 	}
 )
 

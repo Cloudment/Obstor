@@ -53,7 +53,7 @@ func (r Resource) Match(resource string, conditionValues map[string][]string) bo
 	for _, key := range condition.CommonKeys {
 		// Empty values are not supported for policy variables.
 		if rvalues, ok := conditionValues[key.Name()]; ok && rvalues[0] != "" {
-			pattern = strings.Replace(pattern, key.VarName(), rvalues[0], -1)
+			pattern = strings.ReplaceAll(pattern, key.VarName(), rvalues[0])
 		}
 	}
 	if cp := path.Clean(resource); cp != "." && cp == pattern {

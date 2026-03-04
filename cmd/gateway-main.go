@@ -27,7 +27,7 @@ import (
 	"syscall"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	xhttp "github.com/minio/minio/cmd/http"
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/pkg/certs"
@@ -40,7 +40,7 @@ var (
 		Name:            "gateway",
 		Usage:           "start object storage gateway",
 		Flags:           append(ServerFlags, GlobalFlags...),
-		HideHelpCommand: true,
+		HideHelp: true,
 	}
 )
 

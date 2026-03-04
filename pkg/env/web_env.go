@@ -100,7 +100,7 @@ func getEnvValueFromHTTP(urlStr, envKey string) (string, string, string, error) 
 		return "", "", "", err
 	}
 
-	claims := &jwt.StandardClaims{
+	claims := &jwt.StandardClaims{ //nolint:staticcheck // SA1019: jwt.StandardClaims migration requires major refactor
 		ExpiresAt: int64(15 * time.Minute),
 		Issuer:    username,
 		Subject:   envKey,

@@ -19,11 +19,11 @@ package console
 import (
 	"testing"
 
-	"github.com/fatih/color"
+	"github.com/minio/minio/pkg/color"
 )
 
 func TestSetColor(t *testing.T) {
-	SetColor("unknown", color.New(color.FgWhite))
+	SetColor("unknown", color.New(color.AttrFgWhite))
 	_, ok := Theme["unknown"]
 	if !ok {
 		t.Fatal("missing theme")

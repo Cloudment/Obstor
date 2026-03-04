@@ -23,9 +23,9 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"encoding/json"
 	"sync"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/klauspost/compress/s2"
 	"github.com/minio/minio/cmd/logger"
 	"github.com/tinylib/msgp/msgp"
@@ -827,7 +827,7 @@ type metacacheBlock struct {
 }
 
 func (b metacacheBlock) headerKV() map[string]string {
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	v, err := json.Marshal(b)
 	if err != nil {
 		logger.LogIf(context.Background(), err) // Unlikely

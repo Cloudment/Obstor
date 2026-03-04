@@ -21,7 +21,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 )
 
 // Test RegisterGatewayCommand

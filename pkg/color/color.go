@@ -18,8 +18,6 @@ package color
 
 import (
 	"fmt"
-
-	"github.com/fatih/color"
 )
 
 // global colors.
@@ -27,110 +25,110 @@ var (
 	// Check if we stderr, stdout are dumb terminals, we do not apply
 	// ansi coloring on dumb terminals.
 	IsTerminal = func() bool {
-		return !color.NoColor
+		return !NoColor
 	}
 
 	Bold = func() func(a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.Bold).SprintFunc()
+			return New(AttrBold).SprintFunc()
 		}
 		return fmt.Sprint
 	}()
 
 	RedBold = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgRed, color.Bold).SprintfFunc()
+			return New(AttrFgRed, AttrBold).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	Red = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgRed).SprintfFunc()
+			return New(AttrFgRed).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	Blue = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgBlue).SprintfFunc()
+			return New(FgBlue).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	Yellow = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgYellow).SprintfFunc()
+			return New(FgYellow).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	Green = func() func(a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgGreen).SprintFunc()
+			return New(FgGreen).SprintFunc()
 		}
 		return fmt.Sprint
 	}()
 
 	GreenBold = func() func(a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgGreen, color.Bold).SprintFunc()
+			return New(FgGreen, AttrBold).SprintFunc()
 		}
 		return fmt.Sprint
 	}()
 
 	CyanBold = func() func(a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgCyan, color.Bold).SprintFunc()
+			return New(FgCyan, AttrBold).SprintFunc()
 		}
 		return fmt.Sprint
 	}()
 
 	YellowBold = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgYellow, color.Bold).SprintfFunc()
+			return New(FgYellow, AttrBold).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	BlueBold = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgBlue, color.Bold).SprintfFunc()
+			return New(FgBlue, AttrBold).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	BgYellow = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.BgYellow).SprintfFunc()
+			return New(AttrBgYellow).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	Black = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgBlack).SprintfFunc()
+			return New(FgBlack).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	FgRed = func() func(a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgRed).SprintFunc()
+			return New(AttrFgRed).SprintFunc()
 		}
 		return fmt.Sprint
 	}()
 
 	BgRed = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.BgRed).SprintfFunc()
+			return New(AttrBgRed).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()
 
 	FgWhite = func() func(format string, a ...interface{}) string {
 		if IsTerminal() {
-			return color.New(color.FgWhite).SprintfFunc()
+			return New(AttrFgWhite).SprintfFunc()
 		}
 		return fmt.Sprintf
 	}()

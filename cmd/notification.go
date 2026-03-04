@@ -30,8 +30,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cespare/xxhash/v2"
 	"github.com/klauspost/compress/zip"
+	"github.com/minio/highwayhash"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio/cmd/crypto"
 	xhttp "github.com/minio/minio/cmd/http"
@@ -43,7 +43,7 @@ import (
 	"github.com/minio/minio/pkg/madmin"
 	xnet "github.com/minio/minio/pkg/net"
 	"github.com/minio/minio/pkg/sync/errgroup"
-	"github.com/willf/bloom"
+	"github.com/bits-and-blooms/bloom/v3"
 )
 
 // NotificationSys - notification system.
@@ -1334,7 +1334,7 @@ func (sys *NotificationSys) restClientFromHash(s string) (client *peerRESTClient
 	if len(peerClients) == 0 {
 		return nil
 	}
-	idx := xxhash.Sum64String(s) % uint64(len(peerClients))
+	idx := highwayhash.Sum64([]byte(s), magicHighwayHash256Key) % uint64(len(peerClients))
 	return peerClients[idx]
 }
 

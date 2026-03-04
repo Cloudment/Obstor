@@ -18,6 +18,7 @@ package target
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -28,7 +29,6 @@ import (
 
 	"github.com/minio/minio/pkg/event"
 	xnet "github.com/minio/minio/pkg/net"
-	"github.com/pkg/errors"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -150,24 +150,24 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 	var key string
 
 	exists := func() (bool, error) {
-		return target.client.Exists().Index(target.args.Index).Type("event").Id(key).Do(context.Background())
+		return target.client.Exists().Index(target.args.Index).Type("event").Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
 	}
 
 	remove := func() error {
 		exists, err := exists()
 		if err == nil && exists {
-			_, err = target.client.Delete().Index(target.args.Index).Type("event").Id(key).Do(context.Background())
+			_, err = target.client.Delete().Index(target.args.Index).Type("event").Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
 		}
 		return err
 	}
 
 	update := func() error {
-		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Id(key).Do(context.Background())
+		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
 		return err
 	}
 
 	add := func() error {
-		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Do(context.Background())
+		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
 		return err
 	}
 
@@ -256,7 +256,7 @@ func createIndex(client *elastic.Client, args ElasticsearchArgs) error {
 func newClient(args ElasticsearchArgs) (*elastic.Client, error) {
 	// Client options
 	options := []elastic.ClientOptionFunc{elastic.SetURL(args.URL.String()),
-		elastic.SetMaxRetries(10),
+		elastic.SetMaxRetries(10), //nolint:staticcheck // SA1019: elastic.SetMaxRetries deprecated, Retry migration deferred
 		elastic.SetSniff(false),
 		elastic.SetHttpClient(&http.Client{Transport: args.Transport})}
 	// Set basic auth

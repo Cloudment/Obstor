@@ -19,6 +19,7 @@ package data
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -27,8 +28,6 @@ import (
 	"github.com/minio/minio/pkg/s3select/internal/parquet-go/encoding"
 	"github.com/minio/minio/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/minio/minio/pkg/s3select/internal/parquet-go/schema"
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 func getDefaultEncoding(parquetType parquet.Type) parquet.Encoding {
@@ -141,7 +140,7 @@ func populate(columnDataMap map[string]*Column, input *jsonValue, tree *schema.T
 				return true
 			}
 
-			var results []gjson.Result
+			var results []interface{}
 			if results, err = inputValue.GetArray(); err != nil {
 				return false
 			}
@@ -155,7 +154,7 @@ func populate(columnDataMap map[string]*Column, input *jsonValue, tree *schema.T
 				}
 
 				var jsonData []byte
-				if jsonData, err = sjson.SetBytes([]byte{}, "element", results[i].Value()); err != nil {
+				if jsonData, err = json.Marshal(map[string]interface{}{"element": results[i]}); err != nil {
 					return false
 				}
 
@@ -179,18 +178,9 @@ func populate(columnDataMap map[string]*Column, input *jsonValue, tree *schema.T
 
 			keyValueElement, _ := element.Children.Get("key_value")
 			var rerr error
-			err = inputValue.Range(func(key, value gjson.Result) bool {
-				if !key.Exists() || key.Type == gjson.Null {
-					rerr = fmt.Errorf("%v.key_value.key: not found or null", dataPath)
-					return false
-				}
-
+			err = inputValue.Range(func(key string, value interface{}) bool {
 				var jsonData []byte
-				if jsonData, rerr = sjson.SetBytes([]byte{}, "key", key.Value()); rerr != nil {
-					return false
-				}
-
-				if jsonData, rerr = sjson.SetBytes(jsonData, "value", value.Value()); rerr != nil {
+				if jsonData, rerr = json.Marshal(map[string]interface{}{"key": key, "value": value}); rerr != nil {
 					return false
 				}
 

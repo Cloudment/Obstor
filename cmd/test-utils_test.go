@@ -53,9 +53,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fatih/color"
-
 	"github.com/gorilla/mux"
+	color "github.com/minio/minio/pkg/color"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/signer"
 	"github.com/minio/minio/cmd/config"
@@ -2279,7 +2278,8 @@ func getEndpointsLocalAddr(endpointServerPools EndpointServerPools) string {
 func getRandomRange(min, max int, seed int64) int {
 	// special value -1 means no explicit seeding.
 	if seed != -1 {
-		rand.Seed(seed)
+		rng := rand.New(rand.NewSource(seed))
+		return rng.Intn(max-min) + min
 	}
 	return rand.Intn(max-min) + min
 }
@@ -2288,13 +2288,16 @@ func getRandomRange(min, max int, seed int64) int {
 // using Knuth Fisher-Yates shuffle algorithm.
 func randomizeBytes(s []byte, seed int64) []byte {
 	// special value -1 means no explicit seeding.
+	var rng *rand.Rand
 	if seed != -1 {
-		rand.Seed(seed)
+		rng = rand.New(rand.NewSource(seed))
+	} else {
+		rng = rand.New(rand.NewSource(rand.Int63()))
 	}
 	n := len(s)
 	var j int
 	for i := 0; i < n-1; i++ {
-		j = i + rand.Intn(n-i)
+		j = i + rng.Intn(n-i)
 		s[i], s[j] = s[j], s[i]
 	}
 	return s
@@ -2387,7 +2390,7 @@ func uploadTestObject(t *testing.T, apiRouter http.Handler, creds auth.Credentia
 			apiRouter.ServeHTTP(rec, req)
 			checkRespErr(rec, http.StatusOK)
 			header := rec.Header()
-			if v, ok := header["ETag"]; ok {
+			if v := header.Values("ETag"); len(v) > 0 {
 				etag := v[0]
 				if etag == "" {
 					t.Fatalf("Unexpected empty etag")

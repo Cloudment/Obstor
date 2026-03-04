@@ -17,14 +17,14 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/minio/minio/pkg/s3select/internal/parquet-go/gen-go/parquet"
-	"github.com/tidwall/gjson"
 )
 
 type jsonValue struct {
-	result *gjson.Result
+	result interface{} // nil means null/absent; otherwise the unmarshaled JSON value
 	path   *string
 }
 
@@ -33,33 +33,38 @@ func (v *jsonValue) String() string {
 		return "<nil>"
 	}
 
-	return fmt.Sprintf("%v", *v.result)
+	return fmt.Sprintf("%v", v.result)
 }
 
 func (v *jsonValue) IsNull() bool {
-	return v.result == nil || v.result.Type == gjson.Null
+	return v.result == nil
 }
 
 func (v *jsonValue) Get(path string) *jsonValue {
 	if v.path != nil {
-		var result *gjson.Result
+		var result interface{}
 		if *v.path == path {
 			result = v.result
 		}
 
-		return resultToJSONValue(result)
+		return toJSONValue(result)
 	}
 
 	if v.result == nil {
-		return resultToJSONValue(nil)
+		return toJSONValue(nil)
 	}
 
-	result := v.result.Get(path)
-	if !result.Exists() {
-		return resultToJSONValue(nil)
+	m, ok := v.result.(map[string]interface{})
+	if !ok {
+		return toJSONValue(nil)
 	}
 
-	return resultToJSONValue(&result)
+	val, exists := m[path]
+	if !exists {
+		return toJSONValue(nil)
+	}
+
+	return toJSONValue(val)
 }
 
 func (v *jsonValue) GetValue(parquetType parquet.Type, convertedType *parquet.ConvertedType) (interface{}, error) {
@@ -67,41 +72,46 @@ func (v *jsonValue) GetValue(parquetType parquet.Type, convertedType *parquet.Co
 		return nil, nil
 	}
 
-	return resultToParquetValue(*v.result, parquetType, convertedType)
+	return resultToParquetValue(v.result, parquetType, convertedType)
 }
 
-func (v *jsonValue) GetArray() ([]gjson.Result, error) {
+func (v *jsonValue) GetArray() ([]interface{}, error) {
 	if v.result == nil {
 		return nil, nil
 	}
 
-	return resultToArray(*v.result)
+	return resultToArray(v.result)
 }
 
-func (v *jsonValue) Range(iterator func(key, value gjson.Result) bool) error {
-	if v.result == nil || v.result.Type == gjson.Null {
+func (v *jsonValue) Range(iterator func(key string, value interface{}) bool) error {
+	if v.result == nil {
 		return nil
 	}
 
-	if v.result.Type != gjson.JSON || !v.result.IsObject() {
-		return fmt.Errorf("result is not Map but %v", v.result.Type)
+	m, ok := v.result.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("result is not Map but %T", v.result)
 	}
 
-	v.result.ForEach(iterator)
+	for k, val := range m {
+		if !iterator(k, val) {
+			break
+		}
+	}
 	return nil
 }
 
-func resultToJSONValue(result *gjson.Result) *jsonValue {
+func toJSONValue(result interface{}) *jsonValue {
 	return &jsonValue{
 		result: result,
 	}
 }
 
 func bytesToJSONValue(data []byte) (*jsonValue, error) {
-	if !gjson.ValidBytes(data) {
+	var result interface{}
+	if err := json.Unmarshal(data, &result); err != nil {
 		return nil, fmt.Errorf("invalid JSON data")
 	}
 
-	result := gjson.ParseBytes(data)
-	return resultToJSONValue(&result), nil
+	return toJSONValue(result), nil
 }

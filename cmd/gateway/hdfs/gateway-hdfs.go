@@ -37,7 +37,7 @@ import (
 	"github.com/jcmturner/gokrb5/v8/config"
 	"github.com/jcmturner/gokrb5/v8/credentials"
 	"github.com/jcmturner/gokrb5/v8/keytab"
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	minio "github.com/minio/minio/cmd"
 	"github.com/minio/minio/cmd/logger"
@@ -87,7 +87,7 @@ EXAMPLES:
 		Usage:              "Hadoop Distributed File System (HDFS)",
 		Action:             hdfsGatewayMain,
 		CustomHelpTemplate: hdfsGatewayTemplate,
-		HideHelpCommand:    true,
+		HideHelp:           true,
 	})
 }
 

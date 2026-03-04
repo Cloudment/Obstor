@@ -38,7 +38,7 @@ import (
 var (
 	defaultOperatorContextTimeout = 10 * time.Second
 	// ErrNotImplemented - Indicates the functionality which is not implemented
-	ErrNotImplemented = errors.New("The method is not implemented")
+	ErrNotImplemented = errors.New("the method is not implemented")
 )
 
 func (c *OperatorDNS) addAuthHeader(r *http.Request) error {
@@ -46,7 +46,7 @@ func (c *OperatorDNS) addAuthHeader(r *http.Request) error {
 		return nil
 	}
 
-	claims := &jwt.StandardClaims{
+	claims := &jwt.StandardClaims{ //nolint:staticcheck // SA1019: jwt.StandardClaims migration requires major refactor
 		ExpiresAt: int64(15 * time.Minute),
 		Issuer:    c.username,
 		Subject:   config.EnvDNSWebhook,

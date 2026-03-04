@@ -26,7 +26,6 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/fatih/structs"
 	"github.com/minio/minio/pkg/safe"
 	etcd "go.etcd.io/etcd/client/v3"
 )
@@ -38,8 +37,8 @@ type Config interface {
 	Save(string) error
 	Load(string) error
 	Data() interface{}
-	Diff(Config) ([]structs.Field, error)
-	DeepDiff(Config) ([]structs.Field, error)
+	Diff(Config) ([]Field, error)
+	DeepDiff(Config) ([]Field, error)
 }
 
 // config - implements quick.Config interface
@@ -51,7 +50,7 @@ type config struct {
 
 // Version returns the current config file format version
 func (d config) Version() string {
-	st := structs.New(d.data)
+	st := newStruct(d.data)
 	f := st.Field("Version")
 	return f.Value().(string)
 }
@@ -110,11 +109,11 @@ func (d config) Data() interface{} {
 }
 
 // Diff  - list fields that are in A but not in B
-func (d config) Diff(c Config) ([]structs.Field, error) {
-	var fields []structs.Field
+func (d config) Diff(c Config) ([]Field, error) {
+	var fields []Field
 
-	currFields := structs.Fields(d.Data())
-	newFields := structs.Fields(c.Data())
+	currFields := structFields(d.Data())
+	newFields := structFields(c.Data())
 
 	var found bool
 	for _, currField := range currFields {
@@ -132,11 +131,11 @@ func (d config) Diff(c Config) ([]structs.Field, error) {
 }
 
 // DeepDiff  - list fields in A that are missing or not equal to fields in B
-func (d config) DeepDiff(c Config) ([]structs.Field, error) {
-	var fields []structs.Field
+func (d config) DeepDiff(c Config) ([]Field, error) {
+	var fields []Field
 
-	currFields := structs.Fields(d.Data())
-	newFields := structs.Fields(c.Data())
+	currFields := structFields(d.Data())
+	newFields := structFields(c.Data())
 
 	var found bool
 	for _, currField := range currFields {
@@ -156,18 +155,18 @@ func (d config) DeepDiff(c Config) ([]structs.Field, error) {
 // CheckData - checks the validity of config data. Data should be of
 // type struct and contain a string type field called "Version".
 func CheckData(data interface{}) error {
-	if !structs.IsStruct(data) {
+	if !isStruct(data) {
 		return fmt.Errorf("interface must be struct type")
 	}
 
-	st := structs.New(data)
+	st := newStruct(data)
 	f, ok := st.FieldOk("Version")
 	if !ok {
 		return fmt.Errorf("struct ‘%s’ must have field ‘Version’", st.Name())
 	}
 
 	if f.Kind() != reflect.String {
-		return fmt.Errorf("‘Version’ field in struct ‘%s’ must be a string type", st.Name())
+		return fmt.Errorf("’Version’ field in struct ‘%s’ must be a string type", st.Name())
 	}
 
 	return nil

@@ -24,7 +24,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	ewma "github.com/VividCortex/ewma"
 	trace "github.com/minio/minio/pkg/trace"
 )
 
@@ -70,7 +69,7 @@ type xlStorageDiskIDCheck struct {
 	// please use `fieldalignment ./...` to check
 	// if your changes are not causing any problems.
 	storage      StorageAPI
-	apiLatencies [storageMetricLast]ewma.MovingAverage
+	apiLatencies [storageMetricLast]MovingAverage
 	diskID       string
 	apiCalls     [storageMetricLast]uint64
 }
@@ -91,7 +90,7 @@ func (p *xlStorageDiskIDCheck) getMetrics() DiskMetrics {
 
 type lockedSimpleEWMA struct {
 	sync.RWMutex
-	*ewma.SimpleEWMA
+	*SimpleEWMA
 }
 
 func (e *lockedSimpleEWMA) Add(value float64) {
@@ -119,7 +118,7 @@ func newXLStorageDiskIDCheck(storage *xlStorage) *xlStorageDiskIDCheck {
 	}
 	for i := range xl.apiLatencies[:] {
 		xl.apiLatencies[i] = &lockedSimpleEWMA{
-			SimpleEWMA: new(ewma.SimpleEWMA),
+			SimpleEWMA: new(SimpleEWMA),
 		}
 	}
 	return &xl

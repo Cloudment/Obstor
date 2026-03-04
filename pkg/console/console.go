@@ -24,9 +24,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fatih/color"
-	"github.com/mattn/go-colorable"
-	"github.com/mattn/go-isatty"
+	"github.com/minio/minio/pkg/color"
+	"golang.org/x/term"
 )
 
 var (
@@ -36,7 +35,7 @@ var (
 	// Used internally by console.
 	privateMutex sync.Mutex
 
-	stderrColoredOutput = colorable.NewColorableStderr()
+	stderrColoredOutput = os.Stderr
 
 	// Print prints a message.
 	Print = func(data ...interface{}) {
@@ -124,7 +123,7 @@ var (
 
 	// Colorize prints message in a colorized form, dictated by the corresponding tag argument.
 	Colorize = func(tag string, data interface{}) string {
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			colorized, ok := Theme[tag]
 			if ok {
 				return colorized.SprintFunc()(data)
@@ -154,7 +153,7 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <DEBUG> ")
 			c.Print(a...)
 		} else {
@@ -171,7 +170,7 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <ERROR> ")
 			c.Print(a...)
 		} else {
@@ -184,7 +183,7 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 		if len(a) == 0 {
 			return
 		}
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Print(ProgramName() + ": ")
 			c.Print(a...)
 		} else {
@@ -192,7 +191,7 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 			fmt.Fprint(color.Output, a...)
 		}
 	default:
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Print(a...)
 		} else {
 			fmt.Fprint(color.Output, a...)
@@ -213,7 +212,7 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <DEBUG> ")
 			c.Printf(format, a...)
 		} else {
@@ -230,7 +229,7 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <ERROR> ")
 			c.Printf(format, a...)
 		} else {
@@ -243,7 +242,7 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 		if len(a) == 0 {
 			return
 		}
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Print(ProgramName() + ": ")
 			c.Printf(format, a...)
 		} else {
@@ -251,7 +250,7 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 			fmt.Fprintf(color.Output, format, a...)
 		}
 	default:
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Printf(format, a...)
 		} else {
 			fmt.Fprintf(color.Output, format, a...)
@@ -272,7 +271,7 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <DEBUG> ")
 			c.Println(a...)
 		} else {
@@ -289,7 +288,7 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 		}
 		output := color.Output
 		color.Output = stderrColoredOutput
-		if isatty.IsTerminal(os.Stderr.Fd()) {
+		if term.IsTerminal(int(os.Stderr.Fd())) {
 			c.Print(ProgramName() + ": <ERROR> ")
 			c.Println(a...)
 		} else {
@@ -302,7 +301,7 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 		if len(a) == 0 {
 			return
 		}
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Print(ProgramName() + ": ")
 			c.Println(a...)
 		} else {
@@ -310,7 +309,7 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 			fmt.Fprintln(color.Output, a...)
 		}
 	default:
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal(int(os.Stdout.Fd())) {
 			c.Println(a...)
 		} else {
 			fmt.Fprintln(color.Output, a...)

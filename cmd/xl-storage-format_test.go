@@ -23,7 +23,6 @@ import (
 	"testing"
 
 	"github.com/dustin/go-humanize"
-	jsoniter "github.com/json-iterator/go"
 )
 
 func TestIsXLMetaFormatValid(t *testing.T) {
@@ -233,7 +232,7 @@ func TestGetXLMetaV1Jsoniter1(t *testing.T) {
 	}
 
 	var jsoniterXLMeta xlMetaV1Object
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err := json.Unmarshal(xlMetaJSON, &jsoniterXLMeta); err != nil {
 		t.Errorf("jsoniter parsing of XLMeta failed: %v", err)
 	}
@@ -252,7 +251,7 @@ func TestGetXLMetaV1Jsoniter10(t *testing.T) {
 	}
 
 	var jsoniterXLMeta xlMetaV1Object
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err := json.Unmarshal(xlMetaJSON, &jsoniterXLMeta); err != nil {
 		t.Errorf("jsoniter parsing of XLMeta failed: %v", err)
 	}

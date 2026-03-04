@@ -35,9 +35,9 @@ type healStatusSummary string
 // healStatusSummary constants
 const (
 	healNotStartedStatus healStatusSummary = "not started"
-	healRunningStatus                      = "running"
-	healStoppedStatus                      = "stopped"
-	healFinishedStatus                     = "finished"
+	healRunningStatus    healStatusSummary = "running"
+	healStoppedStatus    healStatusSummary = "stopped"
+	healFinishedStatus   healStatusSummary = "finished"
 )
 
 const (

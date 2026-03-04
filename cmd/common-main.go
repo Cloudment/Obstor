@@ -24,7 +24,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net"
 	"net/url"
 	"os"
@@ -34,9 +33,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	dns2 "github.com/miekg/dns"
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio/cmd/config"
 	"github.com/minio/minio/cmd/crypto"
@@ -44,6 +42,7 @@ import (
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/pkg/auth"
 	"github.com/minio/minio/pkg/certs"
+	color "github.com/minio/minio/pkg/color"
 	"github.com/minio/minio/pkg/console"
 	"github.com/minio/minio/pkg/env"
 	"github.com/minio/minio/pkg/handlers"
@@ -54,8 +53,6 @@ import (
 var serverDebugLog = env.Get("_MINIO_SERVER_DEBUG", config.EnableOff) == config.EnableOn
 
 func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-
 	logger.Init(GOPATH, GOROOT)
 	logger.RegisterError(config.FmtError)
 
@@ -332,13 +329,13 @@ func handleCommonEnvVars() {
 	}
 
 	if env.IsSet(config.EnvKMSSecretKey) && env.IsSet(config.EnvKESEndpoint) {
-		logger.Fatal(errors.New("ambigious KMS configuration"), fmt.Sprintf("The environment contains %q as well as %q", config.EnvKMSSecretKey, config.EnvKESEndpoint))
+		logger.Fatal(errors.New("ambigious KMS configuration"), "The environment contains %q as well as %q", config.EnvKMSSecretKey, config.EnvKESEndpoint)
 	}
 	switch {
 	case env.IsSet(config.EnvKMSSecretKey) && env.IsSet(config.EnvKESEndpoint):
-		logger.Fatal(errors.New("ambigious KMS configuration"), fmt.Sprintf("The environment contains %q as well as %q", config.EnvKMSSecretKey, config.EnvKESEndpoint))
+		logger.Fatal(errors.New("ambigious KMS configuration"), "The environment contains %q as well as %q", config.EnvKMSSecretKey, config.EnvKESEndpoint)
 	case env.IsSet(config.EnvKMSMasterKey) && env.IsSet(config.EnvKESEndpoint):
-		logger.Fatal(errors.New("ambigious KMS configuration"), fmt.Sprintf("The environment contains %q as well as %q", config.EnvKMSMasterKey, config.EnvKESEndpoint))
+		logger.Fatal(errors.New("ambigious KMS configuration"), "The environment contains %q as well as %q", config.EnvKMSMasterKey, config.EnvKESEndpoint)
 	}
 	if env.IsSet(config.EnvKMSSecretKey) {
 		KMS, err := kms.Parse(env.Get(config.EnvKMSSecretKey, ""))

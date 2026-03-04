@@ -391,11 +391,11 @@ func (l *Config) Connect() (ldapConn *ldap.Conn, err error) {
 	}
 
 	if l.serverInsecure {
-		return ldap.Dial("tcp", l.ServerAddr)
+		return ldap.Dial("tcp", l.ServerAddr) //nolint:staticcheck // SA1019: ldap.Dial deprecated, DialURL migration deferred
 	}
 
 	if l.serverStartTLS {
-		conn, err := ldap.Dial("tcp", l.ServerAddr)
+		conn, err := ldap.Dial("tcp", l.ServerAddr) //nolint:staticcheck // SA1019: ldap.Dial deprecated, DialURL migration deferred
 		if err != nil {
 			return nil, err
 		}
@@ -406,7 +406,7 @@ func (l *Config) Connect() (ldapConn *ldap.Conn, err error) {
 		return conn, err
 	}
 
-	return ldap.DialTLS("tcp", l.ServerAddr, &tls.Config{
+	return ldap.DialTLS("tcp", l.ServerAddr, &tls.Config{ //nolint:staticcheck // SA1019: ldap.Dial deprecated, DialURL migration deferred
 		InsecureSkipVerify: l.tlsSkipVerify,
 		RootCAs:            l.rootCAs,
 	})
@@ -539,7 +539,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 
 	// At least one of bind mode or username format must be used.
 	if !l.isUsingLookupBind && len(l.UsernameFormats) == 0 {
-		return l, errors.New("Either Lookup Bind mode or Username Format mode is required.")
+		return l, errors.New("either Lookup Bind mode or Username Format mode is required")
 	}
 
 	// Test connection to LDAP server.

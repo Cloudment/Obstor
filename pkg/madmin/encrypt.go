@@ -22,7 +22,6 @@ import (
 	"crypto/sha256"
 	"errors"
 	"io"
-	"io/ioutil"
 
 	"github.com/minio/minio/pkg/argon2"
 	"github.com/minio/minio/pkg/fips"
@@ -122,14 +121,14 @@ func DecryptData(password string, data io.Reader) ([]byte, error) {
 		err    error
 		stream *sio.Stream
 	)
-	switch {
-	case id[0] == argon2idAESGCM:
+	switch id[0] {
+	case argon2idAESGCM:
 		key := argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
 		stream, err = sio.AES_256_GCM.Stream(key)
-	case id[0] == argon2idChaCHa20Poly1305:
+	case argon2idChaCHa20Poly1305:
 		key := argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
 		stream, err = sio.ChaCha20Poly1305.Stream(key)
-	case id[0] == pbkdf2AESGCM:
+	case pbkdf2AESGCM:
 		key := pbkdf2.Key([]byte(password), salt[:], pbkdf2Cost, 32, sha256.New)
 		stream, err = sio.AES_256_GCM.Stream(key)
 	default:
@@ -139,7 +138,7 @@ func DecryptData(password string, data io.Reader) ([]byte, error) {
 		return nil, err
 	}
 
-	plaintext, err := ioutil.ReadAll(stream.DecryptReader(data, nonce[:], nil))
+	plaintext, err := io.ReadAll(stream.DecryptReader(data, nonce[:], nil))
 	if err != nil {
 		return nil, err
 	}

@@ -25,8 +25,8 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/cespare/xxhash/v2"
 	"github.com/klauspost/reedsolomon"
+	"github.com/minio/highwayhash"
 	"github.com/minio/minio/cmd/logger"
 )
 
@@ -182,7 +182,7 @@ func erasureSelfTest() {
 			failOnErr(err)
 			encoded, err := e.EncodeData(GlobalContext, testData[:])
 			failOnErr(err)
-			hash := xxhash.New()
+			hash, _ := highwayhash.New64(magicHighwayHash256Key) // New64 will never return error since key is 256 bit
 			for i, data := range encoded {
 				// Write index to keep track of sizes of each.
 				_, err = hash.Write([]byte{byte(i)})

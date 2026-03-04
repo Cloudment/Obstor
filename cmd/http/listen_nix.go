@@ -19,19 +19,24 @@
 package http
 
 import (
+	"context"
 	"net"
-
-	"github.com/valyala/tcplisten"
+	"syscall"
 )
 
-var cfg = &tcplisten.Config{
-	DeferAccept: true,
-	FastOpen:    true,
-	// Bump up the soMaxConn value from 128 to 4096 to
-	// handle large incoming concurrent requests.
-	Backlog: 4096,
+var listenCfg = net.ListenConfig{
+	Control: func(network, address string, c syscall.RawConn) error {
+		return c.Control(func(fd uintptr) {
+			// Enable SO_REUSEADDR
+			_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+			// TCP_FASTOPEN and TCP_DEFER_ACCEPT are set via platform-specific files.
+			setTCPOptions(int(fd))
+		})
+	},
 }
 
 // Unix listener with special TCP options.
-var listen = cfg.NewListener
+var listen = func(network, addr string) (net.Listener, error) {
+	return listenCfg.Listen(context.Background(), network, addr)
+}
 var fallbackListen = net.Listen

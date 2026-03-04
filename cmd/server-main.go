@@ -30,7 +30,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	"github.com/minio/minio/cmd/config"
 	xhttp "github.com/minio/minio/cmd/http"
 	"github.com/minio/minio/cmd/logger"

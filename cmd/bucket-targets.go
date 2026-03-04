@@ -27,7 +27,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	minio "github.com/minio/minio-go/v7"
 	miniogo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio/cmd/crypto"
@@ -98,7 +97,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 	}
 	// validate if target credentials are ok
 	if _, err = clnt.BucketExists(ctx, tgt.TargetBucket); err != nil {
-		if minio.ToErrorResponse(err).Code == "NoSuchBucket" {
+		if miniogo.ToErrorResponse(err).Code == "NoSuchBucket" {
 			return BucketRemoteTargetNotFound{Bucket: tgt.TargetBucket}
 		}
 		return BucketRemoteConnectionErr{Bucket: tgt.TargetBucket, Err: err}
@@ -125,7 +124,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 		if globalBucketVersioningSys.Enabled(bucket) {
 			vcfg, err := clnt.GetBucketVersioning(ctx, tgt.TargetBucket)
 			if err != nil {
-				if minio.ToErrorResponse(err).Code == "NoSuchBucket" {
+				if miniogo.ToErrorResponse(err).Code == "NoSuchBucket" {
 					return BucketRemoteTargetNotFound{Bucket: tgt.TargetBucket}
 				}
 				return BucketRemoteConnectionErr{Bucket: tgt.TargetBucket, Err: err}
@@ -239,7 +238,7 @@ func (sys *BucketTargetSys) GetRemoteTargetWithLabel(ctx context.Context, bucket
 	sys.RLock()
 	defer sys.RUnlock()
 	for _, t := range sys.targetsMap[bucket] {
-		if strings.ToUpper(t.Label) == strings.ToUpper(targetLabel) {
+		if strings.EqualFold(t.Label, targetLabel) {
 			tgt := t.Clone()
 			return &tgt
 		}
@@ -365,7 +364,7 @@ func (sys *BucketTargetSys) getRemoteTargetClient(tcfg *madmin.BucketTarget) (*T
 	getRemoteTargetInstanceTransportOnce.Do(func() {
 		getRemoteTargetInstanceTransport = NewRemoteTargetHTTPTransport()
 	})
-	api, err := minio.New(tcfg.Endpoint, &miniogo.Options{
+	api, err := miniogo.New(tcfg.Endpoint, &miniogo.Options{
 		Creds:     creds,
 		Secure:    tcfg.Secure,
 		Region:    tcfg.Region,

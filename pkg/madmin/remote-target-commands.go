@@ -21,7 +21,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -65,16 +65,16 @@ func (a ARN) String() string {
 func ParseARN(s string) (*ARN, error) {
 	// ARN must be in the format of arn:minio:<Type>:<REGION>:<ID>:<remote-bucket>
 	if !strings.HasPrefix(s, "arn:minio:") {
-		return nil, fmt.Errorf("Invalid ARN %s", s)
+		return nil, fmt.Errorf("invalid ARN %s", s)
 	}
 
 	tokens := strings.Split(s, ":")
 	if len(tokens) != 6 {
-		return nil, fmt.Errorf("Invalid ARN %s", s)
+		return nil, fmt.Errorf("invalid ARN %s", s)
 	}
 
 	if tokens[4] == "" || tokens[5] == "" {
-		return nil, fmt.Errorf("Invalid ARN %s", s)
+		return nil, fmt.Errorf("invalid ARN %s", s)
 	}
 
 	return &ARN{
@@ -186,7 +186,7 @@ func (adm *AdminClient) ListRemoteTargets(ctx context.Context, bucket, arnType s
 		return targets, httpRespToErrorResponse(resp)
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return targets, err
 	}
@@ -226,7 +226,7 @@ func (adm *AdminClient) SetRemoteTarget(ctx context.Context, bucket string, targ
 	if resp.StatusCode != http.StatusOK {
 		return "", httpRespToErrorResponse(resp)
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -271,7 +271,7 @@ func (adm *AdminClient) UpdateRemoteTarget(ctx context.Context, target *BucketTa
 	if resp.StatusCode != http.StatusOK {
 		return "", httpRespToErrorResponse(resp)
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

@@ -17,7 +17,7 @@
 package cmd
 
 import (
-	jsoniter "github.com/json-iterator/go"
+	"encoding/json"
 )
 
 type versionsSorter []FileInfo
@@ -53,7 +53,7 @@ func getFileInfoVersions(xlMetaBuf []byte, volume, path string) (FileInfoVersion
 	}
 
 	xlMeta := &xlMetaV1Object{}
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err := json.Unmarshal(xlMetaBuf, xlMeta); err != nil {
 		return FileInfoVersions{}, errFileCorrupt
 	}
@@ -98,7 +98,7 @@ func getFileInfo(xlMetaBuf []byte, volume, path, versionID string, data bool) (F
 	}
 
 	xlMeta := &xlMetaV1Object{}
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err := json.Unmarshal(xlMetaBuf, xlMeta); err != nil {
 		return FileInfo{}, errFileCorrupt
 	}

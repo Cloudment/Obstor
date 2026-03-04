@@ -25,7 +25,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/djherbis/atime"
+	"github.com/minio/minio/pkg/atime"
 )
 
 // Return error if Atime is disabled on the O/S

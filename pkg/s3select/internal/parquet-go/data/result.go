@@ -21,19 +21,18 @@ import (
 	"math"
 
 	"github.com/minio/minio/pkg/s3select/internal/parquet-go/gen-go/parquet"
-	"github.com/tidwall/gjson"
 )
 
-func resultToBool(result gjson.Result) (value interface{}, err error) {
-	switch result.Type {
-	case gjson.False, gjson.True:
-		return result.Bool(), nil
+func resultToBool(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case bool:
+		return v, nil
 	}
 
-	return nil, fmt.Errorf("result is not Bool but %v", result.Type)
+	return nil, fmt.Errorf("result is not Bool but %T", result)
 }
 
-func resultToInt32(result gjson.Result) (value interface{}, err error) {
+func resultToInt32(result interface{}) (value interface{}, err error) {
 	if value, err = resultToInt64(result); err != nil {
 		return nil, err
 	}
@@ -45,42 +44,49 @@ func resultToInt32(result gjson.Result) (value interface{}, err error) {
 	return int32(value.(int64)), nil
 }
 
-func resultToInt64(result gjson.Result) (value interface{}, err error) {
-	if result.Type == gjson.Number {
-		return result.Int(), nil
+func resultToInt64(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case float64:
+		return int64(v), nil
+	case int64:
+		return v, nil
 	}
 
-	return nil, fmt.Errorf("result is not Number but %v", result.Type)
+	return nil, fmt.Errorf("result is not Number but %T", result)
 }
 
-func resultToFloat(result gjson.Result) (value interface{}, err error) {
-	if result.Type == gjson.Number {
-		return float32(result.Float()), nil
+func resultToFloat(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case float64:
+		return float32(v), nil
 	}
 
-	return nil, fmt.Errorf("result is not float32 but %v", result.Type)
+	return nil, fmt.Errorf("result is not float32 but %T", result)
 }
 
-func resultToDouble(result gjson.Result) (value interface{}, err error) {
-	if result.Type == gjson.Number {
-		return result.Float(), nil
+func resultToDouble(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case float64:
+		return v, nil
 	}
 
-	return nil, fmt.Errorf("result is not float64 but %v", result.Type)
+	return nil, fmt.Errorf("result is not float64 but %T", result)
 }
 
-func resultToBytes(result gjson.Result) (interface{}, error) {
-	if result.Type != gjson.JSON || !result.IsArray() {
-		return nil, fmt.Errorf("result is not byte array but %v", result.Type)
+func resultToBytes(result interface{}) (interface{}, error) {
+	arr, ok := result.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("result is not byte array but %T", result)
 	}
 
 	data := []byte{}
-	for i, r := range result.Array() {
-		if r.Type != gjson.Number {
-			return nil, fmt.Errorf("result[%v] is not byte but %v", i, r.Type)
+	for i, r := range arr {
+		f, ok := r.(float64)
+		if !ok {
+			return nil, fmt.Errorf("result[%v] is not byte but %T", i, r)
 		}
 
-		value := r.Uint()
+		value := uint64(f)
 		if value > math.MaxUint8 {
 			return nil, fmt.Errorf("byte overflow in result[%v]", i)
 		}
@@ -91,15 +97,16 @@ func resultToBytes(result gjson.Result) (interface{}, error) {
 	return data, nil
 }
 
-func resultToString(result gjson.Result) (value interface{}, err error) {
-	if result.Type == gjson.String {
-		return result.String(), nil
+func resultToString(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case string:
+		return v, nil
 	}
 
-	return nil, fmt.Errorf("result is not String but %v", result.Type)
+	return nil, fmt.Errorf("result is not String but %T", result)
 }
 
-func resultToUint8(result gjson.Result) (value interface{}, err error) {
+func resultToUint8(result interface{}) (value interface{}, err error) {
 	if value, err = resultToUint64(result); err != nil {
 		return nil, err
 	}
@@ -111,7 +118,7 @@ func resultToUint8(result gjson.Result) (value interface{}, err error) {
 	return uint8(value.(uint64)), nil
 }
 
-func resultToUint16(result gjson.Result) (value interface{}, err error) {
+func resultToUint16(result interface{}) (value interface{}, err error) {
 	if value, err = resultToUint64(result); err != nil {
 		return nil, err
 	}
@@ -123,7 +130,7 @@ func resultToUint16(result gjson.Result) (value interface{}, err error) {
 	return uint16(value.(uint64)), nil
 }
 
-func resultToUint32(result gjson.Result) (value interface{}, err error) {
+func resultToUint32(result interface{}) (value interface{}, err error) {
 	if value, err = resultToUint64(result); err != nil {
 		return nil, err
 	}
@@ -135,15 +142,16 @@ func resultToUint32(result gjson.Result) (value interface{}, err error) {
 	return uint32(value.(uint64)), nil
 }
 
-func resultToUint64(result gjson.Result) (value interface{}, err error) {
-	if result.Type == gjson.Number {
-		return result.Uint(), nil
+func resultToUint64(result interface{}) (value interface{}, err error) {
+	switch v := result.(type) {
+	case float64:
+		return uint64(v), nil
 	}
 
-	return nil, fmt.Errorf("result is not Number but %v", result.Type)
+	return nil, fmt.Errorf("result is not Number but %T", result)
 }
 
-func resultToInt8(result gjson.Result) (value interface{}, err error) {
+func resultToInt8(result interface{}) (value interface{}, err error) {
 	if value, err = resultToInt64(result); err != nil {
 		return nil, err
 	}
@@ -155,7 +163,7 @@ func resultToInt8(result gjson.Result) (value interface{}, err error) {
 	return int8(value.(int64)), nil
 }
 
-func resultToInt16(result gjson.Result) (value interface{}, err error) {
+func resultToInt16(result interface{}) (value interface{}, err error) {
 	if value, err = resultToInt64(result); err != nil {
 		return nil, err
 	}
@@ -264,8 +272,8 @@ func int64ToParquetValue(value interface{}, parquetType parquet.Type) (interface
 	return nil, fmt.Errorf("int64 cannot be converted to parquet type %v", parquetType)
 }
 
-func resultToParquetValueByConvertedValue(result gjson.Result, convertedType parquet.ConvertedType, parquetType parquet.Type) (value interface{}, err error) {
-	if result.Type == gjson.Null {
+func resultToParquetValueByConvertedValue(result interface{}, convertedType parquet.ConvertedType, parquetType parquet.Type) (value interface{}, err error) {
+	if result == nil {
 		return nil, nil
 	}
 
@@ -320,12 +328,12 @@ func resultToParquetValueByConvertedValue(result gjson.Result, convertedType par
 	return nil, fmt.Errorf("unsupported converted type %v", convertedType)
 }
 
-func resultToParquetValue(result gjson.Result, parquetType parquet.Type, convertedType *parquet.ConvertedType) (interface{}, error) {
+func resultToParquetValue(result interface{}, parquetType parquet.Type, convertedType *parquet.ConvertedType) (interface{}, error) {
 	if convertedType != nil {
 		return resultToParquetValueByConvertedValue(result, *convertedType, parquetType)
 	}
 
-	if result.Type == gjson.Null {
+	if result == nil {
 		return nil, nil
 	}
 
@@ -347,14 +355,15 @@ func resultToParquetValue(result gjson.Result, parquetType parquet.Type, convert
 	return nil, fmt.Errorf("unknown parquet type %v", parquetType)
 }
 
-func resultToArray(result gjson.Result) ([]gjson.Result, error) {
-	if result.Type == gjson.Null {
+func resultToArray(result interface{}) ([]interface{}, error) {
+	if result == nil {
 		return nil, nil
 	}
 
-	if result.Type != gjson.JSON || !result.IsArray() {
-		return nil, fmt.Errorf("result is not Array but %v", result.Type)
+	arr, ok := result.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("result is not Array but %T", result)
 	}
 
-	return result.Array(), nil
+	return arr, nil
 }

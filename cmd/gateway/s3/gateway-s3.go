@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	miniogo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
@@ -76,7 +76,7 @@ EXAMPLES:
 		Usage:              "Amazon Simple Storage Service (S3)",
 		Action:             s3GatewayMain,
 		CustomHelpTemplate: s3GatewayTemplate,
-		HideHelpCommand:    true,
+		HideHelp:           true,
 	})
 }
 

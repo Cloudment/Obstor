@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/http/cookiejar"
@@ -83,7 +82,7 @@ const (
 // User Agent should always following the below style.
 // Please open an issue to discuss any new changes here.
 //
-//       MinIO (OS; ARCH) LIB/VER APP/VER
+//	MinIO (OS; ARCH) LIB/VER APP/VER
 const (
 	libraryUserAgentPrefix = "MinIO (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
 	libraryUserAgent       = libraryUserAgentPrefix + libraryName + "/" + libraryVersion
@@ -384,7 +383,7 @@ func (adm AdminClient) executeMethod(ctx context.Context, method string, reqData
 		}
 
 		// Read the body to be saved later.
-		errBodyBytes, err := ioutil.ReadAll(res.Body)
+		errBodyBytes, err := io.ReadAll(res.Body)
 		// res.Body should be closed
 		closeResponse(res)
 		if err != nil {
@@ -393,14 +392,14 @@ func (adm AdminClient) executeMethod(ctx context.Context, method string, reqData
 
 		// Save the body.
 		errBodySeeker := bytes.NewReader(errBodyBytes)
-		res.Body = ioutil.NopCloser(errBodySeeker)
+		res.Body = io.NopCloser(errBodySeeker)
 
 		// For errors verify if its retryable otherwise fail quickly.
 		errResponse := ToErrorResponse(httpRespToErrorResponse(res))
 
 		// Save the body back again.
 		errBodySeeker.Seek(0, 0) // Seek back to starting point.
-		res.Body = ioutil.NopCloser(errBodySeeker)
+		res.Body = io.NopCloser(errBodySeeker)
 
 		// Verify if error response code is retryable.
 		if isS3CodeRetryable(errResponse.Code) {
@@ -432,7 +431,7 @@ func (adm AdminClient) setUserAgent(req *http.Request) {
 }
 
 func (adm AdminClient) getSecretKey() string {
-	value, err := adm.credsProvider.Get()
+	value, err := adm.credsProvider.Get() //nolint:staticcheck // SA1019: GetWithContext requires CredContext, not context.Context
 	if err != nil {
 		// Return empty, call will fail.
 		return ""
@@ -463,7 +462,7 @@ func (adm AdminClient) newRequest(ctx context.Context, method string, reqData re
 		return nil, err
 	}
 
-	value, err := adm.credsProvider.Get()
+	value, err := adm.credsProvider.Get() //nolint:staticcheck // SA1019: GetWithContext requires CredContext, not context.Context
 	if err != nil {
 		return nil, err
 	}
@@ -483,7 +482,7 @@ func (adm AdminClient) newRequest(ctx context.Context, method string, reqData re
 	}
 	sum := sha256.Sum256(reqData.content)
 	req.Header.Set("X-Amz-Content-Sha256", hex.EncodeToString(sum[:]))
-	req.Body = ioutil.NopCloser(bytes.NewReader(reqData.content))
+	req.Body = io.NopCloser(bytes.NewReader(reqData.content))
 
 	req = signer.SignV4(*req, accessKeyID, secretAccessKey, sessionToken, location)
 	return req, nil

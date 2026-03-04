@@ -19,8 +19,6 @@ package cmd
 import (
 	"os"
 	"path/filepath"
-
-	homedir "github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -46,7 +44,7 @@ type ConfigDir struct {
 }
 
 func getDefaultConfigDir() string {
-	homeDir, err := homedir.Dir()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return ""
 	}

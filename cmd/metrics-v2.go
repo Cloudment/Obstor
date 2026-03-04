@@ -27,6 +27,7 @@ import (
 
 	"github.com/minio/minio/cmd/logger"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/procfs"
@@ -1649,14 +1650,14 @@ func metricsNodeHandler() http.Handler {
 	if err != nil {
 		logger.CriticalIf(GlobalContext, err)
 	}
-	err = registry.Register(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
+	err = registry.Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{
 		Namespace:    minioNamespace,
 		ReportErrors: true,
 	}))
 	if err != nil {
 		logger.CriticalIf(GlobalContext, err)
 	}
-	err = registry.Register(prometheus.NewGoCollector())
+	err = registry.Register(collectors.NewGoCollector())
 	if err != nil {
 		logger.CriticalIf(GlobalContext, err)
 	}

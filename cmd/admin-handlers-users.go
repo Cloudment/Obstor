@@ -1007,7 +1007,7 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 		}
 		policies, err = globalIAMSys.PolicyDBGet(parentUser, false, cred.Groups...)
 	default:
-		err = errors.New("should not happen!")
+		err = errors.New("should not happen")
 	}
 	if err != nil {
 		logger.LogIf(ctx, err)

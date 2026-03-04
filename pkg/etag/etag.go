@@ -248,8 +248,8 @@ func Get(h http.Header) (ETag, error) {
 	if v := h.Get("Etag"); v != "" {
 		return parse(v, strict)
 	}
-	v, ok := h["ETag"]
-	if !ok || len(v) == 0 {
+	v := h.Values("ETag")
+	if len(v) == 0 {
 		return nil, errors.New("etag: HTTP header does not contain an ETag")
 	}
 	return parse(v[0], strict)

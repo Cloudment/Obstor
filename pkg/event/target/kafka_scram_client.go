@@ -20,7 +20,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 
-	"github.com/xdg/scram"
+	"github.com/xdg-go/scram"
 )
 
 // KafkaSHA256 is a function that returns a crypto/sha256 hasher and should be used

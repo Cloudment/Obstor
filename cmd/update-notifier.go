@@ -19,13 +19,14 @@ package cmd
 import (
 	"fmt"
 	"math"
+	"os"
 	"runtime"
 	"strings"
 	"time"
 
-	"github.com/cheggaaa/pb"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/minio/minio/pkg/color"
+	"golang.org/x/term"
 )
 
 // prepareUpdateMessage - prepares the update message, only if a
@@ -64,7 +65,7 @@ func colorizeUpdateMessage(updateString string, newerThan string) string {
 	// termWidth is set to a default one to use when we are
 	// not able to calculate terminal width via OS syscalls
 	termWidth := 25
-	if width, err := pb.GetTerminalWidth(); err == nil {
+	if width, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 		termWidth = width
 	}
 

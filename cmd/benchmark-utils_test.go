@@ -177,8 +177,6 @@ func benchmarkPutObjectParallel(b *testing.B, instanceType string, objSize int) 
 // randomly picks a character and returns its equivalent byte array.
 func getRandomByte() []byte {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	// seeding the random number generator.
-	rand.Seed(UTCNow().UnixNano())
 	// pick a character randomly.
 	return []byte{letterBytes[rand.Intn(len(letterBytes))]}
 }

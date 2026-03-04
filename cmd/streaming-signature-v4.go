@@ -312,7 +312,7 @@ func (cr *s3ChunkedReader) Read(buf []byte) (n int, err error) {
 		cr.err = err
 		return n, cr.err
 	}
-	b, err = cr.reader.ReadByte()
+	b, _ = cr.reader.ReadByte()
 	if b != '\r' {
 		cr.err = errMalformedEncoding
 		return n, cr.err

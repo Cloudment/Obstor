@@ -32,7 +32,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
+	"encoding/json"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/minio/cmd/config"
@@ -126,7 +126,7 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 	var err error
 	if fsPath, err = getValidPath(fsPath); err != nil {
 		if err == errMinDiskSize {
-			return nil, config.ErrUnableToWriteInBackend(err).Hint(err.Error())
+			return nil, config.ErrUnableToWriteInBackend(err).Hint("%s", err.Error())
 		}
 
 		// Show a descriptive error with a hint about how to fix it.
@@ -137,7 +137,7 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 			username = "<your-username>"
 		}
 		hint := fmt.Sprintf("Use 'sudo chown -R %s %s && sudo chmod u+rxw %s' to provide sufficient permissions.", username, fsPath, fsPath)
-		return nil, config.ErrUnableToWriteInBackend(err).Hint(hint)
+		return nil, config.ErrUnableToWriteInBackend(err).Hint("%s", hint)
 	}
 
 	// Assign a new UUID for FS minio mode. Each server instance
@@ -340,7 +340,7 @@ func (fs *FSObjects) scanBucket(ctx context.Context, bucket string, cache dataUs
 		fsMeta := newFSMetaV1()
 		metaOk := false
 		if len(fsMetaBytes) > 0 {
-			var json = jsoniter.ConfigCompatibleWithStandardLibrary
+		
 			if err = json.Unmarshal(fsMetaBytes, &fsMeta); err == nil {
 				metaOk = true
 			}
@@ -450,7 +450,7 @@ func (fs *FSObjects) SetBucketPolicy(ctx context.Context, bucket string, p *poli
 		return err
 	}
 
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	configData, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -897,7 +897,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 		fsMetaBuf, rerr := ioutil.ReadAll(rc)
 		rc.Close()
 		if rerr == nil {
-			var json = jsoniter.ConfigCompatibleWithStandardLibrary
+		
 			if rerr = json.Unmarshal(fsMetaBuf, &fsMeta); rerr != nil {
 				// For any error to read fsMeta, set default ETag and proceed.
 				fsMeta = fs.defaultFsJSON(object)
@@ -1404,7 +1404,7 @@ func (fs *FSObjects) getObjectETag(ctx context.Context, bucket, entry string, lo
 	}
 
 	var fsMeta fsMetaV1
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err = json.Unmarshal(fsMetaBuf, &fsMeta); err != nil {
 		return "", err
 	}

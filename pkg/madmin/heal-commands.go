@@ -21,7 +21,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"sort"
@@ -94,21 +94,21 @@ type HealItemType string
 // HealItemType constants
 const (
 	HealItemMetadata       HealItemType = "metadata"
-	HealItemBucket                      = "bucket"
-	HealItemBucketMetadata              = "bucket-metadata"
-	HealItemObject                      = "object"
+	HealItemBucket         HealItemType = "bucket"
+	HealItemBucketMetadata HealItemType = "bucket-metadata"
+	HealItemObject         HealItemType = "object"
 )
 
 // Drive state constants
 const (
 	DriveStateOk          string = "ok"
-	DriveStateOffline            = "offline"
-	DriveStateCorrupt            = "corrupt"
-	DriveStateMissing            = "missing"
-	DriveStatePermission         = "permission-denied"
-	DriveStateFaulty             = "faulty"
-	DriveStateUnknown            = "unknown"
-	DriveStateUnformatted        = "unformatted" // only returned by disk
+	DriveStateOffline     string = "offline"
+	DriveStateCorrupt     string = "corrupt"
+	DriveStateMissing     string = "missing"
+	DriveStatePermission  string = "permission-denied"
+	DriveStateFaulty      string = "faulty"
+	DriveStateUnknown     string = "unknown"
+	DriveStateUnformatted string = "unformatted" // only returned by disk
 )
 
 // HealDriveInfo - struct for an individual drive info item.
@@ -267,7 +267,7 @@ func (adm *AdminClient) Heal(ctx context.Context, bucket, prefix string,
 		return healStart, healTaskStatus, httpRespToErrorResponse(resp)
 	}
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return healStart, healTaskStatus, err
 	}
@@ -407,7 +407,7 @@ func (adm *AdminClient) BackgroundHealStatus(ctx context.Context) (BgHealState, 
 		return BgHealState{}, httpRespToErrorResponse(resp)
 	}
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return BgHealState{}, err
 	}

@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cespare/xxhash/v2"
 	"github.com/klauspost/compress/zstd"
+	"github.com/minio/highwayhash"
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/pkg/bucket/lifecycle"
 	"github.com/minio/minio/pkg/hash"
@@ -164,7 +164,7 @@ func (h dataUsageHash) mod(cycle uint32, cycles uint32) bool {
 	if cycles <= 1 {
 		return cycles == 1
 	}
-	return uint32(xxhash.Sum64String(string(h)))%cycles == cycle%cycles
+	return uint32(highwayhash.Sum64([]byte(h), magicHighwayHash256Key))%cycles == cycle%cycles
 }
 
 // addChildString will add a child based on its name.

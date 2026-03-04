@@ -36,7 +36,6 @@ import (
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/cmd/rest"
 	xnet "github.com/minio/minio/pkg/net"
-	xbufio "github.com/philhofer/fwd"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -444,17 +443,13 @@ func (client *storageRESTClient) RenameData(ctx context.Context, srcVolume, srcP
 }
 
 // where we keep old *Readers
-var readMsgpReaderPool = sync.Pool{New: func() interface{} { return &msgp.Reader{} }}
+var readMsgpReaderPool = sync.Pool{New: func() interface{} { return msgp.NewReaderSize(nil, 8<<10) }}
 
 // mspNewReader returns a *Reader that reads from the provided reader.
 // The reader will be buffered.
 func msgpNewReader(r io.Reader) *msgp.Reader {
 	p := readMsgpReaderPool.Get().(*msgp.Reader)
-	if p.R == nil {
-		p.R = xbufio.NewReaderSize(r, 8<<10)
-	} else {
-		p.R.Reset(r)
-	}
+	p.R.Reset(r)
 	return p
 }
 

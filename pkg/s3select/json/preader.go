@@ -23,7 +23,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/bcicen/jstream"
+	"github.com/minio/minio/pkg/s3select/jstream"
 	"github.com/minio/minio/pkg/s3select/sql"
 )
 
@@ -65,8 +65,7 @@ func (r *PReader) Read(dst sql.Record) (sql.Record, error) {
 			r.err = io.EOF
 			return nil, r.err
 		}
-		//lint:ignore SA6002 Using pointer would allocate more since we would have to copy slice header before taking a pointer.
-		r.kvDstPool.Put(r.current)
+		r.kvDstPool.Put(r.current) //nolint:staticcheck // SA6002: slice is reference type
 		r.current = <-item.dst
 		r.err = item.err
 		r.recordsRead = 0
@@ -203,8 +202,7 @@ func (r *PReader) startReaders() {
 					all = append(all, kvs)
 				}
 				// We don't need the input any more.
-				//lint:ignore SA6002 Using pointer would allocate more since we would have to copy slice header before taking a pointer.
-				r.bufferPool.Put(in.input)
+				r.bufferPool.Put(in.input) //nolint:staticcheck // SA6002: slice is reference type
 				in.input = nil
 				in.err = d.Err()
 				in.dst <- all

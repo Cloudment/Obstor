@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/pkg/hash"
 	"github.com/minio/minio/pkg/madmin"
@@ -69,7 +68,7 @@ func loadDataUsageFromBackend(ctx context.Context, objAPI ObjectLayer) (madmin.D
 	defer r.Close()
 
 	var dataUsageInfo madmin.DataUsageInfo
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 	if err = json.NewDecoder(r).Decode(&dataUsageInfo); err != nil {
 		return madmin.DataUsageInfo{}, err
 	}

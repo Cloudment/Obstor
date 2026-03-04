@@ -25,8 +25,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cespare/xxhash/v2"
 	"github.com/google/uuid"
+	"github.com/minio/highwayhash"
 	xhttp "github.com/minio/minio/cmd/http"
 	"github.com/minio/minio/cmd/logger"
 	"github.com/tinylib/msgp/msgp"
@@ -640,7 +640,7 @@ func (z *xlMetaV2) Load(buf []byte) error {
 				if crc, nbuf, err := msgp.ReadUint32Bytes(buf); err == nil {
 					// Read metadata CRC (added in v2)
 					buf = nbuf
-					if got := uint32(xxhash.Sum64(v)); got != crc {
+					if got := uint32(highwayhash.Sum64(v, magicHighwayHash256Key)); got != crc {
 						return fmt.Errorf("xlMetaV2.Load version(%d), CRC mismatch, want 0x%x, got 0x%x", minor, crc, got)
 					}
 				} else {
@@ -693,7 +693,7 @@ func (z *xlMetaV2) AppendTo(dst []byte) ([]byte, error) {
 	binary.BigEndian.PutUint32(dst[dataOffset-4:dataOffset], uint32(len(dst)-dataOffset))
 
 	// Add CRC of metadata.
-	dst = msgp.AppendUint32(dst, uint32(xxhash.Sum64(dst[dataOffset:])))
+	dst = msgp.AppendUint32(dst, uint32(highwayhash.Sum64(dst[dataOffset:], magicHighwayHash256Key)))
 	return append(dst, z.data...), nil
 }
 
@@ -1275,25 +1275,26 @@ func (z xlMetaV2) ToFileInfo(volume, path, versionID string) (fi FileInfo, err e
 
 	var foundIndex = -1
 
+outer:
 	for i := range orderedVersions {
 		switch orderedVersions[i].Type {
 		case ObjectType:
 			if bytes.Equal(orderedVersions[i].ObjectV2.VersionID[:], uv[:]) {
 				fi, err = orderedVersions[i].ObjectV2.ToFileInfo(volume, path)
 				foundIndex = i
-				break
+				break outer
 			}
 		case LegacyType:
 			if orderedVersions[i].ObjectV1.VersionID == versionID {
 				fi, err = orderedVersions[i].ObjectV1.ToFileInfo(volume, path)
 				foundIndex = i
-				break
+				break outer
 			}
 		case DeleteType:
 			if bytes.Equal(orderedVersions[i].DeleteMarker.VersionID[:], uv[:]) {
 				fi, err = orderedVersions[i].DeleteMarker.ToFileInfo(volume, path)
 				foundIndex = i
-				break
+				break outer
 			}
 		}
 	}

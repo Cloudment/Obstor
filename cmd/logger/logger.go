@@ -179,7 +179,7 @@ func Init(goPath string, goRoot string) {
 	defaultgoRootList = strings.Split(build.Default.GOROOT, pathSeperator)
 
 	// Add trim string "{GOROOT}/src/" into trimStrings
-	trimStrings = []string{filepath.Join(runtime.GOROOT(), "src") + string(filepath.Separator)}
+	trimStrings = []string{filepath.Join(runtime.GOROOT(), "src") + string(filepath.Separator)} //nolint:staticcheck // SA1019: runtime.GOROOT used for source path trimming
 
 	// Add all possible path from GOPATH=path1:path2...:pathN
 	// as "{path#}/src/" into trimStrings

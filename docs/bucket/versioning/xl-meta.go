@@ -23,11 +23,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -47,7 +46,7 @@ GLOBAL FLAGS:
   {{end}}{{end}}
 `
 
-	app.HideHelpCommand = true
+	app.HideHelp = true
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
@@ -80,7 +79,7 @@ GLOBAL FLAGS:
 				r = f
 			}
 
-			b, err := ioutil.ReadAll(r)
+			b, err := io.ReadAll(r)
 			if err != nil {
 				return err
 			}

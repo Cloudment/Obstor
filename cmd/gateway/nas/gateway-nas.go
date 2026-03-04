@@ -19,7 +19,7 @@ package nas
 import (
 	"context"
 
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	minio "github.com/minio/minio/cmd"
 	"github.com/minio/minio/pkg/auth"
 	"github.com/minio/minio/pkg/madmin"
@@ -61,7 +61,7 @@ EXAMPLES:
 		Usage:              "Network-attached storage (NAS)",
 		Action:             nasGatewayMain,
 		CustomHelpTemplate: nasGatewayTemplate,
-		HideHelpCommand:    true,
+		HideHelp:           true,
 	})
 }
 

@@ -23,8 +23,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 
-	"github.com/cheggaaa/pb"
+	"golang.org/x/term"
 )
 
 const errorFmt = "%5d: %s  <<<<"
@@ -47,7 +48,7 @@ func FormatJSONSyntaxError(data io.Reader, offset int64) (highlight string) {
 	// dynamically to avoid an eventual bug after modifying errorFmt
 	errorShift := len(fmt.Sprintf(errorFmt, 1, ""))
 
-	if width, err := pb.GetTerminalWidth(); err == nil {
+	if width, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 		termWidth = width
 	}
 

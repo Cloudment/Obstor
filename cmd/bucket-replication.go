@@ -25,7 +25,6 @@ import (
 	"sync"
 	"time"
 
-	minio "github.com/minio/minio-go/v7"
 	miniogo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/tags"
@@ -478,7 +477,7 @@ const (
 // matches k1 with all keys, returns 'true' if one of them matches
 func equals(k1 string, keys ...string) bool {
 	for _, k2 := range keys {
-		if strings.ToLower(k1) == strings.ToLower(k2) {
+		if strings.EqualFold(k1, k2) {
 			return true
 		}
 	}
@@ -486,7 +485,7 @@ func equals(k1 string, keys ...string) bool {
 }
 
 // returns replicationAction by comparing metadata between source and target
-func getReplicationAction(oi1 ObjectInfo, oi2 minio.ObjectInfo) replicationAction {
+func getReplicationAction(oi1 ObjectInfo, oi2 miniogo.ObjectInfo) replicationAction {
 	// needs full replication
 	if oi1.ETag != oi2.ETag ||
 		oi1.VersionID != oi2.VersionID ||

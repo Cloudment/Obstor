@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/bcicen/jstream"
+	"github.com/minio/minio/pkg/s3select/jstream"
 	"github.com/minio/simdjson-go"
 )
 

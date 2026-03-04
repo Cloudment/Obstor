@@ -84,12 +84,12 @@ func LoadX509KeyPair(certFile, keyFile string) (tls.Certificate, error) {
 	if len(rest) > 0 {
 		return tls.Certificate{}, ErrSSLUnexpectedData(nil).Msg("The private key contains additional data")
 	}
-	if x509.IsEncryptedPEMBlock(key) {
+	if x509.IsEncryptedPEMBlock(key) { //nolint:staticcheck // SA1019: intentionally supporting legacy PEM encryption
 		password := env.Get(EnvCertPassword, "")
 		if len(password) == 0 {
 			return tls.Certificate{}, ErrSSLNoPassword(nil)
 		}
-		decryptedKey, decErr := x509.DecryptPEMBlock(key, []byte(password))
+		decryptedKey, decErr := x509.DecryptPEMBlock(key, []byte(password)) //nolint:staticcheck // SA1019: intentionally supporting legacy PEM encryption
 		if decErr != nil {
 			return tls.Certificate{}, ErrSSLWrongPassword(decErr)
 		}
@@ -97,7 +97,7 @@ func LoadX509KeyPair(certFile, keyFile string) (tls.Certificate, error) {
 	}
 	cert, err := tls.X509KeyPair(certPEMBlock, keyPEMBlock)
 	if err != nil {
-		return tls.Certificate{}, ErrSSLUnexpectedData(nil).Msg(err.Error())
+		return tls.Certificate{}, ErrSSLUnexpectedData(nil).Msg("%s", err.Error())
 	}
 	// Ensure that the private key is not a P-384 or P-521 EC key.
 	// The Go TLS stack does not provide constant-time implementations of P-384 and P-521.

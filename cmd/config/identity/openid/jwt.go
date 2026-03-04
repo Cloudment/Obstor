@@ -174,7 +174,7 @@ func updateClaimsExpiry(dsecs string, claims map[string]interface{}) error {
 // Validate - validates the access token.
 func (p *JWT) Validate(token, dsecs string) (map[string]interface{}, error) {
 	jp := new(jwtgo.Parser)
-	jp.ValidMethods = []string{
+	jp.ValidMethods = []string{ //nolint:staticcheck // SA1019: WithValidMethods option not available in this jwt version
 		"RS256", "RS384", "RS512", "ES256", "ES384", "ES512",
 		"RS3256", "RS3384", "RS3512", "ES3256", "ES3384", "ES3512",
 	}

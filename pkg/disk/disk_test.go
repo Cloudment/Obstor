@@ -1,3 +1,4 @@
+//go:build !netbsd && !solaris
 // +build !netbsd,!solaris
 
 /*

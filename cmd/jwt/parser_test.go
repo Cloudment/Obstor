@@ -148,7 +148,7 @@ var jwtTestData = []struct {
 		"",
 		defaultKeyFunc,
 		&StandardClaims{
-			StandardClaims: jwt.StandardClaims{
+			StandardClaims: jwt.StandardClaims{ //nolint:staticcheck // SA1019: jwt.StandardClaims migration requires major refactor
 				ExpiresAt: time.Now().Add(time.Second * 10).Unix(),
 			},
 		},

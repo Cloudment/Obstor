@@ -19,6 +19,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	crand "crypto/rand"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -36,7 +37,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/klauspost/compress/s2"
-	"github.com/klauspost/readahead"
+	"github.com/minio/minio/pkg/readahead"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio/cmd/config/compress"
 	"github.com/minio/minio/cmd/config/dns"
@@ -851,7 +852,7 @@ func (p *PutObjReader) MD5CurrentHexString() string {
 		// md5sumCurr is only empty when we are running
 		// in non-compatibility mode.
 		md5sumCurr = make([]byte, 16)
-		rand.Read(md5sumCurr)
+		crand.Read(md5sumCurr)
 		appendHyphen = true
 	}
 	if p.sealMD5Fn != nil {

@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bcicen/jstream"
 	"github.com/minio/minio-go/v7/pkg/set"
+	"github.com/minio/minio/pkg/s3select/jstream"
 )
 
 // startWithConds - map which indicates if a given condition supports starts-with policy operator

@@ -39,7 +39,7 @@ import (
 	"github.com/Azure/azure-pipeline-go/pipeline"
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	minio "github.com/minio/minio/cmd"
 	"github.com/minio/minio/cmd/logger"
@@ -102,7 +102,7 @@ EXAMPLES:
 		Usage:              "Microsoft Azure Blob Storage",
 		Action:             azureGatewayMain,
 		CustomHelpTemplate: azureGatewayTemplate,
-		HideHelpCommand:    true,
+		HideHelp:           true,
 	})
 }
 

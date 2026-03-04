@@ -26,7 +26,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/beevik/ntp"
+	"encoding/binary"
+	"net"
+
 	"github.com/minio/minio/cmd/logger"
 	"github.com/minio/minio/pkg/env"
 )
@@ -124,6 +126,39 @@ var (
 	ntpServer = env.Get(ntpServerEnv, "")
 )
 
+// ntpTime queries an NTP server and returns the current time.
+func ntpTime(server string) (time.Time, error) {
+	conn, err := net.DialTimeout("udp", server+":123", 5*time.Second)
+	if err != nil {
+		return time.Time{}, err
+	}
+	defer conn.Close()
+
+	conn.SetDeadline(time.Now().Add(5 * time.Second))
+
+	// NTP request packet: 48 bytes, first byte = 0x1B (LI=0, VN=3, Mode=3 client)
+	req := make([]byte, 48)
+	req[0] = 0x1B
+
+	if _, err = conn.Write(req); err != nil {
+		return time.Time{}, err
+	}
+
+	resp := make([]byte, 48)
+	if _, err = conn.Read(resp); err != nil {
+		return time.Time{}, err
+	}
+
+	// Extract transmit timestamp from bytes 40-47.
+	// NTP timestamp: seconds since Jan 1, 1900 (32 bits) + fractional seconds (32 bits)
+	const ntpEpochOffset = 2208988800 // seconds between 1900 and 1970
+	secs := binary.BigEndian.Uint32(resp[40:44])
+	frac := binary.BigEndian.Uint32(resp[44:48])
+
+	nsec := (int64(frac) * 1e9) >> 32
+	return time.Unix(int64(secs)-ntpEpochOffset, nsec).UTC(), nil
+}
+
 // UTCNowNTP - is similar in functionality to UTCNow()
 // but only used when we do not wish to rely on system
 // time.
@@ -132,7 +167,7 @@ func UTCNowNTP() (time.Time, error) {
 	if ntpServer == "" {
 		return time.Now().UTC(), nil
 	}
-	return ntp.Time(ntpServer)
+	return ntpTime(ntpServer)
 }
 
 // Retention - bucket level retention configuration.

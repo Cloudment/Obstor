@@ -36,7 +36,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/cli"
+	"github.com/urfave/cli"
 	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	minio "github.com/minio/minio/cmd"
 	"github.com/minio/minio/cmd/logger"
@@ -132,7 +132,7 @@ EXAMPLES:
 		Usage:              "Google Cloud Storage",
 		Action:             gcsGatewayMain,
 		CustomHelpTemplate: gcsGatewayTemplate,
-		HideHelpCommand:    true,
+		HideHelp:           true,
 	})
 }
 
