@@ -1170,7 +1170,7 @@ func newTestSignedRequestV4(method, urlStr string, contentLength int64, body io.
 
 // Return new WebRPC request object.
 func newWebRPCRequest(methodRPC, authorization string, body io.ReadSeeker) (*http.Request, error) {
-	req, err := http.NewRequest(http.MethodPost, "/minio/webrpc", nil)
+	req, err := http.NewRequest(http.MethodPost, "/obstor/webrpc", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1535,7 +1535,7 @@ func getTestRoot() (string, error) {
 	return ioutil.TempDir(globalTestTmpDir, "api-")
 }
 
-// getRandomDisks - Creates a slice of N random disks, each of the form - minio-XXX
+// getRandomDisks - Creates a slice of N random disks, each of the form - obstor-XXX
 func getRandomDisks(N int) ([]string, error) {
 	var erasureDisks []string
 	for i := 0; i < N; i++ {
@@ -1981,7 +1981,7 @@ func ExecObjectLayerDiskAlteredTest(t *testing.T, objTest objTestDiskNotFoundTyp
 type objTestStaleFilesType func(obj ObjectLayer, instanceType string, dirs []string, t *testing.T)
 
 // ExecObjectLayerStaleFilesTest - executes object layer tests those leaves stale
-// files/directories under .minio/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
+// files/directories under .obstor/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
 func ExecObjectLayerStaleFilesTest(t *testing.T, objTest objTestStaleFilesType) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

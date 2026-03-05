@@ -25,12 +25,12 @@ Example 1: Start ObStor instance on a shared backend mounted and available at `/
 
 On linux server1
 ```shell
-minio gateway nas /path/to/nfs-volume
+obstor gateway nas /path/to/nfs-volume
 ```
 
 On linux server2
 ```shell
-minio gateway nas /path/to/nfs-volume
+obstor gateway nas /path/to/nfs-volume
 ```
 
 ### Windows 2012 Server
@@ -39,24 +39,24 @@ Example 1: Start ObStor instance on a shared backend mounted and available at `\
 
 On windows server1
 ```cmd
-minio.exe gateway nas \\remote-server\cifs\data
+obstor.exe gateway nas \\remote-server\cifs\data
 ```
 
 On windows server2
 ```cmd
-minio.exe gateway nas \\remote-server\cifs\data
+obstor.exe gateway nas \\remote-server\cifs\data
 ```
 
 Alternatively if `\\remote-server\cifs` is mounted as `D:\` drive.
 
 On windows server1
 ```cmd
-minio.exe gateway nas D:\data
+obstor.exe gateway nas D:\data
 ```
 
 On windows server2
 ```cmd
-minio.exe gateway nas D:\data
+obstor.exe gateway nas D:\data
 ```
 
 Architecture

@@ -54,7 +54,7 @@ import (
 
 const (
 	// ObStor meta bucket.
-	minioMetaBucket = ".minio.sys"
+	minioMetaBucket = ".obstor.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
 	// ObStor Multipart meta prefix.
@@ -148,7 +148,7 @@ func IsValidBucketName(bucket string) bool {
 //
 // - Backslash ("\")
 //
-// additionally minio does not support object names with trailing SlashSeparator.
+// additionally obstor does not support object names with trailing SlashSeparator.
 func IsValidObjectName(object string) bool {
 	if len(object) == 0 {
 		return false
@@ -348,12 +348,12 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
 }
 
-// Returns true if input bucket is a reserved minio meta bucket '.minio.sys'.
+// Returns true if input bucket is a reserved obstor meta bucket '.obstor.sys'.
 func isMinioMetaBucket(bucketName string) bool {
 	return bucketName == minioMetaBucket
 }
 
-// Returns true if input bucket is a reserved minio bucket 'minio'.
+// Returns true if input bucket is a reserved obstor bucket 'obstor'.
 func isMinioReservedBucket(bucketName string) bool {
 	return bucketName == minioReservedBucket
 }
@@ -901,12 +901,12 @@ func sealETagFn(key crypto.ObjectKey) SealMD5CurrFn {
 	return fn
 }
 
-// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from minio internal
-// encryption metadata that was sent by minio gateway
+// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from obstor internal
+// encryption metadata that was sent by obstor gateway
 func CleanMinioInternalMetadataKeys(metadata map[string]string) map[string]string {
 	var newMeta = make(map[string]string, len(metadata))
 	for k, v := range metadata {
-		if strings.HasPrefix(k, "X-Amz-Meta-X-Minio-Internal-") {
+		if strings.HasPrefix(k, "X-Amz-Meta-X-Obstor-Internal-") {
 			newMeta[strings.TrimPrefix(k, "X-Amz-Meta-")] = v
 		} else {
 			newMeta[k] = v

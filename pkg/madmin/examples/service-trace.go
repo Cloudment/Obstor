@@ -33,12 +33,12 @@ func main() {
 
 	// API requests are secure (HTTPS) if secure=true and insecure (HTTP) otherwise.
 	// New returns an ObStor Admin client object.
-	madmClnt, err := madmin.New("your-minio.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+	madmClnt, err := madmin.New("your-obstor.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Start listening on all http trace activity from all servers in the minio cluster.
+	// Start listening on all http trace activity from all servers in the obstor cluster.
 	traceCh := madmClnt.ServiceTrace(context.Background(), madmin.ServiceTraceOpts{
 		S3:        true,
 		Internal:  true,

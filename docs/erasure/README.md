@@ -26,7 +26,7 @@ ObStor's erasure coded backend uses high speed [HighwayHash](https://github.com/
 
 ObStor divides the drives you provide into erasure-coding sets of *4 to 16* drives.  Therefore, the number of drives you present must be a multiple of one of these numbers.  Each object is written to a single erasure-coding set.
 
-Minio uses the largest possible EC set size which divides into the number of drives given. For example, *18 drives* are configured as *2 sets of 9 drives*, and *24 drives* are configured as *2 sets of 12 drives*.  This is true for scenarios when running ObStor as a standalone erasure coded deployment. In [distributed setup however node (affinity) based](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide.html) erasure stripe sizes are chosen.
+Minio uses the largest possible EC set size which divides into the number of drives given. For example, *18 drives* are configured as *2 sets of 9 drives*, and *24 drives* are configured as *2 sets of 12 drives*.  This is true for scenarios when running ObStor as a standalone erasure coded deployment. In [distributed setup however node (affinity) based](https://pgg.net/docs/obstor/distributed-obstor-quickstart-guide.html) erasure stripe sizes are chosen.
 
 The drives should all be of approximately the same size.
 
@@ -34,7 +34,7 @@ The drives should all be of approximately the same size.
 
 ### 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
 
 ### 2. Run ObStor Server with Erasure Code
 
@@ -47,7 +47,7 @@ obstor server /data{1...12}
 Example: Start ObStor server in a 8 drives setup, using ObStor Docker image.
 
 ```sh
-docker run -p 9000:9000 --name minio \
+docker run -p 9000:9000 --name obstor \
   -v /mnt/data1:/data1 \
   -v /mnt/data2:/data2 \
   -v /mnt/data3:/data3 \
@@ -56,7 +56,7 @@ docker run -p 9000:9000 --name minio \
   -v /mnt/data6:/data6 \
   -v /mnt/data7:/data7 \
   -v /mnt/data8:/data8 \
-  minio/obstor server /data{1...8}
+  obstor/obstor server /data{1...8}
 ```
 
 ### 3. Test your setup

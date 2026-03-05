@@ -40,7 +40,7 @@ var (
 	)
 	minioVersionInfo = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "minio",
+			Namespace: "obstor",
 			Name:      "version_info",
 			Help:      "Version of current ObStor server instance",
 		},
@@ -59,7 +59,7 @@ const (
 	cacheNamespace       = "cache"
 	s3Namespace          = "s3"
 	bucketNamespace      = "bucket"
-	minioNamespace       = "minio"
+	minioNamespace       = "obstor"
 	diskNamespace        = "disk"
 	interNodeNamespace   = "internode"
 )

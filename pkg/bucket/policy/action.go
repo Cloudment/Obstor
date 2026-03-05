@@ -37,7 +37,7 @@ const (
 	// DeleteBucketAction - DeleteBucket Rest API action.
 	DeleteBucketAction = "s3:DeleteBucket"
 
-	// ForceDeleteBucketAction - DeleteBucket Rest API action when x-minio-force-delete flag
+	// ForceDeleteBucketAction - DeleteBucket Rest API action when x-obstor-force-delete flag
 	// is specified.
 	ForceDeleteBucketAction = "s3:ForceDeleteBucket"
 
@@ -59,7 +59,7 @@ const (
 	// GetObjectAction - GetObject Rest API action.
 	GetObjectAction = "s3:GetObject"
 
-	// HeadBucketAction - HeadBucket Rest API action. This action is unused in minio.
+	// HeadBucketAction - HeadBucket Rest API action. This action is unused in obstor.
 	HeadBucketAction = "s3:HeadBucket"
 
 	// ListAllMyBucketsAction - ListAllMyBuckets (List buckets) Rest API action.

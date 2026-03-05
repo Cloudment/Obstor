@@ -2,22 +2,22 @@
 
 This guide explains how to configure ObStor Server with TLS certificates on Linux and Windows platforms.
 
-1. [Install ObStor Server](#install-minio-server)
-2. [Use an Existing Key and Certificate with ObStor](#use-an-existing-key-and-certificate-with-minio)
+1. [Install ObStor Server](#install-obstor-server)
+2. [Use an Existing Key and Certificate with ObStor](#use-an-existing-key-and-certificate-with-obstor)
 3. [Generate and use Self-signed Keys and Certificates with ObStor](#generate-use-self-signed-keys-certificates)
 4. [Install Certificates from Third-party CAs](#install-certificates-from-third-party-cas)
 
-## <a name="install-minio-server"></a>1. Install ObStor Server
+## <a name="install-obstor-server"></a>1. Install ObStor Server
 
-Install ObStor Server using the instructions in the [ObStor Quickstart Guide](http://pgg.net/docs/obstor/minio-quickstart-guide).
+Install ObStor Server using the instructions in the [ObStor Quickstart Guide](http://pgg.net/docs/obstor/obstor-quickstart-guide).
 
-## <a name="use-an-existing-key-and-certificate-with-minio"></a>2. Use an Existing Key and Certificate with ObStor
+## <a name="use-an-existing-key-and-certificate-with-obstor"></a>2. Use an Existing Key and Certificate with ObStor
 
-This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for ObStor](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-minio.html).
+This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for ObStor](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-obstor.html).
 
 Copy the existing private key and public certificate to the `certs` directory. The default certs directory is:
-* **Linux:** `${HOME}/.minio/certs`
-* **Windows:** `%%USERPROFILE%%\.minio\certs`
+* **Linux:** `${HOME}/.obstor/certs`
+* **Windows:** `%%USERPROFILE%%\.obstor\certs`
 
 **Note:**
 * Location of custom certs directory can be specified using `--certs-dir` command line option.
@@ -229,11 +229,11 @@ certtool.exe --generate-self-signed --load-privkey private.key --template cert.c
 ## <a name="install-certificates-from-third-party-cas"></a>4. Install Certificates from Third-party CAs
 
 ObStor can connect to other servers, including ObStor nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to ObStor Server by placing these certificates under one of the following ObStor configuration paths:
-* **Linux:** `~/.minio/certs/CAs/`
-* **Windows**: `C:\Users\<Username>\.minio\certs\CAs`
+* **Linux:** `~/.obstor/certs/CAs/`
+* **Windows**: `C:\Users\<Username>\.obstor\certs\CAs`
 
 # Explore Further
 * [TLS Configuration for ObStor server on Kubernetes](https://github.com/cloudment/obstor/tree/master/docs/tls/kubernetes)
-* [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
-* [Generate Let's Encrypt Certificate](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-minio)
-* [Setup nginx Proxy with ObStor Server](https://pgg.net/docs/obstor/setup-nginx-proxy-with-minio)
+* [ObStor Client Complete Guide](https://pgg.net/docs/obstor/obstor-client-complete-guide)
+* [Generate Let's Encrypt Certificate](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-obstor)
+* [Setup nginx Proxy with ObStor Server](https://pgg.net/docs/obstor/setup-nginx-proxy-with-obstor)

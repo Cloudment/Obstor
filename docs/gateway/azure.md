@@ -7,19 +7,19 @@ ObStor Gateway adds Amazon S3 compatibility to Microsoft Azure Blob Storage.
 docker run -p 9000:9000 --name azure-s3 \
  -e "OBSTOR_ROOT_USER=azurestorageaccountname" \
  -e "OBSTOR_ROOT_PASSWORD=azurestorageaccountkey" \
- minio/minio gateway azure
+ obstor/obstor gateway azure
 ```
 
 ### Using Binary
 ```
 export OBSTOR_ROOT_USER=azureaccountname
 export OBSTOR_ROOT_PASSWORD=azureaccountkey
-minio gateway azure
+obstor gateway azure
 ```
 ## Test using ObStor Browser
 ObStor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/minio-browser-gateway.png?raw=true)
+![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/obstor-browser-gateway.png?raw=true)
 ## Test using ObStor Client `mc`
 `mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
 
@@ -53,6 +53,6 @@ Other limitations:
 - Bucket notification APIs are not supported.
 
 ## Explore Further
-- [`mc` command-line interface](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [`mc` command-line interface](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://pgg.net/docs/obstor/golang-client-quickstart-guide)

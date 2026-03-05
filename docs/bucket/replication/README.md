@@ -1,10 +1,10 @@
-# Bucket Replication Guide [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Replication Guide [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 Bucket replication is designed to replicate selected objects in a bucket to a destination bucket.
 
-The contents of this page have been migrated to the new [ObStor Baremetal Documentation: Bucket Replication](https://pgg.net/docs/obstor/minio/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://pgg.net/docs/obstor/minio/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new ObStor documentation, as this legacy documentation will be deprecated and removed in the future.
+The contents of this page have been migrated to the new [ObStor Baremetal Documentation: Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new ObStor documentation, as this legacy documentation will be deprecated and removed in the future.
 
-To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://pgg.net/docs/obstor/minio-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source ObStor server.
+To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source ObStor server.
 
 ## Highlights
 - Supports source and destination buckets to have the same name unlike AWS S3, addresses variety of usecases such as *Splunk*, *Veeam* site to site DR.
@@ -19,7 +19,7 @@ Create a replication target on the source cluster as shown below:
 
 ```
 mc admin bucket remote add myminio/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1
-Role ARN = 'arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
+Role ARN = 'arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
 >  The user running the above command needs *s3:GetReplicationConfiguration* and *s3:GetBucketVersioning* permission on the source cluster. We do not recommend running root credentials/super admin with replication, instead create a dedicated user. The access credentials used at the destination requires *s3:ReplicateObject* permission.
@@ -100,14 +100,14 @@ Please note that the permissions required by the admin user on the target cluste
 Once successfully created and authorized, the `mc admin bucket remote add` command generates a replication target ARN.  This command lists all the currently authorized replication targets:
 ```
 mc admin bucket remote ls myminio/srcbucket --service "replication"
-Role ARN = 'arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
+Role ARN = 'arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
 The replication configuration can now be added to the source bucket by applying the json file with replication configuration. The Role ARN above is passed in as a json element in the configuration.
 
 ```json
 {
-  "Role" :"arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket",
+  "Role" :"arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket",
   "Rules": [
     {
       "Status": "Enabled",
@@ -140,7 +140,7 @@ The replication configuration can now be added to the source bucket by applying 
 
 The replication configuration follows [AWS S3 Spec](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html). Any objects uploaded to the source bucket that meet replication criteria will now be automatically replicated by the ObStor server to the remote destination bucket. Replication can be disabled at any time by disabling specific rules in the configuration or deleting the replication configuration entirely.
 
-When object locking is used in conjunction with replication, both source and destination buckets needs to have [object locking](https://pgg.net/docs/obstor/minio-bucket-object-lock-guide.html) enabled. Similarly objects encrypted on the server side, will be replicated if destination also supports encryption.
+When object locking is used in conjunction with replication, both source and destination buckets needs to have [object locking](https://pgg.net/docs/obstor/obstor-bucket-object-lock-guide.html) enabled. Similarly objects encrypted on the server side, will be replicated if destination also supports encryption.
 
 Replication status can be seen in the metadata on the source and destination objects. On the source side, the `X-Amz-Replication-Status` changes from `PENDING` to `COMPLETED` or `FAILED` after replication attempt either succeeded or failed respectively. On the destination side, a `X-Amz-Replication-Status` status of `REPLICA` indicates that the object was replicated successfully. Any replication failures are automatically re-attempted during a periodic disk scanner cycle.
 
@@ -163,13 +163,13 @@ To add a replication rule allowing both delete marker replication, versioned del
 
 Additional permission of "s3:ReplicateDelete" action would need to be specified on the access key configured for the target cluster if Delete Marker replication or versioned delete replication is enabled.
 ```
-mc replicate add myminio/srcbucket/Tax --priority 1 --arn "arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --remote-bucket "destbucket" --replicate "delete,delete-marker"
+mc replicate add myminio/srcbucket/Tax --priority 1 --arn "arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --remote-bucket "destbucket" --replicate "delete,delete-marker"
 Replication configuration applied successfully to myminio/srcbucket.
 ```
 
 > NOTE: Both source and target instance need to be upgraded to latest release to take advantage of Delete marker replication.
 
-Status of delete marker replication can be viewed by doing a GET/HEAD on the object version - it will return a `X-Minio-Replication-DeleteMarker-Status` header and http response code of `405`. In the case of permanent deletes, if the delete replication is pending or failed to propagate to the target cluster, GET/HEAD will return additional `X-Minio-Replication-Delete-Status` header and a http response code of `405`.
+Status of delete marker replication can be viewed by doing a GET/HEAD on the object version - it will return a `X-Obstor-Replication-DeleteMarker-Status` header and http response code of `405`. In the case of permanent deletes, if the delete replication is pending or failed to propagate to the target cluster, GET/HEAD will return additional `X-Obstor-Replication-Delete-Status` header and a http response code of `405`.
 
 ![delete](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DELETE_bucket_replication.png)
 
@@ -186,5 +186,5 @@ remote replication target using the `mc admin bucket remote add` command
 
 ## Explore Further
 - [ObStor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DESIGN.md)
-- [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/minio-bucket-versioning-guide.html)
-- [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
+- [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html)
+- [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)

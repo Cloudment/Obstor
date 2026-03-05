@@ -25,12 +25,12 @@ package main // import "github.com/cloudment/obstor"
 import (
 	"os"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 
 	// Import gateway
 	_ "github.com/cloudment/obstor/cmd/gateway"
 )
 
 func main() {
-	minio.Main(os.Args)
+	obstor.Main(os.Args)
 }

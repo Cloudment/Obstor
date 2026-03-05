@@ -9,7 +9,7 @@ Disk caching feature here refers to the use of caching disks to store content cl
 
 ### 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 
 ### 2. Run ObStor gateway with cache
 
@@ -26,7 +26,7 @@ export OBSTOR_CACHE_AFTER=3
 export OBSTOR_CACHE_WATERMARK_LOW=70
 export OBSTOR_CACHE_WATERMARK_HIGH=90
 
-minio gateway s3
+obstor gateway s3
 ```
 
 The `CACHE_WATERMARK` numbers are percentages of `CACHE_QUOTA`.
@@ -35,13 +35,13 @@ In the example above this means that  `OBSTOR_CACHE_WATERMARK_LOW` is effectivel
 
 ### 3. Test your setup
 
-To test this setup, access the ObStor gateway via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from all the ObStor endpoints.
+To test this setup, access the ObStor gateway via browser or [`mc`](https://pgg.net/docs/obstor/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from all the ObStor endpoints.
 
 # Explore Further
 
 - [Disk cache design](https://github.com/cloudment/obstor/blob/master/docs/disk-caching/DESIGN.md)
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

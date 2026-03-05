@@ -76,7 +76,7 @@ const (
 	libraryName    = "madmin-go"
 	libraryVersion = "0.0.1"
 
-	libraryAdminURLPrefix = "/minio/admin"
+	libraryAdminURLPrefix = "/obstor/admin"
 )
 
 // User Agent should always following the below style.
@@ -95,7 +95,7 @@ type Options struct {
 	// Add future fields here
 }
 
-// New - instantiate minio admin client
+// New - instantiate obstor admin client
 func New(endpoint string, accessKeyID, secretAccessKey string, secure bool) (*AdminClient, error) {
 	creds := credentials.NewStaticV4(accessKeyID, secretAccessKey, "")
 
@@ -106,7 +106,7 @@ func New(endpoint string, accessKeyID, secretAccessKey string, secure bool) (*Ad
 	return clnt, nil
 }
 
-// NewWithOptions - instantiate minio admin client with options.
+// NewWithOptions - instantiate obstor admin client with options.
 func NewWithOptions(endpoint string, opts *Options) (*AdminClient, error) {
 	clnt, err := privateNew(endpoint, opts.Creds, opts.Secure)
 	if err != nil {

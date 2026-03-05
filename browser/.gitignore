@@ -1,7 +1,7 @@
 **/*.swp
 cover.out
 *~
-minio
+obstor
 !*/
 site/
 **/*.test

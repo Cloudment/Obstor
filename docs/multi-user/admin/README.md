@@ -5,11 +5,11 @@ ObStor supports multiple admin users in addition to default operator credential 
 In this document we will explain in detail on how to configure admin users.
 
 ### 1. Prerequisites
-- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
+- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
 
 ### 2. Create a new admin user with CreateUser, DeleteUser and ConfigUpdate permissions
-Use [`mc admin policy`](https://pgg.net/docs/obstor/minio-admin-complete-guide.html#policies) to create custom admin policies.
+Use [`mc admin policy`](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html#policies) to create custom admin policies.
 
 Create new canned policy file `adminManageUser.json`. This policy enables admin user to
 manage other users.
@@ -113,10 +113,10 @@ mc admin policy set myminio-admin1 user1policy user=user1
 
 ### 5. Using an external IDP for admin users
 Admin users can also be externally managed by an IDP by configuring admin policy with
-special permissions listed above. Follow [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide) to manage users with an IDP.
+special permissions listed above. Follow [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide) to manage users with an IDP.
 
 ## Explore Further
-- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/obstor-client-complete-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

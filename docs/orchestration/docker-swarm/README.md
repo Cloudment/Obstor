@@ -1,4 +1,4 @@
-# Deploy ObStor on Docker Swarm [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Docker Swarm [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 Docker Engine provides cluster management and orchestration features in Swarm mode. ObStor server can be easily deployed in distributed mode on Swarm to create a multi-tenant, highly-available and scalable object store.
 
@@ -36,7 +36,7 @@ echo "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" | docker secret create secret_ke
 
 The example ObStor stack uses 4 Docker volumes, which are created automatically by deploying the stack. We have to make sure that the services in the stack are always (re)started on the same node, where the service is deployed the first time.
 Otherwise Docker will create a new volume upon restart of the service on another Docker node, which is not in sync with the other volumes and the stack will fail to start healthy.
-Before deploying the stack, add labels to the Docker nodes where you want the minio services to run:
+Before deploying the stack, add labels to the Docker nodes where you want the obstor services to run:
 
 ```
 docker node update --label-add minio1=true <DOCKER-NODE1>
@@ -45,7 +45,7 @@ docker node update --label-add minio3=true <DOCKER-NODE3>
 docker node update --label-add minio4=true <DOCKER-NODE4>
 ```
 
-It is possible to run more than one minio service on one Docker Node. Set the labels accordingly.
+It is possible to run more than one obstor service on one Docker Node. Set the labels accordingly.
 
 Download the [Docker Compose file](https://github.com/cloudment/obstor/blob/master/docs/orchestration/docker-swarm/docker-compose-secrets.yaml?raw=true) on your Swarm master. Then execute the command
 
@@ -55,7 +55,7 @@ docker stack deploy --compose-file=docker-compose-secrets.yaml minio_stack
 
 This deploys services described in the Compose file as Docker stack `minio_stack`. Look up the `docker stack` [command reference](https://docs.docker.com/engine/reference/commandline/stack/) for more info.
 
-After the stack is successfully deployed, you should be able to access ObStor server via [ObStor Client](https://pgg.net/docs/obstor/minio-client-complete-guide) `mc` or your browser at http://[Node_Public_IP_Address]:[Expose_Port_on_Host]
+After the stack is successfully deployed, you should be able to access ObStor server via [ObStor Client](https://pgg.net/docs/obstor/obstor-client-complete-guide) `mc` or your browser at http://[Node_Public_IP_Address]:[Expose_Port_on_Host]
 
 ## 4. Remove distributed ObStor services
 
@@ -76,19 +76,19 @@ This will remove all the volumes not associated with any container.
 The services are exposed, by default, on the internal overlay network by their services names (minio1, minio2, ...).
 The docker-compose.yml file also exposes the ObStor services behind a single alias on the minio_distributed network.
 
-Services in the Swarm which are attached to that network can interact with the host "minio-cluster" instead of individual services' hostnames.  This provides a simple way to loosely load balance across all the ObStor services in the Swarm as well as simplifies configuration and management.
+Services in the Swarm which are attached to that network can interact with the host "obstor-cluster" instead of individual services' hostnames.  This provides a simple way to loosely load balance across all the ObStor services in the Swarm as well as simplifies configuration and management.
 
 ### Notes
 
-* By default the Docker Compose file uses the Docker image for latest ObStor server release. You can change the image tag to pull a specific [ObStor Docker image](https://hub.docker.com/r/minio/minio/).
+* By default the Docker Compose file uses the Docker image for latest ObStor server release. You can change the image tag to pull a specific [ObStor Docker image](https://hub.docker.com/r/obstor/obstor/).
 
-* There are 4 minio distributed instances created by default. You can add more ObStor services (up to total 16) to your ObStor Swarm deployment. To add a service
+* There are 4 obstor distributed instances created by default. You can add more ObStor services (up to total 16) to your ObStor Swarm deployment. To add a service
   * Replicate a service definition and change the name of the new service appropriately.
   * Add a volume in volumes section, and update volume section in the service accordingly.
   * Update the command section in each service. Specifically, add the drive location to be used as storage on the new service.
   * Update the port number to exposed for the new service.
 
-  Read more about distributed ObStor [here](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide).
+  Read more about distributed ObStor [here](https://pgg.net/docs/obstor/distributed-obstor-quickstart-guide).
 
 * By default the services use `local` volume driver. Refer to [Docker documentation](https://docs.docker.com/compose/compose-file/#/volume-configuration-reference) to explore further options.
 
@@ -98,6 +98,6 @@ Services in the Swarm which are attached to that network can interact with the h
 
 ### Explore Further
 - [Overview of Docker Swarm mode](https://docs.docker.com/engine/swarm/)
-- [ObStor Docker Quickstart Guide](https://pgg.net/docs/obstor/minio-docker-quickstart-guide)
-- [Deploy ObStor on Docker Compose](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose)
-- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
+- [ObStor Docker Quickstart Guide](https://pgg.net/docs/obstor/obstor-docker-quickstart-guide)
+- [Deploy ObStor on Docker Compose](https://pgg.net/docs/obstor/deploy-obstor-on-docker-compose)
+- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide)

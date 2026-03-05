@@ -278,7 +278,7 @@ func (er erasureObjects) ListMultipartUploads(ctx context.Context, bucket, objec
 //
 // Internally this function creates 'uploads.json' associated for the
 // incoming object at
-// '.minio.sys/multipart/bucket/object/uploads.json' on all the
+// '.obstor.sys/multipart/bucket/object/uploads.json' on all the
 // disks. `uploads.json` carries metadata regarding on-going multipart
 // operation(s) on the object.
 func (er erasureObjects) newMultipartUpload(ctx context.Context, bucket string, object string, opts ObjectOptions) (string, error) {

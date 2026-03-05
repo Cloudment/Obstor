@@ -95,8 +95,8 @@ func isHTTPHeaderSizeTooLarge(header http.Header) bool {
 // ReservedMetadataPrefix is the prefix of a metadata key which
 // is reserved and for internal use only.
 const (
-	ReservedMetadataPrefix      = "X-Minio-Internal-"
-	ReservedMetadataPrefixLower = "x-minio-internal-"
+	ReservedMetadataPrefix      = "X-Obstor-Internal-"
+	ReservedMetadataPrefixLower = "x-obstor-internal-"
 )
 
 // ServeHTTP fails if the request contains at least one reserved header which
@@ -125,7 +125,7 @@ func containsReservedMetadata(header http.Header) bool {
 
 // Reserved bucket.
 const (
-	minioReservedBucket     = "minio"
+	minioReservedBucket     = "obstor"
 	minioReservedBucketPath = SlashSeparator + minioReservedBucket
 	loginPathPrefix         = SlashSeparator + "login"
 )
@@ -265,7 +265,7 @@ func setBrowserCacheControlHandler(h http.Handler) http.Handler {
 	})
 }
 
-// Check to allow access to the reserved "bucket" `/minio` for Admin
+// Check to allow access to the reserved "bucket" `/obstor` for Admin
 // API requests.
 func isAdminReq(r *http.Request) bool {
 	return strings.HasPrefix(r.URL.Path, adminPathPrefix)

@@ -46,12 +46,12 @@ import (
 	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
-// minio configuration related constants.
+// obstor configuration related constants.
 const (
 	GlobalMinioDefaultPort = "9000"
 
 	globalMinioDefaultRegion = ""
-	// This is a sha256 output of ``arn:aws:iam::minio:user/admin``,
+	// This is a sha256 output of ``arn:aws:iam::obstor:user/admin``,
 	// this is kept in present form to be compatible with S3 owner ID
 	// requirements -
 	//
@@ -122,7 +122,7 @@ var (
 	// Indicates if the running obstor server is an erasure-code backend.
 	globalIsErasure = false
 
-	// Indicates if the running minio is in gateway mode.
+	// Indicates if the running obstor is in gateway mode.
 	globalIsGateway = false
 
 	// Name of gateway server, e.g S3, GCS, Azure, etc
@@ -298,7 +298,7 @@ var (
 
 var errSelfTestFailure = errors.New("self test failed. unsafe to start server")
 
-// Returns minio global information, as a key value map.
+// Returns obstor global information, as a key value map.
 // returned list of global values is not an exhaustive
 // list. Feel free to add new relevant fields.
 func getGlobalInfo() (globalInfo map[string]interface{}) {

@@ -1,4 +1,4 @@
-# Bucket Quota Configuration Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Quota Configuration Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ![quota](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/quota/bucketquota.png)
 
@@ -10,8 +10,8 @@ Buckets can be configured to have one of two types of quota configuration - FIFO
 > NOTE: Bucket quotas are not supported under gateway or standalone single disk deployments.
 
 ## Prerequisites
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
+- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
 
 ## Set bucket quota configuration
 

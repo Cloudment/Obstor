@@ -45,7 +45,7 @@ const (
 	healMetricNamespace      MetricNamespace = "minio_heal"
 	interNodeMetricNamespace MetricNamespace = "minio_inter_node"
 	nodeMetricNamespace      MetricNamespace = "minio_node"
-	minioMetricNamespace     MetricNamespace = "minio"
+	minioMetricNamespace     MetricNamespace = "obstor"
 	s3MetricNamespace        MetricNamespace = "minio_s3"
 )
 

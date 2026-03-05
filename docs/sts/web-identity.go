@@ -37,7 +37,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/cloudment/obstor/pkg/auth"
-	"github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
@@ -210,9 +210,9 @@ func main() {
 			return
 		}
 
-		opts := &minio.Options{
+		opts := &obstor.Options{
 			Creds:        sts,
-			BucketLookup: minio.BucketLookupAuto,
+			BucketLookup: obstor.BucketLookupAuto,
 		}
 
 		u, err := url.Parse(stsEndpoint)
@@ -222,7 +222,7 @@ func main() {
 			return
 		}
 
-		clnt, err := minio.New(u.Host, opts)
+		clnt, err := obstor.New(u.Host, opts)
 		if err != nil {
 			log.Println(fmt.Errorf("Error while initializing Minio client, %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)

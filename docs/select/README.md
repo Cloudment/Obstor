@@ -10,7 +10,7 @@ You can use the Select API to query objects with following features:
 
 Type inference and automatic conversion of values is performed based on the context when the value is un-typed (such as when reading CSV data). If present, the CAST function overrides automatic conversion.
 
-The [mc sql](https://pgg.net/docs/obstor/minio-client-complete-guide.html#sql) command can be used for executing queries using the command line.
+The [mc sql](https://pgg.net/docs/obstor/obstor-client-complete-guide.html#sql) command can be used for executing queries using the command line.
 
 (*) Parquet is disabled on the ObStor server by default. See below how to enable it.
 
@@ -24,7 +24,7 @@ To enable Parquet set the environment variable `OBSTOR_API_SELECT_PARQUET=on`.
 # Example using Python API
 
 ## 1. Prerequisites
-- Install ObStor Server from [here](http://pgg.net/docs/obstor/minio-quickstart-guide).
+- Install ObStor Server from [here](http://pgg.net/docs/obstor/obstor-quickstart-guide).
 - Familiarity with AWS S3 API.
 - Familiarity with Python and installing dependencies.
 
@@ -42,8 +42,8 @@ import boto3
 
 s3 = boto3.client('s3',
                   endpoint_url='http://localhost:9000',
-                  aws_access_key_id='minio',
-                  aws_secret_access_key='minio123',
+                  aws_access_key_id='obstor',
+                  aws_secret_access_key='obstor123',
                   region_name='us-east-1')
 
 r = s3.select_object_content(
@@ -104,11 +104,11 @@ Stats details bytesProcessed:
 For a more detailed SELECT SQL reference, please see [here](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-glacier-select-sql-reference-select.html)
 
 ## 5. Explore Further
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `mc sql` with ObStor Server](https://pgg.net/docs/obstor/minio-client-complete-guide.html#sql)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `mc sql` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-complete-guide.html#sql)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)
 
 ## 6. Implementation Status

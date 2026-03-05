@@ -156,7 +156,7 @@ func (m *Manager) AddCertificate(certFile, keyFile string) (err error) {
 	// match the client SNI to a SAN since the SNI is meant to communicate the destination
 	// host name and clients will not set the SNI to an IP address.
 	// Allowing multiple certificates with IP SANs lead to errors that confuses users - like:
-	// "It works for `https://instance.minio.local` but not for `https://10.0.2.1`"
+	// "It works for `https://instance.obstor.local` but not for `https://10.0.2.1`"
 	if len(m.certificates) > 0 && len(certificate.Leaf.IPAddresses) > 0 {
 		return errors.New("cert: certificate must not contain any IP SANs: only the default certificate may contain IP SANs")
 	}

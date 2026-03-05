@@ -41,7 +41,7 @@ const (
 type Config struct {
 	Enabled bool `json:"enabled"`
 
-	// E.g. "ldap.minio.io:636"
+	// E.g. "ldap.min.io:636"
 	ServerAddr string `json:"serverAddr"`
 
 	// STS credentials expiry duration

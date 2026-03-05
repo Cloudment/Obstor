@@ -41,13 +41,13 @@ func testBucketVersioningExcludedPrefixes() {
 	testName := "testBucketVersioningExcludedPrefixes"
 	function := "GetBucketVersioning/SetBucketVersioning"
 
-	// Initialize minio client
+	// Initialize obstor client
 	endpoint := os.Getenv("SERVER_ENDPOINT")
 	accessKey := os.Getenv("ACCESS_KEY")
 	secretKey := os.Getenv("SECRET_KEY")
 	secure := os.Getenv("ENABLE_HTTPS") == "1"
 
-	c, err := minio.New(endpoint, &minio.Options{
+	c, err := obstor.New(endpoint, &obstor.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: secure,
 	})
@@ -65,7 +65,7 @@ func testBucketVersioningExcludedPrefixes() {
 	ctx := context.Background()
 
 	// Create bucket
-	err = c.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+	err = c.MakeBucket(ctx, bucketName, obstor.MakeBucketOptions{})
 	if err != nil {
 		logError(testName, function, args, startTime, "", "MakeBucket failed", err)
 		return
@@ -73,12 +73,12 @@ func testBucketVersioningExcludedPrefixes() {
 	defer c.RemoveBucket(ctx, bucketName)
 
 	// Test 1: Set versioning with excluded_prefixes
-	excludedPrefixes := []minio.ExcludedPrefix{
+	excludedPrefixes := []obstor.ExcludedPrefix{
 		{Prefix: "prefix1"},
 		{Prefix: "prefix2"},
 	}
 
-	versioningConfig := minio.BucketVersioningConfiguration{
+	versioningConfig := obstor.BucketVersioningConfiguration{
 		Status:           "Enabled",
 		ExcludedPrefixes: excludedPrefixes,
 		ExcludeFolders:   true,
@@ -131,7 +131,7 @@ func testBucketVersioningExcludedPrefixes() {
 	}
 
 	// Test 2: Suspend versioning (should clear excluded_prefixes)
-	suspendConfig := minio.BucketVersioningConfiguration{
+	suspendConfig := obstor.BucketVersioningConfiguration{
 		Status: "Suspended",
 	}
 

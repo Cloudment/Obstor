@@ -17,14 +17,14 @@
 
 set -e
 
-if [ ! -x "/usr/bin/minio" ]; then
-    echo "minio executable binary not found refusing to proceed"
+if [ ! -x "/usr/bin/obstor" ]; then
+    echo "obstor executable binary not found refusing to proceed"
     exit 1
 fi
 
 verify_sha256sum() {
     echo "verifying binary checksum"
-    echo "$(awk '{print $1}' /usr/bin/minio.sha256sum)  /usr/bin/minio" | sha256sum -c
+    echo "$(awk '{print $1}' /usr/bin/obstor.sha256sum)  /usr/bin/obstor" | sha256sum -c
 }
 
 verify_signature() {
@@ -33,7 +33,7 @@ verify_signature() {
         return
     fi
     echo "verifying binary signature"
-    minisign -VQm /usr/bin/minio -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
+    minisign -VQm /usr/bin/obstor -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
 }
 
 main() {

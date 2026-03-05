@@ -1,4 +1,4 @@
-# Bucket Versioning Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Versioning Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ObStor versioning is designed to keep multiple versions of an object in one bucket. For example, you could store `spark.csv` (version `ede336f2`) and `spark.csv` (version `fae684da`) in a single bucket. Versioning protects you from unintended overwrites, deletions, to apply retention policies and archive your objects.
 
@@ -161,6 +161,6 @@ public class IsVersioningEnabled {
 
 ## Explore Further
 - [Use `minio-java` SDK with ObStor Server](https://pgg.net/docs/obstor/java-client-quickstart-guide.html)
-- [Object Lock and Immutablity Guide](https://pgg.net/docs/obstor/minio-bucket-object-lock-guide.html)
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [Object Lock and Immutablity Guide](https://pgg.net/docs/obstor/obstor-bucket-object-lock-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

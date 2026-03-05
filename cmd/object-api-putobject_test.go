@@ -43,8 +43,8 @@ func TestObjectAPIPutObjectSingle(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObject(obj ObjectLayer, instanceType string, t TestErrHandler) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -208,8 +208,8 @@ func TestObjectAPIPutObjectDiskNotFound(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectDiskNotFound(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -320,8 +320,8 @@ func TestObjectAPIPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -365,8 +365,8 @@ func TestObjectAPIMultipartPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIMultipartPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})

@@ -29,7 +29,7 @@ var exports = {
   output: {
     path: path.resolve(__dirname, 'dev'),
     filename: 'index_bundle.js',
-    publicPath: '/minio/'
+    publicPath: '/obstor/'
   },
   module: {
     rules: [{
@@ -73,23 +73,23 @@ var exports = {
   },
   devServer: {
     historyApiFallback: {
-      index: '/minio/'
+      index: '/obstor/'
     },
     proxy: {
-      '/minio/webrpc': {
+      '/obstor/webrpc': {
         target: 'http://localhost:9000',
         secure: false,
         headers: {'Host': "localhost:9000"}
       },
-      '/minio/upload/*': {
+      '/obstor/upload/*': {
         target: 'http://localhost:9000',
         secure: false
       },
-      '/minio/download/*': {
+      '/obstor/download/*': {
         target: 'http://localhost:9000',
         secure: false
       },
-      '/minio/zip': {
+      '/obstor/zip': {
         target: 'http://localhost:9000',
         secure: false
       }

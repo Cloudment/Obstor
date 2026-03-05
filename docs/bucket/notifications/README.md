@@ -33,7 +33,7 @@ Various event types supported by ObStor server are
 | `s3:BucketRemoved`                                                           |
 
 
-Use client tools like `mc` to set and listen for event notifications using the [`event` sub-command](https://pgg.net/docs/obstor/minio-client-complete-guide#events). ObStor SDK's [`BucketNotification` APIs](https://pgg.net/docs/obstor/golang-client-api-reference#SetBucketNotification) can also be used. The notification message ObStor sends to publish an event is a JSON message with the following [structure](https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html).
+Use client tools like `mc` to set and listen for event notifications using the [`event` sub-command](https://pgg.net/docs/obstor/obstor-client-complete-guide#events). ObStor SDK's [`BucketNotification` APIs](https://pgg.net/docs/obstor/golang-client-api-reference#SetBucketNotification) can also be used. The notification message ObStor sends to publish an event is a JSON message with the following [structure](https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html).
 
 Bucket events can be published to the following targets:
 
@@ -46,8 +46,8 @@ Bucket events can be published to the following targets:
 
 ## Prerequisites
 
-- Install and configure ObStor Server from [here](https://pgg.net/docs/obstor/minio-quickstart-guide).
-- Install and configure ObStor Client from [here](https://pgg.net/docs/obstor/minio-client-quickstart-guide).
+- Install and configure ObStor Server from [here](https://pgg.net/docs/obstor/obstor-quickstart-guide).
+- Install and configure ObStor Client from [here](https://pgg.net/docs/obstor/obstor-client-quickstart-guide).
 
 ```
 $ mc admin config get myminio | grep notify
@@ -130,7 +130,7 @@ $ mc admin config get myminio/ notify_amqp
 notify_amqp:1 delivery_mode="0" exchange_type="" no_wait="off" queue_dir="" queue_limit="0"  url="" auto_deleted="off" durable="off" exchange="" internal="off" mandatory="off" routing_key=""
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment.Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:amqp` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment.Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:amqp` at start-up if there were no errors.
 
 An example configuration for RabbitMQ is shown below:
 
@@ -144,13 +144,13 @@ Note that, you can add as many AMQP server endpoint configurations as needed by 
 
 ### Step 2: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:amqp`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:amqp`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
 
 ```
 mc mb myminio/images
-mc event add myminio/images arn:minio:sqs::1:amqp --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::1:amqp --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:amqp s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:amqp s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 3: Test on RabbitMQ
@@ -202,7 +202,7 @@ You should receive the following event notification via RabbitMQ once the upload
 
 ```py
 python rabbit.py
-'{"Records":[{"eventVersion":"2.0","eventSource":"aws:s3","awsRegion":"","eventTime":"2016–09–08T22:34:38.226Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"minio"},"requestParameters":{"sourceIPAddress":"10.1.10.150:44576"},"responseElements":{},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"minio"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":200436,"sequencer":"147279EAF9F40933"}}}],"level":"info","msg":"","time":"2016–09–08T15:34:38–07:00"}'
+'{"Records":[{"eventVersion":"2.0","eventSource":"aws:s3","awsRegion":"","eventTime":"2016–09–08T22:34:38.226Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"obstor"},"requestParameters":{"sourceIPAddress":"10.1.10.150:44576"},"responseElements":{},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"obstor"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":200436,"sequencer":"147279EAF9F40933"}}}],"level":"info","msg":"","time":"2016–09–08T15:34:38–07:00"}'
 ```
 
 <a name="MQTT"></a>
@@ -261,10 +261,10 @@ $ mc admin config get myminio/ notify_mqtt
 notify_mqtt:1 broker="" password="" queue_dir="" queue_limit="0" reconnect_interval="0s"  keep_alive_interval="0s" qos="0" topic="" username=""
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:mqtt` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:mqtt` at start-up if there were no errors.
 
 ```sh
-$ mc admin config set myminio notify_mqtt:1 broker="tcp://localhost:1883" password="" queue_dir="" queue_limit="0" reconnect_interval="0s"  keep_alive_interval="0s" qos="1" topic="minio" username=""
+$ mc admin config set myminio notify_mqtt:1 broker="tcp://localhost:1883" password="" queue_dir="" queue_limit="0" reconnect_interval="0s"  keep_alive_interval="0s" qos="1" topic="obstor" username=""
 ```
 
 ObStor supports any MQTT server that supports MQTT 3.1 or 3.1.1 and can connect to them over TCP, TLS, or a Websocket connection using `tcp://`, `tls://`, or `ws://` respectively as the scheme for the broker url. See the [Go Client](http://www.eclipse.org/paho/clients/golang/) documentation for more information.
@@ -273,18 +273,18 @@ Note that, you can add as many MQTT server endpoint configurations as needed by 
 
 ### Step 2: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:mqtt`.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:mqtt`.
 
 ```
 mc mb myminio/images
-mc event add  myminio/images arn:minio:sqs::1:mqtt --suffix .jpg
+mc event add  myminio/images arn:obstor:sqs::1:mqtt --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:amqp s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:amqp s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 3: Test on MQTT
 
-The python program below waits on mqtt topic `/minio` and prints event notifications on the console. We use [paho-mqtt](https://pypi.python.org/pypi/paho-mqtt/) library to do this.
+The python program below waits on mqtt topic `/obstor` and prints event notifications on the console. We use [paho-mqtt](https://pypi.python.org/pypi/paho-mqtt/) library to do this.
 
 ```py
 #!/usr/bin/env python3
@@ -296,7 +296,7 @@ import paho.mqtt.client as mqtt
 def on_connect(client, userdata, flags, rc):
   print("Connected with result code "+str(rc))
   # qos level is set to 1
-  client.subscribe("minio", 1)
+  client.subscribe("obstor", 1)
 
 def on_message(client, userdata, msg):
     print(msg.payload)
@@ -327,7 +327,7 @@ You should receive the following event notification via MQTT once the upload com
 
 ```py
 python mqtt.py
-{“Records”:[{“eventVersion”:”2.0",”eventSource”:”aws:s3",”awsRegion”:”",”eventTime”:”2016–09–08T22:34:38.226Z”,”eventName”:”s3:ObjectCreated:Put”,”userIdentity”:{“principalId”:”minio”},”requestParameters”:{“sourceIPAddress”:”10.1.10.150:44576"},”responseElements”:{},”s3":{“s3SchemaVersion”:”1.0",”configurationId”:”Config”,”bucket”:{“name”:”images”,”ownerIdentity”:{“principalId”:”minio”},”arn”:”arn:aws:s3:::images”},”object”:{“key”:”myphoto.jpg”,”size”:200436,”sequencer”:”147279EAF9F40933"}}}],”level”:”info”,”msg”:””,”time”:”2016–09–08T15:34:38–07:00"}
+{“Records”:[{“eventVersion”:”2.0",”eventSource”:”aws:s3",”awsRegion”:”",”eventTime”:”2016–09–08T22:34:38.226Z”,”eventName”:”s3:ObjectCreated:Put”,”userIdentity”:{“principalId”:”obstor”},”requestParameters”:{“sourceIPAddress”:”10.1.10.150:44576"},”responseElements”:{},”s3":{“s3SchemaVersion”:”1.0",”configurationId”:”Config”,”bucket”:{“name”:”images”,”ownerIdentity”:{“principalId”:”obstor”},”arn”:”arn:aws:s3:::images”},”object”:{“key”:”myphoto.jpg”,”size”:200436,”sequencer”:”147279EAF9F40933"}}}],”level”:”info”,”msg”:””,”time”:”2016–09–08T15:34:38–07:00"}
 ```
 
 <a name="Elasticsearch"></a>
@@ -398,10 +398,10 @@ $ mc admin config get myminio/ notify_elasticsearch
 notify_elasticsearch:1 queue_limit="0"  url="" format="namespace" index="" queue_dir=""
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:elasticsearch` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:elasticsearch` at start-up if there were no errors.
 
 ```sh
-$ mc admin config set myminio notify_elasticsearch:1 queue_limit="0"  url="http://127.0.0.1:9200" format="namespace" index="minio_events" queue_dir="" username="" password=""
+$ mc admin config set myminio notify_elasticsearch:1 queue_limit="0"  url="http://127.0.0.1:9200" format="namespace" index="obstor_events" queue_dir="" username="" password=""
 ```
 
 Note that, you can add as many Elasticsearch server endpoint configurations as needed by providing an identifier (like "1" in the example above) for the Elasticsearch instance and an object of per-server configuration parameters.
@@ -416,9 +416,9 @@ With the `mc` tool, the configuration is very simple to add. Let us say that the
 
 ```
 mc mb myminio/images
-mc event add  myminio/images arn:minio:sqs::1:elasticsearch --suffix .jpg
+mc event add  myminio/images arn:obstor:sqs::1:elasticsearch --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:elasticsearch s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:elasticsearch s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 4: Test on Elasticsearch
@@ -454,19 +454,19 @@ $ curl  "http://localhost:9200/minio_events/_search?pretty=true"
           "Records" : [
             {
               "eventVersion" : "2.0",
-              "eventSource" : "minio:s3",
+              "eventSource" : "obstor:s3",
               "awsRegion" : "",
               "eventTime" : "2017-03-30T08:00:41Z",
               "eventName" : "s3:ObjectCreated:Put",
               "userIdentity" : {
-                "principalId" : "minio"
+                "principalId" : "obstor"
               },
               "requestParameters" : {
                 "sourceIPAddress" : "127.0.0.1:38062"
               },
               "responseElements" : {
                 "x-amz-request-id" : "14B09A09703FC47B",
-                "x-minio-origin-endpoint" : "http://192.168.86.115:9000"
+                "x-obstor-origin-endpoint" : "http://192.168.86.115:9000"
               },
               "s3" : {
                 "s3SchemaVersion" : "1.0",
@@ -474,7 +474,7 @@ $ curl  "http://localhost:9200/minio_events/_search?pretty=true"
                 "bucket" : {
                   "name" : "images",
                   "ownerIdentity" : {
-                    "principalId" : "minio"
+                    "principalId" : "obstor"
                   },
                   "arn" : "arn:aws:s3:::images"
                 },
@@ -560,7 +560,7 @@ $ mc admin config get myminio/ notify_redis
 notify_redis:1 address="" format="namespace" key="" password="" queue_dir="" queue_limit="0"
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment.Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:redis` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment.Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:redis` at start-up if there were no errors.
 
 ```sh
 $ mc admin config set myminio/ notify_redis:1 address="127.0.0.1:6379" format="namespace" key="bucketevents" password="yoursecret" queue_dir="" queue_limit="0"
@@ -578,9 +578,9 @@ With the `mc` tool, the configuration is very simple to add. Let us say that the
 
 ```
 mc mb myminio/images
-mc event add myminio/images arn:minio:sqs::1:redis --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::1:redis --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:redis s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:redis s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 3: Test on Redis
@@ -605,7 +605,7 @@ In the previous terminal, you will now see the operation that ObStor performs on
 127.0.0.1:6379> monitor
 OK
 1490686879.650649 [0 172.17.0.1:44710] "PING"
-1490686879.651061 [0 172.17.0.1:44710] "HSET" "minio_events" "images/myphoto.jpg" "{\"Records\":[{\"eventVersion\":\"2.0\",\"eventSource\":\"minio:s3\",\"awsRegion\":\"\",\"eventTime\":\"2017-03-28T07:41:19Z\",\"eventName\":\"s3:ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"minio\"},\"requestParameters\":{\"sourceIPAddress\":\"127.0.0.1:52234\"},\"responseElements\":{\"x-amz-request-id\":\"14AFFBD1ACE5F632\",\"x-minio-origin-endpoint\":\"http://192.168.86.115:9000\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"Config\",\"bucket\":{\"name\":\"images\",\"ownerIdentity\":{\"principalId\":\"minio\"},\"arn\":\"arn:aws:s3:::images\"},\"object\":{\"key\":\"myphoto.jpg\",\"size\":2586,\"eTag\":\"5d284463f9da279f060f0ea4d11af098\",\"sequencer\":\"14AFFBD1ACE5F632\"}},\"source\":{\"host\":\"127.0.0.1\",\"port\":\"52234\",\"userAgent\":\"ObStor (linux; amd64) minio-go/2.0.3 mc/2017-02-15T17:57:25Z\"}}]}"
+1490686879.651061 [0 172.17.0.1:44710] "HSET" "minio_events" "images/myphoto.jpg" "{\"Records\":[{\"eventVersion\":\"2.0\",\"eventSource\":\"obstor:s3\",\"awsRegion\":\"\",\"eventTime\":\"2017-03-28T07:41:19Z\",\"eventName\":\"s3:ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"obstor\"},\"requestParameters\":{\"sourceIPAddress\":\"127.0.0.1:52234\"},\"responseElements\":{\"x-amz-request-id\":\"14AFFBD1ACE5F632\",\"x-obstor-origin-endpoint\":\"http://192.168.86.115:9000\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"Config\",\"bucket\":{\"name\":\"images\",\"ownerIdentity\":{\"principalId\":\"obstor\"},\"arn\":\"arn:aws:s3:::images\"},\"object\":{\"key\":\"myphoto.jpg\",\"size\":2586,\"eTag\":\"5d284463f9da279f060f0ea4d11af098\",\"sequencer\":\"14AFFBD1ACE5F632\"}},\"source\":{\"host\":\"127.0.0.1\",\"port\":\"52234\",\"userAgent\":\"ObStor (linux; amd64) minio-go/2.0.3 mc/2017-02-15T17:57:25Z\"}}]}"
 ```
 
 Here we see that ObStor performed `HSET` on `minio_events` key.
@@ -674,7 +674,7 @@ OBSTOR_NOTIFY_NATS_QUEUE_LIMIT                       (number)    maximum limit f
 OBSTOR_NOTIFY_NATS_COMMENT                           (sentence)  optionally add a comment to this setting
 ```
 
-To update the configuration, use `mc admin config get` command to get the current configuration file for the minio deployment.
+To update the configuration, use `mc admin config get` command to get the current configuration file for the obstor deployment.
 
 ```sh
 $ mc admin config get myminio/ notify_nats
@@ -693,13 +693,13 @@ Read more about sections `cluster_id`, `client_id` on [NATS documentation](https
 
 ### Step 2: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted from `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:nats`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted from `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:nats`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
 
 ```
 mc mb myminio/images
-mc event add myminio/images arn:minio:sqs::1:nats --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::1:nats --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:nats s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:nats s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 3: Test on NATS
@@ -754,7 +754,7 @@ The example `nats.go` program prints event notification to console.
 go run nats.go
 2016/10/12 06:51:26 Connected
 2016/10/12 06:51:26 Subscribing to subject 'bucketevents'
-2016/10/12 06:51:33 Received message '{"EventType":"s3:ObjectCreated:Put","Key":"images/myphoto.jpg","Records":[{"eventVersion":"2.0","eventSource":"aws:s3","awsRegion":"","eventTime":"2016-10-12T13:51:33Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"minio"},"requestParameters":{"sourceIPAddress":"[::1]:57106"},"responseElements":{},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"minio"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":56060,"eTag":"1d97bf45ecb37f7a7b699418070df08f","sequencer":"147CCD1AE054BFD0"}}}],"level":"info","msg":"","time":"2016-10-12T06:51:33-07:00"}
+2016/10/12 06:51:33 Received message '{"EventType":"s3:ObjectCreated:Put","Key":"images/myphoto.jpg","Records":[{"eventVersion":"2.0","eventSource":"aws:s3","awsRegion":"","eventTime":"2016-10-12T13:51:33Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"obstor"},"requestParameters":{"sourceIPAddress":"[::1]:57106"},"responseElements":{},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"obstor"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":56060,"eTag":"1d97bf45ecb37f7a7b699418070df08f","sequencer":"147CCD1AE054BFD0"}}}],"level":"info","msg":"","time":"2016-10-12T06:51:33-07:00"}
 ```
 
 If you use NATS Streaming server, check out this sample program below to log the bucket notification added to NATS.
@@ -829,7 +829,7 @@ mc cp myphoto.jpg myminio/images
 The example `nats.go` program prints event notification to console.
 
 ```
-Received a message: {"EventType":"s3:ObjectCreated:Put","Key":"images/myphoto.jpg","Records":[{"eventVersion":"2.0","eventSource":"minio:s3","awsRegion":"","eventTime":"2017-07-07T18:46:37Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"minio"},"requestParameters":{"sourceIPAddress":"192.168.1.80:55328"},"responseElements":{"x-amz-request-id":"14CF20BD1EFD5B93","x-minio-origin-endpoint":"http://127.0.0.1:9000"},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"minio"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":248682,"eTag":"f1671feacb8bbf7b0397c6e9364e8c92","contentType":"image/jpeg","userDefined":{"content-type":"image/jpeg"},"versionId":"1","sequencer":"14CF20BD1EFD5B93"}},"source":{"host":"192.168.1.80","port":"55328","userAgent":"ObStor (linux; amd64) minio-go/2.0.4 mc/DEVELOPMENT.GOGET"}}],"level":"info","msg":"","time":"2017-07-07T11:46:37-07:00"}
+Received a message: {"EventType":"s3:ObjectCreated:Put","Key":"images/myphoto.jpg","Records":[{"eventVersion":"2.0","eventSource":"obstor:s3","awsRegion":"","eventTime":"2017-07-07T18:46:37Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"obstor"},"requestParameters":{"sourceIPAddress":"192.168.1.80:55328"},"responseElements":{"x-amz-request-id":"14CF20BD1EFD5B93","x-obstor-origin-endpoint":"http://127.0.0.1:9000"},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"obstor"},"arn":"arn:aws:s3:::images"},"object":{"key":"myphoto.jpg","size":248682,"eTag":"f1671feacb8bbf7b0397c6e9364e8c92","contentType":"image/jpeg","userDefined":{"content-type":"image/jpeg"},"versionId":"1","sequencer":"14CF20BD1EFD5B93"}},"source":{"host":"192.168.1.80","port":"55328","userAgent":"ObStor (linux; amd64) minio-go/2.0.4 mc/DEVELOPMENT.GOGET"}}],"level":"info","msg":"","time":"2017-07-07T11:46:37-07:00"}
 ```
 
 <a name="PostgreSQL"></a>
@@ -919,7 +919,7 @@ $ mc admin config get myminio notify_postgres
 notify_postgres:1 queue_dir="" connection_string="" queue_limit="0"  table="" format="namespace"
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:postgresql` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:postgresql` at start-up if there were no errors.
 
 ```sh
 $ mc admin config set myminio notify_postgres:1 connection_string="host=localhost port=5432 dbname=obstor_events user=postgres password=password sslmode=disable" table="bucketevents" format="namespace"
@@ -939,11 +939,11 @@ With the `mc` tool, the configuration is very simple to add. Let us say that the
 # Create bucket named `images` in myminio
 mc mb myminio/images
 # Add notification configuration on the `images` bucket using the MySQL ARN. The --suffix argument filters events.
-mc event add myminio/images arn:minio:sqs::1:postgresql --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::1:postgresql --suffix .jpg
 # Print out the notification configuration on the `images` bucket.
 mc event list myminio/images
 mc event list myminio/images
-arn:minio:sqs::1:postgresql s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:postgresql s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 4: Test on PostgreSQL
@@ -962,7 +962,7 @@ minio_events=# select * from bucketevents;
 
 key                 |                      value
 --------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- images/myphoto.jpg | {"Records": [{"s3": {"bucket": {"arn": "arn:aws:s3:::images", "name": "images", "ownerIdentity": {"principalId": "minio"}}, "object": {"key": "myphoto.jpg", "eTag": "1d97bf45ecb37f7a7b699418070df08f", "size": 56060, "sequencer": "147CE57C70B31931"}, "configurationId": "Config", "s3SchemaVersion": "1.0"}, "awsRegion": "", "eventName": "s3:ObjectCreated:Put", "eventTime": "2016-10-12T21:18:20Z", "eventSource": "aws:s3", "eventVersion": "2.0", "userIdentity": {"principalId": "minio"}, "responseElements": {}, "requestParameters": {"sourceIPAddress": "[::1]:39706"}}]}
+ images/myphoto.jpg | {"Records": [{"s3": {"bucket": {"arn": "arn:aws:s3:::images", "name": "images", "ownerIdentity": {"principalId": "obstor"}}, "object": {"key": "myphoto.jpg", "eTag": "1d97bf45ecb37f7a7b699418070df08f", "size": 56060, "sequencer": "147CE57C70B31931"}, "configurationId": "Config", "s3SchemaVersion": "1.0"}, "awsRegion": "", "eventName": "s3:ObjectCreated:Put", "eventTime": "2016-10-12T21:18:20Z", "eventSource": "aws:s3", "eventVersion": "2.0", "userIdentity": {"principalId": "obstor"}, "responseElements": {}, "requestParameters": {"sourceIPAddress": "[::1]:39706"}}]}
 (1 row)
 ```
 
@@ -1057,12 +1057,12 @@ notify_mysql:myinstance enable=off format=namespace host= port= username= passwo
 Use `mc admin config set` command to update MySQL notification configuration for the deployment with `dsn_string` parameter:
 
 ```sh
-$ mc admin config set myminio notify_mysql:myinstance table="minio_images" dsn_string="root:xxxx@tcp(172.17.0.1:3306)/miniodb"
+$ mc admin config set myminio notify_mysql:myinstance table="obstor_images" dsn_string="root:xxxx@tcp(172.17.0.1:3306)/miniodb"
 ```
 
 Note that, you can add as many MySQL server endpoint configurations as needed by providing an identifier (like "myinstance" in the example above) for each MySQL instance desired.
 
-Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::myinstance:mysql` at start-up, if there are no errors.
+Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::myinstance:mysql` at start-up, if there are no errors.
 
 ### Step 3: Enable bucket notification using ObStor client
 
@@ -1076,10 +1076,10 @@ With the `mc` tool, the configuration is very simple to add. Let us say that the
 # Create bucket named `images` in myminio
 mc mb myminio/images
 # Add notification configuration on the `images` bucket using the MySQL ARN. The --suffix argument filters events.
-mc event add myminio/images arn:minio:sqs::myinstance:mysql --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::myinstance:mysql --suffix .jpg
 # Print out the notification configuration on the `images` bucket.
 mc event list myminio/images
-arn:minio:sqs::myinstance:mysql s3:ObjectCreated:*,s3:ObjectRemoved:*,s3:ObjectAccessed:* Filter: suffix=”.jpg”
+arn:obstor:sqs::myinstance:mysql s3:ObjectCreated:*,s3:ObjectRemoved:*,s3:ObjectAccessed:* Filter: suffix=”.jpg”
 ```
 
 ### Step 4: Test on MySQL
@@ -1098,7 +1098,7 @@ mysql> select * from minio_images;
 +--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | key_name           | value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 +--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| images/myphoto.jpg | {"Records": [{"s3": {"bucket": {"arn": "arn:aws:s3:::images", "name": "images", "ownerIdentity": {"principalId": "minio"}}, "object": {"key": "myphoto.jpg", "eTag": "467886be95c8ecfd71a2900e3f461b4f", "size": 26, "sequencer": "14AC59476F809FD3"}, "configurationId": "Config", "s3SchemaVersion": "1.0"}, "awsRegion": "", "eventName": "s3:ObjectCreated:Put", "eventTime": "2017-03-16T11:29:00Z", "eventSource": "aws:s3", "eventVersion": "2.0", "userIdentity": {"principalId": "minio"}, "responseElements": {"x-amz-request-id": "14AC59476F809FD3", "x-minio-origin-endpoint": "http://192.168.86.110:9000"}, "requestParameters": {"sourceIPAddress": "127.0.0.1:38260"}}]} |
+| images/myphoto.jpg | {"Records": [{"s3": {"bucket": {"arn": "arn:aws:s3:::images", "name": "images", "ownerIdentity": {"principalId": "obstor"}}, "object": {"key": "myphoto.jpg", "eTag": "467886be95c8ecfd71a2900e3f461b4f", "size": 26, "sequencer": "14AC59476F809FD3"}, "configurationId": "Config", "s3SchemaVersion": "1.0"}, "awsRegion": "", "eventName": "s3:ObjectCreated:Put", "eventTime": "2017-03-16T11:29:00Z", "eventSource": "aws:s3", "eventVersion": "2.0", "userIdentity": {"principalId": "obstor"}, "responseElements": {"x-amz-request-id": "14AC59476F809FD3", "x-obstor-origin-endpoint": "http://192.168.86.110:9000"}, "requestParameters": {"sourceIPAddress": "127.0.0.1:38260"}}]} |
 +--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 1 row in set (0.01 sec)
 
@@ -1171,7 +1171,7 @@ $ mc admin config get myminio/ notify_kafka
 notify_kafka:1 tls_skip_verify="off"  queue_dir="" queue_limit="0" sasl="off" sasl_password="" sasl_username="" tls_client_auth="0" tls="off" brokers="" topic="" client_tls_cert="" client_tls_key="" version=""
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:kafka` at start-up if there were no errors.`bucketevents` is the topic used by kafka in this example.
+Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:kafka` at start-up if there were no errors.`bucketevents` is the topic used by kafka in this example.
 
 ```sh
 $ mc admin config set myminio notify_kafka:1 tls_skip_verify="off"  queue_dir="" queue_limit="0" sasl="off" sasl_password="" sasl_username="" tls_client_auth="0" tls="off" client_tls_cert="" client_tls_key="" brokers="localhost:9092,localhost:9093" topic="bucketevents" version=""
@@ -1179,13 +1179,13 @@ $ mc admin config set myminio notify_kafka:1 tls_skip_verify="off"  queue_dir=""
 
 ### Step 3: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted from `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:kafka`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted from `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:kafka`. To understand more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
 
 ```
 mc mb myminio/images
-mc event add  myminio/images arn:minio:sqs::1:kafka --suffix .jpg
+mc event add  myminio/images arn:obstor:sqs::1:kafka --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:kafka s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:kafka s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 4: Test on Kafka
@@ -1212,7 +1212,7 @@ kafkacat -b localhost:9092 -t bucketevents
     "Records": [
         {
             "eventVersion": "2.0",
-            "eventSource": "minio:s3",
+            "eventSource": "obstor:s3",
             "awsRegion": "",
             "eventTime": "2019-09-10T17:41:54Z",
             "eventName": "s3:ObjectCreated:Put",
@@ -1226,8 +1226,8 @@ kafkacat -b localhost:9092 -t bucketevents
             },
             "responseElements": {
                 "x-amz-request-id": "15C3249451E12784",
-                "x-minio-deployment-id": "751a8ba6-acb2-42f6-a297-4cdf1cf1fa4f",
-                "x-minio-origin-endpoint": "http://192.168.97.83:9000"
+                "x-obstor-deployment-id": "751a8ba6-acb2-42f6-a297-4cdf1cf1fa4f",
+                "x-obstor-origin-endpoint": "http://192.168.97.83:9000"
             },
             "s3": {
                 "s3SchemaVersion": "1.0",
@@ -1276,7 +1276,7 @@ KEY:
 notify_webhook[:name]  publish bucket notifications to webhook endpoints
 
 ARGS:
-endpoint*    (url)       webhook server endpoint e.g. http://localhost:8080/minio/events
+endpoint*    (url)       webhook server endpoint e.g. http://localhost:8080/obstor/events
 auth_token   (string)    opaque string or JWT authorization token
 queue_dir    (path)      staging dir for undelivered messages e.g. '/home/events'
 queue_limit  (number)    maximum limit for undelivered messages, defaults to '100000'
@@ -1292,7 +1292,7 @@ notify_webhook[:name]  publish bucket notifications to webhook endpoints
 
 ARGS:
 OBSTOR_NOTIFY_WEBHOOK_ENABLE*      (on|off)    enable notify_webhook target, default is 'off'
-OBSTOR_NOTIFY_WEBHOOK_ENDPOINT*    (url)       webhook server endpoint e.g. http://localhost:8080/minio/events
+OBSTOR_NOTIFY_WEBHOOK_ENDPOINT*    (url)       webhook server endpoint e.g. http://localhost:8080/obstor/events
 OBSTOR_NOTIFY_WEBHOOK_AUTH_TOKEN   (string)    opaque string or JWT authorization token
 OBSTOR_NOTIFY_WEBHOOK_QUEUE_DIR    (path)      staging dir for undelivered messages e.g. '/home/events'
 OBSTOR_NOTIFY_WEBHOOK_QUEUE_LIMIT  (number)    maximum limit for undelivered messages, defaults to '100000'
@@ -1314,12 +1314,12 @@ $ mc admin config set myminio notify_webhook:1 queue_limit="0"  endpoint="http:/
 
 ### Step 2: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded to `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:webhook`. To learn more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded to `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:webhook`. To learn more about ARN please follow [AWS ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) documentation.
 
 ```
 mc mb myminio/images
 mc mb myminio/images-thumbnail
-mc event add myminio/images arn:minio:sqs::1:webhook --event put --suffix .jpg
+mc event add myminio/images arn:obstor:sqs::1:webhook --event put --suffix .jpg
 ```
 
 Check if event notification is successfully configured by
@@ -1331,7 +1331,7 @@ mc event list myminio/images
 You should get a response like this
 
 ```
-arn:minio:sqs::1:webhook   s3:ObjectCreated:*   Filter: suffix=".jpg"
+arn:obstor:sqs::1:webhook   s3:ObjectCreated:*   Filter: suffix=".jpg"
 ```
 
 ### Step 3: Test with Thumbnailer
@@ -1415,23 +1415,23 @@ $ mc admin config get myminio/ notify_nsq
 notify_nsq:1 nsqd_address="" queue_dir="" queue_limit="0"  tls="off" tls_skip_verify="off" topic=""
 ```
 
-Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:minio:sqs::1:nsq` at start-up if there were no errors.
+Use `mc admin config set` command to update the configuration for the deployment. Restart the ObStor server to put the changes into effect. The server will print a line like `SQS ARNs: arn:obstor:sqs::1:nsq` at start-up if there were no errors.
 
 ```sh
-$ mc admin config set myminio notify_nsq:1 nsqd_address="127.0.0.1:4150" queue_dir="" queue_limit="0" tls="off" tls_skip_verify="on" topic="minio"
+$ mc admin config set myminio notify_nsq:1 nsqd_address="127.0.0.1:4150" queue_dir="" queue_limit="0" tls="off" tls_skip_verify="on" topic="obstor"
 ```
 
 Note that, you can add as many NSQ daemon endpoint configurations as needed by providing an identifier (like "1" in the example above) for the NSQ instance and an object of per-server configuration parameters.
 
 ### Step 2: Enable bucket notification using ObStor client
 
-We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:minio:sqs::1:nsq`.
+We will enable bucket event notification to trigger whenever a JPEG image is uploaded or deleted `images` bucket on `myminio` server. Here ARN value is `arn:obstor:sqs::1:nsq`.
 
 ```
 mc mb myminio/images
-mc event add  myminio/images arn:minio:sqs::1:nsq --suffix .jpg
+mc event add  myminio/images arn:obstor:sqs::1:nsq --suffix .jpg
 mc event list myminio/images
-arn:minio:sqs::1:nsq s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
+arn:obstor:sqs::1:nsq s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jpg”
 ```
 
 ### Step 3: Test on NSQ
@@ -1439,7 +1439,7 @@ arn:minio:sqs::1:nsq s3:ObjectCreated:*,s3:ObjectRemoved:* Filter: suffix=”.jp
 The simplest test is to download `nsq_tail` from [nsq github](https://github.com/nsqio/nsq/releases)
 
 ```
-./nsq_tail -nsqd-tcp-address 127.0.0.1:4150 -topic minio
+./nsq_tail -nsqd-tcp-address 127.0.0.1:4150 -topic obstor
 ```
 
 Open another terminal and upload a JPEG image into `images` bucket.
@@ -1451,5 +1451,5 @@ mc cp gopher.jpg myminio/images
 You should receive the following event notification via NSQ once the upload completes.
 
 ```
-{"EventName":"s3:ObjectCreated:Put","Key":"images/gopher.jpg","Records":[{"eventVersion":"2.0","eventSource":"minio:s3","awsRegion":"","eventTime":"2018-10-31T09:31:11Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"21EJ9HYV110O8NVX2VMS"},"requestParameters":{"sourceIPAddress":"10.1.1.1"},"responseElements":{"x-amz-request-id":"1562A792DAA53426","x-minio-origin-endpoint":"http://10.0.3.1:9000"},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"21EJ9HYV110O8NVX2VMS"},"arn":"arn:aws:s3:::images"},"object":{"key":"gopher.jpg","size":162023,"eTag":"5337769ffa594e742408ad3f30713cd7","contentType":"image/jpeg","userMetadata":{"content-type":"image/jpeg"},"versionId":"1","sequencer":"1562A792DAA53426"}},"source":{"host":"","port":"","userAgent":"ObStor (linux; amd64) minio-go/v6.0.8 mc/DEVELOPMENT.GOGET"}}]}
+{"EventName":"s3:ObjectCreated:Put","Key":"images/gopher.jpg","Records":[{"eventVersion":"2.0","eventSource":"obstor:s3","awsRegion":"","eventTime":"2018-10-31T09:31:11Z","eventName":"s3:ObjectCreated:Put","userIdentity":{"principalId":"21EJ9HYV110O8NVX2VMS"},"requestParameters":{"sourceIPAddress":"10.1.1.1"},"responseElements":{"x-amz-request-id":"1562A792DAA53426","x-obstor-origin-endpoint":"http://10.0.3.1:9000"},"s3":{"s3SchemaVersion":"1.0","configurationId":"Config","bucket":{"name":"images","ownerIdentity":{"principalId":"21EJ9HYV110O8NVX2VMS"},"arn":"arn:aws:s3:::images"},"object":{"key":"gopher.jpg","size":162023,"eTag":"5337769ffa594e742408ad3f30713cd7","contentType":"image/jpeg","userMetadata":{"content-type":"image/jpeg"},"versionId":"1","sequencer":"1562A792DAA53426"}},"source":{"host":"","port":"","userAgent":"ObStor (linux; amd64) minio-go/v6.0.8 mc/DEVELOPMENT.GOGET"}}]}
 ```

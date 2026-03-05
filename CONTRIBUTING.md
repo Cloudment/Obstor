@@ -1,4 +1,4 @@
-# ObStor Contribution Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Contribution Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ``ObStor`` community welcomes your contribution. To make the process as seamless as possible, we recommend you read this contribution guide.
 
@@ -17,7 +17,7 @@ $ ls /go/bin/obstor
 
 ### Set up git remote as ``upstream``
 ```sh
-$ cd minio
+$ cd obstor
 $ git remote add upstream https://github.com/cloudment/obstor
 $ git fetch upstream
 $ git merge upstream/master

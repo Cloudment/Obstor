@@ -20,7 +20,7 @@ import sys
 from csv import (test_csv_input_custom_quote_char,
                  test_csv_output_custom_quote_char)
 
-from minio import Minio
+from obstor import Minio
 
 from sql_ops import (test_sql_datatypes, test_sql_functions_agg_cond_conv,
                      test_sql_functions_date, test_sql_functions_string,

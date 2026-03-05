@@ -74,7 +74,7 @@ export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 obstor server /mnt/data
 ```
 
-Assuming that ObStor server is configured to support STS API by following the doc [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide), execute the following command to temporary credentials from ObStor server.
+Assuming that ObStor server is configured to support STS API by following the doc [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide), execute the following command to temporary credentials from ObStor server.
 ```
 go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBtrOWvhRWL4TUCga
 
@@ -90,5 +90,5 @@ go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBtrO
 These credentials can now be used to perform ObStor API operations, these credentials automatically expire in 1hr. To understand more about credential expiry duration and client grants STS API read further [here](https://github.com/cloudment/obstor/blob/master/docs/sts/client-grants.md).
 
 ## Explore Further
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

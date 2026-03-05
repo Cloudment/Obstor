@@ -375,7 +375,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 	return prof, nil
 }
 
-// minioProfiler - minio profiler interface.
+// minioProfiler - obstor profiler interface.
 type minioProfiler interface {
 	// Return base profile. 'nil' if none.
 	Base() []byte

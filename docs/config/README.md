@@ -1,8 +1,8 @@
-# ObStor Server Config Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Server Config Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ## Configuration Directory
 
-Till ObStor release `RELEASE.2018-08-02T23-11-36Z`, ObStor server configuration file (`config.json`) was stored in the configuration directory specified by `--config-dir` or defaulted to `${HOME}/.minio`. However from releases after `RELEASE.2018-08-18T03-49-57Z`, the configuration file (only), has been migrated to the storage backend (storage backend is the directory passed to ObStor server while starting the server).
+Till ObStor release `RELEASE.2018-08-02T23-11-36Z`, ObStor server configuration file (`config.json`) was stored in the configuration directory specified by `--config-dir` or defaulted to `${HOME}/.obstor`. However from releases after `RELEASE.2018-08-18T03-49-57Z`, the configuration file (only), has been migrated to the storage backend (storage backend is the directory passed to ObStor server while starting the server).
 
 You can specify the location of your existing config using `--config-dir`, ObStor will migrate the `config.json` to your backend storage. Your current `config.json` will be renamed upon successful migration as `config.json.deprecated` in your current `--config-dir`. All your existing configurations are honored after this migration.
 
@@ -16,13 +16,13 @@ ObStor also encrypts all the config, IAM and policies content with admin credent
 
 ### Certificate Directory
 
-TLS certificates by default are stored under ``${HOME}/.minio/certs`` directory. You need to place certificates here to enable `HTTPS` based access. Read more about [How to secure access to ObStor server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls).
+TLS certificates by default are stored under ``${HOME}/.obstor/certs`` directory. You need to place certificates here to enable `HTTPS` based access. Read more about [How to secure access to ObStor server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls).
 
 Following is the directory structure for ObStor server with TLS certificates.
 
 ```sh
-$ mc tree --files ~/.minio
-/home/user1/.minio
+$ mc tree --files ~/.obstor
+/home/user1/.obstor
 └─ certs
    ├─ CAs
    ├─ private.key
@@ -48,7 +48,7 @@ Additionally if you wish to change the admin credentials, then ObStor will autom
 
 ```sh
 export OBSTOR_ROOT_USER=newminio
-export OBSTOR_ROOT_PASSWORD=newminio123
+export OBSTOR_ROOT_PASSWORD=newobstor123
 export OBSTOR_ROOT_USER_OLD=obstor
 export OBSTOR_ROOT_PASSWORD_OLD=obstor123
 obstor server /data
@@ -195,7 +195,7 @@ OBSTOR_API_REMOTE_TRANSPORT_DEADLINE  (duration)  set the deadline for API reque
 ```
 
 #### Notifications
-Notification targets supported by ObStor are in the following list. To configure individual targets please refer to more detailed documentation [here](https://pgg.net/docs/obstor/minio-bucket-notification-guide.html)
+Notification targets supported by ObStor are in the following list. To configure individual targets please refer to more detailed documentation [here](https://pgg.net/docs/obstor/obstor-bucket-notification-guide.html)
 
 ```
 notify_webhook        publish bucket notifications to webhook endpoints
@@ -211,7 +211,7 @@ notify_redis          publish bucket notifications to Redis datastores
 ```
 
 ### Accessing configuration
-All configuration changes can be made using [`mc admin config` get/set/reset/export/import commands](https://github.com/minio/mc/blob/master/docs/minio-admin-complete-guide.md).
+All configuration changes can be made using [`mc admin config` get/set/reset/export/import commands](https://github.com/minio/mc/blob/master/docs/obstor-admin-complete-guide.md).
 
 #### List all config keys available
 ```
@@ -352,5 +352,5 @@ obstor server /data
 ```
 
 ## Explore Further
-* [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
-* [Configure ObStor Server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls)
+* [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
+* [Configure ObStor Server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls)

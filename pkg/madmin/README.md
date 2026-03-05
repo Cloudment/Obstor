@@ -23,8 +23,8 @@ func main() {
     // Use a secure connection.
     ssl := true
 
-    // Initialize minio client object.
-    mdmClnt, err := madmin.New("your-minio.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETKEY", ssl)
+    // Initialize obstor client object.
+    mdmClnt, err := madmin.New("your-obstor.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETKEY", ssl)
     if err != nil {
         fmt.Println(err)
         return
@@ -560,7 +560,7 @@ or `OBSTOR_KMS_MASTER_KEY`) if the keyID is empty.
 __Example__
 
 ``` go
-    keyInfo, err := madmClnt.GetKeyStatus(context.Background(), "my-minio-key")
+    keyInfo, err := madmClnt.GetKeyStatus(context.Background(), "my-obstor-key")
     if err != nil {
        log.Fatalln(err)
     }

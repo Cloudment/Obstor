@@ -34,12 +34,12 @@ import (
 	"github.com/cloudment/obstor/pkg/trie"
 )
 
-// Returns EXPORT/.minio.sys/multipart/SHA256/UPLOADID
+// Returns EXPORT/.obstor.sys/multipart/SHA256/UPLOADID
 func (fs *FSObjects) getUploadIDDir(bucket, object, uploadID string) string {
 	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))), uploadID)
 }
 
-// Returns EXPORT/.minio.sys/multipart/SHA256
+// Returns EXPORT/.obstor.sys/multipart/SHA256
 func (fs *FSObjects) getMultipartSHADir(bucket, object string) string {
 	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))))
 }
@@ -248,8 +248,8 @@ func (fs *FSObjects) NewMultipartUpload(ctx context.Context, bucket, object stri
 }
 
 // CopyObjectPart - similar to PutObjectPart but reads data from an existing
-// object. Internally incoming data is written to '.minio.sys/tmp' location
-// and safely renamed to '.minio.sys/multipart' for reach parts.
+// object. Internally incoming data is written to '.obstor.sys/tmp' location
+// and safely renamed to '.obstor.sys/multipart' for reach parts.
 func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, dstBucket, dstObject, uploadID string, partID int,
 	startOffset int64, length int64, srcInfo ObjectInfo, srcOpts, dstOpts ObjectOptions) (pi PartInfo, e error) {
 
@@ -275,8 +275,8 @@ func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, d
 
 // PutObjectPart - reads incoming data until EOF for the part file on
 // an ongoing multipart transaction. Internally incoming data is
-// written to '.minio.sys/tmp' location and safely renamed to
-// '.minio.sys/multipart' for reach parts.
+// written to '.obstor.sys/tmp' location and safely renamed to
+// '.obstor.sys/multipart' for reach parts.
 func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, r *PutObjReader, opts ObjectOptions) (pi PartInfo, e error) {
 	if opts.VersionID != "" && opts.VersionID != nullVersionID {
 		return pi, VersionNotFound{

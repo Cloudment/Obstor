@@ -306,7 +306,7 @@ func (er erasureObjects) getOnlineDisksWithHealing() (newDisks []StorageAPI, hea
 	return newDisks, healing
 }
 
-// Clean-up previously deleted objects. from .minio.sys/tmp/.trash/
+// Clean-up previously deleted objects. from .obstor.sys/tmp/.trash/
 func (er erasureObjects) cleanupDeletedObjects(ctx context.Context) {
 	// run multiple cleanup's local to this server.
 	var wg sync.WaitGroup

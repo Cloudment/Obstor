@@ -447,7 +447,7 @@ func TestParseEndpointSet(t *testing.T) {
 			true,
 		},
 		{
-			"http://rack{1...4}.mydomain.minio{1...16}/data",
+			"http://rack{1...4}.mydomain.obstor{1...16}/data",
 			endpointSet{
 				[]ellipses.ArgPattern{
 					[]ellipses.Pattern{
@@ -458,7 +458,7 @@ func TestParseEndpointSet(t *testing.T) {
 						},
 						{
 							Prefix: "http://rack",
-							Suffix: ".mydomain.minio",
+							Suffix: ".mydomain.obstor",
 							Seq:    getSequences(1, 4, 0),
 						},
 					},

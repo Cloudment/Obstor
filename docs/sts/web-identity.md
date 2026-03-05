@@ -14,7 +14,7 @@
 - [Sample Response](#sample-response)
 - [Using WebIdentity API](#using-webidentity-api)
 - [Authorization Flow](#authorization-flow)
-- [Using ObStor Browser](#using-minio-browser)
+- [Using ObStor Browser](#using-obstor-browser)
 - [Explore Further](#explore-further)
 
 ## Introduction
@@ -164,5 +164,5 @@ JWT token returned by the Identity Provider should include a custom claim for th
 - Upon successful login on Identity Provider page the user will be automatically logged into ObStor Browser
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

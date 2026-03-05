@@ -34,13 +34,13 @@ import (
 
 	"github.com/tinylib/msgp/msgp"
 
-	jwtreq "github.com/golang-jwt/jwt/v4/request"
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/config"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	xjwt "github.com/cloudment/obstor/cmd/jwt"
 	"github.com/cloudment/obstor/cmd/logger"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	jwtreq "github.com/golang-jwt/jwt/v4/request"
+	"github.com/gorilla/mux"
 )
 
 var errDiskStale = errors.New("disk stale")
@@ -60,7 +60,7 @@ func (s *storageRESTServer) writeErrorResponse(w http.ResponseWriter, err error)
 	w.(http.Flusher).Flush()
 }
 
-// DefaultSkewTime - skew time is 15 minutes between minio peers.
+// DefaultSkewTime - skew time is 15 minutes between obstor peers.
 const DefaultSkewTime = 15 * time.Minute
 
 // Authenticates storage client's requests and validates for skewed time.
@@ -87,7 +87,7 @@ func storageServerRequestValidate(r *http.Request) error {
 		return errAuthentication
 	}
 
-	requestTimeStr := r.Header.Get("X-Minio-Time")
+	requestTimeStr := r.Header.Get("X-Obstor-Time")
 	requestTime, err := time.Parse(time.RFC3339, requestTimeStr)
 	if err != nil {
 		return err

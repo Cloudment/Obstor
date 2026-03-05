@@ -115,5 +115,5 @@ $ go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBt
 ```
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

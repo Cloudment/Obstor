@@ -64,7 +64,7 @@ type xlMetaV1Object struct {
 	// ObStor release tag for current object `xl.meta`.
 	Minio struct {
 		Release string `json:"release"`
-	} `json:"minio"`
+	} `json:"obstor"`
 	// Metadata map for current object `xl.meta`.
 	Meta map[string]string `json:"meta,omitempty"`
 	// Captures all the individual object `xl.meta`.

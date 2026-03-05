@@ -106,7 +106,7 @@ func isDirectiveReplace(value string) bool {
 // must be extracted from the header.
 var userMetadataKeyPrefixes = []string{
 	"x-amz-meta-",
-	"x-minio-meta-",
+	"x-obstor-meta-",
 }
 
 // extractMetadata extracts metadata from HTTP header and HTTP queryString.
@@ -428,7 +428,7 @@ func getResource(path string, host string, domains []string) (string, error) {
 	return path, nil
 }
 
-var regexVersion = regexp.MustCompile(`^/minio.*/(v\d+)/.*`)
+var regexVersion = regexp.MustCompile(`^/obstor.*/(v\d+)/.*`)
 
 func extractAPIVersion(r *http.Request) string {
 	if matches := regexVersion.FindStringSubmatch(r.URL.Path); len(matches) > 1 {

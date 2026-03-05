@@ -18,7 +18,7 @@
 import io
 from datetime import datetime
 
-from minio.select import (FILE_HEADER_INFO_NONE, JSON_TYPE_DOCUMENT,
+from obstor.select import (FILE_HEADER_INFO_NONE, JSON_TYPE_DOCUMENT,
                           QUOTE_FIELDS_ASNEEDED, CSVInputSerialization,
                           CSVOutputSerialization, JSONInputSerialization,
                           JSONOutputSerialization, SelectRequest)

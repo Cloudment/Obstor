@@ -27,12 +27,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/klauspost/compress/zstd"
-	"github.com/minio/highwayhash"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/hash"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/klauspost/compress/zstd"
+	"github.com/minio/highwayhash"
 	"github.com/tinylib/msgp/msgp"
 )
 

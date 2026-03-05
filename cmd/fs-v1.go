@@ -95,7 +95,7 @@ type fsAppendFile struct {
 func initMetaVolumeFS(fsPath, fsUUID string) error {
 	// This happens for the first time, but keep this here since this
 	// is the only place where it can be made less expensive
-	// optimizing all other calls. Create minio meta volume,
+	// optimizing all other calls. Create obstor meta volume,
 	// if it doesn't exist yet.
 	metaBucketPath := pathJoin(fsPath, minioMetaBucket)
 
@@ -141,7 +141,7 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 		return nil, config.ErrUnableToWriteInBackend(err).Hint("%s", hint)
 	}
 
-	// Assign a new UUID for FS minio mode. Each server instance
+	// Assign a new UUID for FS obstor mode. Each server instance
 	// gets its own UUID for temporary file transaction.
 	fsUUID := mustGetUUID()
 

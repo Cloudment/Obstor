@@ -4,7 +4,7 @@ ObStor uses a key-management-system (KMS) to support SSE-S3. If a client request
 
 ## Quick Start
 
-ObStor supports multiple KMS implementations via our [KES](https://github.com/minio/kes#kes) project. We run a KES instance at `https://play.pgg.net:7373` for you to experiment and quickly get started. To run ObStor with a KMS just fetch the root identity, set the following environment variables and then start your ObStor server. If you havn't installed ObStor, yet, then follow the ObStor [install instructions](https://pgg.net/docs/obstor/minio-quickstart-guide) first.
+ObStor supports multiple KMS implementations via our [KES](https://github.com/minio/kes#kes) project. We run a KES instance at `https://play.pgg.net:7373` for you to experiment and quickly get started. To run ObStor with a KMS just fetch the root identity, set the following environment variables and then start your ObStor server. If you havn't installed ObStor, yet, then follow the ObStor [install instructions](https://pgg.net/docs/obstor/obstor-quickstart-guide) first.
 
 #### 1. Fetch the root identity
 As the initial step, fetch the private key and certificate of the root identity:
@@ -21,7 +21,7 @@ curl -sSL --tlsv1.2 \
 export OBSTOR_KMS_KES_ENDPOINT=https://play.pgg.net:7373
 export OBSTOR_KMS_KES_KEY_FILE=root.key
 export OBSTOR_KMS_KES_CERT_FILE=root.cert
-export OBSTOR_KMS_KES_KEY_NAME=my-minio-key
+export OBSTOR_KMS_KES_KEY_NAME=my-obstor-key
 ```
 
 #### 3. Start the ObStor Server
@@ -66,7 +66,7 @@ The ObStor-KES configuration is always the same - regardless of the underlying K
 
 ### Further references
 
-- [Run ObStor with TLS / HTTPS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls.html)
+- [Run ObStor with TLS / HTTPS](https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls.html)
 - [Tweak the KES server configuration](https://github.com/minio/kes/wiki/Configuration)
 - [Run a load balancer infront of KES](https://github.com/minio/kes/wiki/TLS-Proxy)
 - [Understand the KES server concepts](https://github.com/minio/kes/wiki/Concepts)
@@ -116,8 +116,8 @@ Encrypted :
 
 ## Explore Further
 
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

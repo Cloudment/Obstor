@@ -12,11 +12,11 @@ services:
     expose:
       - "9000"
     environment:
-      OBSTOR_ROOT_USER: minio
-      OBSTOR_ROOT_PASSWORD: minio123
+      OBSTOR_ROOT_USER: obstor
+      OBSTOR_ROOT_PASSWORD: obstor123
     command: server http://obstor{1...4}/data{1...2}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/obstor/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -29,11 +29,11 @@ services:
     expose:
       - "9000"
     environment:
-      OBSTOR_ROOT_USER: minio
-      OBSTOR_ROOT_PASSWORD: minio123
+      OBSTOR_ROOT_USER: obstor
+      OBSTOR_ROOT_PASSWORD: obstor123
     command: server http://obstor{1...4}/data{1...2}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/obstor/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -46,11 +46,11 @@ services:
     expose:
       - "9000"
     environment:
-      OBSTOR_ROOT_USER: minio
-      OBSTOR_ROOT_PASSWORD: minio123
+      OBSTOR_ROOT_USER: obstor
+      OBSTOR_ROOT_PASSWORD: obstor123
     command: server http://obstor{1...4}/data{1...2}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/obstor/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -63,11 +63,11 @@ services:
     expose:
       - "9000"
     environment:
-      OBSTOR_ROOT_USER: minio
-      OBSTOR_ROOT_PASSWORD: minio123
+      OBSTOR_ROOT_USER: obstor
+      OBSTOR_ROOT_PASSWORD: obstor123
     command: server http://obstor{1...4}/data{1...2}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/obstor/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3

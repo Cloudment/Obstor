@@ -153,7 +153,7 @@ func (fi FileInfo) ToObjectInfo(bucket, object string) ObjectInfo {
 
 	// etag/md5Sum has already been extracted. We need to
 	// remove to avoid it from appearing as part of
-	// response headers. e.g, X-Minio-* or X-Amz-*.
+	// response headers. e.g, X-Obstor-* or X-Amz-*.
 	// Tags have also been extracted, we remove that as well.
 	objInfo.UserDefined = cleanMetadata(fi.Metadata)
 

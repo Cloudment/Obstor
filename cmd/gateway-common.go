@@ -30,7 +30,7 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	xnet "github.com/cloudment/obstor/pkg/net"
 
-	minio "github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 )
 
 var (
@@ -56,7 +56,7 @@ var (
 	IsStringEqual = isStringEqual
 )
 
-// FromMinioClientMetadata converts minio metadata to map[string]string
+// FromMinioClientMetadata converts obstor metadata to map[string]string
 func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
 	mm := make(map[string]string, len(metadata))
 	for k, v := range metadata {
@@ -65,8 +65,8 @@ func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
 	return mm
 }
 
-// FromMinioClientObjectPart converts minio ObjectPart to PartInfo
-func FromMinioClientObjectPart(op minio.ObjectPart) PartInfo {
+// FromMinioClientObjectPart converts obstor ObjectPart to PartInfo
+func FromMinioClientObjectPart(op obstor.ObjectPart) PartInfo {
 	return PartInfo{
 		Size:         op.Size,
 		ETag:         canonicalizeETag(op.ETag),
@@ -75,10 +75,10 @@ func FromMinioClientObjectPart(op minio.ObjectPart) PartInfo {
 	}
 }
 
-// FromMinioClientListPartsInfo converts minio ListObjectPartsResult to ListPartsInfo
-func FromMinioClientListPartsInfo(lopr minio.ListObjectPartsResult) ListPartsInfo {
-	// Convert minio ObjectPart to PartInfo
-	fromMinioClientObjectParts := func(parts []minio.ObjectPart) []PartInfo {
+// FromMinioClientListPartsInfo converts obstor ListObjectPartsResult to ListPartsInfo
+func FromMinioClientListPartsInfo(lopr obstor.ListObjectPartsResult) ListPartsInfo {
+	// Convert obstor ObjectPart to PartInfo
+	fromMinioClientObjectParts := func(parts []obstor.ObjectPart) []PartInfo {
 		toParts := make([]PartInfo, len(parts))
 		for i, part := range parts {
 			toParts[i] = FromMinioClientObjectPart(part)
@@ -99,8 +99,8 @@ func FromMinioClientListPartsInfo(lopr minio.ListObjectPartsResult) ListPartsInf
 	}
 }
 
-// FromMinioClientListMultipartsInfo converts minio ListMultipartUploadsResult to ListMultipartsInfo
-func FromMinioClientListMultipartsInfo(lmur minio.ListMultipartUploadsResult) ListMultipartsInfo {
+// FromMinioClientListMultipartsInfo converts obstor ListMultipartUploadsResult to ListMultipartsInfo
+func FromMinioClientListMultipartsInfo(lmur obstor.ListMultipartUploadsResult) ListMultipartsInfo {
 	uploads := make([]MultipartInfo, len(lmur.Uploads))
 
 	for i, um := range lmur.Uploads {
@@ -132,8 +132,8 @@ func FromMinioClientListMultipartsInfo(lmur minio.ListMultipartUploadsResult) Li
 
 }
 
-// FromMinioClientObjectInfo converts minio ObjectInfo to gateway ObjectInfo
-func FromMinioClientObjectInfo(bucket string, oi minio.ObjectInfo) ObjectInfo {
+// FromMinioClientObjectInfo converts obstor ObjectInfo to gateway ObjectInfo
+func FromMinioClientObjectInfo(bucket string, oi obstor.ObjectInfo) ObjectInfo {
 	userDefined := FromMinioClientMetadata(oi.Metadata)
 	userDefined[xhttp.ContentType] = oi.ContentType
 
@@ -151,8 +151,8 @@ func FromMinioClientObjectInfo(bucket string, oi minio.ObjectInfo) ObjectInfo {
 	}
 }
 
-// FromMinioClientListBucketV2Result converts minio ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketV2Result(bucket string, result minio.ListBucketV2Result) ListObjectsV2Info {
+// FromMinioClientListBucketV2Result converts obstor ListBucketResult to ListObjectsInfo
+func FromMinioClientListBucketV2Result(bucket string, result obstor.ListBucketV2Result) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -174,8 +174,8 @@ func FromMinioClientListBucketV2Result(bucket string, result minio.ListBucketV2R
 	}
 }
 
-// FromMinioClientListBucketResult converts minio ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketResult(bucket string, result minio.ListBucketResult) ListObjectsInfo {
+// FromMinioClientListBucketResult converts obstor ListBucketResult to ListObjectsInfo
+func FromMinioClientListBucketResult(bucket string, result obstor.ListBucketResult) ListObjectsInfo {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -195,8 +195,8 @@ func FromMinioClientListBucketResult(bucket string, result minio.ListBucketResul
 	}
 }
 
-// FromMinioClientListBucketResultToV2Info converts minio ListBucketResult to ListObjectsV2Info
-func FromMinioClientListBucketResultToV2Info(bucket string, result minio.ListBucketResult) ListObjectsV2Info {
+// FromMinioClientListBucketResultToV2Info converts obstor ListBucketResult to ListObjectsV2Info
+func FromMinioClientListBucketResultToV2Info(bucket string, result obstor.ListBucketResult) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -235,17 +235,17 @@ func ToMinioClientMetadata(metadata map[string]string) map[string]string {
 	return mm
 }
 
-// ToMinioClientCompletePart converts CompletePart to minio CompletePart
-func ToMinioClientCompletePart(part CompletePart) minio.CompletePart {
-	return minio.CompletePart{
+// ToMinioClientCompletePart converts CompletePart to obstor CompletePart
+func ToMinioClientCompletePart(part CompletePart) obstor.CompletePart {
+	return obstor.CompletePart{
 		ETag:       part.ETag,
 		PartNumber: part.PartNumber,
 	}
 }
 
-// ToMinioClientCompleteParts converts []CompletePart to minio []CompletePart
-func ToMinioClientCompleteParts(parts []CompletePart) []minio.CompletePart {
-	mparts := make([]minio.CompletePart, len(parts))
+// ToMinioClientCompleteParts converts []CompletePart to obstor []CompletePart
+func ToMinioClientCompleteParts(parts []CompletePart) []obstor.CompletePart {
+	mparts := make([]obstor.CompletePart, len(parts))
 	for i, part := range parts {
 		mparts[i] = ToMinioClientCompletePart(part)
 	}
@@ -270,7 +270,7 @@ func IsBackendOnline(ctx context.Context, host string) bool {
 	return true
 }
 
-// ErrorRespToObjectError converts ObStor errors to minio object layer errors.
+// ErrorRespToObjectError converts ObStor errors to obstor object layer errors.
 func ErrorRespToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -289,9 +289,9 @@ func ErrorRespToObjectError(err error, params ...string) error {
 		return BackendDown{}
 	}
 
-	minioErr, ok := err.(minio.ErrorResponse)
+	minioErr, ok := err.(obstor.ErrorResponse)
 	if !ok {
-		// We don't interpret non ObStor errors. As minio errors will
+		// We don't interpret non ObStor errors. As obstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}

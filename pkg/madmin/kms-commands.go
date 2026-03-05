@@ -26,7 +26,7 @@ import (
 // CreateKey tries to create a new master key with the given keyID
 // at the KMS connected to a ObStor server.
 func (adm *AdminClient) CreateKey(ctx context.Context, keyID string) error {
-	// POST /minio/admin/v3/kms/key/create?key-id=<keyID>
+	// POST /obstor/admin/v3/kms/key/create?key-id=<keyID>
 	qv := url.Values{}
 	qv.Set("key-id", keyID)
 	reqData := requestData{
@@ -47,9 +47,9 @@ func (adm *AdminClient) CreateKey(ctx context.Context, keyID string) error {
 
 // GetKeyStatus requests status information about the key referenced by keyID
 // from the KMS connected to a ObStor by performing a Admin-API request.
-// It basically hits the `/minio/admin/v3/kms/key/status` API endpoint.
+// It basically hits the `/obstor/admin/v3/kms/key/status` API endpoint.
 func (adm *AdminClient) GetKeyStatus(ctx context.Context, keyID string) (*KMSKeyStatus, error) {
-	// GET /minio/admin/v3/kms/key/status?key-id=<keyID>
+	// GET /obstor/admin/v3/kms/key/status?key-id=<keyID>
 	qv := url.Values{}
 	qv.Set("key-id", keyID)
 	reqData := requestData{

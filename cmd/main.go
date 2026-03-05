@@ -27,7 +27,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// GlobalFlags - global flags for minio.
+// GlobalFlags - global flags for obstor.
 var GlobalFlags = []cli.Flag{
 	// Deprecated flag, so its hidden now - existing deployments will keep working.
 	cli.StringFlag{
@@ -67,7 +67,7 @@ var GlobalFlags = []cli.Flag{
 	},
 }
 
-// Help template for minio.
+// Help template for obstor.
 var minioHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
@@ -88,10 +88,10 @@ VERSION:
 `
 
 func newApp(name string) *cli.App {
-	// Collection of minio commands currently supported are.
+	// Collection of obstor commands currently supported are.
 	commands := []cli.Command{}
 
-	// Collection of minio commands currently supported in a trie tree.
+	// Collection of obstor commands currently supported in a trie tree.
 	commandsTree := trie.NewTrie()
 
 	// registerCommand registers a cli command.
@@ -133,16 +133,16 @@ func newApp(name string) *cli.App {
 
 	app := cli.NewApp()
 	app.Name = name
-	app.Author = "MinIO, Inc."
+	app.Author = "PGG, Inc."
 	app.Version = ReleaseTag
 	app.Usage = "High Performance Object Storage"
 	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with ObStor`
 	app.Flags = GlobalFlags
-	app.HideHelp = true // Hide `help, h` command, we already have `minio --help`.
+	app.HideHelp = true // Hide `help, h` command, we already have `obstor --help`.
 	app.Commands = commands
 	app.CustomAppHelpTemplate = minioHelpTemplate
 	app.CommandNotFound = func(ctx *cli.Context, command string) {
-		console.Printf("‘%s’ is not a minio sub-command. See ‘minio --help’.\n", command)
+		console.Printf("‘%s’ is not a obstor sub-command. See ‘obstor --help’.\n", command)
 		closestCommands := findClosestCommands(command)
 		if len(closestCommands) > 0 {
 			console.Println()
@@ -160,7 +160,7 @@ func newApp(name string) *cli.App {
 
 // Main main for obstor server.
 func Main(args []string) {
-	// Set the minio app name.
+	// Set the obstor app name.
 	appName := filepath.Base(args[0])
 
 	// Run the app - exit on error.

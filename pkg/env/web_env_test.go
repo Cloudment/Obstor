@@ -33,7 +33,7 @@ func GetenvHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "namespace not found", http.StatusNotFound)
 		return
 	}
-	if vars["name"] != "minio" {
+	if vars["name"] != "obstor" {
 		http.Error(w, "tenant not found", http.StatusNotFound)
 		return
 	}
@@ -68,7 +68,7 @@ func TestWebEnv(t *testing.T) {
 	}
 
 	v, user, pwd, err := getEnvValueFromHTTP(
-		fmt.Sprintf("env://minio:minio123@%s/webhook/v1/getenv/default/minio",
+		fmt.Sprintf("env://obstor:obstor123@%s/webhook/v1/getenv/default/obstor",
 			u.Host),
 		"OBSTOR_ARGS")
 	if err != nil {
@@ -79,11 +79,11 @@ func TestWebEnv(t *testing.T) {
 		t.Fatalf("Unexpected value %s", v)
 	}
 
-	if user != "minio" {
+	if user != "obstor" {
 		t.Fatalf("Unexpected value %s", v)
 	}
 
-	if pwd != "minio123" {
+	if pwd != "obstor123" {
 		t.Fatalf("Unexpected value %s", v)
 	}
 }

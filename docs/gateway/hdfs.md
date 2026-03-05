@@ -1,4 +1,4 @@
-# ObStor HDFS Gateway [![Discord](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
+# ObStor HDFS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 ObStor HDFS gateway adds Amazon S3 API support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the gateway is stateless and shared-nothing, you may elastically provision as many ObStor instances as needed to distribute the load.
 
 > NOTE: Intention of this gateway implementation it to make it easy to migrate your existing data on HDFS clusters to ObStor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
@@ -10,14 +10,14 @@ Namenode information is obtained by reading `core-site.xml` automatically from y
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-minio gateway hdfs
+obstor gateway hdfs
 ```
 
 You can also override the namenode endpoint as shown below.
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-minio gateway hdfs hdfs://namenode:8200
+obstor gateway hdfs hdfs://namenode:8200
 ```
 
 ### Using Docker
@@ -27,7 +27,7 @@ docker run -p 9000:9000 \
  --name hdfs-s3 \
  -e "OBSTOR_ROOT_USER=obstor" \
  -e "OBSTOR_ROOT_PASSWORD=obstor123" \
- minio/minio gateway hdfs hdfs://namenode:8200
+ obstor/obstor gateway hdfs hdfs://namenode:8200
 ```
 
 ### Setup Kerberos
@@ -71,7 +71,7 @@ export KRB5REALM=REALM.COM
 ## Test using ObStor Browser
 *ObStor gateway* comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/minio-browser-gateway.png)
+![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/obstor-browser-gateway.png)
 
 ## Test using ObStor Client `mc`
 
@@ -101,6 +101,6 @@ Gateway inherits the following limitations of HDFS storage layer:
 - Concurrent multipart operations are not supported (HDFS lacks safe locking support, or poorly implemented)
 
 ## Explore Further
-- [`mc` command-line interface](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [`mc` command-line interface](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://pgg.net/docs/obstor/golang-client-quickstart-guide)

@@ -82,8 +82,8 @@ func testStorageAPIListVols(t *testing.T, storage StorageAPI) {
 		expectedResult []VolInfo
 		expectErr      bool
 	}{
-		{nil, []VolInfo{{Name: ".minio.sys"}}, false},
-		{[]string{"foo"}, []VolInfo{{Name: ".minio.sys"}, {Name: "foo"}}, false},
+		{nil, []VolInfo{{Name: ".obstor.sys"}}, false},
+		{[]string{"foo"}, []VolInfo{{Name: ".obstor.sys"}, {Name: "foo"}}, false},
 	}
 
 	for i, testCase := range testCases {

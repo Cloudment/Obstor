@@ -51,7 +51,7 @@ func setCommonHeaders(w http.ResponseWriter) {
 	w.Header().Set(xhttp.ServerInfo, "ObStor")
 
 	// Set `x-amz-bucket-region` only if region is set on the server
-	// by default minio uses an empty region.
+	// by default obstor uses an empty region.
 	if region := globalServerRegion; region != "" {
 		w.Header().Set(xhttp.AmzBucketRegion, region)
 	}

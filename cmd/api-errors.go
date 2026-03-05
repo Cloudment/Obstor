@@ -33,7 +33,7 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/bucket/replication"
-	minio "github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/tags"
 
 	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
@@ -2125,7 +2125,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 				Description:    e.Error(),
 				HTTPStatusCode: http.StatusBadRequest,
 			}
-		case minio.ErrorResponse:
+		case obstor.ErrorResponse:
 			apiErr = APIError{
 				Code:           e.Code,
 				Description:    e.Message,

@@ -1,5 +1,5 @@
 # ObStor Quickstart Guide
-[![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+[![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 [![ObStor](https://raw.githubusercontent.com/cloudment/obstor/master/.github/logo.svg?sanitize=true)](https://pgg.net)
 
@@ -14,7 +14,7 @@ Use the following commands to run a standalone ObStor server on a Docker contain
 
 Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html)
 for more complete documentation.
 
 ## Stable
@@ -50,7 +50,7 @@ web-based object browser built into ObStor Server. Point a web browser running o
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
@@ -63,7 +63,7 @@ Use the following commands to run a standalone ObStor server on macOS.
 
 Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html)
 for more complete documentation.
 
 ## Homebrew (recommended)
@@ -71,15 +71,15 @@ for more complete documentation.
 Run the following command to install the latest stable ObStor package using [Homebrew](https://brew.sh/). Replace ``/data`` with the path to the drive or directory in which you want ObStor to store data.
 
 ```sh
-brew install minio/stable/minio
+brew install obstor/stable/obstor
 obstor server /data
 ```
 
-> NOTE: If you previously installed minio using `brew install minio` then it is recommended that you reinstall minio from `minio/stable/minio` official repo instead.
+> NOTE: If you previously installed obstor using `brew install obstor` then it is recommended that you reinstall obstor from `obstor/stable/obstor` official repo instead.
 
 ```sh
-brew uninstall minio
-brew install minio/stable/minio
+brew uninstall obstor
+brew install obstor/stable/obstor
 ```
 
 The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
@@ -87,7 +87,7 @@ web-based object browser built into ObStor Server. Point a web browser running o
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 ## Binary Download
@@ -95,8 +95,8 @@ see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to 
 Use the following command to download and run a standalone ObStor server on macOS. Replace ``/data`` with the path to the drive or directory in which you want ObStor to store data.
 
 ```sh
-wget https://dl.pgg.net/server/minio/release/darwin-amd64/minio
-chmod +x minio
+wget https://dl.pgg.net/server/obstor/release/darwin-amd64/obstor
+chmod +x obstor
 ./obstor server /data
 ```
 
@@ -105,7 +105,7 @@ web-based object browser built into ObStor Server. Point a web browser running o
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
@@ -114,8 +114,8 @@ see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to 
 Use the following command to run a standalone ObStor server on Linux hosts running 64-bit Intel/AMD architectures. Replace ``/data`` with the path to the drive or directory in which you want ObStor to store data.
 
 ```sh
-wget https://dl.pgg.net/server/minio/release/linux-amd64/minio
-chmod +x minio
+wget https://dl.pgg.net/server/obstor/release/linux-amd64/obstor
+chmod +x obstor
 ./obstor server /data
 ```
 
@@ -125,23 +125,23 @@ The following table lists supported architectures. Replace the `wget` URL with t
 
 | Architecture                   | URL                                                        |
 | --------                       | ------                                                     |
-| 64-bit Intel/AMD               | https://dl.pgg.net/server/minio/release/linux-amd64/minio   |
-| 64-bit ARM                     | https://dl.pgg.net/server/minio/release/linux-arm64/minio   |
-| 64-bit PowerPC LE (ppc64le)    | https://dl.pgg.net/server/minio/release/linux-ppc64le/minio |
-| IBM Z-Series (S390X)           | https://dl.pgg.net/server/minio/release/linux-s390x/minio   |
+| 64-bit Intel/AMD               | https://dl.pgg.net/server/obstor/release/linux-amd64/obstor   |
+| 64-bit ARM                     | https://dl.pgg.net/server/obstor/release/linux-arm64/obstor   |
+| 64-bit PowerPC LE (ppc64le)    | https://dl.pgg.net/server/obstor/release/linux-ppc64le/obstor |
+| IBM Z-Series (S390X)           | https://dl.pgg.net/server/obstor/release/linux-s390x/obstor   |
 
 The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
 web-based object browser built into ObStor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html)
 for more complete documentation.
 
 # Microsoft Windows
@@ -149,13 +149,13 @@ for more complete documentation.
 To run ObStor on 64-bit Windows hosts, download the ObStor executable from the following URL:
 
 ```sh
-https://dl.pgg.net/server/minio/release/windows-amd64/minio.exe
+https://dl.pgg.net/server/obstor/release/windows-amd64/obstor.exe
 ```
 
-Use the following command to run a standalone ObStor server on the Windows host. Replace ``D:\`` with the path to the drive or directory in which you want ObStor to store data. You must change the terminal or powershell directory to the location of the ``minio.exe`` executable, *or* add the path to that directory to the system ``$PATH``:
+Use the following command to run a standalone ObStor server on the Windows host. Replace ``D:\`` with the path to the drive or directory in which you want ObStor to store data. You must change the terminal or powershell directory to the location of the ``obstor.exe`` executable, *or* add the path to that directory to the system ``$PATH``:
 
 ```sh
-minio.exe server D:\
+obstor.exe server D:\
 ```
 
 The ObStor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the ObStor Browser, an embedded
@@ -163,23 +163,23 @@ web-based object browser built into ObStor Server. Point a web browser running o
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html)
 for more complete documentation.
 
 # FreeBSD
 
-ObStor does not provide an official FreeBSD binary. However, FreeBSD maintains an [upstream release](https://www.freshports.org/www/minio) using [pkg](https://github.com/freebsd/pkg):
+ObStor does not provide an official FreeBSD binary. However, FreeBSD maintains an [upstream release](https://www.freshports.org/www/obstor) using [pkg](https://github.com/freebsd/pkg):
 
 ```sh
-pkg install minio
+pkg install obstor
 sysrc minio_enable=yes
 sysrc minio_disks=/home/user/Photos
-service minio start
+service obstor start
 ```
 
 # Install from Source
@@ -195,13 +195,13 @@ web-based object browser built into ObStor Server. Point a web browser running o
 root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the ObStor server.
 
 You can also connect using any S3-compatible tool, such as the ObStor Client `mc` commandline tool. See
-[Test using ObStor Client `mc`](#test-using-minio-client-mc) for more information on using the `mc` commandline tool. For application developers,
+[Test using ObStor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
 see https://pgg.net/docs/obstor/ and click **OBSTOR SDKS** in the navigation to view ObStor SDKs for supported languages.
 
 
 > NOTE: Standalone ObStor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying ObStor with Erasure Coding. For extended development and production, deploy ObStor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per ObStor server. See [ObStor Erasure Code Quickstart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html)
 for more complete documentation.
 
 ObStor strongly recommends *against* using compiled-from-source ObStor servers for production environments.
@@ -273,23 +273,23 @@ The above statement is also valid for all gateway backends.
 ## Test using ObStor Browser
 ObStor Server comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure your server has started successfully.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/minio-browser.png?raw=true)
+![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/obstor-browser.png?raw=true)
 
 ## Test using ObStor Client `mc`
-`mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services. Follow the ObStor Client [Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide) for further instructions.
+`mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services. Follow the ObStor Client [Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide) for further instructions.
 
 # Upgrading ObStor
-ObStor server supports rolling upgrades, i.e. you can update one ObStor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://pgg.net/docs/obstor/minio-admin-complete-guide.html#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the ObStor client (mc):
+ObStor server supports rolling upgrades, i.e. you can update one ObStor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the ObStor client (mc):
 
 ```
-mc admin update <minio alias, e.g., myminio>
+mc admin update <obstor alias, e.g., myminio>
 ```
 
 > NOTE: some releases might not allow rolling upgrades, this is always called out in the release notes and it is generally advised to read release notes before upgrading. In such a situation `mc admin update` is the recommended upgrading mechanism to upgrade all servers at once.
 
 ## Important things to remember during ObStor upgrades
 
-- `mc admin update` will only work if the user running ObStor has write access to the parent directory where the binary is located, for example if the current binary is at `/usr/local/bin/minio`, you would need write access to `/usr/local/bin`.
+- `mc admin update` will only work if the user running ObStor has write access to the parent directory where the binary is located, for example if the current binary is at `/usr/local/bin/obstor`, you would need write access to `/usr/local/bin`.
 - `mc admin update` updates and restarts all servers simultaneously, applications would retry and continue their respective operations upon upgrade.
 - `mc admin update` is disabled in kubernetes/container environments, container environments provide their own mechanisms to rollout of updates.
 - In the case of federated setups `mc admin update` should be run against each cluster individually. Avoid updating `mc` to any new releases until all clusters have been successfully updated.
@@ -298,10 +298,10 @@ mc admin update <minio alias, e.g., myminio>
 - If using etcd with ObStor for the federation, ensure you have followed the etcd upgrade procedure outlined here: https://github.com/etcd-io/etcd/blob/master/Documentation/upgrades/upgrading-etcd.md
 
 # Explore Further
-- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)
 

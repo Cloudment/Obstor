@@ -11,6 +11,6 @@
 
 Visualize ObStor metrics with our official Grafana dashboard available on the [Grafana dashboard portal](https://grafana.com/grafana/dashboards/13502).
 
-Refer to the dashboard [json file here](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/minio-overview.json).
+Refer to the dashboard [json file here](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/obstor-overview.json).
 
-![Grafana](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/grafana-minio.png)
+![Grafana](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/grafana-obstor.png)

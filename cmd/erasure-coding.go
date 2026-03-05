@@ -25,9 +25,9 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/klauspost/reedsolomon"
 	"github.com/minio/highwayhash"
-	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // Erasure - erasure encoding details.

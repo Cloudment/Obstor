@@ -6,7 +6,7 @@ This document explains how to configure ObStor with `Bucket lookup from DNS` sty
 ## Get started
 
 ### 1. Prerequisites
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 
 ### 2. Run ObStor in federated mode
 Bucket lookup from DNS federation requires two dependencies
@@ -87,12 +87,12 @@ CoreOS team has documented the steps required to migrate existing data from `etc
 
 ### 4. Test your setup
 
-To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the ObStor endpoints.
+To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the ObStor endpoints.
 
 # Explore Further
 
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

@@ -4,7 +4,7 @@
 
 Prometheus offers a multi-dimensional data model with time series data identified by metric name and key/value pairs. The data collection happens via a pull model over HTTP/HTTPS.
 
-ObStor exports Prometheus compatible data by default as an authorized endpoint at `/minio/v2/metrics/cluster`. Users looking to monitor their ObStor instances can point Prometheus configuration to scrape data from this endpoint. This document explains how to setup Prometheus and configure it to scrape data from ObStor servers.
+ObStor exports Prometheus compatible data by default as an authorized endpoint at `/obstor/v2/metrics/cluster`. Users looking to monitor their ObStor instances can point Prometheus configuration to scrape data from this endpoint. This document explains how to setup Prometheus and configure it to scrape data from ObStor servers.
 
 **Table of Contents**
 
@@ -17,10 +17,10 @@ ObStor exports Prometheus compatible data by default as an authorized endpoint a
     - [4. Update `scrape_configs` section in prometheus.yml](#4-update-scrapeconfigs-section-in-prometheusyml)
     - [5. Start Prometheus](#5-start-prometheus)
     - [6. Configure Grafana](#6-configure-grafana)
-- [List of metrics exposed by ObStor](#list-of-metrics-exposed-by-minio)
+- [List of metrics exposed by ObStor](#list-of-metrics-exposed-by-obstor)
 
 ## Prerequisites
-To get started with ObStor, refer [ObStor QuickStart Document](https://pgg.net/docs/obstor/minio-quickstart-guide).
+To get started with ObStor, refer [ObStor QuickStart Document](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 Follow below steps to get started with ObStor monitoring using Prometheus.
 
 ### 1. Download Prometheus
@@ -60,15 +60,15 @@ obstor server ~/test
 
 > If ObStor is configured to expose metrics without authentication, you don't need to use `mc` to generate prometheus config. You can skip reading further and move to 3.2 section.
 
-The Prometheus endpoint in ObStor requires authentication by default. Prometheus supports a bearer token approach to authenticate prometheus scrape requests, override the default Prometheus config with the one generated using mc. To generate a Prometheus config for an alias, use [mc](https://pgg.net/docs/obstor/minio-client-quickstart-guide) as follows `mc admin prometheus generate <alias>`.
+The Prometheus endpoint in ObStor requires authentication by default. Prometheus supports a bearer token approach to authenticate prometheus scrape requests, override the default Prometheus config with the one generated using mc. To generate a Prometheus config for an alias, use [mc](https://pgg.net/docs/obstor/obstor-client-quickstart-guide) as follows `mc admin prometheus generate <alias>`.
 
 The command will generate the `scrape_configs` section of the prometheus.yml as follows:
 
 ```yaml
 scrape_configs:
-- job_name: minio-job
+- job_name: obstor-job
   bearer_token: <secret>
-  metrics_path: /minio/v2/metrics/cluster
+  metrics_path: /obstor/v2/metrics/cluster
   scheme: http
   static_configs:
   - targets: ['localhost:9000']
@@ -82,8 +82,8 @@ This can be collected from any server once per collection.
 ##### Cluster
 ```yaml
 scrape_configs:
-- job_name: minio-job
-  metrics_path: /minio/v2/metrics/cluster
+- job_name: obstor-job
+  metrics_path: /obstor/v2/metrics/cluster
   scheme: http
   static_configs:
   - targets: ['localhost:9000']
@@ -93,8 +93,8 @@ scrape_configs:
 Optionally you can also collect per node metrics. This needs to be done on a per server instance.
 ```yaml
 scrape_configs:
-- job_name: minio-job
-  metrics_path: /minio/v2/metrics/node
+- job_name: obstor-job
+  metrics_path: /obstor/v2/metrics/node
   scheme: http
   static_configs:
   - targets: ['localhost:9000']
@@ -121,10 +121,10 @@ Refer the [document here to setup Grafana with ObStor prometheus metrics](https:
 
 ## List of metrics exposed by ObStor
 
-ObStor server exposes the following metrics on `/minio/v2/metrics/cluster` endpoint. All of these can be accessed via Prometheus dashboard. A sample list of exposed metrics along with their definition is available in the demo server at
+ObStor server exposes the following metrics on `/obstor/v2/metrics/cluster` endpoint. All of these can be accessed via Prometheus dashboard. A sample list of exposed metrics along with their definition is available in the demo server at
 
 ```sh
-curl https://play.pgg.net/minio/v2/metrics/cluster
+curl https://play.pgg.net/obstor/v2/metrics/cluster
 ```
 
 ### List of metrics reported

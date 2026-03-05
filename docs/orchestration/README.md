@@ -1,12 +1,12 @@
-# ObStor Deployment Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Deployment Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ObStor is a cloud-native application designed to scale in a sustainable manner in multi-tenant environments. Orchestration platforms provide perfect launchpad for ObStor to scale. Below is the list of ObStor deployment documents for various orchestration platforms:
 
 | Orchestration platforms|
 |:---|
-| [`Docker Swarm`](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm) |
-| [`Docker Compose`](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose) |
-| [`Kubernetes`](https://pgg.net/docs/obstor/deploy-minio-on-kubernetes) |
+| [`Docker Swarm`](https://pgg.net/docs/obstor/deploy-obstor-on-docker-swarm) |
+| [`Docker Compose`](https://pgg.net/docs/obstor/deploy-obstor-on-docker-compose) |
+| [`Kubernetes`](https://pgg.net/docs/obstor/deploy-obstor-on-kubernetes) |
 
 ## Why is ObStor cloud-native?
 The term cloud-native revolves around the idea of applications deployed as micro services, that scale well. It is not about just retrofitting monolithic applications onto modern container based compute environment. A cloud-native application is portable and resilient by design, and can scale horizontally by simply replicating. Modern orchestration platforms like Swarm, Kubernetes and DC/OS make replicating and managing containers in huge clusters easier than ever.

@@ -33,11 +33,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cloudment/obstor/pkg/atime"
 	"github.com/cloudment/obstor/cmd/config/cache"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/atime"
 	"github.com/cloudment/obstor/pkg/disk"
 	"github.com/cloudment/obstor/pkg/fips"
 	"github.com/cloudment/obstor/pkg/kms"
@@ -52,7 +52,7 @@ const (
 	cacheExpiryDays   = 90 * time.Hour * 24 // defaults to 90 days
 	// SSECacheEncrypted is the metadata key indicating that the object
 	// is a cache entry encrypted with cache KMS master key in globalCacheKMS.
-	SSECacheEncrypted = "X-Minio-Internal-Encrypted-Cache"
+	SSECacheEncrypted = "X-Obstor-Internal-Encrypted-Cache"
 )
 
 // CacheChecksumInfoV1 - carries checksums of individual blocks on disk.

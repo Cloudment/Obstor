@@ -29,6 +29,7 @@ import (
 	"strings"
 
 	"encoding/json"
+
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/minio/sio"
 )
@@ -121,7 +122,7 @@ func createFormatCache(fsFormatPath string, format *formatCacheV1) error {
 		return err
 	}
 	if fi.Size() != 0 {
-		// format.json already got created because of another minio process's createFormatCache()
+		// format.json already got created because of another obstor process's createFormatCache()
 		return nil
 	}
 	return jsonSave(file, format)
@@ -379,7 +380,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 	cacheFormatPath := pathJoin(c.dir, minioMetaBucket, formatConfigFile)
 
 	if _, err := os.Stat(oldCacheBucketsPath); err != nil {
-		// remove .minio.sys sub directories
+		// remove .obstor.sys sub directories
 		removeAll(path.Join(c.dir, minioMetaBucket, "multipart"))
 		removeAll(path.Join(c.dir, minioMetaBucket, "tmp"))
 		removeAll(path.Join(c.dir, minioMetaBucket, "trash"))
@@ -467,7 +468,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 		removeAll(path.Join(c.dir, bucket))
 	}
 
-	// remove .minio.sys sub directories
+	// remove .obstor.sys sub directories
 	removeAll(path.Join(c.dir, minioMetaBucket, "multipart"))
 	removeAll(path.Join(c.dir, minioMetaBucket, "tmp"))
 	removeAll(path.Join(c.dir, minioMetaBucket, "trash"))

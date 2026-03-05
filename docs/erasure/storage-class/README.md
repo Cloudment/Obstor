@@ -2,7 +2,7 @@
 
 ObStor server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
 
-This page is intended as a summary of ObStor Erasure Coding. For a more complete explanation, see https://pgg.net/docs/obstor/minio/baremetal/concepts/erasure-coding.html.
+This page is intended as a summary of ObStor Erasure Coding. For a more complete explanation, see https://pgg.net/docs/obstor/obstor/baremetal/concepts/erasure-coding.html.
 
 ## Overview
 
@@ -54,7 +54,7 @@ The default value for the `STANDARD` storage class depends on the number of volu
 | 8 or more        |                 EC:4  |
 
 Prior to the ``RELEASE.2021-01-30T00-20-58Z`` ObStor release, the default `STANDARD` value was `EC(N/2)` where `N` was the number of erasure set drives.
-For more complete documentation on Erasure Set sizing, see the [ObStor Documentation on Erasure Sets](https://pgg.net/docs/obstor/minio/baremetal/concepts/erasure-coding.html#erasure-sets).
+For more complete documentation on Erasure Set sizing, see the [ObStor Documentation on Erasure Sets](https://pgg.net/docs/obstor/obstor/baremetal/concepts/erasure-coding.html#erasure-sets).
 
 ### Allowed values for REDUCED_REDUNDANCY storage class
 
@@ -99,7 +99,7 @@ with values `REDUCED_REDUNDANCY` or `STANDARD`, ObStor server uses default parit
 In below example `minio-go` is used to set the storage class to `REDUCED_REDUNDANCY`. This means this object will be split across 6 data disks and 2 parity disks (as per the storage class set in previous step).
 
 ```go
-s3Client, err := minio.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+s3Client, err := obstor.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 if err != nil {
 	log.Fatalln(err)
 }
@@ -114,7 +114,7 @@ if err != nil {
 	log.Fatalln(err)
 }
 
-n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
+n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), obstor.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
 if err != nil {
 	log.Fatalln(err)
 }

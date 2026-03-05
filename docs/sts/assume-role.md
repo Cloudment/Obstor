@@ -96,7 +96,7 @@ $ export OBSTOR_ROOT_PASSWORD=obstor123
 $ obstor server ~/test
 ```
 
-Create new users following the multi-user guide [here](https://pgg.net/docs/obstor/minio-multi-user-quickstart-guide.html)
+Create new users following the multi-user guide [here](https://pgg.net/docs/obstor/obstor-multi-user-quickstart-guide.html)
 
 Testing with an example
 > Use the same username and password created in the previous steps.
@@ -126,5 +126,5 @@ $ aws --profile foobar --endpoint-url http://localhost:9000 sts assume-role --po
 ```
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

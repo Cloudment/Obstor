@@ -96,12 +96,12 @@ func TestDownloadURL(t *testing.T) {
 		}
 	} else {
 		if runtime.GOOS == "windows" {
-			if durl != minioReleaseURL+"minio.exe" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"minio.exe", durl)
+			if durl != minioReleaseURL+"obstor.exe" {
+				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor.exe", durl)
 			}
 		} else {
-			if durl != minioReleaseURL+"minio" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"minio", durl)
+			if durl != minioReleaseURL+"obstor" {
+				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor", durl)
 			}
 		}
 	}
@@ -225,8 +225,8 @@ func TestGetHelmVersion(t *testing.T) {
 	}
 
 	filename := createTempFile(
-		`app="virtuous-rat-minio"
-chart="minio-0.1.3"
+		`app="virtuous-rat-obstor"
+chart="obstor-0.1.3"
 heritage="Tiller"
 pod-template-hash="818089471"`)
 
@@ -238,7 +238,7 @@ pod-template-hash="818089471"`)
 	}{
 		{"", ""},
 		{"/tmp/non-existing-file", ""},
-		{filename, "minio-0.1.3"},
+		{filename, "obstor-0.1.3"},
 	}
 
 	for _, testCase := range testCases {
@@ -254,7 +254,7 @@ func TestDownloadReleaseData(t *testing.T) {
 	httpServer1 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer httpServer1.Close()
 	httpServer2 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z")
+		fmt.Fprintln(w, "fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z")
 	}))
 	defer httpServer2.Close()
 	httpServer3 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -268,7 +268,7 @@ func TestDownloadReleaseData(t *testing.T) {
 		expectedErr        error
 	}{
 		{httpServer1.URL, "", nil},
-		{httpServer2.URL, "fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z\n", nil},
+		{httpServer2.URL, "fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z\n", nil},
 		{httpServer3.URL, "", fmt.Errorf("Error downloading URL %s. Response: 404 Not Found", httpServer3.URL)},
 	}
 
@@ -307,12 +307,12 @@ func TestParseReleaseData(t *testing.T) {
 		{"more than two fields", time.Time{}, "", "", true},
 		{"more than", time.Time{}, "", "", true},
 		{"more than.two.fields", time.Time{}, "", "", true},
-		{"more minio.RELEASE.fields", time.Time{}, "", "", true},
-		{"more minio.RELEASE.2016-10-07T01-16-39Z", time.Time{}, "", "", true},
-		{"fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
-			"minio.RELEASE.2016-10-07T01-16-39Z", false},
-		{"fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z.customer-hotfix\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
-			"minio.RELEASE.2016-10-07T01-16-39Z.customer-hotfix", false},
+		{"more obstor.RELEASE.fields", time.Time{}, "", "", true},
+		{"more obstor.RELEASE.2016-10-07T01-16-39Z", time.Time{}, "", "", true},
+		{"fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
+			"obstor.RELEASE.2016-10-07T01-16-39Z", false},
+		{"fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z.customer-hotfix\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
+			"obstor.RELEASE.2016-10-07T01-16-39Z.customer-hotfix", false},
 	}
 
 	for i, testCase := range testCases {

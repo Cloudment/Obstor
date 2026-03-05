@@ -16,8 +16,8 @@ ObStor also supports multi-cluster, multi-site federation similar to AWS regions
    *   [Setup Ambari](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/set_up_the_ambari_server.html) which automatically sets up YARN
    *   [Installing Spark](https://docs.hortonworks.com/HDPDocuments/HDP3/HDP-3.0.1/installing-spark/content/installing_spark.html)
 *  Install ObStor Distributed Server using one of the guides below.
-   *   [Deployment based on Kubernetes](https://pgg.net/docs/obstor/deploy-minio-on-kubernetes.html#minio-distributed-server-deployment)
-   *   [Deployment based on ObStor Helm Chart](https://github.com/helm/charts/tree/master/stable/minio)
+   *   [Deployment based on Kubernetes](https://pgg.net/docs/obstor/deploy-obstor-on-kubernetes.html#obstor-distributed-server-deployment)
+   *   [Deployment based on ObStor Helm Chart](https://github.com/helm/charts/tree/master/stable/obstor)
 
 ## **3. Configure Hadoop, Spark, Hive to use ObStor**
 
@@ -115,8 +115,8 @@ Navigate to “**Custom spark-defaults**” to configure ObStor parameters for `
 Add the following optimal entries for _spark-defaults.conf_ to configure Spark with **ObStor**.
 
 ```
-spark.hadoop.fs.s3a.access.key minio
-spark.hadoop.fs.s3a.secret.key minio123
+spark.hadoop.fs.s3a.access.key obstor
+spark.hadoop.fs.s3a.secret.key obstor123
 spark.hadoop.fs.s3a.path.style.access true
 spark.hadoop.fs.s3a.block.size 512M
 spark.hadoop.fs.s3a.buffer.dir ${hadoop.tmp.dir}/s3a

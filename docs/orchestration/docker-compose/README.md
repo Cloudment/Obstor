@@ -1,4 +1,4 @@
-# Deploy ObStor on Docker Compose [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Deploy ObStor on Docker Compose [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 Docker Compose allows defining and running single host, multi-container Docker applications.
 
@@ -31,17 +31,17 @@ Distributed instances are now accessible on the host at ports 9000, proceed to a
 
 ### Notes
 
-* By default the Docker Compose file uses the Docker image for latest ObStor server release. You can change the image tag to pull a specific [ObStor Docker image](https://hub.docker.com/r/minio/minio/).
+* By default the Docker Compose file uses the Docker image for latest ObStor server release. You can change the image tag to pull a specific [ObStor Docker image](https://hub.docker.com/r/obstor/obstor/).
 
-* There are 4 minio distributed instances created by default. You can add more ObStor services (up to total 16) to your ObStor Compose deployment. To add a service
+* There are 4 obstor distributed instances created by default. You can add more ObStor services (up to total 16) to your ObStor Compose deployment. To add a service
   * Replicate a service definition and change the name of the new service appropriately.
   * Update the command section in each service.
   * Add a new ObStor server instance to the upstream directive in the Nginx configuration file.
 
-  Read more about distributed ObStor [here](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide).
+  Read more about distributed ObStor [here](https://pgg.net/docs/obstor/distributed-obstor-quickstart-guide).
 
 ### Explore Further
 - [Overview of Docker Compose](https://docs.docker.com/compose/overview/)
-- [ObStor Docker Quickstart Guide](https://pgg.net/docs/obstor/minio-docker-quickstart-guide)
-- [Deploy ObStor on Docker Swarm](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm)
-- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
+- [ObStor Docker Quickstart Guide](https://pgg.net/docs/obstor/obstor-docker-quickstart-guide)
+- [Deploy ObStor on Docker Swarm](https://pgg.net/docs/obstor/deploy-obstor-on-docker-swarm)
+- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide)

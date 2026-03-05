@@ -24,7 +24,7 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 )
 
 func TestParseStorageEndpoint(t *testing.T) {
@@ -83,7 +83,7 @@ func TestS3MetaToAzureProperties(t *testing.T) {
 		"X_Amz_Matdesc":    "{}",
 		"X_Amz_Iv":         "eWmyryl8kq+EVnnsE7jpOg==",
 	}
-	meta, _, err := s3MetaToAzureProperties(minio.GlobalContext, headers)
+	meta, _, err := s3MetaToAzureProperties(obstor.GlobalContext, headers)
 	if err != nil {
 		t.Fatalf("Test failed, with %s", err)
 	}
@@ -93,9 +93,9 @@ func TestS3MetaToAzureProperties(t *testing.T) {
 	headers = map[string]string{
 		"invalid--meta": "value",
 	}
-	_, _, err = s3MetaToAzureProperties(minio.GlobalContext, headers)
+	_, _, err = s3MetaToAzureProperties(obstor.GlobalContext, headers)
 	if err != nil {
-		if _, ok := err.(minio.UnsupportedMetadata); !ok {
+		if _, ok := err.(obstor.UnsupportedMetadata); !ok {
 			t.Fatalf("Test failed with unexpected error %s, expected UnsupportedMetadata", err)
 		}
 	}
@@ -103,7 +103,7 @@ func TestS3MetaToAzureProperties(t *testing.T) {
 	headers = map[string]string{
 		"content-md5": "Dce7bmCX61zvxzP5QmfelQ==",
 	}
-	_, props, err := s3MetaToAzureProperties(minio.GlobalContext, headers)
+	_, props, err := s3MetaToAzureProperties(obstor.GlobalContext, headers)
 	if err != nil {
 		t.Fatalf("Test failed, with %s", err)
 	}
@@ -192,34 +192,34 @@ func TestAzureCodesToObjectError(t *testing.T) {
 	}{
 		{
 			nil, "ContainerAlreadyExists", 0,
-			minio.BucketExists{Bucket: "bucket"}, "bucket", "",
+			obstor.BucketExists{Bucket: "bucket"}, "bucket", "",
 		},
 		{
 			nil, "InvalidResourceName", 0,
-			minio.BucketNameInvalid{Bucket: "bucket."}, "bucket.", "",
+			obstor.BucketNameInvalid{Bucket: "bucket."}, "bucket.", "",
 		},
 		{
 			nil, "RequestBodyTooLarge", 0,
-			minio.PartTooBig{}, "", "",
+			obstor.PartTooBig{}, "", "",
 		},
 		{
 			nil, "InvalidMetadata", 0,
-			minio.UnsupportedMetadata{}, "", "",
+			obstor.UnsupportedMetadata{}, "", "",
 		},
 		{
 			nil, "", http.StatusNotFound,
-			minio.ObjectNotFound{
+			obstor.ObjectNotFound{
 				Bucket: "bucket",
 				Object: "object",
 			}, "bucket", "object",
 		},
 		{
 			nil, "", http.StatusNotFound,
-			minio.BucketNotFound{Bucket: "bucket"}, "bucket", "",
+			obstor.BucketNotFound{Bucket: "bucket"}, "bucket", "",
 		},
 		{
 			nil, "", http.StatusBadRequest,
-			minio.BucketNameInvalid{Bucket: "bucket."}, "bucket.", "",
+			obstor.BucketNameInvalid{Bucket: "bucket."}, "bucket.", "",
 		},
 		{
 			fmt.Errorf("unhandled azure error"), "", http.StatusForbidden,
@@ -248,7 +248,7 @@ func TestCheckAzureUploadID(t *testing.T) {
 	}
 
 	for _, uploadID := range invalidUploadIDs {
-		if err := checkAzureUploadID(minio.GlobalContext, uploadID); err == nil {
+		if err := checkAzureUploadID(obstor.GlobalContext, uploadID); err == nil {
 			t.Fatalf("%s: expected: <error>, got: <nil>", uploadID)
 		}
 	}
@@ -259,7 +259,7 @@ func TestCheckAzureUploadID(t *testing.T) {
 	}
 
 	for _, uploadID := range validUploadIDs {
-		if err := checkAzureUploadID(minio.GlobalContext, uploadID); err != nil {
+		if err := checkAzureUploadID(obstor.GlobalContext, uploadID); err != nil {
 			t.Fatalf("%s: expected: <nil>, got: %s", uploadID, err)
 		}
 	}

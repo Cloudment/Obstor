@@ -1,6 +1,6 @@
 # ObStor NAS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple minio instances on the same shared NAS volume as a distributed object gateway.
+ObStor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object gateway.
 
 ## Run ObStor Gateway for NAS Storage
 
@@ -13,7 +13,7 @@ docker run -p 9000:9000 --name nas-s3 \
  -e "OBSTOR_ROOT_USER=obstor" \
  -e "OBSTOR_ROOT_PASSWORD=obstor123" \
  -v /shared/nasvol:/container/vol \
- minio/minio gateway nas /container/vol
+ obstor/obstor gateway nas /container/vol
 ```
 
 ### Using Binary
@@ -21,14 +21,14 @@ docker run -p 9000:9000 --name nas-s3 \
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-minio gateway nas /shared/nasvol
+obstor gateway nas /shared/nasvol
 ```
 
 ## Test using ObStor Browser
 
 ObStor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/minio-browser-gateway.png)
+![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/obstor-browser-gateway.png)
 
 ## Test using ObStor Client `mc`
 
@@ -97,6 +97,6 @@ NAS gateway implementation allows symlinks on regular files,
 *Directory symlinks is not and will not be supported as there are no safe ways to handle them.*
 
 ## Explore Further
-- [`mc` command-line interface](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [`mc` command-line interface](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://pgg.net/docs/obstor/golang-client-quickstart-guide)

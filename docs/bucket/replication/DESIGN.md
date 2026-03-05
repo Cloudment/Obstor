@@ -1,4 +1,4 @@
-# Bucket Replication Design [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Replication Design [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/cloudment/obstor/blob/master/docs/bucket/replication/README.md) first.
 
@@ -24,12 +24,12 @@ For active-active replication, automatic failover occurs on `GET/HEAD` operation
 
 ObStor allows DeleteMarker replication and versioned delete replication by setting `--replicate delete,delete-marker` while setting up replication configuration using `mc replicate add`. The ObStor implementation is based on V2 configuration, however it has been extended to allow both DeleteMarker replication and replication of versioned deletes with the `DeleteMarkerReplication` and `DeleteReplication` fields in the replication configuration. By default, this is set to `Disabled` unless the user specifies it while adding a replication rule.
 
-Similar to object version replication, DeleteMarker replication also cycles through `PENDING` to `COMPLETED` or `FAILED` states for the `X-Amz-Replication-Status` on the source when a delete marker is set (i.e. performing `mc rm` on an object without specifying a version).After replication syncs the delete marker on the target, the DeleteMarker on the target shows `X-Amz-Replication-Status` of `REPLICA`. The status of DeleteMarker replication is returned by `X-Minio-Replication-DeleteMarker-Status` header on `HEAD/GET` calls for the delete marker version in question - i.e with `mc stat --version-id dm-version-id`
+Similar to object version replication, DeleteMarker replication also cycles through `PENDING` to `COMPLETED` or `FAILED` states for the `X-Amz-Replication-Status` on the source when a delete marker is set (i.e. performing `mc rm` on an object without specifying a version).After replication syncs the delete marker on the target, the DeleteMarker on the target shows `X-Amz-Replication-Status` of `REPLICA`. The status of DeleteMarker replication is returned by `X-Obstor-Replication-DeleteMarker-Status` header on `HEAD/GET` calls for the delete marker version in question - i.e with `mc stat --version-id dm-version-id`
 
 It must be noted that if active-active replication is set up with delete marker replication, there is potential for duplicate delete markers to be created if both source and target concurrently set a Delete Marker or if one/both of the clusters went down at tandem before the replication event was synced.This is an unavoidable side-effect in active-active replication caused by allowing delete markers set on a object version with `REPLICA` status back to source.
 
 In the case of versioned deletes a.k.a permanent delete of a version by doing a `mc rm --version-id` on a object, replication implementation marks a object version permanently deleted as `PENDING` purge and deletes the version from source after syncing to the target and ensuring target version is deleted. The delete marker being deleted or object version being deleted will still be visible on listing with `mc ls --versions` until the sync is completed. Objects marked as deleted will not be accessible via `GET` or `HEAD` requests and would return a http response code of `405`. The status of versioned delete replication on the source can be queried by `HEAD` request on the delete marker versionID or object versionID in question.
-An additional header `X-Minio-Replication-Delete-Status` is returned which would show `PENDING` or `FAILED` status if the replication is still not caught up.
+An additional header `X-Obstor-Replication-Delete-Status` is returned which would show `PENDING` or `FAILED` status if the replication is still not caught up.
 
 Note that synchronous replication, i.e. when remote target is configured with --sync mode in `mc admin bucket remote add` does not apply to `DELETE` operations. The version being deleted on the source cluster needs to maintain state and ensure that the operation is mirrored to the target cluster prior to completing on the source object version. Since this needs to account for the target cluster availability and the need to serialize concurrent DELETE operations on different versions of the same object during multi DELETE operations, the current implementation queues the `DELETE` operations in both sync and async modes.
 
@@ -86,5 +86,5 @@ Existing object replication, replica modification sync for 2-way replication and
 ```
 
 ## Explore Further
-- [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/minio-bucket-versioning-guide.html)
-- [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
+- [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html)
+- [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)

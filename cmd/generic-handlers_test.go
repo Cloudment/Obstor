@@ -34,7 +34,7 @@ func TestRedirectLocation(t *testing.T) {
 		location string
 	}{
 		{
-			// 1. When urlPath is '/minio'
+			// 1. When urlPath is '/obstor'
 			urlPath:  minioReservedBucketPath,
 			location: minioReservedBucketPath + SlashSeparator,
 		},
@@ -90,7 +90,7 @@ func TestGuessIsRPC(t *testing.T) {
 		t.Fatal("Unexpected return for nil request")
 	}
 
-	u, err := url.Parse("http://localhost:9000/minio/lock")
+	u, err := url.Parse("http://localhost:9000/obstor/lock")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -179,7 +179,7 @@ var containsReservedMetadataTests = []struct {
 	shouldFail bool
 }{
 	{
-		header: http.Header{"X-Minio-Key": []string{"value"}},
+		header: http.Header{"X-Obstor-Key": []string{"value"}},
 	},
 	{
 		header:     http.Header{crypto.MetaIV: []string{"iv"}},

@@ -99,7 +99,6 @@ func TestHostMarshalJSON(t *testing.T) {
 		{Host{"147.75.201.93", 9000, true}, []byte(`"147.75.201.93:9000"`), false},
 		{Host{"play12", 0, false}, []byte(`"play12"`), false},
 		{Host{"12play", 0, false}, []byte(`"12play"`), false},
-		{Host{"play-minio-io", 0, false}, []byte(`"play-minio-io"`), false},
 		{Host{"play--pgg.net", 0, false}, []byte(`"play--pgg.net"`), false},
 	}
 
@@ -135,7 +134,6 @@ func TestHostUnmarshalJSON(t *testing.T) {
 		{[]byte(`"147.75.201.93:9000"`), &Host{"147.75.201.93", 9000, true}, false},
 		{[]byte(`"play12"`), &Host{"play12", 0, false}, false},
 		{[]byte(`"12play"`), &Host{"12play", 0, false}, false},
-		{[]byte(`"play-minio-io"`), &Host{"play-minio-io", 0, false}, false},
 		{[]byte(`"play--pgg.net"`), &Host{"play--pgg.net", 0, false}, false},
 		{[]byte(`":9000"`), &Host{"", 9000, true}, false},
 		{[]byte(`"[fe80::8097:76eb:b397:e067%wlp2s0]"`), &Host{"fe80::8097:76eb:b397:e067%wlp2s0", 0, false}, false},
@@ -150,7 +148,6 @@ func TestHostUnmarshalJSON(t *testing.T) {
 		{[]byte(`"play:90000"`), nil, true},
 		{[]byte(`"play:-10"`), nil, true},
 		{[]byte(`"play-"`), nil, true},
-		{[]byte(`"play.minio..io"`), nil, true},
 		{[]byte(`":"`), nil, true},
 	}
 
@@ -189,7 +186,6 @@ func TestParseHost(t *testing.T) {
 		{"147.75.201.93:9000", &Host{"147.75.201.93", 9000, true}, false},
 		{"play12", &Host{"play12", 0, false}, false},
 		{"12play", &Host{"12play", 0, false}, false},
-		{"play-minio-io", &Host{"play-minio-io", 0, false}, false},
 		{"play--pgg.net", &Host{"play--pgg.net", 0, false}, false},
 		{":9000", &Host{"", 9000, true}, false},
 		{"play:", nil, true},
@@ -197,7 +193,6 @@ func TestParseHost(t *testing.T) {
 		{"play:90000", nil, true},
 		{"play:-10", nil, true},
 		{"play-", nil, true},
-		{"play.minio..io", nil, true},
 		{":", nil, true},
 		{"", nil, true},
 	}

@@ -79,7 +79,7 @@ Set `identity_openid` config with `config_url`, `client_id` and restart ObStor
 ```
 ~ mc admin config set myminio identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
 ```
-> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by minio to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
+> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by obstor to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
 
 Once successfully set restart the ObStor instance.
 ```
@@ -124,5 +124,5 @@ These credentials can now be used to perform ObStor API operations.
 
 ## Explore Further
 
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

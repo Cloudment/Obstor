@@ -19,7 +19,7 @@ ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_KMS_SECRET_KEY_FILE=kms_master_key \
     OBSTOR_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
 
-COPY dockerscripts/verify-minio.sh /usr/bin/verify-minio.sh
+COPY dockerscripts/verify-obstor.sh /usr/bin/verify-obstor.sh
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 COPY CREDITS /licenses/CREDITS
 COPY LICENSE /licenses/LICENSE
@@ -29,14 +29,14 @@ RUN \
      microdnf install curl ca-certificates shadow-utils util-linux --nodocs && \
      rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
      microdnf install minisign --nodocs && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE} -o /usr/bin/minio && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.sha256sum -o /usr/bin/minio.sha256sum && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.minisig -o /usr/bin/minio.minisig && \
+     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE} -o /usr/bin/obstor && \
+     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.sha256sum -o /usr/bin/obstor.sha256sum && \
+     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.minisig -o /usr/bin/obstor.minisig && \
      microdnf clean all && \
-     chmod +x /usr/bin/minio && \
+     chmod +x /usr/bin/obstor && \
      chmod +x /usr/bin/docker-entrypoint.sh && \
-     chmod +x /usr/bin/verify-minio.sh && \
-     /usr/bin/verify-minio.sh
+     chmod +x /usr/bin/verify-obstor.sh && \
+     /usr/bin/verify-obstor.sh
 
 EXPOSE 9000
 

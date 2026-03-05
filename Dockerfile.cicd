@@ -8,7 +8,7 @@ ENV GO111MODULE on
 
 RUN  \
     apk add --no-cache git && \
-    git clone https://github.com/cloudment/obstor && cd minio && \
+    git clone https://github.com/cloudment/obstor && cd obstor && \
     git checkout master && go install -v -ldflags "$(go run buildscripts/gen-ldflags.go)"
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
@@ -24,7 +24,7 @@ ENV OBSTOR_ACCESS_KEY_FILE=access_key \
 
 EXPOSE 9000
 
-COPY --from=builder /go/bin/obstor /usr/bin/minio
+COPY --from=builder /go/bin/obstor /usr/bin/obstor
 COPY --from=builder /go/obstor/CREDITS /licenses/CREDITS
 COPY --from=builder /go/obstor/LICENSE /licenses/LICENSE
 COPY --from=builder /go/obstor/dockerscripts/docker-entrypoint.sh /usr/bin/
@@ -38,4 +38,4 @@ ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
 VOLUME ["/data"]
 
-CMD ["minio", "server", "/data"]
+CMD ["obstor", "server", "/data"]

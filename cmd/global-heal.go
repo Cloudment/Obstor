@@ -208,7 +208,7 @@ func (er *erasureObjects) healErasureSet(ctx context.Context, buckets []BucketIn
 			}
 			// We might land at .metacache, .trash, .multipart
 			// no need to heal them skip, only when bucket
-			// is '.minio.sys'
+			// is '.obstor.sys'
 			if bucket.Name == minioMetaBucket {
 				if wildcard.Match("buckets/*/.metacache/*", entry.name) {
 					return

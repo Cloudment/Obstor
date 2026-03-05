@@ -4,7 +4,7 @@
 
 - [AssumeRoleWithLDAPIdentity [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
     - [Introduction](#introduction)
-    - [Configuring AD/LDAP on ObStor](#configuring-adldap-on-minio)
+    - [Configuring AD/LDAP on ObStor](#configuring-adldap-on-obstor)
         - [Supported modes of operation](#supported-modes-of-operation)
             - [Lookup-Bind Mode](#lookup-bind-mode)
             - [Username-Format Mode](#username-format-mode)
@@ -256,5 +256,5 @@ $ go run ldap.go -u foouser -p foopassword
 **LDAP STS credentials are not yet supported on ObStor Browser UI, we may add this feature in future releases.**
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

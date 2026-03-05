@@ -34,7 +34,7 @@ func main() {
 
 	// API requests are secure (HTTPS) if secure=true and insecure (HTTP) otherwise.
 	// New returns an ObStor Admin client object.
-	madmClnt, err := madmin.New("your-minio.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+	madmClnt, err := madmin.New("your-obstor.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -65,14 +65,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	target := madmin.BucketTarget{Endpoint: "site2:9000", Credentials: creds, SourceBucket: "srcbucket", TargetBucket: "destbucket", IsSSL: false, Arn: "arn:minio:ilm:us-east-1:3cbe15b8-82b9-44bc-a737-db9051ab359a:srcbucket"}
+	target := madmin.BucketTarget{Endpoint: "site2:9000", Credentials: creds, SourceBucket: "srcbucket", TargetBucket: "destbucket", IsSSL: false, Arn: "arn:obstor:ilm:us-east-1:3cbe15b8-82b9-44bc-a737-db9051ab359a:srcbucket"}
 	// update credentials on bucket target
 	if _, err := madmClnt.UpdateBucketTarget(ctx, &target); err != nil {
 		log.Fatalln(err)
 	}
 
 	// Remove bucket target
-	arn := "arn:minio:replica::ac66b2cf-dd8f-4e7e-a882-9a64132f0d59:dest"
+	arn := "arn:obstor:replica::ac66b2cf-dd8f-4e7e-a882-9a64132f0d59:dest"
 	if err := madmClnt.RemoveBucketTarget(ctx, "srcbucket", arn); err != nil {
 		log.Fatalln(err)
 	}

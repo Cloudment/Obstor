@@ -4,7 +4,7 @@ src/*
 temp
 __pycache__/
 log/*
-minio.test
+obstor.test
 bin/*
 node_modules
 # exception to the rule

@@ -5,12 +5,12 @@ ObStor supports multiple long term users in addition to default user created dur
 In this document we will explain in detail on how to configure multiple users.
 
 ### 1. Prerequisites
-- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
+- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
 - Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/master/docs/sts/etcd.md)
 
 ### 2. Create a new user with canned policy
-Use [`mc admin policy`](https://pgg.net/docs/obstor/minio-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
+Use [`mc admin policy`](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
 
 Create new canned policy file `getonly.json`. This policy enables users to download all objects under `my-bucketname`.
 ```json
@@ -239,7 +239,7 @@ If the user is authenticating using an STS credential which was authorized from 
 
 
 ## Explore Further
-- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/obstor-client-complete-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

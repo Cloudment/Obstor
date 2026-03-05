@@ -4,10 +4,10 @@ When using Veeam Backup and Replication, you can use S3 compatible object storag
 
 __Prerequisites__
 - One or both of Veeam Backup and Replication with support for S3 compatible object store (e.g. 9.5.4) and Veeam Backup for Office365 (VBO)
-- ObStor object storage set up per https://pgg.net/docs/obstor/minio-quickstart-guide.html
-- Veeam requires TLS connections to the object storage.  This can be configured per https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls.html
+- ObStor object storage set up per https://pgg.net/docs/obstor/obstor-quickstart-guide.html
+- Veeam requires TLS connections to the object storage.  This can be configured per https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls.html
 - The S3 bucket, Access Key and Secret Key have to be created before and outside of Veeam.
-- Configure the minio client for the Veeam ObStor endpoint - https://pgg.net/docs/obstor/minio-client-quickstart-guide.html
+- Configure the obstor client for the Veeam ObStor endpoint - https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html
 
 ## Setting up an S3 compatible object store for Veeam Backup and Replication
 ### Create a bucket for Veeam backups
@@ -23,7 +23,7 @@ mc mb myminio/veeambackup
 mc mb -l myminio/veeambackup
 ```
 
-> Object locking requires erasure coding enabled on the obstor server. For more information see https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide.html.
+> Object locking requires erasure coding enabled on the obstor server. For more information see https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide.html.
 
 ### Add ObStor as an object store for Veeam
 Follow the steps from the Veeam documentation for adding ObStor as an object store - https://helpcenter.veeam.com/docs/backup/vsphere/adding_s3c_object_storage.html?ver=100

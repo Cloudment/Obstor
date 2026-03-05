@@ -1173,7 +1173,7 @@ func markRootDisksAsDown(storageDisks []StorageAPI, errs []error) {
 	if !isTestSetup(infos, errs) {
 		for i := range storageDisks {
 			if storageDisks[i] != nil && infos[i].RootDisk {
-				// We should not heal on root disk. i.e in a situation where the minio-administrator has unmounted a
+				// We should not heal on root disk. i.e in a situation where the obstor-administrator has unmounted a
 				// defective drive we should not heal a path on the root disk.
 				logger.Info("Disk `%s` the same as the system root disk.\n"+
 					"Disk will not be used. Please supply a separate disk and restart the server.",

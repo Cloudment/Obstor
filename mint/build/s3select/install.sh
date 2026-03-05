@@ -16,4 +16,4 @@
 #
 
 OBSTOR_PY_VERSION="7.2.20"
-pip3 install --break-system-packages --no-cache-dir minio=="${OBSTOR_PY_VERSION}"
+pip3 install --break-system-packages --no-cache-dir obstor=="${OBSTOR_PY_VERSION}"

@@ -61,7 +61,7 @@ export OBSTOR_ROOT_PASSWORD=aws_secret_key
 export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
 export OBSTOR_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 export OBSTOR_ETCD_ENDPOINTS=http://localhost:2379
-minio gateway s3
+obstor gateway s3
 ```
 
 ### Using WebIdentiy API
@@ -101,5 +101,5 @@ These credentials can now be used to perform ObStor API operations.
   the user should see now the buckets and objects they have access to.
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
+- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

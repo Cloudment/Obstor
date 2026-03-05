@@ -38,7 +38,7 @@ func handleEncryptedConfigBackend(objAPI ObjectLayer) error {
 		return fmt.Errorf("Unable to encrypt config %w", err)
 	}
 	if err = migrateConfigPrefixToEncrypted(objAPI, encrypted); err != nil {
-		return fmt.Errorf("Unable to migrate all config at .minio.sys/config/: %w", err)
+		return fmt.Errorf("Unable to migrate all config at .obstor.sys/config/: %w", err)
 	}
 	return nil
 }

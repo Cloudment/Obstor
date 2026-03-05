@@ -1531,7 +1531,7 @@ func (z *erasureServerPools) HealObjects(ctx context.Context, bucket, prefix str
 						}
 						// We might land at .metacache, .trash, .multipart
 						// no need to heal them skip, only when bucket
-						// is '.minio.sys'
+						// is '.obstor.sys'
 						if bucket == minioMetaBucket {
 							if wildcard.Match("buckets/*/.metacache/*", entry.name) {
 								return

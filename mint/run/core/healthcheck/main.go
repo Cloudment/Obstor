@@ -35,12 +35,12 @@ import (
 const (
 	pass                     = "PASS" // Indicate that a test passed
 	fail                     = "FAIL" // Indicate that a test failed
-	livenessPath             = "/minio/health/live"
-	readinessPath            = "/minio/health/ready"
-	prometheusPathV2Cluster  = "/minio/v2/metrics/cluster"
-	prometheusPathV2Node     = "/minio/v2/metrics/node"
-	prometheusPathV2Bucket   = "/minio/v2/metrics/bucket"
-	prometheusPathV2Resource = "/minio/v2/metrics/resource"
+	livenessPath             = "/obstor/health/live"
+	readinessPath            = "/obstor/health/ready"
+	prometheusPathV2Cluster  = "/obstor/v2/metrics/cluster"
+	prometheusPathV2Node     = "/obstor/v2/metrics/node"
+	prometheusPathV2Bucket   = "/obstor/v2/metrics/bucket"
+	prometheusPathV2Resource = "/obstor/v2/metrics/resource"
 	timeout                  = time.Duration(30 * time.Second)
 )
 
@@ -116,7 +116,7 @@ func testLivenessEndpoint(endpoint string) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		// Status not 200 OK
-		failureLog(function, nil, startTime, "", fmt.Sprintf("GET /minio/health/live returned %s", resp.Status), err).Fatal()
+		failureLog(function, nil, startTime, "", fmt.Sprintf("GET /obstor/health/live returned %s", resp.Status), err).Fatal()
 	}
 
 	defer resp.Body.Close()
@@ -144,7 +144,7 @@ func testReadinessEndpoint(endpoint string) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		// Status not 200 OK
-		failureLog(function, nil, startTime, "", "GET /minio/health/ready returned non OK status", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET /obstor/health/ready returned non OK status", err).Fatal()
 	}
 
 	defer resp.Body.Close()

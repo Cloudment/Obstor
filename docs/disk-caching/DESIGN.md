@@ -5,7 +5,7 @@ This document explains some basic assumptions and design approach, limits of the
 ## Command-line
 
 ```
-minio gateway <name> -h
+obstor gateway <name> -h
 ...
 ...
   CACHE:
@@ -30,7 +30,7 @@ minio gateway <name> -h
      $ export OBSTOR_CACHE_WATERMARK_LOW=70
      $ export OBSTOR_CACHE_WATERMARK_HIGH=90
 
-     $ minio gateway s3
+     $ obstor gateway s3
 ```
 
 ### Run ObStor gateway with cache on Docker Container
@@ -46,7 +46,7 @@ sudo mkdir /mnt/cache  # create mount dir
 
 sudo mount -o relatime /tmp/data /mnt/cache # mount xfs on /mnt/cache with atime.
 
-docker pull minio/minio
+docker pull obstor/obstor
 
 docker run --net=host -e OBSTOR_ROOT_USER={s3-access-key} -e OBSTOR_ROOT_PASSWORD={s3-secret-key} \
     -e OBSTOR_CACHE_DRIVES=/cache -e OBSTOR_CACHE_QUOTA=99 -e OBSTOR_CACHE_AFTER=0 \
@@ -81,7 +81,7 @@ master key to automatically encrypt all cached content.
 
 ### Crash Recovery
 
-Upon restart of minio gateway after a running minio process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
+Upon restart of obstor gateway after a running obstor process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
 
 ## Limits
 

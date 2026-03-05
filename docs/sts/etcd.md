@@ -43,7 +43,7 @@ NOTE: If `etcd` is configured with `Client-to-server authentication with HTTPS c
 ### 4. Test with ObStor STS API
 Once etcd is configured, **any STS configuration** will work including Client Grants, Web Identity or AD/LDAP.
 
-For example, you can configure STS with Client Grants (KeyCloak) using the guides at [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide) and [KeyCloak Configuration Guide](https://github.com/cloudment/obstor/blob/master/docs/sts/keycloak.md). Once this is done, STS credentials can be generated:
+For example, you can configure STS with Client Grants (KeyCloak) using the guides at [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide) and [KeyCloak Configuration Guide](https://github.com/cloudment/obstor/blob/master/docs/sts/keycloak.md). Once this is done, STS credentials can be generated:
 
 ```
 go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBtrOWvhRWL4TUCga
@@ -60,5 +60,5 @@ go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBtrO
 These credentials can now be used to perform ObStor API operations, these credentials automatically expire in 1hr. To understand more about credential expiry duration and client grants STS API read further [here](https://github.com/cloudment/obstor/blob/master/docs/sts/client-grants.md).
 
 ## Explore Further
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

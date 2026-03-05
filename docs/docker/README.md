@@ -1,4 +1,4 @@
-# ObStor Docker Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Docker Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ## Prerequisites
 Docker installed on your machine. Download the relevant installer from [here](https://www.docker.com/community-edition#/download).
@@ -10,10 +10,10 @@ ObStor needs a persistent volume to store configuration and application data. Ho
 docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
-To create a ObStor container with persistent storage, you need to map local persistent directories from the host OS to virtual config `~/.minio` and export `/data` directories. To do this, run the below commands
+To create a ObStor container with persistent storage, you need to map local persistent directories from the host OS to virtual config `~/.obstor` and export `/data` directories. To do this, run the below commands
 
 #### GNU/Linux and macOS
 ```sh
@@ -22,7 +22,7 @@ docker run -p 9000:9000 \
   -v /mnt/data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 #### Windows
@@ -32,11 +32,11 @@ docker run -p 9000:9000 \
   -v D:\data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 ## Run Distributed ObStor on Docker
-Distributed ObStor can be deployed via [Docker Compose](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose) or [Swarm mode](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm). The major difference between these two being, Docker Compose creates a single host, multi-container deployment, while Swarm mode creates a multi-host, multi-container deployment.
+Distributed ObStor can be deployed via [Docker Compose](https://pgg.net/docs/obstor/deploy-obstor-on-docker-compose) or [Swarm mode](https://pgg.net/docs/obstor/deploy-obstor-on-docker-swarm). The major difference between these two being, Docker Compose creates a single host, multi-container deployment, while Swarm mode creates a multi-host, multi-container deployment.
 
 This means Docker Compose lets you quickly get started with Distributed ObStor on your computer - ideal for development, testing, staging environments. While deploying Distributed ObStor on Swarm offers a more robust, production level deployment.
 
@@ -51,7 +51,7 @@ docker run -p 9000:9000 --name minio1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v /mnt/data:/data \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 #### Windows
@@ -60,7 +60,7 @@ docker run -p 9000:9000 --name minio1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 ### Run ObStor Docker as a regular user
@@ -78,7 +78,7 @@ docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v ${HOME}/data:/data \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 #### Windows
@@ -93,7 +93,7 @@ docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 
 ### ObStor Custom Access and Secret Keys using Docker secrets
@@ -106,7 +106,7 @@ echo "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" | docker secret create secret_ke
 
 Create a ObStor service using `docker service` to read from Docker secrets.
 ```
-docker service create --name="minio-service" --secret="access_key" --secret="secret_key" minio/obstor server /data
+docker service create --name="obstor-service" --secret="access_key" --secret="secret_key" obstor/obstor server /data
 ```
 
 Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/)
@@ -114,12 +114,12 @@ Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how
 #### ObStor Custom Access and Secret Key files
 To use other secret names follow the instructions above and replace `access_key` and `secret_key` with your custom names (e.g. `my_secret_key`,`my_custom_key`). Run your service with
 ```
-docker service create --name="minio-service" \
+docker service create --name="obstor-service" \
   --secret="my_access_key" \
   --secret="my_secret_key" \
   --env="OBSTOR_ROOT_USER_FILE=my_access_key" \
   --env="OBSTOR_ROOT_PASSWORD_FILE=my_secret_key" \
-  minio/obstor server /data
+  obstor/obstor server /data
 ```
 `OBSTOR_ROOT_USER_FILE` and `OBSTOR_ROOT_PASSWORD_FILE` also support custom absolute paths, in case Docker secrets are mounted to custom locations or other tools are used to mount secrets into the container. For example, HashiCorp Vault injects secrets to `/vault/secrets`. With the custom names above, set the environment variables to
 ```
@@ -164,7 +164,7 @@ docker stats <container_id>
 
 ## Explore Further
 
-* [Deploy ObStor on Docker Compose](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose)
-* [Deploy ObStor on Docker Swarm](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm)
-* [Distributed ObStor Quickstart Guide](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide)
-* [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
+* [Deploy ObStor on Docker Compose](https://pgg.net/docs/obstor/deploy-obstor-on-docker-compose)
+* [Deploy ObStor on Docker Swarm](https://pgg.net/docs/obstor/deploy-obstor-on-docker-swarm)
+* [Distributed ObStor Quickstart Guide](https://pgg.net/docs/obstor/distributed-obstor-quickstart-guide)
+* [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide)

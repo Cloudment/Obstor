@@ -40,15 +40,15 @@ We found the following APIs to be redundant or less useful outside of AWS S3. If
 
 #### List of Amazon S3 Bucket API's not supported on ObStor
 
-- BucketACL (Use [bucket policies](https://pgg.net/docs/obstor/minio-client-complete-guide#policy) instead)
+- BucketACL (Use [bucket policies](https://pgg.net/docs/obstor/obstor-client-complete-guide#policy) instead)
 - BucketCORS (CORS enabled by default on all buckets for all HTTP verbs)
 - BucketWebsite (Use [`caddy`](https://github.com/caddyserver/caddy) or [`nginx`](https://www.nginx.com/resources/wiki/))
-- BucketAnalytics, BucketMetrics, BucketLogging (Use [bucket notification](https://pgg.net/docs/obstor/minio-client-complete-guide#events) APIs)
+- BucketAnalytics, BucketMetrics, BucketLogging (Use [bucket notification](https://pgg.net/docs/obstor/obstor-client-complete-guide#events) APIs)
 - BucketRequestPayment
 
 #### List of Amazon S3 Object API's not supported on ObStor
 
-- ObjectACL (Use [bucket policies](https://pgg.net/docs/obstor/minio-client-complete-guide#policy) instead)
+- ObjectACL (Use [bucket policies](https://pgg.net/docs/obstor/obstor-client-complete-guide#policy) instead)
 - ObjectTorrent
 
 ### Object name restrictions on ObStor

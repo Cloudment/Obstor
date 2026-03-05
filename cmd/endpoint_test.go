@@ -330,7 +330,7 @@ func TestCreateEndpoints(t *testing.T) {
 	}
 }
 
-// Tests get local peer functionality, local peer is supposed to only return one entry per minio service.
+// Tests get local peer functionality, local peer is supposed to only return one entry per obstor service.
 // So it means that if you have say localhost:9000 and localhost:9001 as endpointArgs then localhost:9001
 // is considered a remote service from localhost:9000 perspective.
 func TestGetLocalPeer(t *testing.T) {

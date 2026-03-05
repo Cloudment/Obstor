@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	// Default minio configuration directory where below configuration files/directories are stored.
-	defaultMinioConfigDir = ".minio"
+	// Default obstor configuration directory where below configuration files/directories are stored.
+	defaultMinioConfigDir = ".obstor"
 
 	// Directory contains below files/directories for HTTPS configuration.
 	certsDir = "certs"

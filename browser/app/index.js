@@ -35,7 +35,7 @@ const store = configureStore()
 const root = createRoot(document.getElementById("root"))
 root.render(
   <Provider store={store}>
-    <HistoryRouter history={history} basename="/minio">
+    <HistoryRouter history={history} basename="/obstor">
       <App />
     </HistoryRouter>
   </Provider>

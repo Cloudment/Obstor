@@ -518,7 +518,7 @@ func enableCompression(t *testing.T, encrypt bool) {
 	if encrypt {
 		globalAutoEncryption = encrypt
 		var err error
-		GlobalKMS, err = kms.Parse("my-minio-key:5lF+0pJM0OWwlQrvK2S/I7W9mO4a6rJJI7wzj7v09cw=")
+		GlobalKMS, err = kms.Parse("my-obstor-key:5lF+0pJM0OWwlQrvK2S/I7W9mO4a6rJJI7wzj7v09cw=")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -533,7 +533,7 @@ func enableEncrytion(t *testing.T) {
 
 	globalAutoEncryption = true
 	var err error
-	GlobalKMS, err = kms.Parse("my-minio-key:5lF+0pJM0OWwlQrvK2S/I7W9mO4a6rJJI7wzj7v09cw=")
+	GlobalKMS, err = kms.Parse("my-obstor-key:5lF+0pJM0OWwlQrvK2S/I7W9mO4a6rJJI7wzj7v09cw=")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -862,11 +862,11 @@ func testContentType(obj ObjectLayer, instanceType string, t TestErrHandler) {
 	var opts ObjectOptions
 	uploadContent := "The specified multipart upload does not exist. The upload ID might be invalid, or the multipart upload might have been aborted or completed."
 	// Test empty.
-	_, err = obj.PutObject(context.Background(), "bucket", "minio.png", mustGetPutObjReader(t, bytes.NewBufferString(uploadContent), int64(len(uploadContent)), "", ""), opts)
+	_, err = obj.PutObject(context.Background(), "bucket", "obstor.png", mustGetPutObjReader(t, bytes.NewBufferString(uploadContent), int64(len(uploadContent)), "", ""), opts)
 	if err != nil {
 		t.Fatalf("%s: <ERROR> %s", instanceType, err)
 	}
-	objInfo, err := obj.GetObjectInfo(context.Background(), "bucket", "minio.png", opts)
+	objInfo, err := obj.GetObjectInfo(context.Background(), "bucket", "obstor.png", opts)
 	if err != nil {
 		t.Fatalf("%s: <ERROR> %s", instanceType, err)
 	}

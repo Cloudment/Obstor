@@ -75,7 +75,7 @@ func updateServer(u *url.URL, sha256Sum []byte, lrTime time.Time, releaseInfo st
 	return us, nil
 }
 
-// ServerUpdateHandler - POST /minio/admin/v3/update?updateURL={updateURL}
+// ServerUpdateHandler - POST /obstor/admin/v3/update?updateURL={updateURL}
 // ----------
 // updates all obstor servers and restarts them gracefully.
 func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Request) {
@@ -183,7 +183,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 	globalServiceSignalCh <- serviceRestart
 }
 
-// ServiceHandler - POST /minio/admin/v3/service?action={action}
+// ServiceHandler - POST /obstor/admin/v3/service?action={action}
 // ----------
 // restarts/stops obstor server gracefully. In a distributed setup,
 func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request) {
@@ -271,7 +271,7 @@ type ServerHTTPStats struct {
 	TotalS3RejectedInvalid uint64             `json:"totalS3RejectedInvalid"`
 }
 
-// StorageInfoHandler - GET /minio/admin/v3/storageinfo
+// StorageInfoHandler - GET /obstor/admin/v3/storageinfo
 // ----------
 // Get server information
 func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -314,7 +314,7 @@ func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Requ
 
 }
 
-// DataUsageInfoHandler - GET /minio/admin/v3/datausage
+// DataUsageInfoHandler - GET /obstor/admin/v3/datausage
 // ----------
 // Get server/cluster data usage info
 func (a adminAPIHandlers) DataUsageInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -485,7 +485,7 @@ type StartProfilingResult struct {
 	Error    string `json:"error"`
 }
 
-// StartProfilingHandler - POST /minio/admin/v3/profiling/start?profilerType={profilerType}
+// StartProfilingHandler - POST /obstor/admin/v3/profiling/start?profilerType={profilerType}
 // ----------
 // Enable server profiling
 func (a adminAPIHandlers) StartProfilingHandler(w http.ResponseWriter, r *http.Request) {
@@ -590,7 +590,7 @@ func (f dummyFileInfo) ModTime() time.Time { return f.modTime }
 func (f dummyFileInfo) IsDir() bool        { return f.isDir }
 func (f dummyFileInfo) Sys() interface{}   { return f.sys }
 
-// DownloadProfilingHandler - POST /minio/admin/v3/profiling/download
+// DownloadProfilingHandler - POST /obstor/admin/v3/profiling/download
 // ----------
 // Download profiling information of all nodes in a zip format
 func (a adminAPIHandlers) DownloadProfilingHandler(w http.ResponseWriter, r *http.Request) {
@@ -681,7 +681,7 @@ func extractHealInitParams(vars map[string]string, qParms url.Values, r io.Reade
 	return
 }
 
-// HealHandler - POST /minio/admin/v3/heal/
+// HealHandler - POST /obstor/admin/v3/heal/
 // -----------
 // Start heal processing and return heal status items.
 //
@@ -1092,7 +1092,7 @@ func extractTraceOptions(r *http.Request) (opts madmin.ServiceTraceOpts, err err
 	return
 }
 
-// TraceHandler - POST /minio/admin/v3/trace
+// TraceHandler - POST /obstor/admin/v3/trace
 // ----------
 // The handler sends http trace to the connected HTTP client.
 func (a adminAPIHandlers) TraceHandler(w http.ResponseWriter, r *http.Request) {
@@ -1224,7 +1224,7 @@ func (a adminAPIHandlers) ConsoleLogHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// KMSCreateKeyHandler - POST /minio/admin/v3/kms/key/create?key-id=<master-key-id>
+// KMSCreateKeyHandler - POST /obstor/admin/v3/kms/key/create?key-id=<master-key-id>
 func (a adminAPIHandlers) KMSCreateKeyHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "KMSCreateKey")
 	defer logger.AuditLog(ctx, w, r, mustGetClaimsFromToken(r))
@@ -1246,7 +1246,7 @@ func (a adminAPIHandlers) KMSCreateKeyHandler(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// KMSKeyStatusHandler - GET /minio/admin/v3/kms/key/status?key-id=<master-key-id>
+// KMSKeyStatusHandler - GET /obstor/admin/v3/kms/key/status?key-id=<master-key-id>
 func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "KMSKeyStatus")
 
@@ -1322,7 +1322,7 @@ func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseJSON(w, resp)
 }
 
-// HealthInfoHandler - GET /minio/admin/v3/healthinfo
+// HealthInfoHandler - GET /obstor/admin/v3/healthinfo
 // ----------
 // Get server health info
 func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -1502,7 +1502,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 
 }
 
-// BandwidthMonitorHandler - GET /minio/admin/v3/bandwidth
+// BandwidthMonitorHandler - GET /obstor/admin/v3/bandwidth
 // ----------
 // Get bandwidth consumption information
 func (a adminAPIHandlers) BandwidthMonitorHandler(w http.ResponseWriter, r *http.Request) {
@@ -1558,7 +1558,7 @@ func (a adminAPIHandlers) BandwidthMonitorHandler(w http.ResponseWriter, r *http
 	}
 }
 
-// ServerInfoHandler - GET /minio/admin/v3/info
+// ServerInfoHandler - GET /obstor/admin/v3/info
 // ----------
 // Get server information
 func (a adminAPIHandlers) ServerInfoHandler(w http.ResponseWriter, r *http.Request) {

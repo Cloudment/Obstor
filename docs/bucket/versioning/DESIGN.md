@@ -1,4 +1,4 @@
-# Bucket Versioning Design Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Versioning Design Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ## Description of `xl.meta`
 
@@ -62,11 +62,11 @@ A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` usin
         "Size": 314,
         "MTime": 1591820730,
         "MetaSys": {
-          "X-Minio-Internal-Server-Side-Encryption-S3-Kms-Key-Id": "bXktbWluaW8ta2V5",
-          "X-Minio-Internal-Server-Side-Encryption-S3-Kms-Sealed-Key": "ZXlKaFpXRmtJam9pUVVWVExUSTFOaTFIUTAwdFNFMUJReTFUU0VFdE1qVTJJaXdpYVhZaU9pSkJMMVZzZFVnelZYVjZSR2N6UkhGWUwycEViRmRCUFQwaUxDSnViMjVqWlNJNklpdE9lbkJXVWtseFlWSlNVa2t2UVhNaUxDSmllWFJsY3lJNklrNDBabVZsZG5WU1NWVnRLMFoyUWpBMVlYTk9aMU41YVhoU1RrNUpkMDlhTkdKa2RuaGpLMjFuVDNnMFFYbFJhbE15V0hkU1pEZzNRMk54ZUN0SFFuSWlmUT09",
-          "X-Minio-Internal-Server-Side-Encryption-Seal-Algorithm": "REFSRXYyLUhNQUMtU0hBMjU2",
-          "X-Minio-Internal-Server-Side-Encryption-Iv": "bW5YRDhRUGczMVhkc2pJT1V1UVlnbWJBcndIQVhpTUN1dnVBS0QwNUVpaz0=",
-          "X-Minio-Internal-Server-Side-Encryption-S3-Sealed-Key": "SUFBZkFPeUo5ZHVVSEkxYXFLU0NSRkJTTnM0QkVJNk9JWU1QcFVTSXFhK2dHVThXeE9oSHJCZWwwdnRvTldUNE8zS1BtcWluR0cydmlNNFRWa0N0Mmc9PQ=="
+          "X-Obstor-Internal-Server-Side-Encryption-S3-Kms-Key-Id": "bXktbWluaW8ta2V5",
+          "X-Obstor-Internal-Server-Side-Encryption-S3-Kms-Sealed-Key": "ZXlKaFpXRmtJam9pUVVWVExUSTFOaTFIUTAwdFNFMUJReTFUU0VFdE1qVTJJaXdpYVhZaU9pSkJMMVZzZFVnelZYVjZSR2N6UkhGWUwycEViRmRCUFQwaUxDSnViMjVqWlNJNklpdE9lbkJXVWtseFlWSlNVa2t2UVhNaUxDSmllWFJsY3lJNklrNDBabVZsZG5WU1NWVnRLMFoyUWpBMVlYTk9aMU41YVhoU1RrNUpkMDlhTkdKa2RuaGpLMjFuVDNnMFFYbFJhbE15V0hkU1pEZzNRMk54ZUN0SFFuSWlmUT09",
+          "X-Obstor-Internal-Server-Side-Encryption-Seal-Algorithm": "REFSRXYyLUhNQUMtU0hBMjU2",
+          "X-Obstor-Internal-Server-Side-Encryption-Iv": "bW5YRDhRUGczMVhkc2pJT1V1UVlnbWJBcndIQVhpTUN1dnVBS0QwNUVpaz0=",
+          "X-Obstor-Internal-Server-Side-Encryption-S3-Sealed-Key": "SUFBZkFPeUo5ZHVVSEkxYXFLU0NSRkJTTnM0QkVJNk9JWU1QcFVTSXFhK2dHVThXeE9oSHJCZWwwdnRvTldUNE8zS1BtcWluR0cydmlNNFRWa0N0Mmc9PQ=="
         },
         "MetaUsr": {
           "content-type": "application/octet-stream",

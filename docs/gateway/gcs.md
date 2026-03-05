@@ -2,11 +2,11 @@
 
 ObStor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S3-compatible APIs
 
-- [Run ObStor Gateway for GCS](#run-minio-gateway-for-gcs)
-- [Test Using ObStor Browser](#test-using-minio-browser)
-- [Test Using ObStor Client](#test-using-minio-client)
+- [Run ObStor Gateway for GCS](#run-obstor-gateway-for-gcs)
+- [Test Using ObStor Browser](#test-using-obstor-browser)
+- [Test Using ObStor Client](#test-using-obstor-client)
 
-## <a name="run-minio-gateway-for-gcs"></a>1. Run ObStor Gateway for GCS
+## <a name="run-obstor-gateway-for-gcs"></a>1. Run ObStor Gateway for GCS
 
 ### 1.1 Create a Service Account key for GCS and get the Credentials File
 1. Navigate to the [API Console Credentials page](https://console.developers.google.com/project/_/apis/credentials).
@@ -26,7 +26,7 @@ docker run -p 9000:9000 --name gcs-s3 \
  -e "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json" \
  -e "OBSTOR_ROOT_USER=obstoraccountname" \
  -e "OBSTOR_ROOT_PASSWORD=obstoraccountkey" \
- minio/minio gateway gcs yourprojectid
+ obstor/obstor gateway gcs yourprojectid
 ```
 
 ### 1.3 Run ObStor GCS Gateway Using the ObStor Binary
@@ -35,16 +35,16 @@ docker run -p 9000:9000 --name gcs-s3 \
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 export OBSTOR_ROOT_USER=obstoraccesskey
 export OBSTOR_ROOT_PASSWORD=obstorsecretkey
-minio gateway gcs yourprojectid
+obstor gateway gcs yourprojectid
 ```
 
-## <a name="test-using-minio-browser"></a>2. Test Using ObStor Browser
+## <a name="test-using-obstor-browser"></a>2. Test Using ObStor Browser
 
 ObStor Gateway comes with an embedded web-based object browser that outputs content to http://127.0.0.1:9000. To test that ObStor Gateway is running, open a web browser, navigate to http://127.0.0.1:9000, and ensure that the object browser is displayed.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/minio-browser-gateway.png?raw=true)
+![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/obstor-browser-gateway.png?raw=true)
 
-## <a name="test-using-minio-client"></a>3. Test Using ObStor Client
+## <a name="test-using-obstor-client"></a>3. Test Using ObStor Client
 
 ObStor Client is a command-line tool called `mc` that provides UNIX-like commands for interacting with the server (e.g. ls, cat, cp, mirror, diff, find, etc.).  `mc` supports file systems and Amazon S3-compatible cloud storage services (AWS Signature v2 and v4).
 
@@ -83,6 +83,6 @@ Other limitations:
 * Bucket notification APIs are not supported.
 
 ## <a name="explore-further"></a>4. Explore Further
-- [`mc` command-line interface](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-minio)
+- [`mc` command-line interface](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [`aws` command-line interface](https://pgg.net/docs/obstor/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://pgg.net/docs/obstor/golang-client-quickstart-guide)

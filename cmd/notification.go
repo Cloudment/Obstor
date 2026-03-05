@@ -1384,11 +1384,11 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 
 	respElements := map[string]string{
 		"x-amz-request-id":        args.RespElements["requestId"],
-		"x-minio-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
+		"x-obstor-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
-		respElements["x-minio-deployment-id"] = globalDeploymentID
+		respElements["x-obstor-deployment-id"] = globalDeploymentID
 	}
 	if args.RespElements["content-length"] != "" {
 		respElements["content-length"] = args.RespElements["content-length"]
@@ -1399,7 +1399,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	}
 	newEvent := event.Event{
 		EventVersion:      "2.0",
-		EventSource:       "minio:s3",
+		EventSource:       "obstor:s3",
 		AwsRegion:         args.ReqParams["region"],
 		EventTime:         eventTime.Format(event.AMZTimeFormat),
 		EventName:         args.EventName,

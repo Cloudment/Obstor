@@ -235,7 +235,7 @@ func testServerInfoWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 		t.Fatalf("Failed, %v", err)
 	}
 	if serverInfoReply.MinioVersion != Version {
-		t.Fatalf("Cannot get minio version from server info handler")
+		t.Fatalf("Cannot get obstor version from server info handler")
 	}
 	serverInfoReply.MinioGlobalInfo["domains"] = []string(nil)
 	globalInfo := getGlobalInfo()
@@ -271,7 +271,7 @@ func testMakeBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 		{"", false},
 		{".", false},
 		{"ab", false},
-		{"minio", false},
+		{"obstor", false},
 		{minioMetaBucket, false},
 		{bucketName, true},
 	}
@@ -342,8 +342,8 @@ func testDeleteBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 		{"ab", false, token, "Bucket Name ab is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
-		{"minio", false, "false token", "Authentication failed"},
-		{"minio", false, token, "Bucket Name minio is invalid. Lowercase letters, period, " +
+		{"obstor", false, "false token", "Authentication failed"},
+		{"obstor", false, token, "Bucket Name obstor is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
 		{bucketName, false, token, ""},
@@ -715,7 +715,7 @@ func testUploadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandler
 
 	test := func(token string, sendContentLength bool) int {
 		rec := httptest.NewRecorder()
-		req, rErr := http.NewRequest(http.MethodPut, "/minio/upload/"+bucketName+SlashSeparator+objectName, nil)
+		req, rErr := http.NewRequest(http.MethodPut, "/obstor/upload/"+bucketName+SlashSeparator+objectName, nil)
 		if rErr != nil {
 			t.Fatalf("Cannot create upload request, %v", rErr)
 		}
@@ -796,7 +796,7 @@ func testDownloadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandl
 
 	test := func(token string) (int, []byte) {
 		rec := httptest.NewRecorder()
-		path := "/minio/download/" + bucketName + SlashSeparator + objectName + "?token="
+		path := "/obstor/download/" + bucketName + SlashSeparator + objectName + "?token="
 		if token != "" {
 			path = path + token
 		}
@@ -911,7 +911,7 @@ func testWebHandlerDownloadZip(obj ObjectLayer, instanceType string, t TestErrHa
 
 	test := func(token string) (int, []byte) {
 		rec := httptest.NewRecorder()
-		path := "/minio/zip" + "?token="
+		path := "/obstor/zip" + "?token="
 		if token != "" {
 			path = path + token
 		}
@@ -1122,7 +1122,7 @@ func TestWebCheckAuthorization(t *testing.T) {
 
 	rec = httptest.NewRecorder()
 	// Test authorization of web.Download
-	req, err := http.NewRequest(http.MethodGet, "/minio/download/bucket/object?token=wrongauth", nil)
+	req, err := http.NewRequest(http.MethodGet, "/obstor/download/bucket/object?token=wrongauth", nil)
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1139,7 +1139,7 @@ func TestWebCheckAuthorization(t *testing.T) {
 	rec = httptest.NewRecorder()
 	// Test authorization of web.Upload
 	content := []byte("temporary file's content")
-	req, err = http.NewRequest(http.MethodPut, "/minio/upload/bucket/object", nil)
+	req, err = http.NewRequest(http.MethodPut, "/obstor/upload/bucket/object", nil)
 	req.Header.Set("Authorization", "Bearer foo-authorization")
 	req.Header.Set("User-Agent", "Mozilla")
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
@@ -1257,7 +1257,7 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 	}
 
 	// Test authorization of web.Download
-	req, err = http.NewRequest(http.MethodGet, "/minio/download/bucket/object?token="+authorization, nil)
+	req, err = http.NewRequest(http.MethodGet, "/obstor/download/bucket/object?token="+authorization, nil)
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1268,7 +1268,7 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 
 	// Test authorization of web.Upload
 	content := []byte("temporary file's content")
-	req, err = http.NewRequest(http.MethodPut, "/minio/upload/bucket/object", nil)
+	req, err = http.NewRequest(http.MethodPut, "/obstor/upload/bucket/object", nil)
 	req.Header.Set("Authorization", "Bearer "+authorization)
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
 	req.Header.Set("x-amz-date", "20160814T114029Z")

@@ -1,4 +1,4 @@
-# Kernel Tuning for ObStor Production Deployment on Linux Servers [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Kernel Tuning for ObStor Production Deployment on Linux Servers [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 List of kernel tuning recommendations for ObStor server deployments, a copy of this [script](https://github.com/cloudment/obstor/blob/master/docs/deployment/kernel-tuning/sysctl.sh) is available here that can be applied on the servers.
 

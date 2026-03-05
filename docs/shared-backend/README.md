@@ -1,4 +1,4 @@
-# Shared Backend ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Shared Backend ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ObStor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple ObStor servers. Synchronization among ObStor servers is taken care by design.
@@ -18,7 +18,7 @@ If you're aware of stand-alone ObStor set up, the installation and running remai
 
 ## 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 
 ## 2. Run ObStor on Shared Backend
 
@@ -36,7 +36,7 @@ You'll need the path to the shared volume, e.g. `/path/to/nfs-volume`. Then run 
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio gateway nas /path/to/nfs-volume
+obstor gateway nas /path/to/nfs-volume
 ```
 
 #### ObStor shared mode on Windows 2012 Server
@@ -46,7 +46,7 @@ You'll need the path to the shared volume, e.g. `\\remote-server\smb`. Then run 
 ```cmd
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
-minio.exe gateway nas \\remote-server\smb\export
+obstor.exe gateway nas \\remote-server\smb\export
 ```
 
 *Windows Tip*
@@ -57,16 +57,16 @@ If a remote volume, e.g. `\\remote-server\smb` is mounted as a drive, e.g. `M:\`
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
 net use m: \\remote-server\smb\export /P:Yes
-minio.exe gateway nas M:\export
+obstor.exe gateway nas M:\export
 ```
 
 ## 3. Test your setup
 
-To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the ObStor shared backend endpoints.
+To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the ObStor shared backend endpoints.
 
 ## Explore Further
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

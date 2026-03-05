@@ -41,7 +41,7 @@ type HealthInfo struct {
 	TimeStamp time.Time       `json:"timestamp,omitempty"`
 	Error     string          `json:"error,omitempty"`
 	Perf      PerfInfo        `json:"perf,omitempty"`
-	Minio     MinioHealthInfo `json:"minio,omitempty"`
+	Minio     MinioHealthInfo `json:"obstor,omitempty"`
 	Sys       SysHealthInfo   `json:"sys,omitempty"`
 }
 

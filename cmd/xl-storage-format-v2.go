@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/minio/highwayhash"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/google/uuid"
+	"github.com/minio/highwayhash"
 	"github.com/tinylib/msgp/msgp"
 )
 

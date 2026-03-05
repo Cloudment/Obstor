@@ -13,7 +13,7 @@ Console target is on always and cannot be disabled.
 ### HTTP Target
 HTTP target logs to a generic HTTP endpoint in JSON format and is not enabled by default. To enable HTTP target logging you would have to update your ObStor server configuration using `mc admin config set` command.
 
-Assuming `mc` is already [configured](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
+Assuming `mc` is already [configured](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 ```
 mc admin config get myminio/ logger_webhook
 logger_webhook:name1 auth_token="" endpoint=""
@@ -30,12 +30,12 @@ ObStor also honors environment variable for HTTP target logging as shown below, 
 ```
 export OBSTOR_LOGGER_WEBHOOK_ENABLE_target1="on"
 export OBSTOR_LOGGER_WEBHOOK_AUTH_TOKEN_target1="token"
-export OBSTOR_LOGGER_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
+export OBSTOR_LOGGER_WEBHOOK_ENDPOINT_target1=http://localhost:8080/obstor/logs
 obstor server /mnt/data
 ```
 
 ## Audit Targets
-Assuming `mc` is already [configured](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
+Assuming `mc` is already [configured](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 ```
 mc admin config get myminio/ audit_webhook
 audit_webhook:name1 enable=off endpoint= auth_token= client_cert= client_key=
@@ -52,7 +52,7 @@ ObStor also honors environment variable for HTTP target Audit logging as shown b
 ```
 export OBSTOR_AUDIT_WEBHOOK_ENABLE_target1="on"
 export OBSTOR_AUDIT_WEBHOOK_AUTH_TOKEN_target1="token"
-export OBSTOR_AUDIT_WEBHOOK_ENDPOINT_target1=http://localhost:8080/minio/logs
+export OBSTOR_AUDIT_WEBHOOK_ENDPOINT_target1=http://localhost:8080/obstor/logs
 export OBSTOR_AUDIT_WEBHOOK_CLIENT_CERT="/tmp/cert.pem"
 export OBSTOR_AUDIT_WEBHOOK_CLIENT_KEY=="/tmp/key.pem"
 obstor server /mnt/data
@@ -120,5 +120,5 @@ NOTE:
 ```
 
 ## Explore Further
-* [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
-* [Configure ObStor Server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls)
+* [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
+* [Configure ObStor Server with TLS](https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls)

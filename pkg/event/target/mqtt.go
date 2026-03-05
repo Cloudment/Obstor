@@ -35,7 +35,7 @@ import (
 
 const (
 	reconnectInterval = 5 // In Seconds
-	storePrefix       = "minio"
+	storePrefix       = "obstor"
 )
 
 // MQTT input constants

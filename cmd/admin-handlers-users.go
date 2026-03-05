@@ -54,7 +54,7 @@ func validateAdminUsersReq(ctx context.Context, w http.ResponseWriter, r *http.R
 	return objectAPI, cred
 }
 
-// RemoveUser - DELETE /minio/admin/v3/remove-user?accessKey=<access_key>
+// RemoveUser - DELETE /obstor/admin/v3/remove-user?accessKey=<access_key>
 func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "RemoveUser")
 
@@ -92,7 +92,7 @@ func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ListUsers - GET /minio/admin/v3/list-users
+// ListUsers - GET /obstor/admin/v3/list-users
 func (a adminAPIHandlers) ListUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListUsers")
 
@@ -126,7 +126,7 @@ func (a adminAPIHandlers) ListUsers(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, econfigData)
 }
 
-// GetUserInfo - GET /minio/admin/v3/user-info
+// GetUserInfo - GET /obstor/admin/v3/user-info
 func (a adminAPIHandlers) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetUserInfo")
 
@@ -183,7 +183,7 @@ func (a adminAPIHandlers) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, data)
 }
 
-// UpdateGroupMembers - PUT /minio/admin/v3/update-group-members
+// UpdateGroupMembers - PUT /obstor/admin/v3/update-group-members
 func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "UpdateGroupMembers")
 
@@ -228,7 +228,7 @@ func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// GetGroup - /minio/admin/v3/group?group=mygroup1
+// GetGroup - /obstor/admin/v3/group?group=mygroup1
 func (a adminAPIHandlers) GetGroup(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetGroup")
 
@@ -257,7 +257,7 @@ func (a adminAPIHandlers) GetGroup(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, body)
 }
 
-// ListGroups - GET /minio/admin/v3/groups
+// ListGroups - GET /obstor/admin/v3/groups
 func (a adminAPIHandlers) ListGroups(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListGroups")
 
@@ -283,7 +283,7 @@ func (a adminAPIHandlers) ListGroups(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, body)
 }
 
-// SetGroupStatus - PUT /minio/admin/v3/set-group-status?group=mygroup1&status=enabled
+// SetGroupStatus - PUT /obstor/admin/v3/set-group-status?group=mygroup1&status=enabled
 func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetGroupStatus")
 
@@ -320,7 +320,7 @@ func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// SetUserStatus - PUT /minio/admin/v3/set-user-status?accessKey=<access_key>&status=[enabled|disabled]
+// SetUserStatus - PUT /obstor/admin/v3/set-user-status?accessKey=<access_key>&status=[enabled|disabled]
 func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetUserStatus")
 
@@ -355,7 +355,7 @@ func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// AddUser - PUT /minio/admin/v3/add-user?accessKey=<access_key>
+// AddUser - PUT /obstor/admin/v3/add-user?accessKey=<access_key>
 func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddUser")
 
@@ -457,7 +457,7 @@ func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// AddServiceAccount - PUT /minio/admin/v3/add-service-account
+// AddServiceAccount - PUT /obstor/admin/v3/add-service-account
 func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddServiceAccount")
 
@@ -573,7 +573,7 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 	writeSuccessResponseJSON(w, encryptedData)
 }
 
-// UpdateServiceAccount - POST /minio/admin/v3/update-service-account
+// UpdateServiceAccount - POST /obstor/admin/v3/update-service-account
 func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "UpdateServiceAccount")
 
@@ -659,7 +659,7 @@ func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Re
 	writeSuccessNoContent(w)
 }
 
-// InfoServiceAccount - GET /minio/admin/v3/info-service-account
+// InfoServiceAccount - GET /obstor/admin/v3/info-service-account
 func (a adminAPIHandlers) InfoServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "InfoServiceAccount")
 
@@ -758,7 +758,7 @@ func (a adminAPIHandlers) InfoServiceAccount(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, encryptedData)
 }
 
-// ListServiceAccounts - GET /minio/admin/v3/list-service-accounts
+// ListServiceAccounts - GET /obstor/admin/v3/list-service-accounts
 func (a adminAPIHandlers) ListServiceAccounts(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListServiceAccounts")
 
@@ -836,7 +836,7 @@ func (a adminAPIHandlers) ListServiceAccounts(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseJSON(w, encryptedData)
 }
 
-// DeleteServiceAccount - DELETE /minio/admin/v3/delete-service-account
+// DeleteServiceAccount - DELETE /obstor/admin/v3/delete-service-account
 func (a adminAPIHandlers) DeleteServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "DeleteServiceAccount")
 
@@ -1049,7 +1049,7 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, usageInfoJSON)
 }
 
-// InfoCannedPolicyV2 - GET /minio/admin/v2/info-canned-policy?name={policyName}
+// InfoCannedPolicyV2 - GET /obstor/admin/v2/info-canned-policy?name={policyName}
 func (a adminAPIHandlers) InfoCannedPolicyV2(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "InfoCannedPolicyV2")
 
@@ -1076,7 +1076,7 @@ func (a adminAPIHandlers) InfoCannedPolicyV2(w http.ResponseWriter, r *http.Requ
 	w.(http.Flusher).Flush()
 }
 
-// InfoCannedPolicy - GET /minio/admin/v3/info-canned-policy?name={policyName}
+// InfoCannedPolicy - GET /obstor/admin/v3/info-canned-policy?name={policyName}
 func (a adminAPIHandlers) InfoCannedPolicy(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "InfoCannedPolicy")
 
@@ -1100,7 +1100,7 @@ func (a adminAPIHandlers) InfoCannedPolicy(w http.ResponseWriter, r *http.Reques
 	w.(http.Flusher).Flush()
 }
 
-// ListCannedPoliciesV2 - GET /minio/admin/v2/list-canned-policies
+// ListCannedPoliciesV2 - GET /obstor/admin/v2/list-canned-policies
 func (a adminAPIHandlers) ListCannedPoliciesV2(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListCannedPoliciesV2")
 
@@ -1134,7 +1134,7 @@ func (a adminAPIHandlers) ListCannedPoliciesV2(w http.ResponseWriter, r *http.Re
 	w.(http.Flusher).Flush()
 }
 
-// ListCannedPolicies - GET /minio/admin/v3/list-canned-policies
+// ListCannedPolicies - GET /obstor/admin/v3/list-canned-policies
 func (a adminAPIHandlers) ListCannedPolicies(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListCannedPolicies")
 
@@ -1168,7 +1168,7 @@ func (a adminAPIHandlers) ListCannedPolicies(w http.ResponseWriter, r *http.Requ
 	w.(http.Flusher).Flush()
 }
 
-// RemoveCannedPolicy - DELETE /minio/admin/v3/remove-canned-policy?name=<policy_name>
+// RemoveCannedPolicy - DELETE /obstor/admin/v3/remove-canned-policy?name=<policy_name>
 func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "RemoveCannedPolicy")
 
@@ -1196,7 +1196,7 @@ func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// AddCannedPolicy - PUT /minio/admin/v3/add-canned-policy?name=<policy_name>
+// AddCannedPolicy - PUT /obstor/admin/v3/add-canned-policy?name=<policy_name>
 func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddCannedPolicy")
 
@@ -1248,7 +1248,7 @@ func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// SetPolicyForUserOrGroup - PUT /minio/admin/v3/set-policy?policy=xxx&user-or-group=?[&is-group]
+// SetPolicyForUserOrGroup - PUT /obstor/admin/v3/set-policy?policy=xxx&user-or-group=?[&is-group]
 func (a adminAPIHandlers) SetPolicyForUserOrGroup(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetPolicyForUserOrGroup")
 

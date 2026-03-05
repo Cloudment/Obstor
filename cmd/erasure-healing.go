@@ -404,7 +404,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		copyPartsMetadata = shufflePartsMetadata(copyPartsMetadata, latestMeta.Erasure.Distribution)
 
 		// Heal each part. erasureHealFile() will write the healed
-		// part to .minio/tmp/uuid/ which needs to be renamed later to
+		// part to .obstor/tmp/uuid/ which needs to be renamed later to
 		// the final location.
 		erasure, err := NewErasure(ctx, latestMeta.Erasure.DataBlocks,
 			latestMeta.Erasure.ParityBlocks, latestMeta.Erasure.BlockSize)

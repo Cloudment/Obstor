@@ -57,7 +57,7 @@ func validateAdminReqConfigKV(ctx context.Context, w http.ResponseWriter, r *htt
 	return cred, objectAPI
 }
 
-// DelConfigKVHandler - DELETE /minio/admin/v3/del-config-kv
+// DelConfigKVHandler - DELETE /obstor/admin/v3/del-config-kv
 func (a adminAPIHandlers) DelConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "DeleteConfigKV")
 
@@ -99,7 +99,7 @@ func (a adminAPIHandlers) DelConfigKVHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// SetConfigKVHandler - PUT /minio/admin/v3/set-config-kv
+// SetConfigKVHandler - PUT /obstor/admin/v3/set-config-kv
 func (a adminAPIHandlers) SetConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetConfigKV")
 
@@ -166,7 +166,7 @@ func (a adminAPIHandlers) SetConfigKVHandler(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// GetConfigKVHandler - GET /minio/admin/v3/get-config-kv?key={key}
+// GetConfigKVHandler - GET /obstor/admin/v3/get-config-kv?key={key}
 func (a adminAPIHandlers) GetConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetConfigKV")
 
@@ -329,7 +329,7 @@ func (a adminAPIHandlers) ListConfigHistoryKVHandler(w http.ResponseWriter, r *h
 	writeSuccessResponseJSON(w, econfigData)
 }
 
-// HelpConfigKVHandler - GET /minio/admin/v3/help-config-kv?subSys={subSys}&key={key}
+// HelpConfigKVHandler - GET /obstor/admin/v3/help-config-kv?subSys={subSys}&key={key}
 func (a adminAPIHandlers) HelpConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "HelpConfigKV")
 
@@ -357,7 +357,7 @@ func (a adminAPIHandlers) HelpConfigKVHandler(w http.ResponseWriter, r *http.Req
 	w.(http.Flusher).Flush()
 }
 
-// SetConfigHandler - PUT /minio/admin/v3/config
+// SetConfigHandler - PUT /obstor/admin/v3/config
 func (a adminAPIHandlers) SetConfigHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetConfig")
 
@@ -408,8 +408,8 @@ func (a adminAPIHandlers) SetConfigHandler(w http.ResponseWriter, r *http.Reques
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// GetConfigHandler - GET /minio/admin/v3/config
-// Get config.json of this minio setup.
+// GetConfigHandler - GET /obstor/admin/v3/config
+// Get config.json of this obstor setup.
 func (a adminAPIHandlers) GetConfigHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetConfig")
 

@@ -21,14 +21,14 @@ import jwtDecode from "jwt-decode"
 
 jest.mock("jwt-decode")
 
-jwtDecode.mockImplementation(() => ({ sub: "minio" }))
+jwtDecode.mockImplementation(() => ({ sub: "obstor" }))
 
 jest.mock("../../web", () => ({
   SetAuth: jest.fn(
     ({ currentAccessKey, currentSecretKey, newAccessKey, newSecretKey }) => {
       if (
-        currentAccessKey == "minio" &&
-        currentSecretKey == "minio123" &&
+        currentAccessKey == "obstor" &&
+        currentSecretKey == "obstor123" &&
         newAccessKey == "test" &&
         newSecretKey == "test1234"
       ) {
@@ -93,7 +93,7 @@ describe("ChangePasswordModal", () => {
     const wrapper = shallow(<ChangePasswordModal serverInfo={serverInfo} />)
     wrapper.find("#generate-keys").simulate("click")
     setImmediate(() => {
-      expect(wrapper.state("newAccessKey")).toBe("minio")
+      expect(wrapper.state("newAccessKey")).toBe("obstor")
       expect(wrapper.state("newSecretKey")).toBe("rsecretkey")
     })
   })
@@ -110,7 +110,7 @@ describe("ChangePasswordModal", () => {
     )
     wrapper
       .find("#currentSecretKey")
-      .simulate("change", { target: { value: "minio123" } })
+      .simulate("change", { target: { value: "obstor123" } })
     wrapper
       .find("#newSecretKey")
       .simulate("change", { target: { value: "t1" } })

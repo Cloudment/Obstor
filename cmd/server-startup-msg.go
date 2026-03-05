@@ -33,7 +33,7 @@ import (
 
 // Documentation links, these are part of message printing code.
 const (
-	mcQuickStartGuide     = "https://pgg.net/docs/obstor/minio-client-quickstart-guide"
+	mcQuickStartGuide     = "https://pgg.net/docs/obstor/obstor-client-quickstart-guide"
 	goQuickStartGuide     = "https://pgg.net/docs/obstor/golang-client-quickstart-guide"
 	jsQuickStartGuide     = "https://pgg.net/docs/obstor/javascript-client-quickstart-guide"
 	javaQuickStartGuide   = "https://pgg.net/docs/obstor/java-client-quickstart-guide"
@@ -177,7 +177,7 @@ func printCLIAccessMsg(endPoint string, alias string) {
 	// Get saved credentials.
 	cred := globalActiveCred
 
-	// Configure 'mc', following block prints platform specific information for minio client.
+	// Configure 'mc', following block prints platform specific information for obstor client.
 	if color.IsTerminal() && !globalCLIContext.Anonymous {
 		logStartupMessage(color.Blue("\nCommand-line Access: ") + mcQuickStartGuide)
 		if runtime.GOOS == globalWindowsOSName {

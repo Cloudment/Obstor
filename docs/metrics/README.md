@@ -6,22 +6,22 @@ ObStor server exposes monitoring data over endpoints. Monitoring tools can pick 
 
 ObStor server has two healthcheck related un-authenticated endpoints, a liveness probe to indicate if server is responding, cluster probe to check if server can be taken down for maintenance.
 
-- Liveness probe available at `/minio/health/live`
-- Cluster probe available at `/minio/health/cluster`
+- Liveness probe available at `/obstor/health/live`
+- Cluster probe available at `/obstor/health/cluster`
 
 Read more on how to use these endpoints in [ObStor healthcheck guide](https://github.com/cloudment/obstor/blob/master/docs/metrics/healthcheck/README.md).
 
 ### Prometheus Probe
 
 ObStor allows reading metrics for the entire cluster from any single node. This allows for metrics collection for a ObStor instance across all servers. Thus, metrics collection for instances behind a load balancer can be done without any knowledge of the individual node addresses. The cluster wide metrics can be read at
-`<Address for ObStor Service>/minio/v2/metrics/cluster`.
+`<Address for ObStor Service>/obstor/v2/metrics/cluster`.
 
 The additional node specific metrics which include additional go metrics or process metrics are exposed at
-`<Address for ObStor Node>/minio/v2/metrics/node`.
+`<Address for ObStor Node>/obstor/v2/metrics/node`.
 
 To use this endpoint, setup Prometheus to scrape data from this endpoint. Read more on how to configure and use Prometheus to monitor ObStor server in [How to monitor ObStor server with Prometheus](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/README.md).
 
 **Deprecated metrics monitoring**
 
-- Prometheus' data available at `/minio/prometheus/metrics` is deprecated
+- Prometheus' data available at `/obstor/prometheus/metrics` is deprecated
 

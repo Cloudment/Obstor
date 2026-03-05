@@ -23,9 +23,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/klauspost/compress/zstd"
 	"github.com/cloudment/obstor/pkg/s3select/json"
 	"github.com/cloudment/obstor/pkg/s3select/sql"
+	"github.com/klauspost/compress/zstd"
 	"github.com/minio/simdjson-go"
 )
 

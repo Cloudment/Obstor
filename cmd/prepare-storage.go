@@ -106,11 +106,11 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 		index := index
 		g.Go(func() error {
 			epPath := endpoints[index].Path
-			// Need to move temporary objects left behind from previous run of minio
+			// Need to move temporary objects left behind from previous run of obstor
 			// server to a unique directory under `minioMetaTmpBucket-old` to clean
 			// up `minioMetaTmpBucket` for the current run.
 			//
-			// /disk1/.minio.sys/tmp-old/
+			// /disk1/.obstor.sys/tmp-old/
 			//  |__ 33a58b40-aecc-4c9f-a22f-ff17bfa33b62
 			//  |__ e870a2c1-d09c-450c-a69c-6eaa54a89b3e
 			//
@@ -320,7 +320,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 		return nil, nil, err
 	}
 
-	// The will always recreate some directories inside .minio.sys of
+	// The will always recreate some directories inside .obstor.sys of
 	// the local disk such as tmp, multipart and background-ops
 	initErasureMetaVolumesInLocalDisks(storageDisks, formatConfigs)
 

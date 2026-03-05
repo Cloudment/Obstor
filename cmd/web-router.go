@@ -51,7 +51,7 @@ const assetPrefix = "production"
 // specialAssets are files which are unique files not embedded inside index_bundle.js.
 const specialAssets = "index_bundle.*.js|loader.css|logo.svg|firefox.png|safari.png|chrome.png|favicon-16x16.png|favicon-32x32.png|favicon-96x96.png"
 
-// registerWebRouter - registers web router for serving minio browser.
+// registerWebRouter - registers web router for serving obstor browser.
 func registerWebRouter(router *mux.Router) error {
 	// Initialize Web.
 	web := &webAPIHandlers{
@@ -90,7 +90,7 @@ func registerWebRouter(router *mux.Router) error {
 		return err
 	}
 
-	// RPC handler at URI - /minio/webrpc
+	// RPC handler at URI - /obstor/webrpc
 	webBrowserRouter.Methods(http.MethodPost).Path("/webrpc").Handler(webRPC)
 	webBrowserRouter.Methods(http.MethodPut).Path("/upload/{bucket}/{object:.+}").HandlerFunc(httpTraceHdrs(web.Upload))
 

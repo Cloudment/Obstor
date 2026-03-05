@@ -44,7 +44,7 @@ import (
 const (
 	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
 	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.pgg.net/server/minio/release/" + minioOSARCH + SlashSeparator
+	minioReleaseURL           = "https://dl.pgg.net/server/obstor/release/" + minioOSARCH + SlashSeparator
 
 	envMinisignPubKey = "OBSTOR_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
@@ -52,7 +52,7 @@ const (
 
 var (
 	// For windows our files have .exe additionally.
-	minioReleaseWindowsInfoURL = minioReleaseURL + "minio.exe.sha256sum"
+	minioReleaseWindowsInfoURL = minioReleaseURL + "obstor.exe.sha256sum"
 )
 
 // minioVersionToReleaseTime - parses a standard official release
@@ -67,7 +67,7 @@ func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error
 // releaseTimeToReleaseTag - converts a time to a string formatted as
 // an official ObStor release tag.
 //
-// An official minio release tag looks like:
+// An official obstor release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
 func releaseTimeToReleaseTag(releaseTime time.Time) string {
 	return "RELEASE." + releaseTime.Format(minioReleaseTagTimeLayout)
@@ -93,7 +93,7 @@ func getModTime(path string) (t time.Time, err error) {
 		return t, fmt.Errorf("Unable to get absolute path of %s. %w", path, err)
 	}
 
-	// Version is minio non-standard, we will use minio binary's
+	// Version is obstor non-standard, we will use obstor binary's
 	// ModTime as release time.
 	fi, err := os.Stat(absPath)
 	if err != nil {
@@ -105,19 +105,19 @@ func getModTime(path string) (t time.Time, err error) {
 }
 
 // GetCurrentReleaseTime - returns this process's release time.  If it
-// is official minio version, parsed version is returned else minio
+// is official obstor version, parsed version is returned else obstor
 // binary's mod time is returned.
 func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
 	if releaseTime, err = minioVersionToReleaseTime(Version); err == nil {
 		return releaseTime, err
 	}
 
-	// Looks like version is minio non-standard, we use minio
+	// Looks like version is obstor non-standard, we use obstor
 	// binary's ModTime as release time:
 	return getModTime(os.Args[0])
 }
 
-// IsDocker - returns if the environment minio is running in docker or
+// IsDocker - returns if the environment obstor is running in docker or
 // not. The check is a simple file existence check.
 //
 // https://github.com/moby/moby/blob/master/daemon/initlayer/setup_unix.go#L25
@@ -139,7 +139,7 @@ func IsDocker() bool {
 	return false
 }
 
-// IsDCOS returns true if minio is running in DCOS.
+// IsDCOS returns true if obstor is running in DCOS.
 func IsDCOS() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// http://mesos.apache.org/documentation/latest/docker-containerizer/
@@ -149,12 +149,12 @@ func IsDCOS() bool {
 	return false
 }
 
-// IsKubernetesReplicaSet returns true if minio is running in kubernetes replica set.
+// IsKubernetesReplicaSet returns true if obstor is running in kubernetes replica set.
 func IsKubernetesReplicaSet() bool {
 	return IsKubernetes() && (env.Get("KUBERNETES_REPLICA_SET", "") != "")
 }
 
-// IsKubernetes returns true if minio is running in kubernetes.
+// IsKubernetes returns true if obstor is running in kubernetes.
 func IsKubernetes() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// Kubernetes env used to validate if we are
@@ -166,7 +166,7 @@ func IsKubernetes() bool {
 	return false
 }
 
-// IsBOSH returns true if minio is deployed from a bosh package
+// IsBOSH returns true if obstor is deployed from a bosh package
 func IsBOSH() bool {
 	// "/var/vcap/bosh" exists in BOSH deployed instance.
 	_, err := os.Stat("/var/vcap/bosh")
@@ -366,13 +366,13 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 }
 
 // parseReleaseData - parses release info file content fetched from
-// official minio download server.
+// official obstor download server.
 //
 // The expected format is a single line with two words like:
 //
-// fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
+// fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
 //
-// The second word must be `minio.` appended to a standard release tag.
+// The second word must be `obstor.` appended to a standard release tag.
 func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, releaseInfo string, err error) {
 	defer func() {
 		if err != nil {
@@ -397,13 +397,13 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 
 	releaseInfo = fields[1]
 
-	// Split release of style minio.RELEASE.2019-08-21T19-40-07Z.<hotfix>
+	// Split release of style obstor.RELEASE.2019-08-21T19-40-07Z.<hotfix>
 	nfields := strings.SplitN(releaseInfo, ".", 2)
 	if len(nfields) != 2 {
 		err = fmt.Errorf("Unknown release information `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
-	if nfields[0] != "minio" {
+	if nfields[0] != "obstor" {
 		err = fmt.Errorf("Unknown release `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
@@ -443,10 +443,10 @@ func getLatestReleaseTime(u *url.URL, timeout time.Duration, mode string) (sha25
 
 const (
 	// Kubernetes deployment doc link.
-	kubernetesDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-kubernetes"
+	kubernetesDeploymentDoc = "https://pgg.net/docs/obstor/deploy-obstor-on-kubernetes"
 
 	// Mesos deployment doc link.
-	mesosDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-dc-os"
+	mesosDeploymentDoc = "https://pgg.net/docs/obstor/deploy-obstor-on-dc-os"
 )
 
 func getDownloadURL(releaseTag string) (downloadURL string) {
@@ -470,10 +470,10 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 
 	// For binary only installations, we return link to the latest binary.
 	if runtime.GOOS == "windows" {
-		return minioReleaseURL + "minio.exe"
+		return minioReleaseURL + "obstor.exe"
 	}
 
-	return minioReleaseURL + "minio"
+	return minioReleaseURL + "obstor"
 }
 
 func getUpdateReaderFromFile(u *url.URL) (io.ReadCloser, error) {

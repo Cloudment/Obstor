@@ -70,8 +70,8 @@ On the browser now you shall see the list of buckets output, along with your tem
 ```
 {
 	"buckets": [
-		"dl.minio.equipment",
-		"dl.minio.service-fulfillment",
+		"dl.obstor.equipment",
+		"dl.obstor.service-fulfillment",
 		"testbucket"
 	],
 	"credentials": {
@@ -94,5 +94,5 @@ and add relevant policies on ObStor using `mc admin policy add myminio/ <group_n
 
 ## Explore Further
 
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
+- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)

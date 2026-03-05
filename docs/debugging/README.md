@@ -1,7 +1,7 @@
-# ObStor Server Debugging Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# ObStor Server Debugging Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ### HTTP Trace
-HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/minio-admin-complete-guide.md#command-trace---display-minio-server-http-trace) command.
+HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/obstor-admin-complete-guide.md#command-trace---display-obstor-server-http-trace) command.
 
 Example:
 ```sh

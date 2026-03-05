@@ -22,7 +22,7 @@ if [ -z "$OBSTOR_GO_VERSION" ]; then
 fi
 
 test_run_dir="$MINT_RUN_CORE_DIR/minio-go"
-curl -sL -o "${test_run_dir}/main.go" "https://raw.githubusercontent.com/cloudment/obstor-go/${OBSTOR_GO_VERSION}/functional_tests.go"
+curl -sL -o "${test_run_dir}/main.go" "https://raw.githubusercontent.com/cloudment/minio-go/${OBSTOR_GO_VERSION}/functional_tests.go"
 
 # Extract only the function from versioning_test.go (skip package, imports, comments)
 # Start from line 34 where the function definition begins

@@ -78,7 +78,7 @@
       "includeVars": true,
       "keepTime": true,
       "tags": [
-        "minio"
+        "obstor"
       ],
       "type": "dashboards"
     }
@@ -1941,7 +1941,7 @@
   "schemaVersion": 26,
   "style": "dark",
   "tags": [
-    "minio"
+    "obstor"
   ],
   "templating": {
     "list": [

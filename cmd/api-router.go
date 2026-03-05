@@ -194,11 +194,11 @@ func registerAPIRouter(router *mux.Router) {
 				if err != nil {
 					host = r.Host
 				}
-				// Make sure to skip matching minio.<domain>` this is
+				// Make sure to skip matching obstor.<domain>` this is
 				// specifically meant for operator/k8s deployment
 				// The reason we need to skip this is for a special
 				// usecase where we need to make sure that
-				// minio.<namespace>.svc.<cluster_domain> is ignored
+				// obstor.<namespace>.svc.<cluster_domain> is ignored
 				// by the bucketDNS style to ensure that path style
 				// is available and honored at this domain.
 				//

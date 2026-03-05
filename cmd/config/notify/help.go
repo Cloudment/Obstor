@@ -32,7 +32,7 @@ var (
 	HelpWebhook = config.HelpKVS{
 		config.HelpKV{
 			Key:         target.WebhookEndpoint,
-			Description: "webhook server endpoint e.g. http://localhost:8080/minio/events",
+			Description: "webhook server endpoint e.g. http://localhost:8080/obstor/events",
 			Type:        "url",
 		},
 		config.HelpKV{

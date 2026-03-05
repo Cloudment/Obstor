@@ -99,7 +99,7 @@ var (
 	ErrInvalidCacheEncryptionKey = newErrFn(
 		"Invalid cache encryption master key value",
 		"Please check the passed value",
-		"OBSTOR_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/minio-disk-cache-guide",
+		"OBSTOR_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/obstor-disk-cache-guide",
 	)
 
 	ErrInvalidCacheRange = newErrFn(
@@ -158,13 +158,13 @@ var (
 	ErrInvalidErasureEndpoints = newErrFn(
 		"Invalid endpoint(s) in erasure mode",
 		"Please provide correct combination of local/remote paths",
-		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide",
 	)
 
 	ErrInvalidNumberOfErasureEndpoints = newErrFn(
 		"Invalid total number of endpoints for erasure mode",
 		"Please provide an even number of endpoints greater or equal to 4",
-		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide",
 	)
 
 	ErrStorageClassValue = newErrFn(
@@ -195,7 +195,7 @@ Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/s
 		"Please check the FS endpoint",
 		`FS mode requires only one writable disk path
 Example 1:
-   $ obstor server /data/minio/`,
+   $ obstor server /data/obstor/`,
 	)
 
 	ErrUnsupportedBackend = newErrFn(
@@ -219,7 +219,7 @@ Example 1:
 	ErrPortAccess = newErrFn(
 		"Unable to use specified port",
 		"Please ensure ObStor binary has 'cap_net_bind_service=+ep' permissions",
-		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/minio' to provide sufficient permissions`,
+		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/obstor' to provide sufficient permissions`,
 	)
 
 	ErrSSLUnexpectedError = newErrFn(
@@ -243,7 +243,7 @@ Example 1:
 	ErrNoCertsAndHTTPSEndpoints = newErrFn(
 		"HTTPS specified in endpoints, but no TLS certificate is found on the local machine",
 		"Please add TLS certificate or use HTTP endpoints only",
-		"Refer to https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls for information about how to load a TLS certificate in your server",
+		"Refer to https://pgg.net/docs/obstor/how-to-secure-access-to-obstor-server-with-tls for information about how to load a TLS certificate in your server",
 	)
 
 	ErrCertsAndHTTPEndpoints = newErrFn(
@@ -279,7 +279,7 @@ Example 1:
 	ErrInvalidGWSSEEnvValue = newErrFn(
 		"Invalid gateway SSE configuration",
 		"",
-		"Refer to https://pgg.net/docs/obstor/minio-kms-quickstart-guide.html for setting up SSE",
+		"Refer to https://pgg.net/docs/obstor/obstor-kms-quickstart-guide.html for setting up SSE",
 	)
 
 	ErrInvalidReplicationWorkersValue = newErrFn(

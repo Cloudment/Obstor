@@ -151,7 +151,7 @@ func ValidateGatewayArguments(serverAddr, endpointAddr string) error {
 	return nil
 }
 
-// StartGateway - handler for 'minio gateway <name>'.
+// StartGateway - handler for 'obstor gateway <name>'.
 func StartGateway(ctx *cli.Context, gw Gateway) {
 	defer globalDNSCache.Stop()
 
@@ -201,8 +201,8 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	globalMinioHost, globalMinioPort = mustSplitHostPort(globalCLIContext.Addr)
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie obstor will start listening on IPv6 address whereas another
+	// (non-)obstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
 	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the gateway")
 

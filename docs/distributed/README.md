@@ -1,4 +1,4 @@
-# Distributed ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Distributed ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
 ObStor in distributed mode lets you pool multiple drives (even on different machines) into a single object storage server. As drives are distributed across several nodes, distributed ObStor can withstand multiple node failures and yet ensure full data protection.
 
@@ -8,7 +8,7 @@ ObStor in distributed mode can help you setup a highly-available storage system 
 
 ### Data protection
 
-Distributed ObStor provides protection against multiple node/drive failures and [bit rot](https://github.com/cloudment/obstor/blob/master/docs/erasure/README.md#what-is-bit-rot-protection) using [erasure code](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide). As the minimum disks required for distributed ObStor is 4 (same as minimum disks required for erasure coding), erasure code automatically kicks in as you launch distributed ObStor.
+Distributed ObStor provides protection against multiple node/drive failures and [bit rot](https://github.com/cloudment/obstor/blob/master/docs/erasure/README.md#what-is-bit-rot-protection) using [erasure code](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide). As the minimum disks required for distributed ObStor is 4 (same as minimum disks required for erasure coding), erasure code automatically kicks in as you launch distributed ObStor.
 
 ### High availability
 
@@ -28,7 +28,7 @@ If you're aware of stand-alone ObStor set up, the process remains largely the sa
 
 ## 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 
 ## 2. Run distributed ObStor
 
@@ -82,12 +82,12 @@ Now the server has expanded total storage by _(newly_added_servers\*m)_ more dis
 > __NOTE:__ __Each pool you add must have the same erasure coding parity configuration as the original pool, so the same data redundancy SLA is maintained.__
 
 ## 3. Test your setup
-To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide).
+To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/obstor-client-quickstart-guide).
 
 ## Explore Further
-- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
+- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/obstor-erasure-code-quickstart-guide)
+- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
 - [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
 - [The ObStor documentation website](https://pgg.net/docs/obstor)
