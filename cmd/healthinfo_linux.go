@@ -27,7 +27,6 @@ import (
 	"strings"
 
 	"github.com/cloudment/obstor/pkg/madmin"
-	"github.com/cloudment/obstor/pkg/smart"
 	diskhw "github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
 )
@@ -95,16 +94,11 @@ func getLocalDiskHwInfo(ctx context.Context, r *http.Request) madmin.ServerDiskH
 
 			drives = append(drives, device)
 			paths = append(paths, path)
-			smartInfo, err := smart.GetInfo(device)
-			if err != nil {
-				smartInfo.Error = fmt.Sprintf("smart: %v", err)
-			}
 			partition := madmin.PartitionStat{
 				Device:     part.Device,
 				Mountpoint: part.Mountpoint,
 				Fstype:     part.Fstype,
 				Opts:       strings.Join(part.Opts, ","),
-				SmartInfo:  smartInfo,
 			}
 			partitions = append(partitions, partition)
 		}

@@ -12,7 +12,6 @@ require (
 	github.com/bits-and-blooms/bloom/v3 v3.7.1
 	github.com/colinmarc/hdfs/v2 v2.4.0
 	github.com/coredns/coredns v1.14.1
-	github.com/dswarbrick/smart v0.0.0-20230625164221-6fe037e2b05f
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/go-ldap/ldap/v3 v3.4.12
@@ -174,7 +173,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
 	google.golang.org/grpc v1.79.2 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace github.com/go-ini/ini => gopkg.in/ini.v1 v1.67.1

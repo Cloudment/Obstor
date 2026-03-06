@@ -28,7 +28,6 @@ import (
 	"github.com/cloudment/obstor/pkg/disk"
 	"github.com/cloudment/obstor/pkg/net"
 
-	smart "github.com/cloudment/obstor/pkg/smart"
 	"github.com/shirou/gopsutil/v3/cpu"
 	diskhw "github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
@@ -135,13 +134,19 @@ type ServerDiskHwInfo struct {
 	Error      string                           `json:"error,omitempty"`
 }
 
+// SmartInfo contains S.M.A.R.T data about a drive
+type SmartInfo struct {
+	Device string `json:"device"`
+	Error  string `json:"error,omitempty"`
+}
+
 // PartitionStat - includes data from both shirou/psutil.diskHw.PartitionStat as well as SMART data
 type PartitionStat struct {
-	Device     string     `json:"device"`
-	Mountpoint string     `json:"mountpoint,omitempty"`
-	Fstype     string     `json:"fstype,omitempty"`
-	Opts       string     `json:"opts,omitempty"`
-	SmartInfo  smart.Info `json:"smartInfo,omitempty"`
+	Device     string    `json:"device"`
+	Mountpoint string    `json:"mountpoint,omitempty"`
+	Fstype     string    `json:"fstype,omitempty"`
+	Opts       string    `json:"opts,omitempty"`
+	SmartInfo  SmartInfo `json:"smartInfo,omitempty"`
 }
 
 // PerfInfo - Includes Drive and Net perf info for the entire Obstor cluster
