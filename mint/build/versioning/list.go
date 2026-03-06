@@ -56,7 +56,7 @@ func testListObjectVersionsSimple() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -71,10 +71,10 @@ func testListObjectVersionsSimple() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func testListObjectVersionsSimple() {
 		}
 		_, err = s3Client.PutObject(ctx, putInput1)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -101,7 +101,7 @@ func testListObjectVersionsSimple() {
 	}
 	_, err = s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -110,68 +110,68 @@ func testListObjectVersionsSimple() {
 
 	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 
 	// Check the delete marker entries
 	if len(result.DeleteMarkers) != 1 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 	dm := result.DeleteMarkers[0]
 	if !*dm.IsLatest {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 	if *dm.Key != object {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 	if time.Since(*dm.LastModified) > time.Hour {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 	if *dm.VersionId == "" {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 	versionIDs[*dm.VersionId] = struct{}{}
 
 	// Check versions entries
 	if len(result.Versions) != 10 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 
 	for _, version := range result.Versions {
 		v := version
 		if *v.IsLatest {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected IsLatest field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected IsLatest field", nil)
 			return
 		}
 		if *v.Key != object {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected Key field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected Key field", nil)
 			return
 		}
 		if time.Since(*v.LastModified) > time.Hour {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected LastModified field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected LastModified field", nil)
 			return
 		}
 		if *v.VersionId == "" {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected VersionId field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected VersionId field", nil)
 			return
 		}
 		if !etagRegex.MatchString(*v.ETag) {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected ETag field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected ETag field", nil)
 			return
 		}
 		if *v.Size != 12 {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected Size field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected Size field", nil)
 			return
 		}
 		if v.StorageClass != types.ObjectVersionStorageClassStandard {
-			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected StorageClass field", nil).Fatal()
+			failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected StorageClass field", nil)
 			return
 		}
 
@@ -180,7 +180,7 @@ func testListObjectVersionsSimple() {
 
 	// Ensure that we have 11 distinct versions IDs
 	if len(versionIDs) != 11 {
-		failureLog(function, args, startTime, "", "ListObjectVersions didn't return 11 different version IDs", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions didn't return 11 different version IDs", nil)
 		return
 	}
 
@@ -193,7 +193,7 @@ func testListObjectVersionsSimple() {
 	}
 	_, err = s3Client.ListObjectVersions(ctx, lovInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err)
 		return
 	}
 
@@ -201,7 +201,7 @@ func testListObjectVersionsSimple() {
 	lovInput.EncodingType = types.EncodingType("test")
 	_, err = s3Client.ListObjectVersions(ctx, lovInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err)
 		return
 	}
 
@@ -209,7 +209,7 @@ func testListObjectVersionsSimple() {
 	creds := credentials.NewStaticCredentialsProvider("test", "test", "")
 	cfg2, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(creds))
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("LoadDefaultConfig expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("LoadDefaultConfig expected to succeed but got %v", err), err)
 		return
 	}
 	s3ClientTest := s3.NewFromConfig(cfg2)
@@ -217,11 +217,11 @@ func testListObjectVersionsSimple() {
 	// Check with a second client: bucket-listobjects-handlers.go > ListObjectVersionsHandler > checkRequestAuthType
 	_, err = s3ClientTest.ListObjectVersions(ctx, lovInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to fail but got %v", err), err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testListObjectVersionsWithPrefixAndDelimiter() {
@@ -241,7 +241,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -256,10 +256,10 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -271,7 +271,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 		}
 		_, err = s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -301,7 +301,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 	}
 	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult := simplifyListingResult(result)
@@ -313,7 +313,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 		},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
@@ -324,7 +324,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 	}
 	result, err = s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult = simplifyListingResult(result)
@@ -335,7 +335,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 		commonPrefixes: []string{"dir/"},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
@@ -347,7 +347,7 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 	}
 	result, err = s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult = simplifyListingResult(result)
@@ -358,11 +358,11 @@ func testListObjectVersionsWithPrefixAndDelimiter() {
 		commonPrefixes: []string{"dir/dir/"},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Test if key marker continuation works in listing works well
@@ -383,7 +383,7 @@ func testListObjectVersionsKeysContinuation() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -398,10 +398,10 @@ func testListObjectVersionsKeysContinuation() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -413,7 +413,7 @@ func testListObjectVersionsKeysContinuation() {
 		}
 		_, err = s3Client.PutObject(ctx, putInput1)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -454,12 +454,12 @@ func testListObjectVersionsKeysContinuation() {
 	}
 
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 
 	if numPages != 2 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected number of pages", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected number of pages", nil)
 		return
 	}
 
@@ -469,11 +469,11 @@ func testListObjectVersionsKeysContinuation() {
 	}
 
 	if !reflect.DeepEqual(expectedResult, gotResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", fmt.Errorf("want %+v, got %+v", expectedResult, gotResult)).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", fmt.Errorf("want %+v, got %+v", expectedResult, gotResult))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Test if version id marker continuation works in listing works well
@@ -494,7 +494,7 @@ func testListObjectVersionsVersionIDContinuation() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -509,10 +509,10 @@ func testListObjectVersionsVersionIDContinuation() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -524,7 +524,7 @@ func testListObjectVersionsVersionIDContinuation() {
 		}
 		_, err = s3Client.PutObject(ctx, putInput1)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -568,12 +568,12 @@ func testListObjectVersionsVersionIDContinuation() {
 	}
 
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 
 	if numPages != 2 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected number of pages", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected number of pages", nil)
 		return
 	}
 
@@ -583,11 +583,11 @@ func testListObjectVersionsVersionIDContinuation() {
 	}
 
 	if !reflect.DeepEqual(expectedResult, gotResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Test listing object when there is some empty directory object
@@ -608,7 +608,7 @@ func testListObjectsVersionsWithEmptyDirObject() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -623,10 +623,10 @@ func testListObjectsVersionsWithEmptyDirObject() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -638,7 +638,7 @@ func testListObjectsVersionsWithEmptyDirObject() {
 		}
 		_, err = s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -674,12 +674,12 @@ func testListObjectsVersionsWithEmptyDirObject() {
 	}
 	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult, err := simplifyListingResult(result)
 	if err != nil {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err)
 		return
 	}
 	expectedResult := listResult{
@@ -689,7 +689,7 @@ func testListObjectsVersionsWithEmptyDirObject() {
 		},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", fmt.Errorf("want %+v, got %+v", expectedResult, gotResult)).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", fmt.Errorf("want %+v, got %+v", expectedResult, gotResult))
 		return
 	}
 
@@ -700,18 +700,18 @@ func testListObjectsVersionsWithEmptyDirObject() {
 	}
 	result, err = s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult, err = simplifyListingResult(result)
 	if err != nil {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err)
 	}
 	expectedResult = listResult{
 		commonPrefixes: []string{"dir/"},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
@@ -723,12 +723,12 @@ func testListObjectsVersionsWithEmptyDirObject() {
 	}
 	result, err = s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	gotResult, err = simplifyListingResult(result)
 	if err != nil {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", err)
 		return
 	}
 	expectedResult = listResult{
@@ -738,9 +738,9 @@ func testListObjectsVersionsWithEmptyDirObject() {
 		},
 	}
 	if !reflect.DeepEqual(gotResult, expectedResult) {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected listing result", nil)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

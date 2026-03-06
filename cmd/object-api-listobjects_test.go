@@ -22,7 +22,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -504,7 +503,7 @@ func testListObjects(obj ObjectLayer, instanceType string, t1 TestErrHandler) {
 		{"volatile-bucket-3", "", "", "", 0, ListObjectsInfo{}, BucketNotFound{Bucket: "volatile-bucket-3"}, false},
 		// Testing for failure cases with both perfix and marker (11).
 		// The prefix and marker combination to be valid it should satisfy strings.HasPrefix(marker, prefix).
-		{"test-bucket-list-object", "asia", "europe-object", "", 0, ListObjectsInfo{}, fmt.Errorf("Invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
+		{"test-bucket-list-object", "asia", "europe-object", "", 0, ListObjectsInfo{}, fmt.Errorf("invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
 		// Setting a non-existing directory to be prefix (12-13).
 		{"empty-bucket", "europe/france/", "", "", 1, ListObjectsInfo{}, nil, true},
 		{"empty-bucket", "africa/tunisia/", "", "", 1, ListObjectsInfo{}, nil, true},
@@ -1179,7 +1178,7 @@ func testListObjectVersions(obj ObjectLayer, instanceType string, t1 TestErrHand
 		{"volatile-bucket-3", "", "", "", 0, ListObjectsInfo{}, BucketNotFound{Bucket: "volatile-bucket-3"}, false},
 		// Testing for failure cases with both perfix and marker (9).
 		// The prefix and marker combination to be valid it should satisfy strings.HasPrefix(marker, prefix).
-		{"test-bucket-list-object", "asia", "europe-object", "", 0, ListObjectsInfo{}, fmt.Errorf("Invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
+		{"test-bucket-list-object", "asia", "europe-object", "", 0, ListObjectsInfo{}, fmt.Errorf("invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
 		// Setting a non-existing directory to be prefix (10-11).
 		{"empty-bucket", "europe/france/", "", "", 1, ListObjectsInfo{}, nil, true},
 		{"empty-bucket", "africa/tunisia/", "", "", 1, ListObjectsInfo{}, nil, true},
@@ -1365,7 +1364,7 @@ func initFSObjectsB(disk string, t *testing.B) (obj ObjectLayer) {
 // BenchmarkListObjects - Run ListObject Repeatedly and benchmark.
 func BenchmarkListObjects(b *testing.B) {
 	// Make a temporary directory to use as the obj.
-	directory, err := ioutil.TempDir(globalTestTmpDir, "obstor-list-benchmark")
+	directory, err := os.MkdirTemp(globalTestTmpDir, "obstor-list-benchmark")
 	if err != nil {
 		b.Fatal(err)
 	}

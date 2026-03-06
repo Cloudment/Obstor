@@ -38,6 +38,7 @@ func parseMarker(s string) (marker, uuid string) {
 	end := strings.LastIndex(s, "]")
 	tag := strings.Trim(s[start:end], "[]")
 	tags := strings.Split(tag, ",")
+tagLoop:
 	for _, tag := range tags {
 		kv := strings.Split(tag, ":")
 		if len(kv) < 2 {
@@ -46,7 +47,7 @@ func parseMarker(s string) (marker, uuid string) {
 		switch kv[0] {
 		case "minio_cache":
 			if kv[1] != markerTagVersion {
-				break
+				break tagLoop
 			}
 		case "id":
 			uuid = kv[1]

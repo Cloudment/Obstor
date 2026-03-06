@@ -18,7 +18,7 @@
 // github.com/bcicen/jstream using only the Go standard library's
 // encoding/json package.
 //
-// It reimplements the subset of jstream used by ObStor:
+// It reimplements the subset of jstream used by Obstor:
 //   - KV, KVS types (ordered key-value pairs with custom JSON marshaling)
 //   - Decoder with depth-based filtering and ObjectAsKVS mode
 //   - MetaValue with ValueType discrimination

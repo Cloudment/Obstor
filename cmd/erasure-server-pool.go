@@ -84,7 +84,7 @@ func newErasureServerPools(ctx context.Context, endpointServerPools EndpointServ
 		}
 
 		if err = storageclass.ValidateParity(commonParityDrives, ep.DrivesPerSet); err != nil {
-			return nil, fmt.Errorf("All current serverPools should have same parity ratio - expected %d, got %d", commonParityDrives, ecDrivesNoConfig(ep.DrivesPerSet))
+			return nil, fmt.Errorf("all current serverPools should have same parity ratio - expected %d, got %d", commonParityDrives, ecDrivesNoConfig(ep.DrivesPerSet))
 		}
 
 		storageDisks[i], formats[i], err = waitForFormatErasure(local, ep.Endpoints, i+1,
@@ -104,7 +104,7 @@ func newErasureServerPools(ctx context.Context, endpointServerPools EndpointServ
 
 		// Validate if users brought different DeploymentID pools.
 		if deploymentID != formats[i].ID {
-			return nil, fmt.Errorf("All serverPools should have same deployment ID expected %s, got %s", deploymentID, formats[i].ID)
+			return nil, fmt.Errorf("all serverPools should have same deployment ID expected %s, got %s", deploymentID, formats[i].ID)
 		}
 
 		z.serverPools[i], err = newErasureSets(ctx, ep.Endpoints, storageDisks[i], formats[i], commonParityDrives, i)
@@ -643,7 +643,7 @@ func (z *erasureServerPools) GetObjectNInfo(ctx context.Context, bucket, object 
 	}
 	wg.Wait()
 
-	var found int = -1
+	var found = -1
 	for i, err := range errs {
 		if err == nil {
 			found = i
@@ -703,7 +703,7 @@ func (z *erasureServerPools) GetObjectInfo(ctx context.Context, bucket, object s
 	}
 	wg.Wait()
 
-	var found int = -1
+	var found = -1
 	for i, err := range errs {
 		if err == nil {
 			found = i
@@ -1520,7 +1520,7 @@ func (z *erasureServerPools) HealObjects(ctx context.Context, bucket, prefix str
 
 					disks, _ := set.getOnlineDisksWithHealing()
 					if len(disks) == 0 {
-						errCh <- errors.New("HealObjects: No non-healing disks found")
+						errCh <- errors.New("healObjects: No non-healing disks found")
 						cancel()
 						return
 					}
@@ -1646,7 +1646,7 @@ func (z *erasureServerPools) getPoolAndSet(id string) (poolIdx, setIdx, diskIdx 
 			}
 		}
 	}
-	return -1, -1, -1, fmt.Errorf("DiskID(%s) %w", id, errDiskNotFound)
+	return -1, -1, -1, fmt.Errorf("diskID(%s) %w", id, errDiskNotFound)
 }
 
 // HealthOptions takes input options to return sepcific information
@@ -1740,14 +1740,14 @@ func (z *erasureServerPools) Health(ctx context.Context, opts HealthOptions) Hea
 		var err error
 		aggHealStateResult, err = getAggregatedBackgroundHealState(ctx, nil)
 		if err != nil {
-			logger.LogIf(logger.SetReqInfo(ctx, reqInfo), fmt.Errorf("Unable to verify global heal status: %w", err))
+			logger.LogIf(logger.SetReqInfo(ctx, reqInfo), fmt.Errorf("unable to verify global heal status: %w", err))
 			return HealthResult{
 				Healthy: false,
 			}
 		}
 
 		if len(aggHealStateResult.HealDisks) > 0 {
-			logger.LogIf(logger.SetReqInfo(ctx, reqInfo), fmt.Errorf("Total drives to be healed %d", len(aggHealStateResult.HealDisks)))
+			logger.LogIf(logger.SetReqInfo(ctx, reqInfo), fmt.Errorf("total drives to be healed %d", len(aggHealStateResult.HealDisks)))
 		}
 	}
 
@@ -1755,7 +1755,7 @@ func (z *erasureServerPools) Health(ctx context.Context, opts HealthOptions) Hea
 		for setIdx := range erasureSetUpCount[poolIdx] {
 			if erasureSetUpCount[poolIdx][setIdx] < writeQuorum {
 				logger.LogIf(logger.SetReqInfo(ctx, reqInfo),
-					fmt.Errorf("Write quorum may be lost on pool: %d, set: %d, expected write quorum: %d",
+					fmt.Errorf("write quorum may be lost on pool: %d, set: %d, expected write quorum: %d",
 						poolIdx, setIdx, writeQuorum))
 				return HealthResult{
 					Healthy:       false,

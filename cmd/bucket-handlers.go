@@ -150,7 +150,7 @@ func initFederatorBackend(buckets []BucketInfo, objLayer ObjectLayer) {
 	}
 
 	for _, bucket := range bucketsInConflict.ToSlice() {
-		logger.LogIf(ctx, fmt.Errorf("Unable to add bucket DNS entry for bucket %s, an entry exists for the same bucket by a different tenant. This local bucket will be ignored. Bucket names are globally unique in federated deployments. Use path style requests on following addresses '%v' to access this bucket", bucket, globalDomainIPs.ToSlice()))
+		logger.LogIf(ctx, fmt.Errorf("unable to add bucket DNS entry for bucket %s, an entry exists for the same bucket by a different tenant. This local bucket will be ignored. Bucket names are globally unique in federated deployments. Use path style requests on following addresses '%v' to access this bucket", bucket, globalDomainIPs.ToSlice()))
 	}
 
 	var wg sync.WaitGroup
@@ -171,7 +171,7 @@ func initFederatorBackend(buckets []BucketInfo, objLayer ObjectLayer) {
 			// We go to here, so we know the bucket no longer exists,
 			// but is registered in DNS to this server
 			if err := globalDNSConfig.Delete(bucket); err != nil {
-				logger.LogIf(GlobalContext, fmt.Errorf("Failed to remove DNS entry for %s due to %w",
+				logger.LogIf(GlobalContext, fmt.Errorf("failed to remove DNS entry for %s due to %w",
 					bucket, err))
 			}
 		}(bucket)
@@ -867,7 +867,7 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 	if fileName != "" && strings.Contains(formValues.Get("Key"), "${filename}") {
 		// S3 feature to replace ${filename} found in Key form field
 		// by the filename attribute passed in multipart
-		formValues.Set("Key", strings.Replace(formValues.Get("Key"), "${filename}", fileName, -1))
+		formValues.Set("Key", strings.ReplaceAll(formValues.Get("Key"), "${filename}", fileName))
 	}
 	object := trimLeadingSlash(formValues.Get("Key"))
 
@@ -1088,7 +1088,7 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 }
 
 // GetBucketPolicyStatusHandler -  Retrieves the policy status
-// for an ObStor bucket, indicating whether the bucket is public.
+// for an Obstor bucket, indicating whether the bucket is public.
 func (api objectAPIHandlers) GetBucketPolicyStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetBucketPolicyStatus")
 
@@ -1202,7 +1202,7 @@ func (api objectAPIHandlers) DeleteBucketHandler(w http.ResponseWriter, r *http.
 	}
 
 	forceDelete := false
-	if value := r.Header.Get(xhttp.ObStorForceDelete); value != "" {
+	if value := r.Header.Get(xhttp.ObstorForceDelete); value != "" {
 		var err error
 		forceDelete, err = strconv.ParseBool(value)
 		if err != nil {
@@ -1245,7 +1245,7 @@ func (api objectAPIHandlers) DeleteBucketHandler(w http.ResponseWriter, r *http.
 
 	if globalDNSConfig != nil {
 		if err := globalDNSConfig.Delete(bucket); err != nil {
-			logger.LogIf(ctx, fmt.Errorf("Unable to delete bucket DNS entry %w, please delete it manually", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to delete bucket DNS entry %w, please delete it manually", err))
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 			return
 		}

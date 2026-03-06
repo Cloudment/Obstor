@@ -68,7 +68,7 @@ func main() {
 	}
 
 	fmt.Println(li.Get())
-	// Use generated credentials to authenticate with ObStor server
+	// Use generated credentials to authenticate with Obstor server
 	minioClient, err := minio.New(stsEndpointURL.Host, opts)
 	if err != nil {
 		log.Fatalln(err)

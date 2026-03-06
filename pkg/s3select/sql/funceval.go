@@ -54,9 +54,9 @@ const (
 )
 
 var (
-	errUnimplementedCast = errors.New("This cast not yet implemented")
-	errNonStringTrimArg  = errors.New("TRIM() received a non-string argument")
-	errNonTimestampArg   = errors.New("Expected a timestamp argument")
+	errUnimplementedCast = errors.New("this cast not yet implemented")
+	errNonStringTrimArg  = errors.New("trim() received a non-string argument")
+	errNonTimestampArg   = errors.New("expected a timestamp argument")
 )
 
 func (e *FuncExpr) getFunctionName() FuncName {
@@ -227,7 +227,7 @@ func handleDateAdd(r Record, d *DateAddFunc, tableAlias string) (*Value, error) 
 	inferTypeForArithOp(q)
 	qty, ok := q.ToFloat()
 	if !ok {
-		return nil, fmt.Errorf("QUANTITY must be a numeric argument to %s()", sqlFnDateAdd)
+		return nil, fmt.Errorf("quantity must be a numeric argument to %s()", sqlFnDateAdd)
 	}
 
 	ts, err := d.Timestamp.evalNode(r, tableAlias)
@@ -289,7 +289,7 @@ func handleSQLSubstring(r Record, e *SubstringFunc, tableAlias string) (val *Val
 	inferTypeAsString(v1)
 	s, ok := v1.ToString()
 	if !ok {
-		err := fmt.Errorf("Incorrect argument type passed to %s", sqlFnSubstring)
+		err := fmt.Errorf("incorrect argument type passed to %s", sqlFnSubstring)
 		return nil, errIncorrectSQLFunctionArgumentType(err)
 	}
 
@@ -308,7 +308,7 @@ func handleSQLSubstring(r Record, e *SubstringFunc, tableAlias string) (val *Val
 	inferTypeForArithOp(v2)
 	startIdx, ok := v2.ToInt()
 	if !ok {
-		err := fmt.Errorf("Incorrect type for start index argument in %s", sqlFnSubstring)
+		err := fmt.Errorf("incorrect type for start index argument in %s", sqlFnSubstring)
 		return nil, errIncorrectSQLFunctionArgumentType(err)
 	}
 
@@ -322,12 +322,12 @@ func handleSQLSubstring(r Record, e *SubstringFunc, tableAlias string) (val *Val
 		inferTypeForArithOp(v3)
 		lenInt, ok := v3.ToInt()
 		if !ok {
-			err := fmt.Errorf("Incorrect type for length argument in %s", sqlFnSubstring)
+			err := fmt.Errorf("incorrect type for length argument in %s", sqlFnSubstring)
 			return nil, errIncorrectSQLFunctionArgumentType(err)
 		}
 		length = int(lenInt)
 		if length < 0 {
-			err := fmt.Errorf("Negative length argument in %s", sqlFnSubstring)
+			err := fmt.Errorf("negative length argument in %s", sqlFnSubstring)
 			return nil, errIncorrectSQLFunctionArgumentType(err)
 		}
 	}
@@ -387,11 +387,11 @@ func handleSQLExtract(r Record, e *ExtractFunc, tableAlias string) (res *Value, 
 }
 
 func errUnsupportedCast(fromType, toType string) error {
-	return fmt.Errorf("Cannot cast from %v to %v", fromType, toType)
+	return fmt.Errorf("cannot cast from %v to %v", fromType, toType)
 }
 
 func errCastFailure(msg string) error {
-	return fmt.Errorf("Error casting: %s", msg)
+	return fmt.Errorf("error casting: %s", msg)
 }
 
 // Allowed cast types

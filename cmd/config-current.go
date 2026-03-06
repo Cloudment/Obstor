@@ -105,7 +105,7 @@ func initHelp() {
 		},
 		config.HelpKV{
 			Key:         config.KmsKesSubSys,
-			Description: "enable external ObStor key encryption service",
+			Description: "enable external Obstor key encryption service",
 		},
 		config.HelpKV{
 			Key:         config.APISubSys,
@@ -267,7 +267,7 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 	objAPI := newObjectLayerFn()
 	if objAPI != nil {
 		if compCfg.Enabled && !objAPI.IsCompressionSupported() {
-			return fmt.Errorf("Backend does not support compression")
+			return fmt.Errorf("backend does not support compression")
 		}
 	}
 
@@ -332,7 +332,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		// Env doesn't seem to be set, we fallback to lookup creds from the config.
 		globalActiveCred, err = config.LookupCreds(s[config.CredentialsSubSys][config.Default])
 		if err != nil {
-			logger.LogIf(ctx, fmt.Errorf("Invalid credentials configuration: %w", err))
+			logger.LogIf(ctx, fmt.Errorf("invalid credentials configuration: %w", err))
 		}
 	}
 
@@ -344,7 +344,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 			if globalIsGateway {
 				logger.FatalIf(err, "Unable to initialize remote webhook DNS config")
 			} else {
-				logger.LogIf(ctx, fmt.Errorf("Unable to initialize remote webhook DNS config %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to initialize remote webhook DNS config %w", err))
 			}
 		}
 	}
@@ -354,7 +354,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		if globalIsGateway {
 			logger.FatalIf(err, "Unable to initialize etcd config")
 		} else {
-			logger.LogIf(ctx, fmt.Errorf("Unable to initialize etcd config: %w", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to initialize etcd config: %w", err))
 		}
 	}
 
@@ -365,7 +365,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 				if globalIsGateway {
 					logger.FatalIf(err, "Unable to initialize etcd config")
 				} else {
-					logger.LogIf(ctx, fmt.Errorf("Unable to initialize etcd config: %w", err))
+					logger.LogIf(ctx, fmt.Errorf("unable to initialize etcd config: %w", err))
 				}
 			}
 		}
@@ -374,7 +374,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 			if globalDNSConfig != nil {
 				// if global DNS is already configured, indicate with a warning, incase
 				// users are confused.
-				logger.LogIf(ctx, fmt.Errorf("DNS store is already configured with %s, not using etcd for DNS store", globalDNSConfig))
+				logger.LogIf(ctx, fmt.Errorf("dns store is already configured with %s, not using etcd for DNS store", globalDNSConfig))
 			} else {
 				globalDNSConfig, err = dns.NewCoreDNS(etcdCfg.Config,
 					dns.DomainNames(globalDomainNames),
@@ -386,7 +386,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 					if globalIsGateway {
 						logger.FatalIf(err, "Unable to initialize DNS config")
 					} else {
-						logger.LogIf(ctx, fmt.Errorf("Unable to initialize DNS config for %s: %w",
+						logger.LogIf(ctx, fmt.Errorf("unable to initialize DNS config for %s: %w",
 							globalDomainNames, err))
 					}
 				}
@@ -403,12 +403,12 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	globalServerRegion, err = config.LookupRegion(s[config.RegionSubSys][config.Default])
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Invalid region configuration: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("invalid region configuration: %w", err))
 	}
 
 	apiConfig, err := api.LookupConfig(s[config.APISubSys][config.Default])
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Invalid api configuration: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("invalid api configuration: %w", err))
 	}
 
 	globalAPIConfig.init(apiConfig, setDriveCounts)
@@ -422,7 +422,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		for i, setDriveCount := range setDriveCounts {
 			sc, err := storageclass.LookupConfig(s[config.StorageClassSubSys][config.Default], setDriveCount)
 			if err != nil {
-				logger.LogIf(ctx, fmt.Errorf("Unable to initialize storage class config: %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to initialize storage class config: %w", err))
 				break
 			}
 			// if we validated all setDriveCounts and it was successful
@@ -438,7 +438,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		if globalIsGateway {
 			logger.FatalIf(err, "Unable to setup cache")
 		} else {
-			logger.LogIf(ctx, fmt.Errorf("Unable to setup cache: %w", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to setup cache: %w", err))
 		}
 	}
 
@@ -446,7 +446,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		if cacheEncKey := env.Get(cache.EnvCacheEncryptionKey, ""); cacheEncKey != "" {
 			globalCacheKMS, err = kms.Parse(cacheEncKey)
 			if err != nil {
-				logger.LogIf(ctx, fmt.Errorf("Unable to setup encryption cache: %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to setup encryption cache: %w", err))
 			}
 		}
 	}
@@ -459,13 +459,13 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 	globalOpenIDConfig, err = openid.LookupConfig(s[config.IdentityOpenIDSubSys][config.Default],
 		NewGatewayHTTPTransport(), xhttp.DrainBody)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize OpenID: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize OpenID: %w", err))
 	}
 
 	opaCfg, err := opa.LookupConfig(s[config.PolicyOPASubSys][config.Default],
 		NewGatewayHTTPTransport(), xhttp.DrainBody)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize OPA: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize OPA: %w", err))
 	}
 
 	globalOpenIDValidators = getOpenIDValidators(globalOpenIDConfig)
@@ -474,7 +474,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 	globalLDAPConfig, err = xldap.Lookup(s[config.IdentityLDAPSubSys][config.Default],
 		globalRootCAs)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to parse LDAP configuration: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to parse LDAP configuration: %w", err))
 	}
 
 	// Load logger targets based on user's configuration
@@ -482,7 +482,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	loggerCfg, err := logger.LookupConfig(s)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize logger: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize logger: %w", err))
 	}
 
 	for k, l := range loggerCfg.HTTP {
@@ -498,7 +498,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 					http.WithTransport(NewGatewayHTTPTransport()),
 				),
 			); err != nil {
-				logger.LogIf(ctx, fmt.Errorf("Unable to initialize console HTTP target: %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to initialize console HTTP target: %w", err))
 			}
 		}
 	}
@@ -516,19 +516,19 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 					http.WithTransport(NewGatewayHTTPTransportWithClientCerts(l.ClientCert, l.ClientKey)),
 				),
 			); err != nil {
-				logger.LogIf(ctx, fmt.Errorf("Unable to initialize audit HTTP target: %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to initialize audit HTTP target: %w", err))
 			}
 		}
 	}
 
 	globalConfigTargetList, err = notify.GetNotificationTargets(GlobalContext, s, NewGatewayHTTPTransport(), false)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize notification target(s): %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize notification target(s): %w", err))
 	}
 
 	globalEnvTargetList, err = notify.GetNotificationTargets(GlobalContext, newServerConfig(), NewGatewayHTTPTransport(), true)
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize notification target(s): %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize notification target(s): %w", err))
 	}
 
 	// Apply dynamic config values
@@ -546,30 +546,30 @@ func applyDynamicConfig(ctx context.Context, objAPI ObjectLayer, s config.Config
 	// API
 	apiConfig, err := api.LookupConfig(s[config.APISubSys][config.Default])
 	if err != nil {
-		logger.LogIf(ctx, fmt.Errorf("Invalid api configuration: %w", err))
+		logger.LogIf(ctx, fmt.Errorf("invalid api configuration: %w", err))
 	}
 
 	// Compression
 	cmpCfg, err := compress.LookupConfig(s[config.CompressionSubSys][config.Default])
 	if err != nil {
-		return fmt.Errorf("Unable to setup Compression: %w", err)
+		return fmt.Errorf("unable to setup Compression: %w", err)
 	}
 
 	// Validate if the object layer supports compression.
 	if cmpCfg.Enabled && !objAPI.IsCompressionSupported() {
-		return fmt.Errorf("Backend does not support compression")
+		return fmt.Errorf("backend does not support compression")
 	}
 
 	// Heal
 	healCfg, err := heal.LookupConfig(s[config.HealSubSys][config.Default])
 	if err != nil {
-		return fmt.Errorf("Unable to apply heal config: %w", err)
+		return fmt.Errorf("unable to apply heal config: %w", err)
 	}
 
 	// Scanner
 	scannerCfg, err := scanner.LookupConfig(s[config.ScannerSubSys][config.Default])
 	if err != nil {
-		return fmt.Errorf("Unable to apply scanner config: %w", err)
+		return fmt.Errorf("unable to apply scanner config: %w", err)
 	}
 
 	// Apply configurations.

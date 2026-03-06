@@ -119,7 +119,7 @@ func (f dateLessThanEqualsFunc) name() name {
 }
 
 func (f dateLessThanEqualsFunc) String() string {
-	return toDateLessThanFuncString(dateNotEquals, f.dateLessThanFunc.k, f.dateLessThanFunc.value)
+	return toDateLessThanFuncString(dateNotEquals, f.k, f.value)
 }
 
 // newDateLessThanFunc - returns new DateLessThan function.

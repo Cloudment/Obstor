@@ -33,7 +33,7 @@ func TestNewRequestID(t *testing.T) {
 		e = rune(char)
 
 		// Ensure that it is alphanumeric, in this case, between 0-9 and A-Z.
-		if !(('0' <= e && e <= '9') || ('A' <= e && e <= 'Z')) {
+		if ('0' > e || e > '9') && ('A' > e || e > 'Z') {
 			t.Fail()
 		}
 	}

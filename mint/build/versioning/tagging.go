@@ -50,7 +50,7 @@ func testTagging() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -65,10 +65,10 @@ func testTagging() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -96,7 +96,7 @@ func testTagging() {
 			}
 			deleteOutput, err := s3Client.DeleteObject(ctx, deleteInput)
 			if err != nil {
-				failureLog(function, args, startTime, "", fmt.Sprintf("DELETE object expected to succeed but got %v", err), err).Fatal()
+				failureLog(function, args, startTime, "", fmt.Sprintf("DELETE object expected to succeed but got %v", err), err)
 				return
 			}
 			uploads[i].versionId = *deleteOutput.VersionId
@@ -110,7 +110,7 @@ func testTagging() {
 		}
 		output, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *output.VersionId
@@ -129,7 +129,7 @@ func testTagging() {
 		}
 		_, err = s3Client.PutObjectTagging(ctx, putTaggingInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT Object tagging expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT Object tagging expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -143,11 +143,11 @@ func testTagging() {
 		}
 		result, err := s3Client.GetObjectTagging(ctx, input)
 		if err == nil && uploads[i].deleteMarker {
-			failureLog(function, args, startTime, "", "GET Object tagging expected to fail with delete marker but succeded", err).Fatal()
+			failureLog(function, args, startTime, "", "GET Object tagging expected to fail with delete marker but succeded", err)
 			return
 		}
 		if err != nil && !uploads[i].deleteMarker {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err)
 			return
 		}
 
@@ -157,7 +157,7 @@ func testTagging() {
 
 		// Compare tags by value, not pointer (reflect.DeepEqual compares pointers which will fail)
 		if len(result.TagSet) != len(uploads[i].tagging) {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging returned unexpected count: expected %d, got %d", len(uploads[i].tagging), len(result.TagSet)), nil).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging returned unexpected count: expected %d, got %d", len(uploads[i].tagging), len(result.TagSet)), nil)
 			return
 		}
 		for j := range result.TagSet {
@@ -165,7 +165,7 @@ func testTagging() {
 				aws.ToString(result.TagSet[j].Value) != aws.ToString(uploads[i].tagging[j].Value) {
 				failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging tag mismatch: expected {%s: %s}, got {%s: %s}",
 					aws.ToString(uploads[i].tagging[j].Key), aws.ToString(uploads[i].tagging[j].Value),
-					aws.ToString(result.TagSet[j].Key), aws.ToString(result.TagSet[j].Value)), nil).Fatal()
+					aws.ToString(result.TagSet[j].Key), aws.ToString(result.TagSet[j].Value)), nil)
 				return
 			}
 		}
@@ -180,11 +180,11 @@ func testTagging() {
 		}
 		_, err := s3Client.DeleteObjectTagging(ctx, input)
 		if err == nil && uploads[i].deleteMarker {
-			failureLog(function, args, startTime, "", "DELETE Object tagging expected to fail with delete marker but succeded", err).Fatal()
+			failureLog(function, args, startTime, "", "DELETE Object tagging expected to fail with delete marker but succeded", err)
 			return
 		}
 		if err != nil && !uploads[i].deleteMarker {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -202,15 +202,15 @@ func testTagging() {
 		}
 		result, err := s3Client.GetObjectTagging(ctx, input)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err)
 			return
 		}
 		// After delete, TagSet should be empty (either nil or empty slice)
 		if len(result.TagSet) != 0 {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging after DELETE returned unexpected result: expected empty, got %d tags", len(result.TagSet)), nil).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging after DELETE returned unexpected result: expected empty, got %d tags", len(result.TagSet)), nil)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

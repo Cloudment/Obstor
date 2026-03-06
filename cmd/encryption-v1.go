@@ -40,13 +40,13 @@ import (
 
 var (
 	// AWS errors for invalid SSE-C requests.
-	errEncryptedObject      = errors.New("The object was stored using a form of SSE")
-	errInvalidSSEParameters = errors.New("The SSE-C key for key-rotation is not correct") // special access denied
-	errKMSNotConfigured     = errors.New("KMS not configured for a server side encrypted object")
-	// Additional ObStor errors for SSE-C requests.
-	errObjectTampered = errors.New("The requested object was modified and may be compromised")
+	errEncryptedObject      = errors.New("the object was stored using a form of SSE")
+	errInvalidSSEParameters = errors.New("the SSE-C key for key-rotation is not correct") // special access denied
+	errKMSNotConfigured     = errors.New("kms not configured for a server side encrypted object")
+	// Additional Obstor errors for SSE-C requests.
+	errObjectTampered = errors.New("the requested object was modified and may be compromised")
 	// error returned when invalid encryption parameters are specified
-	errInvalidEncryptionParameters = errors.New("The encryption parameters are not applicable to this object")
+	errInvalidEncryptionParameters = errors.New("the encryption parameters are not applicable to this object")
 )
 
 const (
@@ -84,7 +84,7 @@ func isEncryptedMultipart(objInfo ObjectInfo) bool {
 	// Further check if this object is uploaded using multipart mechanism
 	// by the user and it is not about Erasure internally splitting the
 	// object into parts in PutObject()
-	return !(objInfo.backendType == BackendErasure && len(objInfo.ETag) == 32)
+	return objInfo.backendType != BackendErasure || len(objInfo.ETag) != 32
 }
 
 // ParseSSECopyCustomerRequest parses the SSE-C header fields of the provided request.
@@ -245,7 +245,7 @@ func EncryptRequest(content io.Reader, r *http.Request, bucket, object string, m
 func decryptObjectInfo(key []byte, bucket, object string, metadata map[string]string) ([]byte, error) {
 	switch kind, _ := crypto.IsEncrypted(metadata); kind {
 	case crypto.S3:
-		var KMS crypto.KMS = GlobalKMS
+		var KMS = GlobalKMS
 		if isCacheEncrypted(metadata) {
 			KMS = globalCacheKMS
 		}
@@ -499,7 +499,7 @@ func (d *DecryptBlocksReader) Read(p []byte) (int, error) {
 // but has an invalid size.
 func (o *ObjectInfo) DecryptedSize() (int64, error) {
 	if _, ok := crypto.IsEncrypted(o.UserDefined); !ok {
-		return 0, errors.New("Cannot compute decrypted size of an unencrypted object")
+		return 0, errors.New("cannot compute decrypted size of an unencrypted object")
 	}
 	if !isEncryptedMultipart(*o) {
 		size, err := sio.DecryptedSize(uint64(o.Size))
@@ -527,7 +527,7 @@ func (o *ObjectInfo) DecryptedSize() (int64, error) {
 // it consists of a 128 bit hex value (32 hex chars) and exactly
 // one '-' followed by a 32-bit number.
 // This special case adresses randomly-generated ETags generated
-// by the ObStor server when running in non-compat mode. These
+// by the Obstor server when running in non-compat mode. These
 // random ETags are not encrypt.
 //
 // Calling DecryptETag with a non-randomly generated ETag will
@@ -632,7 +632,7 @@ func tryDecryptETag(key []byte, encryptedETag string, ssec bool) string {
 // that part. For single part objects, the partStart will be 0.
 func (o *ObjectInfo) GetDecryptedRange(rs *HTTPRangeSpec) (encOff, encLength, skipLen int64, seqNumber uint32, partStart int, err error) {
 	if _, ok := crypto.IsEncrypted(o.UserDefined); !ok {
-		err = errors.New("Object is not encrypted")
+		err = errors.New("object is not encrypted")
 		return
 	}
 
@@ -785,7 +785,7 @@ func DecryptObjectInfo(info *ObjectInfo, r *http.Request) (encrypted bool, err e
 
 	if encrypted {
 		if crypto.SSEC.IsEncrypted(info.UserDefined) {
-			if !(crypto.SSEC.IsRequested(headers) || crypto.SSECopy.IsRequested(headers)) {
+			if !crypto.SSEC.IsRequested(headers) && !crypto.SSECopy.IsRequested(headers) {
 				return encrypted, errEncryptedObject
 			}
 		}

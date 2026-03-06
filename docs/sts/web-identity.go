@@ -59,7 +59,7 @@ type AssumeRoleWithWebIdentityResponse struct {
 }
 
 // WebIdentityResult - Contains the response to a successful AssumeRoleWithWebIdentity
-// request, including temporary credentials that can be used to make ObStor API requests.
+// request, including temporary credentials that can be used to make Obstor API requests.
 type WebIdentityResult struct {
 	AssumedRoleUser             AssumedRoleUser  `xml:",omitempty"`
 	Audience                    string           `xml:",omitempty"`
@@ -147,7 +147,7 @@ func main() {
 
 	ddoc, err := parseDiscoveryDoc(configEndpoint)
 	if err != nil {
-		log.Println(fmt.Errorf("Failed to parse OIDC discovery document %s", err))
+		log.Println(fmt.Errorf("failed to parse OIDC discovery document %s", err))
 		fmt.Println(err)
 		return
 	}
@@ -205,7 +205,7 @@ func main() {
 
 		sts, err := credentials.NewSTSWebIdentity(stsEndpoint, getWebTokenExpiry)
 		if err != nil {
-			log.Println(fmt.Errorf("Could not get STS credentials: %s", err))
+			log.Println(fmt.Errorf("could not get STS credentials: %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -217,20 +217,20 @@ func main() {
 
 		u, err := url.Parse(stsEndpoint)
 		if err != nil {
-			log.Println(fmt.Errorf("Failed to parse STS Endpoint: %s", err))
+			log.Println(fmt.Errorf("failed to parse STS Endpoint: %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		clnt, err := obstor.New(u.Host, opts)
 		if err != nil {
-			log.Println(fmt.Errorf("Error while initializing Minio client, %s", err))
+			log.Println(fmt.Errorf("error while initializing Minio client, %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		buckets, err := clnt.ListBuckets(r.Context())
 		if err != nil {
-			log.Println(fmt.Errorf("Error while listing buckets, %s", err))
+			log.Println(fmt.Errorf("error while listing buckets, %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

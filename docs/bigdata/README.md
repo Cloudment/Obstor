@@ -1,4 +1,4 @@
-# **Disaggregated HDP Spark and Hive with ObStor**
+# **Disaggregated HDP Spark and Hive with Obstor**
 
 ## **1. Cloud-native Architecture**
 
@@ -6,20 +6,20 @@
 
 Kubernetes manages stateless Spark and Hive containers elastically on the compute nodes. Spark has native scheduler integration with Kubernetes. Hive, for legacy reasons, uses YARN scheduler on top of Kubernetes.
 
-All access to ObStor object storage is via S3/SQL SELECT API. In addition to the compute nodes, ObStor containers are also managed by Kubernetes as stateful containers with local storage (JBOD/JBOF) mapped as persistent local volumes. This architecture enables multi-tenant ObStor, allowing isolation of data between customers.
+All access to Obstor object storage is via S3/SQL SELECT API. In addition to the compute nodes, Obstor containers are also managed by Kubernetes as stateful containers with local storage (JBOD/JBOF) mapped as persistent local volumes. This architecture enables multi-tenant Obstor, allowing isolation of data between customers.
 
-ObStor also supports multi-cluster, multi-site federation similar to AWS regions and tiers. Using ObStor Information Lifecycle Management (ILM), you can configure data to be tiered between NVMe based hot storage, and HDD based warm storage. All data is encrypted with per-object key. Access Control and Identity Management between the tenants are managed by ObStor using OpenID Connect or Kerberos/LDAP/AD.
+Obstor also supports multi-cluster, multi-site federation similar to AWS regions and tiers. Using Obstor Information Lifecycle Management (ILM), you can configure data to be tiered between NVMe based hot storage, and HDD based warm storage. All data is encrypted with per-object key. Access Control and Identity Management between the tenants are managed by Obstor using OpenID Connect or Kerberos/LDAP/AD.
 
 ## **2. Prerequisites**
 
 *  Install Hortonworks Distribution using this [guide.](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/ch_Installing_Ambari.html)
    *   [Setup Ambari](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/set_up_the_ambari_server.html) which automatically sets up YARN
    *   [Installing Spark](https://docs.hortonworks.com/HDPDocuments/HDP3/HDP-3.0.1/installing-spark/content/installing_spark.html)
-*  Install ObStor Distributed Server using one of the guides below.
+*  Install Obstor Distributed Server using one of the guides below.
    *   [Deployment based on Kubernetes](https://pgg.net/docs/obstor/deploy-obstor-on-kubernetes.html#obstor-distributed-server-deployment)
-   *   [Deployment based on ObStor Helm Chart](https://github.com/helm/charts/tree/master/stable/obstor)
+   *   [Deployment based on Obstor Helm Chart](https://github.com/helm/charts/tree/master/stable/obstor)
 
-## **3. Configure Hadoop, Spark, Hive to use ObStor**
+## **3. Configure Hadoop, Spark, Hive to use Obstor**
 
 After successful installation navigate to the Ambari UI `http://<ambari-server>:8080/` and login using the default credentials: [**_username: admin, password: admin_**]
 
@@ -31,7 +31,7 @@ Navigate to **Services** -> **HDFS** -> **CONFIGS** -> **ADVANCED** as shown bel
 
 ![hdfs-configs](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image2.png?raw=true "hdfs advanced configs")
 
-Navigate to **Custom core-site** to configure ObStor parameters for `_s3a_` connector
+Navigate to **Custom core-site** to configure Obstor parameters for `_s3a_` connector
 
 ![s3a-config](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image5.png?raw=true "custom core-site")
 
@@ -40,7 +40,7 @@ sudo pip install yq
 alias kv-pairify='xq ".configuration[]" | jq ".[]" | jq -r ".name + \"=\" + .value"'
 ```
 
-Let's take for example a set of 12 compute nodes with an aggregate memory of *1.2TiB*, we need to do following settings for optimal results. Add the following optimal entries for _core-site.xml_ to configure _s3a_ with **ObStor**. Most important options here are
+Let's take for example a set of 12 compute nodes with an aggregate memory of *1.2TiB*, we need to do following settings for optimal results. Add the following optimal entries for _core-site.xml_ to configure _s3a_ with **Obstor**. Most important options here are
 
 ```
 cat ${HADOOP_CONF_DIR}/core-site.xml | kv-pairify | grep "mapred"
@@ -56,7 +56,7 @@ mapreduce.task.io.sort.factor=999 # Threshold before writing to disk
 mapreduce.task.sort.spill.percent=0.9 # Minimum % before spilling to disk
 ```
 
-S3A is the connector to use S3 and other S3-compatible object stores such as ObStor. MapReduce workloads typically interact with object stores in the same way they do with HDFS. These workloads rely on HDFS atomic rename functionality to complete writing data to the datastore. Object storage operations are atomic by nature and they do not require/implement rename API. The default S3A committer emulates renames through copy and delete APIs. This interaction pattern causes significant loss of performance because of the write amplification. *Netflix*, for example, developed two new staging committers - the Directory staging committer and the Partitioned staging committer - to take full advantage of native object storage operations. These committers do not require rename operation. The two staging committers were evaluated, along with another new addition called the Magic committer for benchmarking.
+S3A is the connector to use S3 and other S3-compatible object stores such as Obstor. MapReduce workloads typically interact with object stores in the same way they do with HDFS. These workloads rely on HDFS atomic rename functionality to complete writing data to the datastore. Object storage operations are atomic by nature and they do not require/implement rename API. The default S3A committer emulates renames through copy and delete APIs. This interaction pattern causes significant loss of performance because of the write amplification. *Netflix*, for example, developed two new staging committers - the Directory staging committer and the Partitioned staging committer - to take full advantage of native object storage operations. These committers do not require rename operation. The two staging committers were evaluated, along with another new addition called the Magic committer for benchmarking.
 
 It was found that the directory staging committer was the fastest among the three, S3A connector should be configured with the following parameters for optimal results:
 
@@ -80,7 +80,7 @@ fs.s3a.connection.timeout=200000
 fs.s3a.endpoint=http://obstor:9000
 fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 
-fs.s3a.committer.threads=2048 # Number of threads writing to ObStor
+fs.s3a.committer.threads=2048 # Number of threads writing to Obstor
 fs.s3a.connection.maximum=8192 # Maximum number of concurrent conns
 fs.s3a.fast.upload.active.blocks=2048 # Number of parallel uploads
 fs.s3a.fast.upload.buffer=disk # Use disk as the buffer for uploads
@@ -108,11 +108,11 @@ Navigate to **Services** -> **Spark2** -> **CONFIGS** as shown below
 
 ![spark-config](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image6.png?raw=true "spark config")
 
-Navigate to “**Custom spark-defaults**” to configure ObStor parameters for `_s3a_` connector
+Navigate to “**Custom spark-defaults**” to configure Obstor parameters for `_s3a_` connector
 
 ![spark-config](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image9.png?raw=true "spark defaults")
 
-Add the following optimal entries for _spark-defaults.conf_ to configure Spark with **ObStor**.
+Add the following optimal entries for _spark-defaults.conf_ to configure Spark with **Obstor**.
 
 ```
 spark.hadoop.fs.s3a.access.key obstor
@@ -126,7 +126,7 @@ spark.hadoop.fs.s3a.committer.staging.abort.pending.uploads true
 spark.hadoop.fs.s3a.committer.staging.conflict-mode append
 spark.hadoop.fs.s3a.committer.staging.tmp.path /tmp/staging
 spark.hadoop.fs.s3a.committer.staging.unique-filenames true
-spark.hadoop.fs.s3a.committer.threads 2048 # number of threads writing to ObStor
+spark.hadoop.fs.s3a.committer.threads 2048 # number of threads writing to Obstor
 spark.hadoop.fs.s3a.connection.establish.timeout 5000
 spark.hadoop.fs.s3a.connection.maximum 8192 # maximum number of concurrent conns
 spark.hadoop.fs.s3a.connection.ssl.enabled false
@@ -154,11 +154,11 @@ Navigate to **Services** -> **Hive** -> **CONFIGS**-> **ADVANCED** as shown belo
 
 ![hive-config](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image10.png?raw=true "hive advanced config")
 
-Navigate to “**Custom hive-site**” to configure ObStor parameters for `_s3a_` connector
+Navigate to “**Custom hive-site**” to configure Obstor parameters for `_s3a_` connector
 
 ![hive-config](https://github.com/cloudment/obstor/blob/master/docs/bigdata/images/image11.png?raw=true "hive advanced config")
 
-Add the following optimal entries for `hive-site.xml` to configure Hive with **ObStor**.
+Add the following optimal entries for `hive-site.xml` to configure Hive with **Obstor**.
 
 ```
 hive.blobstore.use.blobstore.as.scratchdir=true
@@ -188,7 +188,7 @@ Test the Spark installation by running the following compute intensive example, 
 Follow these steps to run the Spark Pi example:
 
 *  Login as user **‘spark’**.
-*  When the job runs, the library can now use **ObStor** during intermediate processing.
+*  When the job runs, the library can now use **Obstor** during intermediate processing.
 *  Navigate to a node with the Spark client and access the spark2-client directory:
 
 ```
@@ -224,7 +224,7 @@ WordCount is a simple program that counts how often a word occurs in a text file
 The following example submits WordCount code to the Scala shell. Select an input file for the Spark WordCount example. We can use any text file as input.
 
 *  Login as user **‘spark’**.
-*  When the job runs, the library can now use **ObStor** during intermediate processing.
+*  When the job runs, the library can now use **Obstor** during intermediate processing.
 *  Navigate to a node with Spark client and access the spark2-client directory:
 
 ```
@@ -290,7 +290,7 @@ scala> counts.count()
 364
 ```
 
-To view the output from ObStor exit the Scala shell. View WordCount job status:
+To view the output from Obstor exit the Scala shell. View WordCount job status:
 
 ```
 hadoop fs -ls s3a://testbucket/wordcount

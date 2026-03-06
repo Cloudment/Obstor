@@ -174,10 +174,10 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 			bucketTargetsFile: bucketTargetsFile,
 		})
 		if err != nil {
-			return fmt.Errorf("Error encrypting bucket target metadata %w", err)
+			return fmt.Errorf("error encrypting bucket target metadata %w", err)
 		}
 	default:
-		return fmt.Errorf("Unknown bucket %s metadata update requested %s", bucket, configFile)
+		return fmt.Errorf("unknown bucket %s metadata update requested %s", bucket, configFile)
 	}
 
 	if err := meta.Save(GlobalContext, objAPI); err != nil {

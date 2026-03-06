@@ -113,7 +113,7 @@ func (f stringNotLikeFunc) name() name {
 }
 
 func (f stringNotLikeFunc) String() string {
-	return toStringLikeFuncString(stringNotLike, f.stringLikeFunc.k, f.stringLikeFunc.values)
+	return toStringLikeFuncString(stringNotLike, f.k, f.values)
 }
 
 func validateStringLikeValues(n name, key Key, values set.StringSet) error {

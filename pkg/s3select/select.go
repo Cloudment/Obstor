@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -73,9 +72,9 @@ var bufPool = sync.Pool{
 
 var bufioWriterPool = sync.Pool{
 	New: func() interface{} {
-		// ioutil.Discard is just used to create the writer. Actual destination
+		// io.Discard is just used to create the writer. Actual destination
 		// writer is set later by Reset() before using it.
-		return bufio.NewWriter(ioutil.Discard)
+		return bufio.NewWriter(io.Discard)
 	},
 }
 
@@ -141,7 +140,7 @@ func (input *InputSerialization) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 	}
 	if !parsedInput.ParquetArgs.IsEmpty() {
 		if parsedInput.CompressionType != "" && parsedInput.CompressionType != noneType {
-			return errInvalidRequestParameter(fmt.Errorf("CompressionType must be NONE for Parquet format"))
+			return errInvalidRequestParameter(fmt.Errorf("compressionType must be NONE for Parquet format"))
 		}
 
 		parsedInput.format = parquetFormat
@@ -250,11 +249,11 @@ func (s3Select *S3Select) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 	}
 
 	if parsedS3Select.Input.IsEmpty() {
-		return errMissingRequiredParameter(fmt.Errorf("InputSerialization must be provided"))
+		return errMissingRequiredParameter(fmt.Errorf("inputSerialization must be provided"))
 	}
 
 	if parsedS3Select.Output.IsEmpty() {
-		return errMissingRequiredParameter(fmt.Errorf("OutputSerialization must be provided"))
+		return errMissingRequiredParameter(fmt.Errorf("outputSerialization must be provided"))
 	}
 
 	statement, err := sql.ParseSelectStatement(parsedS3Select.Expression)
@@ -356,7 +355,7 @@ func (s3Select *S3Select) marshal(buf *bytes.Buffer, record sql.Record) error {
 		// Use bufio Writer to prevent csv.Writer from allocating a new buffer.
 		bufioWriter := bufioWriterPool.Get().(*bufio.Writer)
 		defer func() {
-			bufioWriter.Reset(ioutil.Discard)
+			bufioWriter.Reset(io.Discard)
 			bufioWriterPool.Put(bufioWriter)
 		}()
 

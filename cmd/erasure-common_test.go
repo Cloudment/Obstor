@@ -72,7 +72,7 @@ func TestErasureParentDirIsObject(t *testing.T) {
 			_, err = obj.PutObject(GlobalContext, bucketName, testCase.objectName,
 				mustGetPutObjReader(t, bytes.NewReader([]byte(objectContent)), int64(len(objectContent)), "", ""), ObjectOptions{})
 			if testCase.expectedErr && err == nil {
-				t.Error("Expected error but got nil")
+				t.Error("expected error but got nil")
 			}
 			if !testCase.expectedErr && err != nil {
 				t.Errorf("Expected nil but got %v", err)

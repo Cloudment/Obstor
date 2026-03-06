@@ -61,7 +61,7 @@ func fileMetadata(getReaderFunc GetReaderFunc) (*parquet.FileMetaData, error) {
 
 	fileMeta := parquet.NewFileMetaData()
 
-	pf := thrift.NewTCompactProtocolFactory()
+	pf := thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{})
 	protocol := pf.GetProtocol(thrift.NewStreamTransportR(rc))
 	err = fileMeta.Read(context.Background(), protocol)
 	if err != nil {

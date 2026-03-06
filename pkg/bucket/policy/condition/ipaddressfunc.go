@@ -124,7 +124,7 @@ func (f notIPAddressFunc) name() name {
 }
 
 func (f notIPAddressFunc) String() string {
-	return toIPAddressFuncString(notIPAddress, f.ipAddressFunc.k, f.ipAddressFunc.values)
+	return toIPAddressFuncString(notIPAddress, f.k, f.values)
 }
 
 func valuesToIPNets(n name, values ValueSet) ([]*net.IPNet, error) {

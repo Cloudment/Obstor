@@ -1,13 +1,13 @@
-# ObStor Contribution Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
+# Obstor Contribution Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
-``ObStor`` community welcomes your contribution. To make the process as seamless as possible, we recommend you read this contribution guide.
+``Obstor`` community welcomes your contribution. To make the process as seamless as possible, we recommend you read this contribution guide.
 
 ## Development Workflow
 
-Start by forking the ObStor GitHub repository, make changes in a branch and then send a pull request. We encourage pull requests to discuss code changes. Here are the steps in details:
+Start by forking the Obstor GitHub repository, make changes in a branch and then send a pull request. We encourage pull requests to discuss code changes. Here are the steps in details:
 
-### Setup your ObStor GitHub Repository
-Fork [ObStor upstream](https://github.com/cloudment/obstor/fork) source repository to your own personal repository. Copy the URL of your ObStor fork (you will need it for the `git clone` command below).
+### Setup your Obstor GitHub Repository
+Fork [Obstor upstream](https://github.com/cloudment/obstor/fork) source repository to your own personal repository. Copy the URL of your Obstor fork (you will need it for the `git clone` command below).
 
 ```sh
 $ git clone https://github.com/cloudment/obstor
@@ -31,7 +31,7 @@ Before making code changes, make sure you create a separate branch for these cha
 $ git checkout -b my-new-feature
 ```
 
-### Test ObStor server changes
+### Test Obstor server changes
 After your code changes, make sure
 
 - To add test cases for the new code. If you have questions about how to do it, please ask on our [Discord](https://pgg.net/discord) channel.
@@ -56,13 +56,13 @@ $ git push origin my-new-feature
 Pull requests can be created via GitHub. Refer to [this document](https://help.github.com/articles/creating-a-pull-request/) for detailed steps on how to create a pull request. After a Pull Request gets peer reviewed and approved, it will be merged.
 
 ## FAQs
-### How does ``ObStor`` manages dependencies?
-``ObStor`` uses `go mod` to manage its dependencies.
+### How does ``Obstor`` manages dependencies?
+``Obstor`` uses `go mod` to manage its dependencies.
 - Run `go get foo/bar` in the source folder to add the dependency to `go.mod` file.
 
 To remove a dependency
 - Edit your code and remove the import reference.
 - Run `go mod tidy` in the source folder to remove dependency from `go.mod` file.
 
-### What are the coding guidelines for ObStor?
-``ObStor`` is fully conformant with Golang style. Refer: [Effective Go](https://github.com/golang/go/wiki/CodeReviewComments) article from Golang project. If you observe offending code, please feel free to send a pull request or ping us on [Discord](https://pgg.net/discord).
+### What are the coding guidelines for Obstor?
+``Obstor`` is fully conformant with Golang style. Refer: [Effective Go](https://github.com/golang/go/wiki/CodeReviewComments) article from Golang project. If you observe offending code, please feel free to send a pull request or ping us on [Discord](https://pgg.net/discord).

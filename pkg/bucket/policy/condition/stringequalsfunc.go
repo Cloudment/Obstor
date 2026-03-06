@@ -105,7 +105,7 @@ func (f stringNotEqualsFunc) name() name {
 }
 
 func (f stringNotEqualsFunc) String() string {
-	return toStringEqualsFuncString(stringNotEquals, f.stringEqualsFunc.k, f.stringEqualsFunc.values)
+	return toStringEqualsFuncString(stringNotEquals, f.k, f.values)
 }
 
 func valuesToStringSlice(n name, values ValueSet) ([]string, error) {

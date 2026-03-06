@@ -77,11 +77,11 @@ const (
 	ListBucketMultipartUploadsAction = "s3:ListBucketMultipartUploads"
 
 	// ListenNotificationAction - ListenNotification Rest API action.
-	// This is ObStor extension.
+	// This is Obstor extension.
 	ListenNotificationAction = "s3:ListenNotification"
 
 	// ListenBucketNotificationAction - ListenBucketNotification Rest API action.
-	// This is ObStor extension.
+	// This is Obstor extension.
 	ListenBucketNotificationAction = "s3:ListenBucketNotification"
 
 	// ListMultipartUploadPartsAction - ListParts Rest API action.

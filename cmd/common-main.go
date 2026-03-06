@@ -245,7 +245,7 @@ func handleCommonEnvVars() {
 		logger.Fatal(config.ErrInvalidWormValue(err), "Invalid worm configuration")
 	}
 	if wormEnabled {
-		logger.Fatal(errors.New("WORM is deprecated"), "global OBSTOR_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
+		logger.Fatal(errors.New("worm is deprecated"), "global OBSTOR_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
 	}
 
 	globalBrowserEnabled, err = config.ParseBool(env.Get(config.EnvBrowser, config.EnableOn))
@@ -286,7 +286,7 @@ func handleCommonEnvVars() {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
-					logger.FatalIf(err, "Unable to initialize ObStor server with [%s] invalid entry found in OBSTOR_PUBLIC_IPS", endpoint)
+					logger.FatalIf(err, "Unable to initialize Obstor server with [%s] invalid entry found in OBSTOR_PUBLIC_IPS", endpoint)
 				}
 				for _, addr := range addrs {
 					domainIPs.Add(addr)
@@ -389,7 +389,7 @@ func logStartupMessage(msg string) {
 }
 
 func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secureConn bool, err error) {
-	if !(isFile(getPublicCertFile()) && isFile(getPrivateKeyFile())) {
+	if !isFile(getPublicCertFile()) || !isFile(getPrivateKeyFile()) {
 		return nil, nil, false, nil
 	}
 
@@ -402,7 +402,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 		return nil, nil, false, err
 	}
 
-	// ObStor has support for multiple certificates. It expects the following structure:
+	// Obstor has support for multiple certificates. It expects the following structure:
 	//  certs/
 	//   │
 	//   ├─ public.crt
@@ -458,7 +458,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 			continue
 		}
 		if err = manager.AddCertificate(certFile, keyFile); err != nil {
-			err = fmt.Errorf("Unable to load TLS certificate '%s,%s': %w", certFile, keyFile, err)
+			err = fmt.Errorf("unable to load TLS certificate '%s,%s': %w", certFile, keyFile, err)
 			logger.LogIf(GlobalContext, err, logger.Minio)
 		}
 	}

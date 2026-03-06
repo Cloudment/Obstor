@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net"
 	"testing"
 	"time"
@@ -107,10 +106,6 @@ func TestDialContextWithDNSCache(t *testing.T) {
 }
 
 func TestDialContextWithDNSCacheRand(t *testing.T) {
-	rand.Seed(time.Now().UTC().UnixNano())
-	defer func() {
-		rand.Seed(1)
-	}()
 
 	resolver := &DNSCache{
 		cache: map[string][]string{

@@ -19,7 +19,7 @@ package parquet
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"sync"
 
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
@@ -113,10 +113,10 @@ func (c compressionCodec) uncompress(buf []byte) ([]byte, error) {
 			return nil, err
 		}
 		defer reader.Close()
-		return ioutil.ReadAll(reader)
+		return io.ReadAll(reader)
 
 	case parquet.CompressionCodec_LZ4:
-		return ioutil.ReadAll(lz4.NewReader(bytes.NewReader(buf)))
+		return io.ReadAll(lz4.NewReader(bytes.NewReader(buf)))
 
 	case parquet.CompressionCodec_ZSTD:
 		initZstd()

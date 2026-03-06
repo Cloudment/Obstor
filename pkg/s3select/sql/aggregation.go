@@ -34,7 +34,7 @@ var (
 	errNonNumericArg = func(fnStr FuncName) error {
 		return fmt.Errorf("%s() requires a numeric argument", fnStr)
 	}
-	errInvalidAggregation = errors.New("Invalid aggregation seen")
+	errInvalidAggregation = errors.New("invalid aggregation seen")
 )
 
 type aggVal struct {
@@ -131,7 +131,7 @@ func (e *FuncExpr) evalAggregationNode(r Record, tableAlias string) error {
 		// Convert to float.
 		f, ok := argVal.ToFloat()
 		if !ok {
-			return fmt.Errorf("Could not convert value %v (%s) to a number", argVal.value, argVal.GetTypeString())
+			return fmt.Errorf("could not convert value %v (%s) to a number", argVal.value, argVal.GetTypeString())
 		}
 		argVal.setFloat(f)
 		err = e.aggregate.runningSum.arithOp(opPlus, argVal)

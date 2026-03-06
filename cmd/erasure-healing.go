@@ -701,13 +701,14 @@ func isObjectDirDangling(errs []error) (ok bool) {
 	var foundNotEmpty int
 	var otherFound int
 	for _, readErr := range errs {
-		if readErr == nil {
+		switch readErr {
+		case nil:
 			found++
-		} else if readErr == errFileNotFound || readErr == errVolumeNotFound {
+		case errFileNotFound, errVolumeNotFound:
 			notFound++
-		} else if readErr == errVolumeNotEmpty {
+		case errVolumeNotEmpty:
 			foundNotEmpty++
-		} else {
+		default:
 			otherFound++
 		}
 	}

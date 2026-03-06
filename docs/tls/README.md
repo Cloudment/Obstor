@@ -1,19 +1,19 @@
-# How to secure access to ObStor server with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to secure access to Obstor server with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-This guide explains how to configure ObStor Server with TLS certificates on Linux and Windows platforms.
+This guide explains how to configure Obstor Server with TLS certificates on Linux and Windows platforms.
 
-1. [Install ObStor Server](#install-obstor-server)
-2. [Use an Existing Key and Certificate with ObStor](#use-an-existing-key-and-certificate-with-obstor)
-3. [Generate and use Self-signed Keys and Certificates with ObStor](#generate-use-self-signed-keys-certificates)
+1. [Install Obstor Server](#install-obstor-server)
+2. [Use an Existing Key and Certificate with Obstor](#use-an-existing-key-and-certificate-with-obstor)
+3. [Generate and use Self-signed Keys and Certificates with Obstor](#generate-use-self-signed-keys-certificates)
 4. [Install Certificates from Third-party CAs](#install-certificates-from-third-party-cas)
 
-## <a name="install-obstor-server"></a>1. Install ObStor Server
+## <a name="install-obstor-server"></a>1. Install Obstor Server
 
-Install ObStor Server using the instructions in the [ObStor Quickstart Guide](http://pgg.net/docs/obstor/obstor-quickstart-guide).
+Install Obstor Server using the instructions in the [Obstor Quickstart Guide](http://pgg.net/docs/obstor/obstor-quickstart-guide).
 
-## <a name="use-an-existing-key-and-certificate-with-obstor"></a>2. Use an Existing Key and Certificate with ObStor
+## <a name="use-an-existing-key-and-certificate-with-obstor"></a>2. Use an Existing Key and Certificate with Obstor
 
-This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for ObStor](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-obstor.html).
+This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for Obstor](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-obstor.html).
 
 Copy the existing private key and public certificate to the `certs` directory. The default certs directory is:
 * **Linux:** `${HOME}/.obstor/certs`
@@ -24,7 +24,7 @@ Copy the existing private key and public certificate to the `certs` directory. T
 * Inside the `certs` directory, the private key must by named `private.key` and the public key must be named `public.crt`.
 * A certificate signed by a CA contains information about the issued identity (e.g. name, expiry, public key) and any intermediate certificates. The root CA is not included.
 
-## <a name="generate-use-self-signed-keys-certificates"></a>3. Generate and use Self-signed Keys and Certificates with ObStor
+## <a name="generate-use-self-signed-keys-certificates"></a>3. Generate and use Self-signed Keys and Certificates with Obstor
 
 This section describes how to generate a self-signed certificate using various tools:
 
@@ -34,8 +34,8 @@ This section describes how to generate a self-signed certificate using various t
 * 3.4 [Use GnuTLS (for Windows) to Generate a Certificate](#using-gnu-tls)
 
 **Note:**
-* ObStor only supports keys and certificates in PEM format on Linux and Windows.
-* ObStor doesn't currently support PFX certificates.
+* Obstor only supports keys and certificates in PEM format on Linux and Windows.
+* Obstor doesn't currently support PFX certificates.
 
 ### <a name="using-go"></a>3.1 Use generate_cert.go to Generate a Certificate
 
@@ -115,7 +115,7 @@ openssl genrsa -aes256 -passout pass:PASSWORD -out private.key 2048
 export OBSTOR_CERT_PASSWD=<PASSWORD>
 ```
 
-The default OpenSSL format for private encrypted keys is PKCS-8, but ObStor only supports PKCS-1. An RSA key that has been formatted with PKCS-8 can be converted to PKCS-1 using the following command:
+The default OpenSSL format for private encrypted keys is PKCS-8, but Obstor only supports PKCS-1. An RSA key that has been formatted with PKCS-8 can be converted to PKCS-1 using the following command:
 
 ```sh
 openssl rsa -in private-pkcs8-key.key -aes256 -passout pass:PASSWORD -out private.key
@@ -228,12 +228,12 @@ certtool.exe --generate-self-signed --load-privkey private.key --template cert.c
 
 ## <a name="install-certificates-from-third-party-cas"></a>4. Install Certificates from Third-party CAs
 
-ObStor can connect to other servers, including ObStor nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to ObStor Server by placing these certificates under one of the following ObStor configuration paths:
+Obstor can connect to other servers, including Obstor nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to Obstor Server by placing these certificates under one of the following Obstor configuration paths:
 * **Linux:** `~/.obstor/certs/CAs/`
 * **Windows**: `C:\Users\<Username>\.obstor\certs\CAs`
 
 # Explore Further
-* [TLS Configuration for ObStor server on Kubernetes](https://github.com/cloudment/obstor/tree/master/docs/tls/kubernetes)
-* [ObStor Client Complete Guide](https://pgg.net/docs/obstor/obstor-client-complete-guide)
+* [TLS Configuration for Obstor server on Kubernetes](https://github.com/cloudment/obstor/tree/master/docs/tls/kubernetes)
+* [Obstor Client Complete Guide](https://pgg.net/docs/obstor/obstor-client-complete-guide)
 * [Generate Let's Encrypt Certificate](https://pgg.net/docs/obstor/generate-let-s-encypt-certificate-using-concert-for-obstor)
-* [Setup nginx Proxy with ObStor Server](https://pgg.net/docs/obstor/setup-nginx-proxy-with-obstor)
+* [Setup nginx Proxy with Obstor Server](https://pgg.net/docs/obstor/setup-nginx-proxy-with-obstor)

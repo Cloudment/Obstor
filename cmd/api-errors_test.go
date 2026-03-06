@@ -62,7 +62,7 @@ var toAPIErrorTests = []struct {
 	{err: errObjectTampered, errCode: ErrObjectTampered},
 
 	{err: nil, errCode: ErrNone},
-	{err: errors.New("Custom error"), errCode: ErrInternalError}, // Case where err type is unknown.
+	{err: errors.New("custom error"), errCode: ErrInternalError}, // Case where err type is unknown.
 }
 
 func TestAPIErrCode(t *testing.T) {

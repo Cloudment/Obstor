@@ -238,11 +238,11 @@ func findFileInfoInQuorum(ctx context.Context, metaArr []FileInfo, modTime time.
 	for i, meta := range metaArr {
 		if meta.IsValid() && meta.ModTime.Equal(modTime) && meta.DataDir == dataDir {
 			for _, part := range meta.Parts {
-				h.Write([]byte(fmt.Sprintf("part.%d", part.Number)))
+				fmt.Fprintf(h, "part.%d", part.Number)
 			}
-			h.Write([]byte(fmt.Sprintf("%v", meta.Erasure.Distribution)))
+			fmt.Fprintf(h, "%v", meta.Erasure.Distribution)
 			// make sure that length of Data is same
-			h.Write([]byte(fmt.Sprintf("%v", len(meta.Data))))
+			fmt.Fprintf(h, "%v", len(meta.Data))
 			metaHashes[i] = hex.EncodeToString(h.Sum(nil))
 			h.Reset()
 		}

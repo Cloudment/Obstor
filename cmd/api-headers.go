@@ -48,7 +48,7 @@ func setEventStreamHeaders(w http.ResponseWriter) {
 // Write http common headers
 func setCommonHeaders(w http.ResponseWriter) {
 	// Set the "Server" http header.
-	w.Header().Set(xhttp.ServerInfo, "ObStor")
+	w.Header().Set(xhttp.ServerInfo, "Obstor")
 
 	// Set `x-amz-bucket-region` only if region is set on the server
 	// by default obstor uses an empty region.

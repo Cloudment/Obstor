@@ -63,9 +63,10 @@ func testAuthenticate(authType string, t *testing.T) {
 	// Run tests.
 	for _, testCase := range testCases {
 		var err error
-		if authType == "web" {
+		switch authType {
+		case "web":
 			_, err = authenticateWeb(testCase.accessKey, testCase.secretKey)
-		} else if authType == "url" {
+		case "url":
 			_, err = authenticateURL(testCase.accessKey, testCase.secretKey)
 		}
 

@@ -51,7 +51,7 @@ func testBucketVersioningExcludedPrefixes() {
 		Secure: secure,
 	})
 	if err != nil {
-		logError(testName, function, nil, startTime, "", "ObStor client creation failed", err)
+		logError(testName, function, nil, startTime, "", "Obstor client creation failed", err)
 		return
 	}
 

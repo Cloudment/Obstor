@@ -215,7 +215,6 @@ func (s endpointSet) getEndpoints() (endpoints []string) {
 			endpoints = append(endpoints, strings.Join(lbls, ""))
 		}
 	}
-	s.endpoints = endpoints
 	return endpoints
 }
 

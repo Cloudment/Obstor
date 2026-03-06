@@ -255,7 +255,7 @@ func (g *S3) Production() bool {
 	return true
 }
 
-// s3Objects implements gateway for ObStor and S3 compatible object storage servers.
+// s3Objects implements gateway for Obstor and S3 compatible object storage servers.
 type s3Objects struct {
 	obstor.GatewayUnsupported
 	Client     *miniogo.Core

@@ -137,9 +137,9 @@ var (
 	// This flag is set to 'us-east-1' by default
 	globalServerRegion = globalMinioDefaultRegion
 
-	// ObStor local server address (in `host:port` format)
+	// Obstor local server address (in `host:port` format)
 	globalMinioAddr = ""
-	// ObStor default port, can be changed through command line.
+	// Obstor default port, can be changed through command line.
 	globalMinioPort = GlobalMinioDefaultPort
 	// Holds the host that was passed using --address
 	globalMinioHost = ""
@@ -220,7 +220,7 @@ var (
 	globalPublicCerts []*x509.Certificate
 
 	globalDomainNames []string      // Root domains for virtual host style requests
-	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed ObStor deployment
+	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed Obstor deployment
 
 	globalOperationTimeout       = newDynamicTimeout(10*time.Minute, 5*time.Minute) // default timeout for general ops
 	globalDeleteOperationTimeout = newDynamicTimeout(5*time.Minute, 1*time.Minute)  // default time for delete ops

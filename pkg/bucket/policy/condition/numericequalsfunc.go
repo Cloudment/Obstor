@@ -106,7 +106,7 @@ func (f numericNotEqualsFunc) name() name {
 }
 
 func (f numericNotEqualsFunc) String() string {
-	return toNumericEqualsFuncString(numericNotEquals, f.numericEqualsFunc.k, f.numericEqualsFunc.value)
+	return toNumericEqualsFuncString(numericNotEquals, f.k, f.value)
 }
 
 func valueToInt(n name, values ValueSet) (v int, err error) {

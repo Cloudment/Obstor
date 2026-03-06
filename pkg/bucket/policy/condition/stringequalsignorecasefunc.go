@@ -112,7 +112,7 @@ func (f stringNotEqualsIgnoreCaseFunc) name() name {
 }
 
 func (f stringNotEqualsIgnoreCaseFunc) String() string {
-	return toStringEqualsIgnoreCaseFuncString(stringNotEqualsIgnoreCase, f.stringEqualsIgnoreCaseFunc.k, f.stringEqualsIgnoreCaseFunc.values)
+	return toStringEqualsIgnoreCaseFuncString(stringNotEqualsIgnoreCase, f.k, f.values)
 }
 
 func validateStringEqualsIgnoreCaseValues(n name, key Key, values set.StringSet) error {

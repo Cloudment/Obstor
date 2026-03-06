@@ -26,7 +26,7 @@ import (
 )
 
 var (
-	errBadLimitSpecified = errors.New("Limit value must be a positive integer")
+	errBadLimitSpecified = errors.New("limit value must be a positive integer")
 )
 
 const (
@@ -88,12 +88,12 @@ func ParseSelectStatement(s string) (stmt SelectStatement, err error) {
 	if selectAST.Where != nil {
 		whereQProp := selectAST.Where.analyze(&selectAST)
 		if whereQProp.err != nil {
-			err = errQueryAnalysisFailure(fmt.Errorf("Where clause error: %w", whereQProp.err))
+			err = errQueryAnalysisFailure(fmt.Errorf("where clause error: %w", whereQProp.err))
 			return
 		}
 
 		if whereQProp.isAggregation {
-			err = errQueryAnalysisFailure(errors.New("WHERE clause cannot have an aggregation"))
+			err = errQueryAnalysisFailure(errors.New("where clause cannot have an aggregation"))
 			return
 		}
 	}
@@ -259,7 +259,7 @@ func (e *SelectStatement) isPassingWhereClause(input Record) (bool, error) {
 
 	b, ok := value.ToBool()
 	if !ok {
-		err = fmt.Errorf("WHERE expression did not return bool")
+		err = fmt.Errorf("where expression did not return bool")
 		return false, err
 	}
 

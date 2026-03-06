@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"os"
@@ -52,13 +51,13 @@ import (
 
 var (
 	// Project ID format is not valid.
-	errGCSInvalidProjectID = fmt.Errorf("GCS project id is either empty or invalid")
+	errGCSInvalidProjectID = fmt.Errorf("gcs project id is either empty or invalid")
 
 	// Project ID not found
-	errGCSProjectIDNotFound = fmt.Errorf("Unknown project id")
+	errGCSProjectIDNotFound = fmt.Errorf("unknown project id")
 
 	// Invalid format.
-	errGCSFormat = fmt.Errorf("Unknown format")
+	errGCSFormat = fmt.Errorf("unknown format")
 )
 
 const (
@@ -187,7 +186,7 @@ func (g *GCS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error
 	// Initialize a GCS client.
 	// Send user-agent in this format for Google to obtain usage insights while participating in the
 	// Google Cloud Technology Partners (https://cloud.google.com/partners/)
-	client, err := storage.NewClient(ctx, option.WithUserAgent(fmt.Sprintf("ObStor/%s (GPN:ObStor;)", obstor.Version)))
+	client, err := storage.NewClient(ctx, option.WithUserAgent(fmt.Sprintf("Obstor/%s (GPN:Obstor;)", obstor.Version)))
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +228,7 @@ func gcsMultipartDataName(uploadID string, partNumber int, etag string) string {
 	return fmt.Sprintf("%s/%s/%05d.%s", gcsMinioMultipartPathV1, uploadID, partNumber, etag)
 }
 
-// Convert ObStor errors to obstor object layer errors.
+// Convert Obstor errors to obstor object layer errors.
 func gcsToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -271,7 +270,7 @@ func gcsToObjectError(err error, params ...string) error {
 
 	googleAPIErr, ok := err.(*googleapi.Error)
 	if !ok {
-		// We don't interpret non ObStor errors. As obstor errors will
+		// We don't interpret non Obstor errors. As obstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}
@@ -334,7 +333,7 @@ func isValidGCSProjectIDFormat(projectID string) bool {
 	return gcsProjectIDRegex.MatchString(projectID)
 }
 
-// gcsGateway - Implements gateway for ObStor and GCS compatible object storage servers.
+// gcsGateway - Implements gateway for Obstor and GCS compatible object storage servers.
 type gcsGateway struct {
 	obstor.GatewayUnsupported
 	client     *storage.Client
@@ -345,7 +344,7 @@ type gcsGateway struct {
 
 // Returns projectID from the GOOGLE_APPLICATION_CREDENTIALS file.
 func gcsParseProjectID(credsFile string) (projectID string, err error) {
-	contents, err := ioutil.ReadFile(credsFile)
+	contents, err := os.ReadFile(credsFile)
 	if err != nil {
 		return projectID, err
 	}
@@ -1060,7 +1059,7 @@ func (l *gcsGateway) ListMultipartUploads(ctx context.Context, bucket string, pr
 			// E.g obstor.sys.tmp/multipart/v1/d063ad89-fdc4-4ea3-a99e-22dba98151f5/gcs.json
 			components := strings.SplitN(attrs.Name, obstor.SlashSeparator, 5)
 			if len(components) != 5 {
-				compErr := errors.New("Invalid multipart upload format")
+				compErr := errors.New("invalid multipart upload format")
 				logger.LogIf(ctx, compErr)
 				return obstor.ListMultipartsInfo{}, compErr
 			}
@@ -1134,20 +1133,20 @@ func (l *gcsGateway) PutObjectPart(ctx context.Context, bucket string, key strin
 func gcsGetPartInfo(ctx context.Context, attrs *storage.ObjectAttrs) (obstor.PartInfo, error) {
 	components := strings.SplitN(attrs.Name, obstor.SlashSeparator, 5)
 	if len(components) != 5 {
-		logger.LogIf(ctx, errors.New("Invalid multipart upload format"))
-		return obstor.PartInfo{}, errors.New("Invalid multipart upload format")
+		logger.LogIf(ctx, errors.New("invalid multipart upload format"))
+		return obstor.PartInfo{}, errors.New("invalid multipart upload format")
 	}
 
 	partComps := strings.SplitN(components[4], ".", 2)
 	if len(partComps) != 2 {
-		logger.LogIf(ctx, errors.New("Invalid multipart part format"))
-		return obstor.PartInfo{}, errors.New("Invalid multipart part format")
+		logger.LogIf(ctx, errors.New("invalid multipart part format"))
+		return obstor.PartInfo{}, errors.New("invalid multipart part format")
 	}
 
 	partNum, pErr := strconv.Atoi(partComps[0])
 	if pErr != nil {
 		logger.LogIf(ctx, pErr)
-		return obstor.PartInfo{}, errors.New("Invalid part number")
+		return obstor.PartInfo{}, errors.New("invalid part number")
 	}
 
 	return obstor.PartInfo{

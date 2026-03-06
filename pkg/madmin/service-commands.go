@@ -28,12 +28,12 @@ import (
 	trace "github.com/cloudment/obstor/pkg/trace"
 )
 
-// ServiceRestart - restarts the ObStor cluster
+// ServiceRestart - restarts the Obstor cluster
 func (adm *AdminClient) ServiceRestart(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionRestart)
 }
 
-// ServiceStop - stops the ObStor cluster
+// ServiceStop - stops the Obstor cluster
 func (adm *AdminClient) ServiceStop(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionStop)
 }

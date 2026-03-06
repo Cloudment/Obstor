@@ -182,7 +182,7 @@ func (p *JWT) Validate(token, dsecs string) (map[string]interface{}, error) {
 	keyFuncCallback := func(jwtToken *jwtgo.Token) (interface{}, error) {
 		kid, ok := jwtToken.Header["kid"].(string)
 		if !ok {
-			return nil, fmt.Errorf("Invalid kid value %v", jwtToken.Header["kid"])
+			return nil, fmt.Errorf("invalid kid value %v", jwtToken.Header["kid"])
 		}
 		return p.publicKeys[kid], nil
 	}

@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -44,7 +43,7 @@ import (
 const (
 	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
 	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.pgg.net/server/obstor/release/" + minioOSARCH + SlashSeparator
+	minioReleaseURL           = "https://dl.pgg.net/packages/obstor/release/" + minioOSARCH + SlashSeparator
 
 	envMinisignPubKey = "OBSTOR_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
@@ -56,7 +55,7 @@ var (
 )
 
 // minioVersionToReleaseTime - parses a standard official release
-// ObStor version string.
+// Obstor version string.
 //
 // An official binary's version string is the release time formatted
 // with RFC3339 (in UTC) - e.g. `2017-09-29T19:16:56Z`
@@ -65,7 +64,7 @@ func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error
 }
 
 // releaseTimeToReleaseTag - converts a time to a string formatted as
-// an official ObStor release tag.
+// an official Obstor release tag.
 //
 // An official obstor release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
@@ -90,14 +89,14 @@ func getModTime(path string) (t time.Time, err error) {
 	// Convert to absolute path
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		return t, fmt.Errorf("Unable to get absolute path of %s. %w", path, err)
+		return t, fmt.Errorf("unable to get absolute path of %s. %w", path, err)
 	}
 
 	// Version is obstor non-standard, we will use obstor binary's
 	// ModTime as release time.
 	fi, err := os.Stat(absPath)
 	if err != nil {
-		return t, fmt.Errorf("Unable to get ModTime of %s. %w", absPath, err)
+		return t, fmt.Errorf("unable to get ModTime of %s. %w", absPath, err)
 	}
 
 	// Return the ModTime
@@ -179,14 +178,14 @@ func IsBOSH() bool {
 	return err == nil
 }
 
-// ObStor Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
+// Obstor Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
 // More info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#store-pod-fields
 // Check if this is Helm package installation and report helm chart version
 func getHelmVersion(helmInfoFilePath string) string {
 	// Read the file exists.
 	helmInfoFile, err := os.Open(helmInfoFilePath)
 	if err != nil {
-		// Log errors and return "" as ObStor can be deployed
+		// Log errors and return "" as Obstor can be deployed
 		// without Helm charts as well.
 		if !osIsNotExist(err) {
 			reqInfo := (&logger.ReqInfo{}).AppendTags("helmInfoFilePath", helmInfoFilePath)
@@ -223,7 +222,7 @@ func IsPCFTile() bool {
 // DO NOT CHANGE USER AGENT STYLE.
 // The style should be
 //
-//	ObStor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) ObStor/<VERSION> ObStor/<RELEASE-TAG> ObStor/<COMMIT-ID> [ObStor/universe-<PACKAGE-NAME>] [ObStor/helm-<HELM-VERSION>]
+//	Obstor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) Obstor/<VERSION> Obstor/<RELEASE-TAG> Obstor/<COMMIT-ID> [Obstor/universe-<PACKAGE-NAME>] [Obstor/helm-<HELM-VERSION>]
 //
 // Any change here should be discussed by opening an issue at
 // https://github.com/cloudment/obstor/issues.
@@ -236,7 +235,7 @@ func getUserAgent(mode string) string {
 		userAgentParts = append(userAgentParts, p, q)
 	}
 
-	uaAppend("ObStor (", runtime.GOOS)
+	uaAppend("Obstor (", runtime.GOOS)
 	uaAppend("; ", runtime.GOARCH)
 	if mode != "" {
 		uaAppend("; ", mode)
@@ -257,14 +256,14 @@ func getUserAgent(mode string) string {
 		uaAppend("; ", "source")
 	}
 
-	uaAppend(") ObStor/", Version)
-	uaAppend(" ObStor/", ReleaseTag)
-	uaAppend(" ObStor/", CommitID)
+	uaAppend(") Obstor/", Version)
+	uaAppend(" Obstor/", ReleaseTag)
+	uaAppend(" Obstor/", CommitID)
 	if IsDCOS() {
 		universePkgVersion := env.Get("MARATHON_APP_LABEL_DCOS_PACKAGE_VERSION", "")
 		// On DC/OS environment try to the get universe package version.
 		if universePkgVersion != "" {
-			uaAppend(" ObStor/universe-", universePkgVersion)
+			uaAppend(" Obstor/universe-", universePkgVersion)
 		}
 	}
 
@@ -272,23 +271,23 @@ func getUserAgent(mode string) string {
 		// In Kubernetes environment, try to fetch the helm package version
 		helmChartVersion := getHelmVersion("/podinfo/labels")
 		if helmChartVersion != "" {
-			uaAppend(" ObStor/helm-", helmChartVersion)
+			uaAppend(" Obstor/helm-", helmChartVersion)
 		}
 		// In Kubernetes environment, try to fetch the Operator, VSPHERE plugin version
 		opVersion := env.Get("OBSTOR_OPERATOR_VERSION", "")
 		if opVersion != "" {
-			uaAppend(" ObStor/operator-", opVersion)
+			uaAppend(" Obstor/operator-", opVersion)
 		}
 		vsphereVersion := env.Get("OBSTOR_VSPHERE_PLUGIN_VERSION", "")
 		if vsphereVersion != "" {
-			uaAppend(" ObStor/vsphere-plugin-", vsphereVersion)
+			uaAppend(" Obstor/vsphere-plugin-", vsphereVersion)
 		}
 	}
 
 	if IsPCFTile() {
 		pcfTileVersion := env.Get("OBSTOR_PCF_TILE_VERSION", "")
 		if pcfTileVersion != "" {
-			uaAppend(" ObStor/pcf-tile-", pcfTileVersion)
+			uaAppend(" Obstor/pcf-tile-", pcfTileVersion)
 		}
 	}
 
@@ -352,7 +351,7 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 		}
 	}
 
-	contentBytes, err := ioutil.ReadAll(reader)
+	contentBytes, err := io.ReadAll(reader)
 	if err != nil {
 		return content, AdminError{
 			Code:       AdminUpdateUnexpectedFailure,
@@ -385,7 +384,7 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 
 	fields := strings.Fields(data)
 	if len(fields) != 2 {
-		err = fmt.Errorf("Unknown release data `%s`", data)
+		err = fmt.Errorf("unknown release data `%s`", data)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
 
@@ -399,17 +398,17 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 	// Split release of style obstor.RELEASE.2019-08-21T19-40-07Z.<hotfix>
 	nfields := strings.SplitN(releaseInfo, ".", 2)
 	if len(nfields) != 2 {
-		err = fmt.Errorf("Unknown release information `%s`", releaseInfo)
+		err = fmt.Errorf("unknown release information `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
 	if nfields[0] != "obstor" {
-		err = fmt.Errorf("Unknown release `%s`", releaseInfo)
+		err = fmt.Errorf("unknown release `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
 
 	releaseTime, err = releaseTagToReleaseTime(nfields[1])
 	if err != nil {
-		err = fmt.Errorf("Unknown release tag format. %w", err)
+		err = fmt.Errorf("unknown release tag format. %w", err)
 	}
 
 	return sha256Sum, releaseTime, releaseInfo, err

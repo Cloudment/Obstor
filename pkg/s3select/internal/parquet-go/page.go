@@ -490,7 +490,7 @@ func (page *page) getRLDLFromRawData(columnNameIndexMap map[string]int, schemaEl
 		return int64(numValues), numRows, nil
 	}
 
-	return 0, 0, fmt.Errorf("Unsupported page type %v", pageType)
+	return 0, 0, fmt.Errorf("unsupported page type %v", pageType)
 }
 
 func (page *page) getValueFromRawData(columnNameIndexMap map[string]int, schemaElements []*parquet.SchemaElement) (err error) {
@@ -634,7 +634,7 @@ func (page *page) toDataPage(compressType parquet.CompressionCodec) []byte {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -724,7 +724,7 @@ func (page *page) toDataPageV2(compressType parquet.CompressionCodec) []byte {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -753,7 +753,7 @@ func (page *page) toDictPage(compressType parquet.CompressionCodec, dataType par
 	page.Header.DictionaryPageHeader.Encoding = parquet.Encoding_PLAIN
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -811,7 +811,7 @@ func (page *page) toDictDataPage(compressType parquet.CompressionCodec, bitWidth
 	page.Header.DataPageHeader.Encoding = parquet.Encoding_PLAIN_DICTIONARY
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)

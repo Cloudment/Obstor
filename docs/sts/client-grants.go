@@ -101,7 +101,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Uncomment this to use ObStor API operations by initializing obstor
+	// Uncomment this to use Obstor API operations by initializing obstor
 	// client with obtained credentials.
 
 	opts := &obstor.Options{

@@ -24,7 +24,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -317,14 +316,14 @@ func checkRequestAuthTypeCredential(ctx context.Context, r *http.Request, action
 	var locationConstraint string
 	if action == policy.CreateBucketAction {
 		// To extract region from XML in request body, get copy of request body.
-		payload, err := ioutil.ReadAll(io.LimitReader(r.Body, maxLocationConstraintSize))
+		payload, err := io.ReadAll(io.LimitReader(r.Body, maxLocationConstraintSize))
 		if err != nil {
 			logger.LogIf(ctx, err, logger.Application)
 			return cred, owner, ErrMalformedXML
 		}
 
 		// Populate payload to extract location constraint.
-		r.Body = ioutil.NopCloser(bytes.NewReader(payload))
+		r.Body = io.NopCloser(bytes.NewReader(payload))
 
 		var s3Error APIErrorCode
 		locationConstraint, s3Error = parseLocationConstraint(r)
@@ -333,7 +332,7 @@ func checkRequestAuthTypeCredential(ctx context.Context, r *http.Request, action
 		}
 
 		// Populate payload again to handle it in HTTP handler.
-		r.Body = ioutil.NopCloser(bytes.NewReader(payload))
+		r.Body = io.NopCloser(bytes.NewReader(payload))
 	}
 	if cred.AccessKey != "" {
 		logger.GetReqInfo(ctx).AccessKey = cred.AccessKey

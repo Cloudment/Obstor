@@ -181,7 +181,7 @@ func getConditionValues(r *http.Request, lc string, username string, claims map[
 	return args
 }
 
-// PolicyToBucketAccessPolicy converts a ObStor policy into a minio-go policy data structure.
+// PolicyToBucketAccessPolicy converts a Obstor policy into a minio-go policy data structure.
 func PolicyToBucketAccessPolicy(bucketPolicy *policy.Policy) (*miniogopolicy.BucketAccessPolicy, error) {
 	// Return empty BucketAccessPolicy for empty bucket policy.
 	if bucketPolicy == nil {

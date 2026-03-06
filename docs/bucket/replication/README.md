@@ -2,14 +2,14 @@
 
 Bucket replication is designed to replicate selected objects in a bucket to a destination bucket.
 
-The contents of this page have been migrated to the new [ObStor Baremetal Documentation: Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new ObStor documentation, as this legacy documentation will be deprecated and removed in the future.
+The contents of this page have been migrated to the new [Obstor Baremetal Documentation: Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://pgg.net/docs/obstor/obstor/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new Obstor documentation, as this legacy documentation will be deprecated and removed in the future.
 
-To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source ObStor server.
+To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source Obstor server.
 
 ## Highlights
 - Supports source and destination buckets to have the same name unlike AWS S3, addresses variety of usecases such as *Splunk*, *Veeam* site to site DR.
 - Supports object locking/retention across source and destination buckets natively out of the box, unlike AWS S3.
-- Simpler implementation than [AWS S3 Bucket Replication Config](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html) with requirements such as IAM Role, AccessControlTranslation, Metrics and SourceSelectionCriteria are not needed with ObStor.
+- Simpler implementation than [AWS S3 Bucket Replication Config](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html) with requirements such as IAM Role, AccessControlTranslation, Metrics and SourceSelectionCriteria are not needed with Obstor.
 - Active-Active replication
 
 ## How to use?
@@ -138,7 +138,7 @@ The replication configuration can now be added to the source bucket by applying 
 }
 ```
 
-The replication configuration follows [AWS S3 Spec](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html). Any objects uploaded to the source bucket that meet replication criteria will now be automatically replicated by the ObStor server to the remote destination bucket. Replication can be disabled at any time by disabling specific rules in the configuration or deleting the replication configuration entirely.
+The replication configuration follows [AWS S3 Spec](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html). Any objects uploaded to the source bucket that meet replication criteria will now be automatically replicated by the Obstor server to the remote destination bucket. Replication can be disabled at any time by disabling specific rules in the configuration or deleting the replication configuration entirely.
 
 When object locking is used in conjunction with replication, both source and destination buckets needs to have [object locking](https://pgg.net/docs/obstor/obstor-bucket-object-lock-guide.html) enabled. Similarly objects encrypted on the server side, will be replicated if destination also supports encryption.
 
@@ -150,12 +150,12 @@ To perform bi-directional replication, repeat the above process on the target si
 
 ![head](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/HEAD_bucket_replication.png)
 
-## ObStor Extension
+## Obstor Extension
 ### Replicating Deletes
 
-Delete marker replication is allowed in [AWS V1 Configuration](https://aws.amazon.com/blogs/storage/managing-delete-marker-replication-in-amazon-s3/) but not in V2 configuration. The ObStor implementation above is based on V2 configuration, however it has been extended to allow both DeleteMarker replication and replication of versioned deletes with the `DeleteMarkerReplication` and `DeleteReplication` fields in the replication configuration above. By default, this is set to `Disabled` unless the user specifies it while adding a replication rule.
+Delete marker replication is allowed in [AWS V1 Configuration](https://aws.amazon.com/blogs/storage/managing-delete-marker-replication-in-amazon-s3/) but not in V2 configuration. The Obstor implementation above is based on V2 configuration, however it has been extended to allow both DeleteMarker replication and replication of versioned deletes with the `DeleteMarkerReplication` and `DeleteReplication` fields in the replication configuration above. By default, this is set to `Disabled` unless the user specifies it while adding a replication rule.
 
-When an object is deleted from the source bucket, the corresponding replica version will be marked deleted if delete marker replication is enabled in the replication configuration. Replication of deletes that specify a version id (a.k.a hard deletes) can be enabled by setting the `DeleteReplication` status to enabled in the replication configuration. This is a ObStor specific extension that can be enabled using the `mc replicate add` or `mc replicate edit` command with the --replicate "delete" flag.
+When an object is deleted from the source bucket, the corresponding replica version will be marked deleted if delete marker replication is enabled in the replication configuration. Replication of deletes that specify a version id (a.k.a hard deletes) can be enabled by setting the `DeleteReplication` status to enabled in the replication configuration. This is a Obstor specific extension that can be enabled using the `mc replicate add` or `mc replicate edit` command with the --replicate "delete" flag.
 
 Note that due to this extension behavior, AWS SDK's may not support the extension functionality pertaining to replicating versioned deletes.
 
@@ -185,6 +185,6 @@ remote replication target using the `mc admin bucket remote add` command
 ```
 
 ## Explore Further
-- [ObStor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DESIGN.md)
-- [ObStor Bucket Versioning Implementation](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html)
-- [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
+- [Obstor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DESIGN.md)
+- [Obstor Bucket Versioning Implementation](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html)
+- [Obstor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)

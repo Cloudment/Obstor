@@ -12,7 +12,7 @@ Type inference and automatic conversion of values is performed based on the cont
 
 The [mc sql](https://pgg.net/docs/obstor/obstor-client-complete-guide.html#sql) command can be used for executing queries using the command line.
 
-(*) Parquet is disabled on the ObStor server by default. See below how to enable it.
+(*) Parquet is disabled on the Obstor server by default. See below how to enable it.
 
 ## Enabling Parquet Format
 
@@ -24,7 +24,7 @@ To enable Parquet set the environment variable `OBSTOR_API_SELECT_PARQUET=on`.
 # Example using Python API
 
 ## 1. Prerequisites
-- Install ObStor Server from [here](http://pgg.net/docs/obstor/obstor-quickstart-guide).
+- Install Obstor Server from [here](http://pgg.net/docs/obstor/obstor-quickstart-guide).
 - Familiarity with AWS S3 API.
 - Familiarity with Python and installing dependencies.
 
@@ -73,7 +73,7 @@ for event in r['Payload']:
 ```
 
 ## 4. Run the Program
-Upload a sample dataset to ObStor using the following commands.
+Upload a sample dataset to Obstor using the following commands.
 ```sh
 $ curl "https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv" > TotalPopulation.csv
 $ mc mb myminio/mycsvbucket
@@ -104,12 +104,12 @@ Stats details bytesProcessed:
 For a more detailed SELECT SQL reference, please see [here](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-glacier-select-sql-reference-select.html)
 
 ## 5. Explore Further
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
-- [Use `mc sql` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-complete-guide.html#sql)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Use `mc` with Obstor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `mc sql` with Obstor Server](https://pgg.net/docs/obstor/obstor-client-complete-guide.html#sql)
+- [Use `minio-go` SDK with Obstor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
+- [The Obstor documentation website](https://pgg.net/docs/obstor)
 
 ## 6. Implementation Status
 - Full AWS S3 [SELECT SQL](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-glacier-select-sql-reference-select.html) syntax is supported.

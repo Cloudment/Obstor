@@ -21,7 +21,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/user"
@@ -894,7 +893,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 
 	rc, _, err := fsOpenFile(ctx, fsMetaPath, 0)
 	if err == nil {
-		fsMetaBuf, rerr := ioutil.ReadAll(rc)
+		fsMetaBuf, rerr := io.ReadAll(rc)
 		rc.Close()
 		if rerr == nil {
 
@@ -1374,7 +1373,7 @@ func (fs *FSObjects) getObjectETag(ctx context.Context, bucket, entry string, lo
 		defer fs.rwPool.Close(fsMetaPath)
 
 		// Fetch the size of the underlying file.
-		fi, err = rlk.LockedFile.Stat()
+		fi, err = rlk.Stat()
 		if err != nil {
 			logger.LogIf(ctx, err)
 			return "", toObjectErr(err, bucket, entry)
@@ -1397,7 +1396,7 @@ func (fs *FSObjects) getObjectETag(ctx context.Context, bucket, entry string, lo
 		return "", nil
 	}
 
-	fsMetaBuf, err := ioutil.ReadAll(reader)
+	fsMetaBuf, err := io.ReadAll(reader)
 	if err != nil {
 		logger.LogIf(ctx, err)
 		return "", toObjectErr(err, bucket, entry)

@@ -1,10 +1,10 @@
-# How to monitor ObStor server with Prometheus [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to monitor Obstor server with Prometheus [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 [Prometheus](https://prometheus.io) is a cloud-native monitoring platform.
 
 Prometheus offers a multi-dimensional data model with time series data identified by metric name and key/value pairs. The data collection happens via a pull model over HTTP/HTTPS.
 
-ObStor exports Prometheus compatible data by default as an authorized endpoint at `/obstor/v2/metrics/cluster`. Users looking to monitor their ObStor instances can point Prometheus configuration to scrape data from this endpoint. This document explains how to setup Prometheus and configure it to scrape data from ObStor servers.
+Obstor exports Prometheus compatible data by default as an authorized endpoint at `/obstor/v2/metrics/cluster`. Users looking to monitor their Obstor instances can point Prometheus configuration to scrape data from this endpoint. This document explains how to setup Prometheus and configure it to scrape data from Obstor servers.
 
 **Table of Contents**
 
@@ -17,11 +17,11 @@ ObStor exports Prometheus compatible data by default as an authorized endpoint a
     - [4. Update `scrape_configs` section in prometheus.yml](#4-update-scrapeconfigs-section-in-prometheusyml)
     - [5. Start Prometheus](#5-start-prometheus)
     - [6. Configure Grafana](#6-configure-grafana)
-- [List of metrics exposed by ObStor](#list-of-metrics-exposed-by-obstor)
+- [List of metrics exposed by Obstor](#list-of-metrics-exposed-by-obstor)
 
 ## Prerequisites
-To get started with ObStor, refer [ObStor QuickStart Document](https://pgg.net/docs/obstor/obstor-quickstart-guide).
-Follow below steps to get started with ObStor monitoring using Prometheus.
+To get started with Obstor, refer [Obstor QuickStart Document](https://pgg.net/docs/obstor/obstor-quickstart-guide).
+Follow below steps to get started with Obstor monitoring using Prometheus.
 
 ### 1. Download Prometheus
 
@@ -47,7 +47,7 @@ Refer [Prometheus documentation](https://prometheus.io/docs/introduction/first_s
 
 ### 2. Configure authentication type for Prometheus metrics
 
-ObStor supports two authentication modes for Prometheus either `jwt` or `public`, by default ObStor runs in `jwt` mode. To allow public access without authentication for prometheus metrics set environment as follows.
+Obstor supports two authentication modes for Prometheus either `jwt` or `public`, by default Obstor runs in `jwt` mode. To allow public access without authentication for prometheus metrics set environment as follows.
 
 ```
 export OBSTOR_PROMETHEUS_AUTH_TYPE="public"
@@ -58,9 +58,9 @@ obstor server ~/test
 
 #### 3.1 Authenticated Prometheus config
 
-> If ObStor is configured to expose metrics without authentication, you don't need to use `mc` to generate prometheus config. You can skip reading further and move to 3.2 section.
+> If Obstor is configured to expose metrics without authentication, you don't need to use `mc` to generate prometheus config. You can skip reading further and move to 3.2 section.
 
-The Prometheus endpoint in ObStor requires authentication by default. Prometheus supports a bearer token approach to authenticate prometheus scrape requests, override the default Prometheus config with the one generated using mc. To generate a Prometheus config for an alias, use [mc](https://pgg.net/docs/obstor/obstor-client-quickstart-guide) as follows `mc admin prometheus generate <alias>`.
+The Prometheus endpoint in Obstor requires authentication by default. Prometheus supports a bearer token approach to authenticate prometheus scrape requests, override the default Prometheus config with the one generated using mc. To generate a Prometheus config for an alias, use [mc](https://pgg.net/docs/obstor/obstor-client-quickstart-guide) as follows `mc admin prometheus generate <alias>`.
 
 The command will generate the `scrape_configs` section of the prometheus.yml as follows:
 
@@ -76,7 +76,7 @@ scrape_configs:
 
 #### 3.2 Public Prometheus config
 
-If Prometheus endpoint authentication type is set to `public`. Following prometheus config is sufficient to start scraping metrics data from ObStor.
+If Prometheus endpoint authentication type is set to `public`. Following prometheus config is sufficient to start scraping metrics data from Obstor.
 This can be collected from any server once per collection.
 
 ##### Cluster
@@ -112,16 +112,16 @@ Start (or) Restart Prometheus service by running
 ./prometheus --config.file=prometheus.yml
 ```
 
-Here `prometheus.yml` is the name of configuration file. You can now see ObStor metrics in Prometheus dashboard. By default Prometheus dashboard is accessible at `http://localhost:9090`.
+Here `prometheus.yml` is the name of configuration file. You can now see Obstor metrics in Prometheus dashboard. By default Prometheus dashboard is accessible at `http://localhost:9090`.
 
 ### 6. Configure Grafana
 
-After Prometheus is configured, you can use Grafana to visualize ObStor metrics.
-Refer the [document here to setup Grafana with ObStor prometheus metrics](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/grafana/README.md).
+After Prometheus is configured, you can use Grafana to visualize Obstor metrics.
+Refer the [document here to setup Grafana with Obstor prometheus metrics](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/grafana/README.md).
 
-## List of metrics exposed by ObStor
+## List of metrics exposed by Obstor
 
-ObStor server exposes the following metrics on `/obstor/v2/metrics/cluster` endpoint. All of these can be accessed via Prometheus dashboard. A sample list of exposed metrics along with their definition is available in the demo server at
+Obstor server exposes the following metrics on `/obstor/v2/metrics/cluster` endpoint. All of these can be accessed via Prometheus dashboard. A sample list of exposed metrics along with their definition is available in the demo server at
 
 ```sh
 curl https://play.pgg.net/obstor/v2/metrics/cluster

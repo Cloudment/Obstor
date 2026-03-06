@@ -1,8 +1,8 @@
-# ObStor NAS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor NAS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object gateway.
+Obstor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object gateway.
 
-## Run ObStor Gateway for NAS Storage
+## Run Obstor Gateway for NAS Storage
 
 ### Using Docker
 
@@ -24,13 +24,13 @@ export OBSTOR_ROOT_PASSWORD=obstor123
 obstor gateway nas /shared/nasvol
 ```
 
-## Test using ObStor Browser
+## Test using Obstor Browser
 
-ObStor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
+Obstor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
 ![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/obstor-browser-gateway.png)
 
-## Test using ObStor Client `mc`
+## Test using Obstor Client `mc`
 
 `mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
 

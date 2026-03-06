@@ -347,7 +347,7 @@ func formatFSFixDeploymentID(ctx context.Context, fsFormatPath string) error {
 	for !stop {
 		select {
 		case <-ctx.Done():
-			return fmt.Errorf("Initializing FS format stopped gracefully")
+			return fmt.Errorf("initializing FS format stopped gracefully")
 		default:
 			wlk, err = lock.TryLockedOpenFile(fsFormatPath, os.O_RDWR, 0)
 			if err == lock.ErrAlreadyLocked {

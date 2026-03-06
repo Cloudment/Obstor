@@ -150,7 +150,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
 			logger.LogIf(ctx, nerr.Err)
-			err = fmt.Errorf("Server update failed, please do not restart the servers yet: failed with %w", nerr.Err)
+			err = fmt.Errorf("server update failed, please do not restart the servers yet: failed with %w", nerr.Err)
 			writeErrorResponseJSON(ctx, w, toAdminAPIErr(ctx, err), r.URL)
 			return
 		}
@@ -158,7 +158,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 
 	updateStatus, err := updateServer(u, sha256Sum, lrTime, releaseInfo, mode)
 	if err != nil {
-		err = fmt.Errorf("Server update failed, please do not restart the servers yet: failed with %w", err)
+		err = fmt.Errorf("server update failed, please do not restart the servers yet: failed with %w", err)
 		writeErrorResponseJSON(ctx, w, toAdminAPIErr(ctx, err), r.URL)
 		return
 	}
@@ -172,7 +172,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 
 	writeSuccessResponseJSON(w, jsonBytes)
 
-	// Notify all other ObStor peers signal service.
+	// Notify all other Obstor peers signal service.
 	for _, nerr := range globalNotificationSys.SignalService(serviceRestart) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -201,7 +201,7 @@ func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request)
 	case madmin.ServiceActionStop:
 		serviceSig = serviceStop
 	default:
-		logger.LogIf(ctx, fmt.Errorf("Unrecognized service action %s requested", action), logger.Application)
+		logger.LogIf(ctx, fmt.Errorf("unrecognized service action %s requested", action), logger.Application)
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrMalformedPOSTRequest), r.URL)
 		return
 	}
@@ -217,7 +217,7 @@ func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Notify all other ObStor peers signal service.
+	// Notify all other Obstor peers signal service.
 	for _, nerr := range globalNotificationSys.SignalService(serviceSig) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -225,7 +225,7 @@ func (a adminAPIHandlers) ServiceHandler(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	// Reply to the client before restarting, stopping ObStor server.
+	// Reply to the client before restarting, stopping Obstor server.
 	writeSuccessResponseHeadersOnly(w)
 
 	globalServiceSignalCh <- serviceSig
@@ -1275,7 +1275,7 @@ func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Req
 		KeyID: keyID,
 	}
 
-	kmsContext := kms.Context{"ObStor admin API": "KMSKeyStatusHandler"} // Context for a test key operation
+	kmsContext := kms.Context{"Obstor admin API": "KMSKeyStatusHandler"} // Context for a test key operation
 	// 1. Generate a new key using the KMS.
 	key, err := GlobalKMS.GenerateKey(keyID, kmsContext)
 	if err != nil {
@@ -1452,7 +1452,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 			healthInfo.Perf.DriveInfo = append(healthInfo.Perf.DriveInfo, driveInfo)
 			partialWrite(healthInfo)
 
-			// Notify all other ObStor peers to report drive perf numbers
+			// Notify all other Obstor peers to report drive perf numbers
 			driveInfos := globalNotificationSys.DrivePerfInfoChan(deadlinedCtx)
 			for obd := range driveInfos {
 				healthInfo.Perf.DriveInfo = append(healthInfo.Perf.DriveInfo, obd)
@@ -1764,7 +1764,7 @@ func fetchKMSStatus() madmin.KMS {
 	}
 	kmsStat.Status = string(madmin.ItemOnline)
 
-	kmsContext := kms.Context{"ObStor admin API": "ServerInfoHandler"} // Context for a test key operation
+	kmsContext := kms.Context{"Obstor admin API": "ServerInfoHandler"} // Context for a test key operation
 	// 1. Generate a new key using the KMS.
 	key, err := GlobalKMS.GenerateKey("", kmsContext)
 	if err != nil {

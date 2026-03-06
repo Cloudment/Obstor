@@ -46,7 +46,7 @@ func testMakeBucket() {
 		Bucket: aws.String(bucketName),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "Versioning CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Versioning CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(bucketName, function, args, startTime)
@@ -62,10 +62,10 @@ func testMakeBucket() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -75,13 +75,13 @@ func testMakeBucket() {
 
 	result, err := s3Client.GetBucketVersioning(ctx, getVersioningInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", "Get Versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Get Versioning failed", err)
 		return
 	}
 
 	if result.Status != types.BucketVersioningStatusEnabled {
-		failureLog(function, args, startTime, "", "Get Versioning status failed", errors.New("unexpected versioning status")).Fatal()
+		failureLog(function, args, startTime, "", "Get Versioning status failed", errors.New("unexpected versioning status"))
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

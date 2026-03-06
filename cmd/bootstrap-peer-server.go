@@ -58,26 +58,26 @@ type ServerSystemConfig struct {
 // Diff - returns error on first difference found in two configs.
 func (s1 ServerSystemConfig) Diff(s2 ServerSystemConfig) error {
 	if s1.MinioPlatform != s2.MinioPlatform {
-		return fmt.Errorf("Expected platform '%s', found to be running '%s'",
+		return fmt.Errorf("expected platform '%s', found to be running '%s'",
 			s1.MinioPlatform, s2.MinioPlatform)
 	}
 	if s1.MinioEndpoints.NEndpoints() != s2.MinioEndpoints.NEndpoints() {
-		return fmt.Errorf("Expected number of endpoints %d, seen %d", s1.MinioEndpoints.NEndpoints(),
+		return fmt.Errorf("expected number of endpoints %d, seen %d", s1.MinioEndpoints.NEndpoints(),
 			s2.MinioEndpoints.NEndpoints())
 	}
 
 	for i, ep := range s1.MinioEndpoints {
 		if ep.SetCount != s2.MinioEndpoints[i].SetCount {
-			return fmt.Errorf("Expected set count %d, seen %d", ep.SetCount,
+			return fmt.Errorf("expected set count %d, seen %d", ep.SetCount,
 				s2.MinioEndpoints[i].SetCount)
 		}
 		if ep.DrivesPerSet != s2.MinioEndpoints[i].DrivesPerSet {
-			return fmt.Errorf("Expected drives pet set %d, seen %d", ep.DrivesPerSet,
+			return fmt.Errorf("expected drives pet set %d, seen %d", ep.DrivesPerSet,
 				s2.MinioEndpoints[i].DrivesPerSet)
 		}
 		for j, endpoint := range ep.Endpoints {
 			if endpoint.String() != s2.MinioEndpoints[i].Endpoints[j].String() {
-				return fmt.Errorf("Expected endpoint %s, seen %s", endpoint,
+				return fmt.Errorf("expected endpoint %s, seen %s", endpoint,
 					s2.MinioEndpoints[i].Endpoints[j])
 			}
 		}

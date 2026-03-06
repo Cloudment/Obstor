@@ -24,7 +24,7 @@ const (
 	MetaMultipart = "X-Obstor-Internal-Encrypted-Multipart"
 
 	// MetaIV is the random initialization vector (IV) used for
-	// the ObStor-internal key derivation.
+	// the Obstor-internal key derivation.
 	MetaIV = "X-Obstor-Internal-Server-Side-Encryption-Iv"
 
 	// MetaAlgorithm is the algorithm used to derive internal keys

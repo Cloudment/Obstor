@@ -29,8 +29,8 @@ import (
 var (
 	errInvalidASTNode    = errors.New("invalid AST Node")
 	errExpectedBool      = errors.New("expected bool")
-	errLikeNonStrArg     = errors.New("LIKE clause requires string arguments")
-	errLikeInvalidEscape = errors.New("LIKE clause has invalid ESCAPE character")
+	errLikeNonStrArg     = errors.New("like clause requires string arguments")
+	errLikeInvalidEscape = errors.New("like clause has invalid ESCAPE character")
 	errNotImplemented    = errors.New("not implemented")
 )
 
@@ -442,7 +442,7 @@ func jsonToValue(result interface{}) (*Value, error) {
 	case nil:
 		return FromNull(), nil
 	}
-	return nil, fmt.Errorf("Unhandled value type: %T", result)
+	return nil, fmt.Errorf("unhandled value type: %T", result)
 }
 
 func (e *PrimaryTerm) evalNode(r Record, tableAlias string) (res *Value, err error) {

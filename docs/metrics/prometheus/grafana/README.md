@@ -1,15 +1,15 @@
-# How to monitor ObStor server with Grafana [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to monitor Obstor server with Grafana [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 [Grafana](https://grafana.com/) allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture.
 
 ## Prerequisites
 
-- Prometheus and ObStor configured as explained in [document here](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/README.md).
+- Prometheus and Obstor configured as explained in [document here](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/README.md).
 - Grafana installed as explained [here](https://grafana.com/grafana/download).
 
-## ObStor Grafana Dashboard
+## Obstor Grafana Dashboard
 
-Visualize ObStor metrics with our official Grafana dashboard available on the [Grafana dashboard portal](https://grafana.com/grafana/dashboards/13502).
+Visualize Obstor metrics with our official Grafana dashboard available on the [Grafana dashboard portal](https://grafana.com/grafana/dashboards/13502).
 
 Refer to the dashboard [json file here](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/obstor-overview.json).
 

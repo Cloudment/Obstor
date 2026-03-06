@@ -21,15 +21,14 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -44,55 +43,27 @@ const (
 	timeout                  = time.Duration(30 * time.Second)
 )
 
-type mintJSONFormatter struct{}
-
-func (f *mintJSONFormatter) Format(entry *log.Entry) ([]byte, error) {
-	data := make(log.Fields, len(entry.Data))
-	for k, v := range entry.Data {
-		switch v := v.(type) {
-		case error:
-			// Otherwise errors are ignored by `encoding/json`
-			// https://github.com/sirupsen/logrus/issues/137
-			data[k] = v.Error()
-		default:
-			data[k] = v
-		}
-	}
-
-	serialized, err := json.Marshal(data)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal fields to JSON, %w", err)
-	}
-	return append(serialized, '\n'), nil
-}
-
 // log successful test runs
-func successLogger(function string, args map[string]interface{}, startTime time.Time) *log.Entry {
+func successLogger(function string, args map[string]interface{}, startTime time.Time) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
 	// log with the fields as per mint
-	fields := log.Fields{"name": "healthcheck", "function": function, "args": args, "duration": duration.Nanoseconds() / 1000000, "status": pass}
-	return log.WithFields(fields)
+	slog.Info("test passed", "name", "healthcheck", "function", function, "args", args, "duration", duration.Nanoseconds()/1000000, "status", pass)
 }
 
-// log failed test runs
-func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) *log.Entry {
+// log failed test runs and exit
+func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
-	var fields log.Fields
 	// log with the fields as per mint
 	if err != nil {
-		fields = log.Fields{
-			"name": "healthcheck", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": fail, "alert": alert, "message": message, "error": err,
-		}
+		slog.Error("test failed", "name", "healthcheck", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", fail, "alert", alert, "message", message, "error", err.Error())
 	} else {
-		fields = log.Fields{
-			"name": "healthcheck", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": fail, "alert": alert, "message": message,
-		}
+		slog.Error("test failed", "name", "healthcheck", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", fail, "alert", alert, "message", message)
 	}
-	return log.WithFields(fields)
+	os.Exit(1)
 }
 
 func testLivenessEndpoint(endpoint string) {
@@ -102,7 +73,7 @@ func testLivenessEndpoint(endpoint string) {
 	u, err := url.Parse(fmt.Sprintf("%s%s", endpoint, livenessPath))
 	if err != nil {
 		// Could not parse URL successfully
-		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Liveness handler failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Liveness handler failed", err)
 	}
 
 	tr := &http.Transport{
@@ -112,15 +83,15 @@ func testLivenessEndpoint(endpoint string) {
 	resp, err := client.Get(u.String())
 	if err != nil {
 		// GET request errored
-		failureLog(function, nil, startTime, "", "GET request failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET request failed", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		// Status not 200 OK
-		failureLog(function, nil, startTime, "", fmt.Sprintf("GET /obstor/health/live returned %s", resp.Status), err).Fatal()
+		failureLog(function, nil, startTime, "", fmt.Sprintf("GET /obstor/health/live returned %s", resp.Status), err)
 	}
 
 	defer resp.Body.Close()
-	defer successLogger(function, nil, startTime).Info()
+	defer successLogger(function, nil, startTime)
 }
 
 func testReadinessEndpoint(endpoint string) {
@@ -130,7 +101,7 @@ func testReadinessEndpoint(endpoint string) {
 	u, err := url.Parse(fmt.Sprintf("%s%s", endpoint, readinessPath))
 	if err != nil {
 		// Could not parse URL successfully
-		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Readiness handler failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Readiness handler failed", err)
 	}
 
 	tr := &http.Transport{
@@ -140,15 +111,15 @@ func testReadinessEndpoint(endpoint string) {
 	resp, err := client.Get(u.String())
 	if err != nil {
 		// GET request errored
-		failureLog(function, nil, startTime, "", "GET request to Readiness endpoint failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET request to Readiness endpoint failed", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		// Status not 200 OK
-		failureLog(function, nil, startTime, "", "GET /obstor/health/ready returned non OK status", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET /obstor/health/ready returned non OK status", err)
 	}
 
 	defer resp.Body.Close()
-	defer successLogger(function, nil, startTime).Info()
+	defer successLogger(function, nil, startTime)
 }
 
 const (
@@ -162,7 +133,7 @@ func testPrometheusEndpointV2(endpoint string, metricsPath string) {
 	u, err := url.Parse(fmt.Sprintf("%s%s", endpoint, metricsPath))
 	if err != nil {
 		// Could not parse URL successfully
-		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Prometheus handler failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "URL Parsing for Healthcheck Prometheus handler failed", err)
 	}
 
 	jwt := jwtgo.NewWithClaims(jwtgo.SigningMethodHS512, jwtgo.StandardClaims{
@@ -173,7 +144,7 @@ func testPrometheusEndpointV2(endpoint string, metricsPath string) {
 
 	token, err := jwt.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
-		failureLog(function, nil, startTime, "", "jwt generation failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "jwt generation failed", err)
 	}
 
 	tr := &http.Transport{
@@ -183,23 +154,23 @@ func testPrometheusEndpointV2(endpoint string, metricsPath string) {
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		failureLog(function, nil, startTime, "", "Initializing GET request to Prometheus endpoint failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "Initializing GET request to Prometheus endpoint failed", err)
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	resp, err := client.Do(req)
 	if err != nil {
 		// GET request errored
-		failureLog(function, nil, startTime, "", "GET request to Prometheus endpoint failed", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET request to Prometheus endpoint failed", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		// Status not 200 OK
-		failureLog(function, nil, startTime, "", "GET "+endpoint+" returned non OK status", err).Fatal()
+		failureLog(function, nil, startTime, "", "GET "+endpoint+" returned non OK status", err)
 	}
 
 	defer resp.Body.Close()
-	defer successLogger(function, nil, startTime).Info()
+	defer successLogger(function, nil, startTime)
 }
 
 func testClusterPrometheusEndpointV2(endpoint string) {
@@ -227,14 +198,10 @@ func main() {
 		endpoint = "http://" + endpoint
 	}
 
-	// Output to stdout instead of the default stderr
-	log.SetOutput(os.Stdout)
-	// create custom formatter
-	mintFormatter := mintJSONFormatter{}
-	// set custom formatter
-	log.SetFormatter(&mintFormatter)
-	// log Info or above -- success cases are Info level, failures are Fatal level
-	log.SetLevel(log.InfoLevel)
+	// Configure slog to output JSON to stdout
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
 	// execute tests
 	testLivenessEndpoint(endpoint)
 	testReadinessEndpoint(endpoint)

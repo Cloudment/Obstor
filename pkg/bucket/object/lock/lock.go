@@ -229,15 +229,15 @@ func (dr *DefaultRetention) UnmarshalXML(d *xml.Decoder, start xml.StartElement)
 
 	if retention.Days != nil {
 		if *retention.Days == 0 {
-			return fmt.Errorf("Default retention period must be a positive integer value for 'Days'")
+			return fmt.Errorf("default retention period must be a positive integer value for 'Days'")
 		}
 		if *retention.Days > maximumRetentionDays {
-			return fmt.Errorf("Default retention period too large for 'Days' %d", *retention.Days)
+			return fmt.Errorf("default retention period too large for 'Days' %d", *retention.Days)
 		}
 	} else if *retention.Years == 0 {
-		return fmt.Errorf("Default retention period must be a positive integer value for 'Years'")
+		return fmt.Errorf("default retention period must be a positive integer value for 'Years'")
 	} else if *retention.Years > maximumRetentionYears {
-		return fmt.Errorf("Default retention period too large for 'Years' %d", *retention.Years)
+		return fmt.Errorf("default retention period too large for 'Years' %d", *retention.Years)
 	}
 
 	*dr = DefaultRetention(retention)

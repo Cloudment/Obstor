@@ -117,7 +117,7 @@ func untar(r io.Reader, putObject func(reader io.Reader, info os.FileInfo, name 
 	case formatUnknown:
 		r = bf
 	default:
-		return fmt.Errorf("Unsupported format %s", f)
+		return fmt.Errorf("unsupported format %s", f)
 	}
 	tarReader := tar.NewReader(r)
 	for {

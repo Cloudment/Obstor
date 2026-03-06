@@ -312,7 +312,7 @@ func TestIgnoreErr(t *testing.T) {
 			want: true,
 		},
 		{
-			err:  errors.New("EOF"),
+			err:  errors.New("eof"),
 			want: true,
 		},
 		{

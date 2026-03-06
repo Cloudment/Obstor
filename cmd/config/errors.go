@@ -122,19 +122,19 @@ var (
 	ErrInvalidRotatingCredentialsBackendEncrypted = newErrFn(
 		"Invalid rotating credentials",
 		"Please set correct rotating credentials in the environment for decryption",
-		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables OBSTOR_ROOT_USER_OLD and OBSTOR_ROOT_PASSWORD_OLD to be able to re-encrypt the ObStor config, user IAM and policies with new credentials`,
+		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables OBSTOR_ROOT_USER_OLD and OBSTOR_ROOT_PASSWORD_OLD to be able to re-encrypt the Obstor config, user IAM and policies with new credentials`,
 	)
 
 	ErrInvalidCredentialsBackendEncrypted = newErrFn(
 		"Invalid credentials",
 		"Please set correct credentials in the environment for decryption",
-		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the Obstor config, user IAM and policies`,
 	)
 
 	ErrMissingCredentialsBackendEncrypted = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`Detected encrypted config backend, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the Obstor config, user IAM and policies`,
 	)
 
 	ErrInvalidCredentials = newErrFn(
@@ -170,14 +170,14 @@ var (
 	ErrStorageClassValue = newErrFn(
 		"Invalid storage class value",
 		"Please check the value",
-		`OBSTOR_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
-OBSTOR_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
+		`OBSTOR_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for Obstor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
+OBSTOR_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for Obstor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
 Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class for more information`,
 	)
 
 	ErrUnexpectedBackendVersion = newErrFn(
 		"Backend version seems to be too recent",
-		"Please update to the latest ObStor version",
+		"Please update to the latest Obstor version",
 		"",
 	)
 
@@ -206,8 +206,8 @@ Example 1:
 
 	ErrUnableToWriteInBackend = newErrFn(
 		"Unable to write to the backend",
-		"Please ensure ObStor binary has write permissions for the backend",
-		`Verify if ObStor binary is running as the same user who has write permissions for the backend`,
+		"Please ensure Obstor binary has write permissions for the backend",
+		`Verify if Obstor binary is running as the same user who has write permissions for the backend`,
 	)
 
 	ErrPortAlreadyInUse = newErrFn(
@@ -218,7 +218,7 @@ Example 1:
 
 	ErrPortAccess = newErrFn(
 		"Unable to use specified port",
-		"Please ensure ObStor binary has 'cap_net_bind_service=+ep' permissions",
+		"Please ensure Obstor binary has 'cap_net_bind_service=+ep' permissions",
 		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/obstor' to provide sufficient permissions`,
 	)
 
@@ -260,7 +260,7 @@ Example 1:
 
 	ErrUnexpectedError = newErrFn(
 		"Unexpected error",
-		"Please contact ObStor at https://pgg.net/discord",
+		"Please contact Obstor at https://pgg.net/discord",
 		"",
 	)
 

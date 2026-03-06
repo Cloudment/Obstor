@@ -57,7 +57,7 @@ func TestUpdateClaimsExpiry(t *testing.T) {
 				t.Errorf("Expected success, got failure %s", err)
 			}
 			if err == nil && testCase.expectedFailure {
-				t.Error("Expected failure, got success")
+				t.Error("expected failure, got success")
 			}
 		})
 	}

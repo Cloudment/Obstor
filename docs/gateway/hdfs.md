@@ -1,9 +1,9 @@
-# ObStor HDFS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
-ObStor HDFS gateway adds Amazon S3 API support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the gateway is stateless and shared-nothing, you may elastically provision as many ObStor instances as needed to distribute the load.
+# Obstor HDFS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+Obstor HDFS gateway adds Amazon S3 API support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the gateway is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
 
-> NOTE: Intention of this gateway implementation it to make it easy to migrate your existing data on HDFS clusters to ObStor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
+> NOTE: Intention of this gateway implementation it to make it easy to migrate your existing data on HDFS clusters to Obstor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
 
-## Run ObStor Gateway for HDFS Storage
+## Run Obstor Gateway for HDFS Storage
 
 ### Using Binary
 Namenode information is obtained by reading `core-site.xml` automatically from your hadoop environment variables *$HADOOP_HOME*
@@ -32,7 +32,7 @@ docker run -p 9000:9000 \
 
 ### Setup Kerberos
 
-ObStor supports two kerberos authentication methods, keytab and ccache.
+Obstor supports two kerberos authentication methods, keytab and ccache.
 
 To enable kerberos authentication, you need to set `hadoop.security.authentication=kerberos` in the HDFS config file.
 
@@ -43,13 +43,13 @@ To enable kerberos authentication, you need to set `hadoop.security.authenticati
 </property>
 ```
 
-ObStor will load `krb5.conf` from environment variable `KRB5_CONFIG` or default location `/etc/krb5.conf`.
+Obstor will load `krb5.conf` from environment variable `KRB5_CONFIG` or default location `/etc/krb5.conf`.
 ```sh
 export KRB5_CONFIG=/path/to/krb5.conf
 ```
 
-If you want ObStor to use ccache for authentication, set environment variable `KRB5CCNAME` to the credential cache file path,
-or ObStor will use the default location `/tmp/krb5cc_%{uid}`.
+If you want Obstor to use ccache for authentication, set environment variable `KRB5CCNAME` to the credential cache file path,
+or Obstor will use the default location `/tmp/krb5cc_%{uid}`.
 ```sh
 export KRB5CCNAME=/path/to/krb5cc
 ```
@@ -68,12 +68,12 @@ export KRB5USERNAME=hdfs
 export KRB5REALM=REALM.COM
 ```
 
-## Test using ObStor Browser
-*ObStor gateway* comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
+## Test using Obstor Browser
+*Obstor gateway* comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
 ![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/obstor-browser-gateway.png)
 
-## Test using ObStor Client `mc`
+## Test using Obstor Client `mc`
 
 `mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
 

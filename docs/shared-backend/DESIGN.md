@@ -1,12 +1,12 @@
 Introduction [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 ------------
 
-This feature allows ObStor to serve a shared NAS drive across multiple ObStor instances. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default.
+This feature allows Obstor to serve a shared NAS drive across multiple Obstor instances. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default.
 
 Motivation
 ----------
 
-Since ObStor instances serve the purpose of a single tenant there is an increasing requirement where users want to run multiple ObStor instances on a same backend which is managed by an existing NAS (NFS, GlusterFS, Other distributed filesystems) rather than a local disk. This feature is implemented also with minimal disruption in mind for the user and overall UI.
+Since Obstor instances serve the purpose of a single tenant there is an increasing requirement where users want to run multiple Obstor instances on a same backend which is managed by an existing NAS (NFS, GlusterFS, Other distributed filesystems) rather than a local disk. This feature is implemented also with minimal disruption in mind for the user and overall UI.
 
 Restrictions
 ------------
@@ -17,11 +17,11 @@ Restrictions
 
 ## How To Run?
 
-Running ObStor instances on shared backend is no different than running on a stand-alone disk. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default. Following examples will clarify this further for each operating system of your choice:
+Running Obstor instances on shared backend is no different than running on a stand-alone disk. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default. Following examples will clarify this further for each operating system of your choice:
 
 ### Ubuntu 16.04 LTS
 
-Example 1: Start ObStor instance on a shared backend mounted and available at `/path/to/nfs-volume`.
+Example 1: Start Obstor instance on a shared backend mounted and available at `/path/to/nfs-volume`.
 
 On linux server1
 ```shell
@@ -35,7 +35,7 @@ obstor gateway nas /path/to/nfs-volume
 
 ### Windows 2012 Server
 
-Example 1: Start ObStor instance on a shared backend mounted and available at `\\remote-server\cifs`.
+Example 1: Start Obstor instance on a shared backend mounted and available at `\\remote-server\cifs`.
 
 On windows server1
 ```cmd
@@ -66,7 +66,7 @@ Architecture
 
 ### Lock process
 
-With in the same ObStor instance locking is handled by existing in-memory namespace locks (**sync.RWMutex** et. al).  To synchronize locks between many ObStor instances we leverage POSIX `fcntl()` locks on Unixes and on Windows `LockFileEx()` Win32 API. Requesting write lock block if there are any read locks held by neighboring ObStor instance on the same path. So does the read lock if there are any active write locks in-progress.
+With in the same Obstor instance locking is handled by existing in-memory namespace locks (**sync.RWMutex** et. al).  To synchronize locks between many Obstor instances we leverage POSIX `fcntl()` locks on Unixes and on Windows `LockFileEx()` Win32 API. Requesting write lock block if there are any read locks held by neighboring Obstor instance on the same path. So does the read lock if there are any active write locks in-progress.
 
 ### Unlock process
 

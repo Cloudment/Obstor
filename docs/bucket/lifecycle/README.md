@@ -3,7 +3,7 @@
 Enable object lifecycle configuration on buckets to setup automatic deletion of objects after a specified number of days or a specified date.
 
 ## 1. Prerequisites
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
+- Install Obstor - [Obstor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 - Install `mc` - [mc Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 
 ## 2. Enable bucket lifecycle configuration
@@ -100,5 +100,5 @@ When an object has only one version as a delete marker, the latter can be automa
 ```
 
 ## Explore Further
-- [ObStor | Golang Client API Reference](https://pgg.net/docs/obstor/golang-client-api-reference.html#SetBucketLifecycle)
+- [Obstor | Golang Client API Reference](https://pgg.net/docs/obstor/golang-client-api-reference.html#SetBucketLifecycle)
 - [Object Lifecycle Management](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html)

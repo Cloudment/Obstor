@@ -165,7 +165,7 @@ const (
 	KvDoubleQuote      = madmin.KvDoubleQuote
 	KvSingleQuote      = madmin.KvSingleQuote
 
-	// Env prefix used for all envs in ObStor
+	// Env prefix used for all envs in Obstor
 	EnvPrefix        = "OBSTOR_"
 	EnvWordDelimiter = `_`
 )
@@ -299,7 +299,7 @@ func (kvs KVS) Lookup(key string) (string, bool) {
 	return "", false
 }
 
-// Config - ObStor server config structure.
+// Config - Obstor server config structure.
 type Config map[string]map[string]KVS
 
 // DelFrom - deletes all keys in the input reader.

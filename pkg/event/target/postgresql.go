@@ -19,7 +19,7 @@
 //
 // * Namespace format
 //
-// On each create or update object event in ObStor Object storage
+// On each create or update object event in Obstor Object storage
 // server, a row is created or updated in the table in Postgres. On
 // each object removal, the corresponding row is deleted from the
 // table.
@@ -421,7 +421,7 @@ func NewPostgreSQLTarget(id string, args PostgreSQLArgs, doneCh <-chan struct{},
 
 	err = target.db.Ping()
 	if err != nil {
-		if target.store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if target.store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

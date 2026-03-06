@@ -67,7 +67,7 @@ func TestFSCleanupMultipartUploadsInRoutine(t *testing.T) {
 			t.Fatal("Unexpected err: ", err)
 		}
 	} else {
-		t.Error("Item was not cleaned up.")
+		t.Error("item was not cleaned up.")
 	}
 }
 

@@ -49,15 +49,15 @@ func NewRowGroup(chunks []*ColumnChunk, numRows, offset int64) *parquet.RowGroup
 		rows.Columns = append(rows.Columns, &chunk.ColumnChunk)
 		rows.TotalByteSize += chunk.dataLen
 
-		chunk.ColumnChunk.FileOffset = offset
+		chunk.FileOffset = offset
 
 		if chunk.isDictPage {
 			dictPageOffset := offset
-			chunk.ColumnChunk.MetaData.DictionaryPageOffset = &dictPageOffset
+			chunk.MetaData.DictionaryPageOffset = &dictPageOffset
 			offset += chunk.dictPageLen
 		}
 
-		chunk.ColumnChunk.MetaData.DataPageOffset = offset
+		chunk.MetaData.DataPageOffset = offset
 		offset += chunk.dataPageLen
 	}
 

@@ -289,7 +289,7 @@ func (m *Manager) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, 
 	// via SNI.
 	//
 	// Note: The certificate.Leaf should be non-nil and contain the actual
-	// client certificate of ObStor that should be presented to the peer (TLS client).
+	// client certificate of Obstor that should be presented to the peer (TLS client).
 	// Otherwise, the leaf certificate has to be parsed again - which is kind of
 	// expensive and may cause a performance issue. For more information, check the
 	// docs of tls.ClientHelloInfo.SupportsCertificate.
@@ -323,7 +323,7 @@ func (m *Manager) GetClientCertificate(reqInfo *tls.CertificateRequestInfo) (*tl
 	// be accepted by the peer (TLS server) based on reqInfo.
 	//
 	// Note: The certificate.Leaf should be non-nil and contain the actual
-	// client certificate of ObStor that should be presented to the peer (TLS server).
+	// client certificate of Obstor that should be presented to the peer (TLS server).
 	// Otherwise, the leaf certificate has to be parsed again - which is kind of
 	// expensive and may cause a performance issue. For more information, check the
 	// docs of tls.CertificateRequestInfo.SupportsCertificate.

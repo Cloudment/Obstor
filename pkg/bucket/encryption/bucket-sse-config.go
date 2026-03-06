@@ -45,7 +45,7 @@ func (alg *SSEAlgorithm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 	case string(AWSKms):
 		*alg = AWSKms
 	default:
-		return errors.New("Unknown SSE algorithm")
+		return errors.New("unknown SSE algorithm")
 	}
 
 	return nil
@@ -94,11 +94,11 @@ func ParseBucketSSEConfig(r io.Reader) (*BucketSSEConfig, error) {
 		switch rule.DefaultEncryptionAction.Algorithm {
 		case AES256:
 			if rule.DefaultEncryptionAction.MasterKeyID != "" {
-				return nil, errors.New("MasterKeyID is allowed with aws:kms only")
+				return nil, errors.New("masterKeyID is allowed with aws:kms only")
 			}
 		case AWSKms:
 			if rule.DefaultEncryptionAction.MasterKeyID == "" {
-				return nil, errors.New("MasterKeyID is missing with aws:kms")
+				return nil, errors.New("masterKeyID is missing with aws:kms")
 			}
 		}
 	}

@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -184,7 +183,7 @@ func (g *Azure) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, err
 	}
 
 	httpClient := &http.Client{Transport: t}
-	userAgent := fmt.Sprintf("APN/1.0 ObStor/1.0 ObStor/%s", obstor.Version)
+	userAgent := fmt.Sprintf("APN/1.0 Obstor/1.0 Obstor/%s", obstor.Version)
 
 	pipeline := azblob.NewPipeline(credential, azblob.PipelineOptions{
 		Retry: azblob.RetryOptions{
@@ -280,7 +279,7 @@ func s3MetaToAzureProperties(ctx context.Context, s3Metadata map[string]string) 
 	encodeKey := func(key string) string {
 		tokens := strings.Split(key, "_")
 		for i := range tokens {
-			tokens[i] = strings.Replace(tokens[i], "-", "_", -1)
+			tokens[i] = strings.ReplaceAll(tokens[i], "-", "_")
 		}
 		return strings.Join(tokens, "__")
 	}
@@ -373,7 +372,7 @@ func azurePropertiesToS3Meta(meta azblob.Metadata, props azblob.BlobHTTPHeaders,
 	decodeKey := func(key string) string {
 		tokens := strings.Split(key, "__")
 		for i := range tokens {
-			tokens[i] = strings.Replace(tokens[i], "_", "-", -1)
+			tokens[i] = strings.ReplaceAll(tokens[i], "_", "-")
 		}
 		return strings.Join(tokens, "_")
 	}
@@ -498,7 +497,7 @@ func getAzureUploadID() (string, error) {
 		return "", err
 	}
 	if n != len(id) {
-		return "", fmt.Errorf("Unexpected random data size. Expected: %d, read: %d)", len(id), n)
+		return "", fmt.Errorf("unexpected random data size. Expected: %d, read: %d)", len(id), n)
 	}
 
 	return hex.EncodeToString(id[:]), nil
@@ -821,7 +820,7 @@ func (a *azureObjects) getObject(ctx context.Context, bucket, object string, sta
 
 	accessCond := azblob.BlobAccessConditions{}
 	if etag != "" {
-		accessCond.ModifiedAccessConditions.IfMatch = azblob.ETag(etag)
+		accessCond.IfMatch = azblob.ETag(etag)
 	}
 
 	blobURL := a.client.NewContainerURL(bucket).NewBlobURL(object)
@@ -1105,7 +1104,7 @@ func (a *azureObjects) PutObjectPart(ctx context.Context, bucket, object, upload
 
 		id := base64.StdEncoding.EncodeToString([]byte(obstor.MustGetUUID()))
 		blobURL := a.client.NewContainerURL(bucket).NewBlockBlobURL(object)
-		body, err := ioutil.ReadAll(io.LimitReader(data, subPartSize))
+		body, err := io.ReadAll(io.LimitReader(data, subPartSize))
 		if err != nil {
 			return info, azureToObjectError(err, bucket, object)
 		}
@@ -1200,13 +1199,13 @@ func (a *azureObjects) ListObjectParts(ctx context.Context, bucket, object, uplo
 		}
 		partNumber, err := parseAzurePart(blob.Name, prefix)
 		if err != nil {
-			return result, azureToObjectError(fmt.Errorf("Unexpected error"), bucket, object)
+			return result, azureToObjectError(fmt.Errorf("unexpected error"), bucket, object)
 		}
 		var metadata partMetadataV1
 		blobURL := containerURL.NewBlobURL(blob.Name)
 		blob, err := blobURL.Download(ctx, 0, azblob.CountToEnd, azblob.BlobAccessConditions{}, false, azblob.ClientProvidedKeyOptions{})
 		if err != nil {
-			return result, azureToObjectError(fmt.Errorf("Unexpected error"), bucket, object)
+			return result, azureToObjectError(fmt.Errorf("unexpected error"), bucket, object)
 		}
 		metadataReader := blob.Body(azblob.RetryReaderOptions{MaxRetryRequests: azureDownloadRetryAttempts})
 		if err = json.NewDecoder(metadataReader).Decode(&metadata); err != nil {

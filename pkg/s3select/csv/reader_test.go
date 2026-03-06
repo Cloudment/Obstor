@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -47,7 +47,7 @@ func TestRead(t *testing.T) {
 		var record sql.Record
 		var result bytes.Buffer
 
-		r, _ := NewReader(ioutil.NopCloser(strings.NewReader(c.content)), &ReaderArgs{
+		r, _ := NewReader(io.NopCloser(strings.NewReader(c.content)), &ReaderArgs{
 			FileHeaderInfo:             none,
 			RecordDelimiter:            c.recordDelimiter,
 			FieldDelimiter:             c.fieldDelimiter,
@@ -89,7 +89,7 @@ type tester interface {
 }
 
 func openTestFile(t tester, file string) []byte {
-	f, err := ioutil.ReadFile(filepath.Join("testdata/testdata.zip"))
+	f, err := os.ReadFile(filepath.Join("testdata/testdata.zip"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,7 +104,7 @@ func openTestFile(t tester, file string) []byte {
 				t.Fatal(err)
 			}
 			defer rc.Close()
-			b, err := ioutil.ReadAll(rc)
+			b, err := io.ReadAll(rc)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -240,7 +240,7 @@ func TestReadExtended(t *testing.T) {
 			if !c.header {
 				args.FileHeaderInfo = none
 			}
-			r, _ := NewReader(ioutil.NopCloser(bytes.NewReader(input)), &args)
+			r, _ := NewReader(io.NopCloser(bytes.NewReader(input)), &args)
 			fields := 0
 			for {
 				record, err = r.Read(record)
@@ -458,7 +458,7 @@ func TestReadFailures(t *testing.T) {
 			if c.sendErr != nil {
 				inr = io.MultiReader(inr, errReader{c.sendErr})
 			}
-			r, _ := NewReader(ioutil.NopCloser(inr), &args)
+			r, _ := NewReader(io.NopCloser(inr), &args)
 			fields := 0
 			for {
 				record, err = r.Read(record)
@@ -505,7 +505,7 @@ func BenchmarkReaderBasic(b *testing.B) {
 		unmarshaled:                true,
 	}
 	f := openTestFile(b, "nyc-taxi-data-100k.csv")
-	r, err := NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+	r, err := NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
@@ -515,7 +515,7 @@ func BenchmarkReaderBasic(b *testing.B) {
 	b.SetBytes(int64(len(f)))
 	var record sql.Record
 	for i := 0; i < b.N; i++ {
-		r, err = NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+		r, err = NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 		if err != nil {
 			b.Fatalf("Reading init failed with %s", err)
 		}
@@ -553,7 +553,7 @@ func BenchmarkReaderHuge(b *testing.B) {
 			b.ResetTimer()
 			var record sql.Record
 			for i := 0; i < b.N; i++ {
-				r, err := NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+				r, err := NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 				if err != nil {
 					b.Fatalf("Reading init failed with %s", err)
 				}
@@ -587,7 +587,7 @@ func BenchmarkReaderReplace(b *testing.B) {
 		unmarshaled:                true,
 	}
 	f := openTestFile(b, "nyc-taxi-data-100k-single-delim.csv")
-	r, err := NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+	r, err := NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
@@ -597,7 +597,7 @@ func BenchmarkReaderReplace(b *testing.B) {
 	b.SetBytes(int64(len(f)))
 	var record sql.Record
 	for i := 0; i < b.N; i++ {
-		r, err = NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+		r, err = NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 		if err != nil {
 			b.Fatalf("Reading init failed with %s", err)
 		}
@@ -624,7 +624,7 @@ func BenchmarkReaderReplaceTwo(b *testing.B) {
 		unmarshaled:                true,
 	}
 	f := openTestFile(b, "nyc-taxi-data-100k-multi-delim.csv")
-	r, err := NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+	r, err := NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
@@ -634,7 +634,7 @@ func BenchmarkReaderReplaceTwo(b *testing.B) {
 	b.SetBytes(int64(len(f)))
 	var record sql.Record
 	for i := 0; i < b.N; i++ {
-		r, err = NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &args)
+		r, err = NewReader(io.NopCloser(bytes.NewBuffer(f)), &args)
 		if err != nil {
 			b.Fatalf("Reading init failed with %s", err)
 		}

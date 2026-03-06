@@ -62,7 +62,7 @@ func registerWebRouter(router *mux.Router) error {
 	// Initialize a new json2 codec.
 	codec := json2.NewCodec()
 
-	// ObStor browser router.
+	// Obstor browser router.
 	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
 
 	// Initialize json rpc handlers.

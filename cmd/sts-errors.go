@@ -136,7 +136,7 @@ var stsErrCodes = stsErrorCodeMap{
 	},
 	ErrSTSInvalidClientGrantsToken: {
 		Code:           "InvalidClientGrantsToken",
-		Description:    "The client grants token that was passed could not be validated by ObStor.",
+		Description:    "The client grants token that was passed could not be validated by Obstor.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrSTSMalformedPolicyDocument: {

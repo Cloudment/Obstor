@@ -164,7 +164,7 @@ func TestService(t *testing.T) {
 
 	var res Service1Response
 	if err := execute(t, s, "Service1.Multiply", &Service1Request{4, 2}, &res); err != nil {
-		t.Error("Expected err to be nil, but got:", err)
+		t.Error("expected err to be nil, but got:", err)
 	}
 	if res.Result != 8 {
 		t.Errorf("Wrong response: %v.", res.Result)
@@ -206,7 +206,7 @@ func TestService(t *testing.T) {
 
 	res = Service1Response{}
 	if err := executeInvalidJSON(t, s, &res); err == nil {
-		t.Error("Expected to receive an E_PARSE error, but got nil")
+		t.Error("expected to receive an E_PARSE error, but got nil")
 	} else if jsonRpcErr, ok := err.(*Error); !ok {
 		t.Errorf("Expected to receive an Error, but got %T: %s", err, err)
 	} else if jsonRpcErr.Code != E_PARSE {
@@ -283,10 +283,10 @@ func TestDecodeNullResult(t *testing.T) {
 	err := DecodeClientResponse(reader, &result)
 
 	if err != ErrNullResult {
-		t.Error("Expected err no be ErrNullResult, but got:", err)
+		t.Error("expected err no be ErrNullResult, but got:", err)
 	}
 
 	if result != nil {
-		t.Error("Expected result to be nil, but got:", result)
+		t.Error("expected result to be nil, but got:", result)
 	}
 }

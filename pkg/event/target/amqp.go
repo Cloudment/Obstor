@@ -295,7 +295,7 @@ func NewAMQPTarget(id string, args AMQPArgs, doneCh <-chan struct{}, loggerOnce 
 
 	conn, err = amqp.Dial(args.URL.String())
 	if err != nil {
-		if store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

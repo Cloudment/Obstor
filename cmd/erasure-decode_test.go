@@ -225,7 +225,7 @@ func TestErasureDecodeRandomOffsetLength(t *testing.T) {
 	// Prepare a slice of 5MiB with random data.
 	data := make([]byte, 5*humanize.MiByte)
 	length := int64(len(data))
-	_, err = rand.Read(data)
+	_, err = crand.Read(data)
 	if err != nil {
 		t.Fatal(err)
 	}

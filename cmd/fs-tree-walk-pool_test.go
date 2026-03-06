@@ -83,7 +83,7 @@ func TestManyWalksSameParam(t *testing.T) {
 		tw.mu.Lock()
 		if walks, ok := tw.pool[params]; ok {
 			if len(walks) != treeWalkSameEntryLimit {
-				t.Error("There aren't as many walks as were Set")
+				t.Error("there aren't as many walks as were Set")
 			}
 		}
 		tw.mu.Unlock()
@@ -92,7 +92,7 @@ func TestManyWalksSameParam(t *testing.T) {
 			if walks, ok := tw.pool[params]; ok {
 				// Before ith Release we should have n-i treeWalk go-routines.
 				if treeWalkSameEntryLimit-i != len(walks) {
-					t.Error("There aren't as many walks as were Set")
+					t.Error("there aren't as many walks as were Set")
 				}
 			}
 			tw.mu.Unlock()
@@ -128,7 +128,7 @@ func TestManyWalksSameParamPrune(t *testing.T) {
 		tw.mu.Lock()
 		if walks, ok := tw.pool[params]; ok {
 			if len(walks) != treeWalkSameEntryLimit {
-				t.Error("There aren't as many walks as were Set")
+				t.Error("there aren't as many walks as were Set")
 			}
 		}
 		tw.mu.Unlock()
@@ -137,7 +137,7 @@ func TestManyWalksSameParamPrune(t *testing.T) {
 			if walks, ok := tw.pool[params]; ok {
 				// Before ith Release we should have n-i treeWalk go-routines.
 				if treeWalkSameEntryLimit-i != len(walks) {
-					t.Error("There aren't as many walks as were Set")
+					t.Error("there aren't as many walks as were Set")
 				}
 			}
 			tw.mu.Unlock()

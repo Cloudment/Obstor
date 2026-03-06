@@ -17,6 +17,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"os"
 	"time"
 
@@ -24,8 +26,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // S3 client for testing
@@ -83,7 +83,7 @@ func cleanupBucket(bucket string, function string, args map[string]interface{}, 
 		return
 	}
 
-	failureLog(function, args, startTime, "", "Unable to cleanup bucket after compliance tests", nil).Fatal()
+	failureLog(function, args, startTime, "", "Unable to cleanup bucket after compliance tests", nil)
 	return
 }
 
@@ -102,7 +102,8 @@ func main() {
 		config.WithRegion("us-east-1"),
 	)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error(fmt.Sprintf("unable to load SDK config: %v", err))
+		os.Exit(1)
 	}
 
 	// Create an S3 service object with custom endpoint resolver
@@ -111,14 +112,9 @@ func main() {
 		o.UsePathStyle = true
 	})
 
-	// Output to stdout instead of the default stderr
-	log.SetOutput(os.Stdout)
-	// create custom formatter
-	mintFormatter := mintJSONFormatter{}
-	// set custom formatter
-	log.SetFormatter(&mintFormatter)
-	// log Info or above -- success cases are Info level, failures are Fatal level
-	log.SetLevel(log.InfoLevel)
+	// Configure slog to output JSON to stdout
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
 
 	testMakeBucket()
 	testPutObject()

@@ -25,7 +25,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -165,7 +164,7 @@ func newDiskCache(ctx context.Context, dir string, config cache.Config) (*diskCa
 	}
 
 	if err := os.MkdirAll(dir, 0777); err != nil {
-		return nil, fmt.Errorf("Unable to initialize '%s' dir, %w", dir, err)
+		return nil, fmt.Errorf("unable to initialize '%s' dir, %w", dir, err)
 	}
 	cache := diskCache{
 		dir:              dir,
@@ -693,7 +692,7 @@ func newCacheEncryptMetadata(bucket, object string, metadata map[string]string) 
 // Caches the object to disk
 func (c *diskCache) Put(ctx context.Context, bucket, object string, data io.Reader, size int64, rs *HTTPRangeSpec, opts ObjectOptions, incHitsOnly bool) (oi ObjectInfo, err error) {
 	if !c.diskSpaceAvailable(size) {
-		io.Copy(ioutil.Discard, data)
+		io.Copy(io.Discard, data)
 		return oi, errDiskFull
 	}
 	cachePath := getCacheSHADir(c.dir, bucket, object)

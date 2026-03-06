@@ -21,7 +21,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	pathutil "path"
@@ -48,7 +47,7 @@ const (
 	fsMetaVersion101 = "1.0.1"
 
 	// FS backend meta 1.0.2
-	// Removed the fields "Format" and "ObStor" from fsMetaV1 as they were unused. Added "Checksum" field - to be used in future for bit-rot protection.
+	// Removed the fields "Format" and "Obstor" from fsMetaV1 as they were unused. Added "Checksum" field - to be used in future for bit-rot protection.
 	fsMetaVersion = "1.0.2"
 
 	// Add more constants here.
@@ -217,7 +216,7 @@ func (m *fsMetaV1) ReadFrom(ctx context.Context, lk *lock.LockedFile) (n int64, 
 		return 0, err
 	}
 
-	fsMetaBuf, err = ioutil.ReadAll(io.NewSectionReader(lk, 0, fi.Size()))
+	fsMetaBuf, err = io.ReadAll(io.NewSectionReader(lk, 0, fi.Size()))
 	if err != nil {
 		logger.LogIf(ctx, err)
 		return 0, err

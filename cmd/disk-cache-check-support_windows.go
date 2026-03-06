@@ -21,7 +21,6 @@ package cmd
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 
 	"github.com/cloudment/obstor/pkg/atime"
@@ -30,7 +29,7 @@ import (
 
 // Return error if Atime is disabled on the O/S
 func checkAtimeSupport(dir string) (err error) {
-	file, err := ioutil.TempFile(dir, "prefix")
+	file, err := os.CreateTemp(dir, "prefix")
 	if err != nil {
 		return
 	}
@@ -55,7 +54,7 @@ func checkAtimeSupport(dir string) (err error) {
 
 	lowSetting := setting & 0xFFFF
 	if lowSetting != uint64(0x0000) && lowSetting != uint64(0x0002) {
-		return errors.New("Atime not supported")
+		return errors.New("atime not supported")
 	}
 	return
 }

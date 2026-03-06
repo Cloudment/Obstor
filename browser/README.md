@@ -1,6 +1,6 @@
-# ObStor File Browser
+# Obstor File Browser
 
-``ObStor Browser`` provides minimal set of UI to manage buckets and objects on ``obstor`` server. ``ObStor Browser`` is written in javascript and released under [Apache 2.0 License](./LICENSE).
+``Obstor Browser`` provides minimal set of UI to manage buckets and objects on ``obstor`` server. ``Obstor Browser`` is written in javascript and released under [Apache 2.0 License](./LICENSE).
 
 
 ## Installation
@@ -26,9 +26,9 @@ npm run release
 This generates `production` in the current directory.
 
 
-## Run ObStor Browser with live reload
+## Run Obstor Browser with live reload
 
-### Run ObStor Browser with live reload
+### Run Obstor Browser with live reload
 
 ```sh
 npm run dev
@@ -36,7 +36,7 @@ npm run dev
 
 Open [http://localhost:8080/obstor/](http://localhost:8080/obstor/) in your browser to play with the application.
 
-### Run ObStor Browser with live reload on custom port
+### Run Obstor Browser with live reload on custom port
 
 Edit `browser/webpack.config.js`
 
@@ -70,7 +70,7 @@ npm run dev
 
 Open [http://localhost:8888/obstor/](http://localhost:8888/obstor/) in your browser to play with the application.
 
-### Run ObStor Browser with live reload on any IP
+### Run Obstor Browser with live reload on any IP
 
 Edit `browser/webpack.config.js`
 

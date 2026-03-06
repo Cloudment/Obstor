@@ -209,7 +209,7 @@ func Open(path string, flag int, perm os.FileMode) (*os.File, error) {
 	case syscall.O_WRONLY | syscall.O_CREAT | syscall.O_APPEND:
 		access = syscall.FILE_APPEND_DATA
 	default:
-		return nil, fmt.Errorf("Unsupported flag (%d)", flag)
+		return nil, fmt.Errorf("unsupported flag (%d)", flag)
 	}
 
 	var createflag uint32

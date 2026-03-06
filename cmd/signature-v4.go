@@ -102,7 +102,7 @@ func getSignedHeaders(signedHeaders http.Header) string {
 //	<SignedHeaders>\n
 //	<HashedPayload>
 func getCanonicalRequest(extractedSignedHeaders http.Header, payload, queryStr, urlPath, method string) string {
-	rawQuery := strings.Replace(queryStr, "+", "%20", -1)
+	rawQuery := strings.ReplaceAll(queryStr, "+", "%20")
 	encodedPath := s3utils.EncodePath(urlPath)
 	canonicalRequest := strings.Join([]string{
 		method,

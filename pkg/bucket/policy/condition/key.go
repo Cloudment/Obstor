@@ -105,10 +105,10 @@ const (
 	// AWSPrincipalType - user principal type currently supported values are "User" and "Anonymous".
 	AWSPrincipalType Key = "aws:principaltype"
 
-	// AWSUserID - user unique ID, in ObStor this value is same as your user Access Key.
+	// AWSUserID - user unique ID, in Obstor this value is same as your user Access Key.
 	AWSUserID Key = "aws:userid"
 
-	// AWSUsername - user friendly name, in ObStor this value is same as your user Access Key.
+	// AWSUsername - user friendly name, in Obstor this value is same as your user Access Key.
 	AWSUsername Key = "aws:username"
 
 	// S3SignatureVersion - identifies the version of AWS Signature that you want to support for authenticated requests.
@@ -173,7 +173,7 @@ func substFuncFromValues(values map[string][]string) func(string) string {
 		for _, key := range CommonKeys {
 			// Empty values are not supported for policy variables.
 			if rvalues, ok := values[key.Name()]; ok && rvalues[0] != "" {
-				v = strings.Replace(v, key.VarName(), rvalues[0], -1)
+				v = strings.ReplaceAll(v, key.VarName(), rvalues[0])
 			}
 		}
 		return v

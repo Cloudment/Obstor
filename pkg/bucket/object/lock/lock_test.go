@@ -120,12 +120,12 @@ func TestUnmarshalDefaultRetention(t *testing.T) {
 		},
 		{
 			value:       DefaultRetention{Mode: RetGovernance, Days: &zerodays},
-			expectedErr: fmt.Errorf("Default retention period must be a positive integer value for 'Days'"),
+			expectedErr: fmt.Errorf("default retention period must be a positive integer value for 'Days'"),
 			expectErr:   true,
 		},
 		{
 			value:       DefaultRetention{Mode: RetGovernance, Days: &invalidDays},
-			expectedErr: fmt.Errorf("Default retention period too large for 'Days' %d", invalidDays),
+			expectedErr: fmt.Errorf("default retention period too large for 'Days' %d", invalidDays),
 			expectErr:   true,
 		},
 	}
@@ -161,7 +161,7 @@ func TestParseObjectLockConfig(t *testing.T) {
 		},
 		{
 			value:       `<ObjectLockConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><ObjectLockEnabled>Enabled</ObjectLockEnabled><Rule><DefaultRetention><Mode>COMPLIANCE</Mode><Days>0</Days></DefaultRetention></Rule></ObjectLockConfiguration>`,
-			expectedErr: fmt.Errorf("Default retention period must be a positive integer value for 'Days'"),
+			expectedErr: fmt.Errorf("default retention period must be a positive integer value for 'Days'"),
 			expectErr:   true,
 		},
 		{

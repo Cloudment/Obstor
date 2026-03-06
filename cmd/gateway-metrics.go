@@ -52,13 +52,14 @@ func (s *BackendMetrics) GetBytesSent() uint64 {
 // IncRequests - Increase request count sent to gateway backend by 1
 func (s *BackendMetrics) IncRequests(method string) {
 	// Only increment for Head & Get requests, else no op
-	if method == http.MethodGet {
+	switch method {
+	case http.MethodGet:
 		atomic.AddUint64(&s.requestStats.Get, 1)
-	} else if method == http.MethodHead {
+	case http.MethodHead:
 		atomic.AddUint64(&s.requestStats.Head, 1)
-	} else if method == http.MethodPut {
+	case http.MethodPut:
 		atomic.AddUint64(&s.requestStats.Put, 1)
-	} else if method == http.MethodPost {
+	case http.MethodPost:
 		atomic.AddUint64(&s.requestStats.Post, 1)
 	}
 }

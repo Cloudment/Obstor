@@ -1,7 +1,7 @@
 project_name: obstor
 
 release:
-   name_template: "Version {{.ObStor.Version}}"
+   name_template: "Version {{.Obstor.Version}}"
    disable: true
    github:
     owner: obstor
@@ -81,7 +81,7 @@ nfpms:
     vendor: PGG, Inc.
     homepage: https://pgg.net/
     maintainer: oss@pgg.net
-    description: ObStor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use ObStor to build high performance infrastructure for machine learning, analytics and application data workloads.
+    description: Obstor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use Obstor to build high performance infrastructure for machine learning, analytics and application data workloads.
     license: Apache 2.0
     bindir: /usr/bin
     formats:

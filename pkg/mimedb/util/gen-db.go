@@ -22,7 +22,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -78,7 +77,7 @@ func convertDB(jsonFile string) (mimeDB, error) {
 	}
 
 	// Access embedded "db.json" inside go-bindata.
-	jsonDB, err := ioutil.ReadFile(jsonFile)
+	jsonDB, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}

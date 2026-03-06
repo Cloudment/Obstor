@@ -28,7 +28,7 @@ func TestValidateBucketSSEConfig(t *testing.T) {
 		expectedErr error
 		shouldPass  bool
 	}{
-		// ObStor supported XML
+		// Obstor supported XML
 		{
 			inputXML: `<ServerSideEncryptionConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 			<Rule>
@@ -50,7 +50,7 @@ func TestValidateBucketSSEConfig(t *testing.T) {
 			</ApplyServerSideEncryptionByDefault>
 			</Rule>
 			</ServerSideEncryptionConfiguration>`,
-			expectedErr: errors.New("Unsupported bucket encryption configuration"),
+			expectedErr: errors.New("unsupported bucket encryption configuration"),
 			shouldPass:  false,
 		},
 	}

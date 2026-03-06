@@ -61,7 +61,7 @@ var printEndpointError = func() func(Endpoint, error, bool) {
 		// once not set, check if same error occurred 3 times in
 		// a row, then make sure we print it to call attention.
 		if m[err.Error()] > 2 {
-			logger.LogAlwaysIf(ctx, fmt.Errorf("Following error has been printed %d times.. %w", m[err.Error()], err))
+			logger.LogAlwaysIf(ctx, fmt.Errorf("following error has been printed %d times.. %w", m[err.Error()], err))
 			// Reduce the count to introduce further delay in printing
 			// but let it again print after the 2th attempt
 			m[err.Error()]--
@@ -153,7 +153,7 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 // the disk UUID association. Below error message is returned when
 // we see this situation in format.json, for more info refer
 // https://github.com/cloudment/obstor/issues/5667
-var errErasureV3ThisEmpty = fmt.Errorf("Erasure format version 3 has This field empty")
+var errErasureV3ThisEmpty = fmt.Errorf("erasure format version 3 has This field empty")
 
 // isServerResolvable - checks if the endpoint is resolvable
 // by sending a naked HTTP request with liveness checks.
@@ -224,7 +224,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 	for i, err := range errs {
 		if err != nil {
 			if err != errDiskNotFound {
-				return nil, nil, fmt.Errorf("Disk %s: %w", endpoints[i], err)
+				return nil, nil, fmt.Errorf("disk %s: %w", endpoints[i], err)
 			}
 			if retryCount >= 5 {
 				logger.Info("Unable to connect to %s: %v\n", endpoints[i], isServerResolvable(endpoints[i], time.Second))
@@ -381,7 +381,7 @@ func waitForFormatErasure(firstDisk bool, endpoints Endpoints, poolCount, setCou
 			}
 			return storageDisks, format, nil
 		case <-globalOSSignalCh:
-			return nil, nil, fmt.Errorf("Initializing data volumes gracefully stopped")
+			return nil, nil, fmt.Errorf("initializing data volumes gracefully stopped")
 		}
 	}
 }

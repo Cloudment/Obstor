@@ -53,15 +53,15 @@ import (
 )
 
 const (
-	// ObStor meta bucket.
+	// Obstor meta bucket.
 	minioMetaBucket = ".obstor.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
-	// ObStor Multipart meta prefix.
+	// Obstor Multipart meta prefix.
 	minioMetaMultipartBucket = minioMetaBucket + SlashSeparator + mpartMetaPrefix
-	// ObStor tmp meta prefix.
+	// Obstor tmp meta prefix.
 	minioMetaTmpBucket = minioMetaBucket + "/tmp"
-	// ObStor tmp meta prefix for deleted objects.
+	// Obstor tmp meta prefix for deleted objects.
 	minioMetaTmpDeletedBucket = minioMetaTmpBucket + "/.trash"
 
 	// DNS separator (period), used for bucket name validation.
@@ -74,7 +74,7 @@ const (
 	compReadAheadBufSize = 1 << 20
 )
 
-// isMinioBucket returns true if given bucket is a ObStor internal
+// isMinioBucket returns true if given bucket is a Obstor internal
 // bucket and false otherwise.
 func isMinioMetaBucketName(bucket string) bool {
 	return bucket == minioMetaBucket ||
@@ -130,7 +130,7 @@ func IsValidBucketName(bucket string) bool {
 		allNumbers = allNumbers && !isNotNumber
 	}
 	// Does the bucket name look like an IP address?
-	return !(len(pieces) == 4 && allNumbers)
+	return len(pieces) != 4 || !allNumbers
 }
 
 // IsValidObjectName verifies an object name in accordance with Amazon's

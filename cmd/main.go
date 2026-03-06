@@ -136,7 +136,7 @@ func newApp(name string) *cli.App {
 	app.Author = "PGG, Inc."
 	app.Version = ReleaseTag
 	app.Usage = "High Performance Object Storage"
-	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with ObStor`
+	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with Obstor`
 	app.Flags = GlobalFlags
 	app.HideHelp = true // Hide `help, h` command, we already have `obstor --help`.
 	app.Commands = commands

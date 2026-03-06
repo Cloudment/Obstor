@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"sort"
 
@@ -83,7 +82,7 @@ func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Notify all other ObStor peers to delete user.
+	// Notify all other Obstor peers to delete user.
 	for _, nerr := range globalNotificationSys.DeleteUser(accessKey) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -195,7 +194,7 @@ func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Requ
 	}
 
 	defer r.Body.Close()
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrInvalidRequest), r.URL)
 		return
@@ -219,7 +218,7 @@ func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Notify all other ObStor peers to load group.
+	// Notify all other Obstor peers to load group.
 	for _, nerr := range globalNotificationSys.LoadGroup(updReq.Group) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -299,11 +298,12 @@ func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request)
 	status := vars["status"]
 
 	var err error
-	if status == statusEnabled {
+	switch status {
+	case statusEnabled:
 		err = globalIAMSys.SetGroupStatus(group, true)
-	} else if status == statusDisabled {
+	case statusDisabled:
 		err = globalIAMSys.SetGroupStatus(group, false)
-	} else {
+	default:
 		err = errInvalidArgument
 	}
 	if err != nil {
@@ -311,7 +311,7 @@ func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Notify all other ObStor peers to reload user.
+	// Notify all other Obstor peers to reload user.
 	for _, nerr := range globalNotificationSys.LoadGroup(group) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -346,7 +346,7 @@ func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Notify all other ObStor peers to reload user.
+	// Notify all other Obstor peers to reload user.
 	for _, nerr := range globalNotificationSys.LoadUser(accessKey, false) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -998,7 +998,7 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 	accountName := cred.AccessKey
 	var policies []string
 	switch globalIAMSys.usersSysType {
-	case ObStorUsersSysType:
+	case ObstorUsersSysType:
 		policies, err = globalIAMSys.PolicyDBGet(accountName, false)
 	case LDAPUsersSysType:
 		parentUser := accountName
@@ -1187,7 +1187,7 @@ func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Notify all other ObStor peers to delete policy
+	// Notify all other Obstor peers to delete policy
 	for _, nerr := range globalNotificationSys.DeletePolicy(policyName) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -1239,7 +1239,7 @@ func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Notify all other ObStor peers to reload policy
+	// Notify all other Obstor peers to reload policy
 	for _, nerr := range globalNotificationSys.LoadPolicy(policyName) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -1281,7 +1281,7 @@ func (a adminAPIHandlers) SetPolicyForUserOrGroup(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Notify all other ObStor peers to reload policy
+	// Notify all other Obstor peers to reload policy
 	for _, nerr := range globalNotificationSys.LoadPolicyMapping(entityName, isGroup) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())

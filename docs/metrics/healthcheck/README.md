@@ -1,6 +1,6 @@
-## ObStor Healthcheck
+## Obstor Healthcheck
 
-ObStor server exposes three un-authenticated, healthcheck endpoints liveness probe and a cluster probe at `/obstor/health/live` and `/obstor/health/cluster` respectively.
+Obstor server exposes three un-authenticated, healthcheck endpoints liveness probe and a cluster probe at `/obstor/health/live` and `/obstor/health/cluster` respectively.
 
 ### Liveness probe
 
@@ -29,7 +29,7 @@ HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
 Content-Security-Policy: block-all-mixed-content
-Server: ObStor/GOGET.GOGET
+Server: Obstor/GOGET.GOGET
 Vary: Origin
 X-Amz-Bucket-Region: us-east-1
 X-Obstor-Write-Quorum: 3
@@ -47,7 +47,7 @@ HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
 Content-Security-Policy: block-all-mixed-content
-Server: ObStor/GOGET.GOGET
+Server: Obstor/GOGET.GOGET
 Vary: Origin
 X-Amz-Bucket-Region: us-east-1
 X-Obstor-Write-Quorum: 3
@@ -65,7 +65,7 @@ HTTP/1.1 412 Precondition Failed
 Accept-Ranges: bytes
 Content-Length: 0
 Content-Security-Policy: block-all-mixed-content
-Server: ObStor/GOGET.GOGET
+Server: Obstor/GOGET.GOGET
 Vary: Origin
 X-Amz-Bucket-Region: us-east-1
 X-Amz-Request-Id: 16239D63820C6E76

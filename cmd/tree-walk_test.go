@@ -19,7 +19,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"sort"
@@ -136,7 +135,7 @@ func testTreeWalkMarker(t *testing.T, listDir ListDirFunc, isLeaf IsLeafFunc, is
 
 // Test tree-walk.
 func TestTreeWalk(t *testing.T) {
-	fsDir, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	fsDir, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Unable to create tmp directory: %s", err)
 	}
@@ -183,7 +182,7 @@ func TestTreeWalk(t *testing.T) {
 
 // Test if tree walk go-routine exits cleanly if tree walk is aborted because of timeout.
 func TestTreeWalkTimeout(t *testing.T) {
-	fsDir, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	fsDir, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Unable to create tmp directory: %s", err)
 	}
@@ -247,7 +246,7 @@ func TestTreeWalkTimeout(t *testing.T) {
 	// The last entry will not be received as the Treewalk goroutine would have exited.
 	_, ok := <-resultCh
 	if ok {
-		t.Error("Tree-walk go routine has not exited after timeout.")
+		t.Error("tree-walk go routine has not exited after timeout.")
 	}
 	err = os.RemoveAll(fsDir)
 	if err != nil {
@@ -259,7 +258,7 @@ func TestTreeWalkTimeout(t *testing.T) {
 // without recursively traversing prefixes.
 func TestRecursiveTreeWalk(t *testing.T) {
 	// Create a backend directories fsDir1.
-	fsDir1, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	fsDir1, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Unable to create tmp directory: %s", err)
 	}
@@ -373,7 +372,7 @@ func TestRecursiveTreeWalk(t *testing.T) {
 
 func TestSortedness(t *testing.T) {
 	// Create a backend directories fsDir1.
-	fsDir1, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	fsDir1, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Errorf("Unable to create tmp directory: %s", err)
 	}
@@ -453,7 +452,7 @@ func TestSortedness(t *testing.T) {
 
 func TestTreeWalkIsEnd(t *testing.T) {
 	// Create a backend directories fsDir1.
-	fsDir1, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	fsDir1, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Errorf("Unable to create tmp directory: %s", err)
 	}

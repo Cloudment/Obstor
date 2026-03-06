@@ -53,7 +53,7 @@ func testDeleteObject() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -68,10 +68,10 @@ func testDeleteObject() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -83,7 +83,7 @@ func testDeleteObject() {
 
 	putOutput, err := s3Client.PutObject(ctx, putInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -94,7 +94,7 @@ func testDeleteObject() {
 	}
 	delOutput, err := s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -107,18 +107,18 @@ func testDeleteObject() {
 
 	_, err = s3Client.GetObject(ctx, getInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "GetObject expected to fail but succeeded", nil).Fatal()
+		failureLog(function, args, startTime, "", "GetObject expected to fail but succeeded", nil)
 		return
 	}
 	if err != nil {
 		var apiErr smithy.APIError
 		if errors.As(err, &apiErr) {
 			if apiErr.ErrorCode() != "MethodNotAllowed" {
-				failureLog(function, args, startTime, "", "GetObject unexpected error with delete marker", err).Fatal()
+				failureLog(function, args, startTime, "", "GetObject unexpected error with delete marker", err)
 				return
 			}
 		} else {
-			failureLog(function, args, startTime, "", "GetObject unexpected error with delete marker", err).Fatal()
+			failureLog(function, args, startTime, "", "GetObject unexpected error with delete marker", err)
 			return
 		}
 	}
@@ -133,19 +133,19 @@ func testDeleteObject() {
 	var result *s3.GetObjectOutput
 	result, err = s3Client.GetObject(ctx, getInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("GetObject expected to succeed but failed with %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("GetObject expected to succeed but failed with %v", err), err)
 		return
 	}
 
 	body, err := io.ReadAll(result.Body)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("GetObject expected to return data but failed with %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("GetObject expected to return data but failed with %v", err), err)
 		return
 	}
 	result.Body.Close()
 
 	if string(body) != objectContent {
-		failureLog(function, args, startTime, "", "GetObject unexpected body content", nil).Fatal()
+		failureLog(function, args, startTime, "", "GetObject unexpected body content", nil)
 		return
 	}
 
@@ -157,7 +157,7 @@ func testDeleteObject() {
 		}
 		_, err := s3Client.DeleteObject(ctx, delInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("DeleteObject (%d) expected to succeed but failed", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("DeleteObject (%d) expected to succeed but failed", i+1), err)
 			return
 		}
 	}
@@ -168,16 +168,16 @@ func testDeleteObject() {
 
 	listOutput, err := s3Client.ListObjectVersions(ctx, listInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 
 	if len(listOutput.DeleteMarkers) != 0 || len(listOutput.CommonPrefixes) != 0 || len(listOutput.Versions) != 0 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned some entries but expected to return nothing", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned some entries but expected to return nothing", nil)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Test deletion using multi delete API
@@ -199,7 +199,7 @@ func testDeleteObjects() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -214,10 +214,10 @@ func testDeleteObjects() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -229,7 +229,7 @@ func testDeleteObjects() {
 
 	_, err = s3Client.PutObject(ctx, putInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -248,7 +248,7 @@ func testDeleteObjects() {
 
 	_, err = s3Client.DeleteObjects(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -258,11 +258,11 @@ func testDeleteObjects() {
 	}
 	listOutput, err := s3Client.ListObjectVersions(ctx, listInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	if len(listOutput.DeleteMarkers) != 1 || len(listOutput.Versions) != 1 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned unexpected result", nil)
 		return
 	}
 
@@ -285,7 +285,7 @@ func testDeleteObjects() {
 	}
 	_, err = s3Client.DeleteObjects(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -295,13 +295,13 @@ func testDeleteObjects() {
 	}
 	listOutput, err = s3Client.ListObjectVersions(ctx, listInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 	if len(listOutput.DeleteMarkers) != 0 || len(listOutput.Versions) != 0 {
-		failureLog(function, args, startTime, "", "ListObjectVersions returned non empty result", nil).Fatal()
+		failureLog(function, args, startTime, "", "ListObjectVersions returned non empty result", nil)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

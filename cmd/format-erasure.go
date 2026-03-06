@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"sync"
 
@@ -185,19 +185,19 @@ func formatErasureMigrate(export string) error {
 	formatPath := pathJoin(export, minioMetaBucket, formatConfigFile)
 	version, err := formatGetBackendErasureVersion(formatPath)
 	if err != nil {
-		return fmt.Errorf("Disk %s: %w", export, err)
+		return fmt.Errorf("disk %s: %w", export, err)
 	}
 	switch version {
 	case formatErasureVersionV1:
 		if err = formatErasureMigrateV1ToV2(export, version); err != nil {
-			return fmt.Errorf("Disk %s: %w", export, err)
+			return fmt.Errorf("disk %s: %w", export, err)
 		}
 		// Migrate successful v1 => v2, proceed to v2 => v3
 		version = formatErasureVersionV2
 		fallthrough
 	case formatErasureVersionV2:
 		if err = formatErasureMigrateV2ToV3(export, version); err != nil {
-			return fmt.Errorf("Disk %s: %w", export, err)
+			return fmt.Errorf("disk %s: %w", export, err)
 		}
 		// Migrate successful v2 => v3, v3 is latest
 		// version = formatXLVersionV3
@@ -206,7 +206,7 @@ func formatErasureMigrate(export string) error {
 		// v3 is the latest version, return.
 		return nil
 	}
-	return fmt.Errorf(`Disk %s: unknown format version %s`, export, version)
+	return fmt.Errorf(`disk %s: unknown format version %s`, export, version)
 }
 
 // Migrates version V1 of format.json to version V2 of format.json,
@@ -241,7 +241,7 @@ func formatErasureMigrateV1ToV2(export, version string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(formatPath, b, 0644)
+	return os.WriteFile(formatPath, b, 0644)
 }
 
 // Migrates V2 for format.json to V3 (Flat hierarchy for multipart)
@@ -283,7 +283,7 @@ func formatErasureMigrateV2ToV3(export, version string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(formatPath, b, 0644)
+	return os.WriteFile(formatPath, b, 0644)
 }
 
 // countErrs - count a specific error.
@@ -437,13 +437,13 @@ func loadFormatErasure(disk StorageAPI) (format *formatErasureV3, err error) {
 func checkFormatErasureValue(formatErasure *formatErasureV3, disk StorageAPI) error {
 	// Validate format version and format type.
 	if formatErasure.Version != formatMetaVersionV1 {
-		return fmt.Errorf("Unsupported version of backend format [%s] found on %s", formatErasure.Version, disk)
+		return fmt.Errorf("unsupported version of backend format [%s] found on %s", formatErasure.Version, disk)
 	}
 	if formatErasure.Format != formatBackendErasure {
-		return fmt.Errorf("Unsupported backend format [%s] found on %s", formatErasure.Format, disk)
+		return fmt.Errorf("unsupported backend format [%s] found on %s", formatErasure.Format, disk)
 	}
 	if formatErasure.Erasure.Version != formatErasureVersionV3 {
-		return fmt.Errorf("Unsupported Erasure backend format found [%s] on %s", formatErasure.Erasure.Version, disk)
+		return fmt.Errorf("unsupported Erasure backend format found [%s] on %s", formatErasure.Erasure.Version, disk)
 	}
 	return nil
 }
@@ -490,7 +490,7 @@ func formatErasureGetDeploymentID(refFormat *formatErasureV3, formats []*formatE
 			} else if deploymentID != format.ID {
 				// DeploymentID found earlier doesn't match with the
 				// current format.json's ID.
-				return "", fmt.Errorf("Deployment IDs do not match expected %s, got %s: %w",
+				return "", fmt.Errorf("deployment IDs do not match expected %s, got %s: %w",
 					deploymentID, format.ID, errCorruptedFormat)
 			}
 		}
@@ -564,7 +564,7 @@ func formatErasureFixLocalDeploymentID(endpoints Endpoints, storageDisks []Stora
 				// Heal the drive if we fixed its deployment ID.
 				if err := saveFormatErasure(storageDisks[index], format, true); err != nil {
 					logger.LogIf(GlobalContext, err)
-					return fmt.Errorf("Unable to save format.json, %w", err)
+					return fmt.Errorf("unable to save format.json, %w", err)
 				}
 			}
 			return nil
@@ -631,18 +631,18 @@ func formatErasureV3Check(reference *formatErasureV3, format *formatErasureV3) e
 	this := tmpFormat.Erasure.This
 	tmpFormat.Erasure.This = ""
 	if len(reference.Erasure.Sets) != len(format.Erasure.Sets) {
-		return fmt.Errorf("Expected number of sets %d, got %d", len(reference.Erasure.Sets), len(format.Erasure.Sets))
+		return fmt.Errorf("expected number of sets %d, got %d", len(reference.Erasure.Sets), len(format.Erasure.Sets))
 	}
 
 	// Make sure that the sets match.
 	for i := range reference.Erasure.Sets {
 		if len(reference.Erasure.Sets[i]) != len(format.Erasure.Sets[i]) {
-			return fmt.Errorf("Each set should be of same size, expected %d got %d",
+			return fmt.Errorf("each set should be of same size, expected %d got %d",
 				len(reference.Erasure.Sets[i]), len(format.Erasure.Sets[i]))
 		}
 		for j := range reference.Erasure.Sets[i] {
 			if reference.Erasure.Sets[i][j] != format.Erasure.Sets[i][j] {
-				return fmt.Errorf("UUID on positions %d:%d do not match with, expected %s got %s: (%w)",
+				return fmt.Errorf("uuid on positions %d:%d do not match with, expected %s got %s: (%w)",
 					i, j, reference.Erasure.Sets[i][j], format.Erasure.Sets[i][j], errInconsistentDisk)
 			}
 		}
@@ -656,7 +656,7 @@ func formatErasureV3Check(reference *formatErasureV3, format *formatErasureV3) e
 			}
 		}
 	}
-	return fmt.Errorf("Disk ID %s not found in any disk sets %s", this, format.Erasure.Sets)
+	return fmt.Errorf("disk ID %s not found in any disk sets %s", this, format.Erasure.Sets)
 }
 
 // Initializes meta volume only on local storage disks.
@@ -912,7 +912,7 @@ func makeFormatErasureMetaVolumes(disk StorageAPI) error {
 	if disk == nil {
 		return errDiskNotFound
 	}
-	// Attempt to create ObStor internal buckets.
+	// Attempt to create Obstor internal buckets.
 	return disk.MakeVolBulk(context.TODO(), minioMetaBucket, minioMetaTmpBucket, minioMetaMultipartBucket, minioMetaTmpDeletedBucket, dataUsageBucket, minioMetaTmpBucket+"-old")
 }
 

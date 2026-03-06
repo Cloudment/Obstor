@@ -25,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	pathutil "path"
@@ -367,7 +366,7 @@ func (s *xlStorage) SetDiskLoc(poolIdx, setIdx, diskIdx int) {
 func (s *xlStorage) Healing() *healingTracker {
 	healingFile := pathJoin(s.diskPath, minioMetaBucket,
 		bucketMetaPrefix, healingTrackerFilename)
-	b, err := ioutil.ReadFile(healingFile)
+	b, err := os.ReadFile(healingFile)
 	if err != nil {
 		return nil
 	}
@@ -1142,7 +1141,7 @@ func (s *xlStorage) readAllData(volumeDir string, filePath string, requireDirect
 	}
 
 	defer r.Close()
-	buf, err = ioutil.ReadAll(r)
+	buf, err = io.ReadAll(r)
 	if err != nil {
 		err = osErrToFileErr(err)
 	}
@@ -2102,7 +2101,7 @@ func (s *xlStorage) RenameFile(ctx context.Context, srcVolume, srcPath, dstVolum
 	srcIsDir := HasSuffix(srcPath, SlashSeparator)
 	dstIsDir := HasSuffix(dstPath, SlashSeparator)
 	// Either src and dst have to be directories or files, else return error.
-	if !(srcIsDir && dstIsDir || !srcIsDir && !dstIsDir) {
+	if srcIsDir != dstIsDir {
 		return errFileAccessDenied
 	}
 	srcFilePath := pathutil.Join(srcVolumeDir, srcPath)

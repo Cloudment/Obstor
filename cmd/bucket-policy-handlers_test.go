@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -287,7 +286,7 @@ func testPutBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 		int64(len(bucketPolicyStr)), bytes.NewReader([]byte(bucketPolicyStr)))
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
 			instanceType, bucketName, err)
 	}
 
@@ -306,7 +305,7 @@ func testPutBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -429,7 +428,7 @@ func testGetBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 			t.Fatalf("Case %d: Expected the response status to be `%d`, but instead found `%d`", i+1, testCase.expectedRespStatus, recV4.Code)
 		}
 		// read the response body.
-		bucketPolicyReadBuf, err := ioutil.ReadAll(recV4.Body)
+		bucketPolicyReadBuf, err := io.ReadAll(recV4.Body)
 		if err != nil {
 			t.Fatalf("Test %d: %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
 		}
@@ -467,7 +466,7 @@ func testGetBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 			t.Fatalf("Case %d: Expected the response status to be `%d`, but instead found `%d`", i+1, testCase.expectedRespStatus, recV2.Code)
 		}
 		// read the response body.
-		bucketPolicyReadBuf, err = ioutil.ReadAll(recV2.Body)
+		bucketPolicyReadBuf, err = io.ReadAll(recV2.Body)
 		if err != nil {
 			t.Fatalf("Test %d: %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
 		}
@@ -494,7 +493,7 @@ func testGetBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 	anonReq, err := newTestRequest(http.MethodGet, getPutPolicyURL("", bucketName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
 			instanceType, bucketName, err)
 	}
 
@@ -513,7 +512,7 @@ func testGetBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName string
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -697,7 +696,7 @@ func testDeleteBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName str
 	anonReq, err := newTestRequest(http.MethodDelete, getPutPolicyURL("", bucketName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
 			instanceType, bucketName, err)
 	}
 
@@ -716,7 +715,7 @@ func testDeleteBucketPolicyHandler(obj ObjectLayer, instanceType, bucketName str
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.

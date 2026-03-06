@@ -338,7 +338,7 @@ const (
 func (v *Value) InferBytesType() (err error) {
 	b, ok := v.ToBytes()
 	if !ok {
-		return fmt.Errorf("InferByteType: Input is not bytes, but %v", v.GetTypeString())
+		return fmt.Errorf("inferByteType: Input is not bytes, but %v", v.GetTypeString())
 	}
 
 	// Check for numeric inference
@@ -519,14 +519,14 @@ func inferTypesForCmp(a *Value, b *Value) error {
 			} else if fA, ok := a.bytesToFloat(); ok {
 				a.setFloat(fA)
 			} else {
-				return fmt.Errorf("Could not convert %s to a number", a.String())
+				return fmt.Errorf("could not convert %s to a number", a.String())
 			}
 
 		case bool:
 			if bA, ok := a.bytesToBool(); ok {
 				a.setBool(bA)
 			} else {
-				return fmt.Errorf("Could not convert %s to a boolean", a.String())
+				return fmt.Errorf("could not convert %s to a boolean", a.String())
 			}
 
 		default:
@@ -613,7 +613,7 @@ func inferTypeForArithOp(a *Value) error {
 		return nil
 	}
 
-	err := fmt.Errorf("Could not convert %q to a number", string(a.value.([]byte)))
+	err := fmt.Errorf("could not convert %q to a number", string(a.value.([]byte)))
 	return errInvalidDataType(err)
 }
 

@@ -37,7 +37,7 @@
 // sync.Pool reusable buffers to avoid large memory build up with frequent
 // allocations done by memory hard PBKDF.
 //
-// All the changes are governed by the LICENSE file ObStor project.
+// All the changes are governed by the LICENSE file Obstor project.
 package argon2
 
 import (

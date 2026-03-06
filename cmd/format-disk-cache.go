@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -189,26 +188,26 @@ func formatMetaCacheV1(r io.ReadSeeker) (*formatCacheV1, error) {
 
 func checkFormatCacheValue(format *formatCacheV2, migrating bool) error {
 	if format.Format != formatCache {
-		return fmt.Errorf("Unsupported cache format [%s] found", format.Format)
+		return fmt.Errorf("unsupported cache format [%s] found", format.Format)
 	}
 
 	// during migration one or more cache drive(s) formats can be out of sync
 	if migrating {
 		// Validate format version and format type.
 		if format.Version != formatMetaVersion1 {
-			return fmt.Errorf("Unsupported version of cache format [%s] found", format.Version)
+			return fmt.Errorf("unsupported version of cache format [%s] found", format.Version)
 		}
 		if format.Cache.Version != formatCacheVersionV2 && format.Cache.Version != formatCacheVersionV1 {
-			return fmt.Errorf("Unsupported Cache backend format found [%s]", format.Cache.Version)
+			return fmt.Errorf("unsupported Cache backend format found [%s]", format.Cache.Version)
 		}
 		return nil
 	}
 	// Validate format version and format type.
 	if format.Version != formatMetaVersion1 {
-		return fmt.Errorf("Unsupported version of cache format [%s] found", format.Version)
+		return fmt.Errorf("unsupported version of cache format [%s] found", format.Version)
 	}
 	if format.Cache.Version != formatCacheVersionV2 {
-		return fmt.Errorf("Unsupported Cache backend format found [%s]", format.Cache.Version)
+		return fmt.Errorf("unsupported Cache backend format found [%s]", format.Cache.Version)
 	}
 	return nil
 }
@@ -222,7 +221,7 @@ func checkFormatCacheValues(migrating bool, formats []*formatCacheV2) (int, erro
 			return i, err
 		}
 		if len(formats) != len(formatCache.Cache.Disks) {
-			return i, fmt.Errorf("Expected number of cache drives %d , got  %d",
+			return i, fmt.Errorf("expected number of cache drives %d , got  %d",
 				len(formatCache.Cache.Disks), len(formats))
 		}
 	}
@@ -247,10 +246,10 @@ func checkCacheDiskConsistency(formats []*formatCacheV2) error {
 		}
 		j := findCacheDiskIndex(disks[i], format.Cache.Disks)
 		if j == -1 {
-			return fmt.Errorf("UUID on positions %d:%d do not match with , expected %s", i, j, disks[i])
+			return fmt.Errorf("uuid on positions %d:%d do not match with , expected %s", i, j, disks[i])
 		}
 		if i != j {
-			return fmt.Errorf("UUID on positions %d:%d do not match with , expected %s got %s", i, j, disks[i], format.Cache.Disks[j])
+			return fmt.Errorf("uuid on positions %d:%d do not match with , expected %s got %s", i, j, disks[i], format.Cache.Disks[j])
 		}
 	}
 	return nil
@@ -298,7 +297,7 @@ func validateCacheFormats(ctx context.Context, migrating bool, formats []*format
 		}
 	}
 	if count == len(formats) {
-		return errors.New("Cache format files missing on all drives")
+		return errors.New("cache format files missing on all drives")
 	}
 	if _, err := checkFormatCacheValues(migrating, formats); err != nil {
 		logger.LogIf(ctx, err)
@@ -422,7 +421,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 			// get old cached metadata
 			oldMetaPath := pathJoin(oldCacheBucketsPath, bucket, object, cacheMetaJSONFile)
 			metaPath := pathJoin(destdir, cacheMetaJSONFile)
-			metaBytes, err := ioutil.ReadFile(oldMetaPath)
+			metaBytes, err := os.ReadFile(oldMetaPath)
 			if err != nil {
 				return err
 			}
@@ -460,7 +459,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 				return err
 			}
 
-			if err = ioutil.WriteFile(metaPath, jsonData, 0644); err != nil {
+			if err = os.WriteFile(metaPath, jsonData, 0644); err != nil {
 				return err
 			}
 		}

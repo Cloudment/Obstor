@@ -129,7 +129,7 @@ func (target *ElasticsearchTarget) IsActive() (bool, error) {
 		}
 		return false, err
 	}
-	return !(code >= http.StatusBadRequest), nil
+	return code < http.StatusBadRequest, nil
 }
 
 // Save - saves the events to the store if queuestore is configured, which will be replayed when the elasticsearch connection is active.

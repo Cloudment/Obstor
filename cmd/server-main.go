@@ -290,14 +290,14 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		select {
 		case <-ctx.Done():
 			// Retry was canceled successfully.
-			return fmt.Errorf("Initializing sub-systems stopped gracefully %w", ctx.Err())
+			return fmt.Errorf("initializing sub-systems stopped gracefully %w", ctx.Err())
 		default:
 		}
 
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err = txnLk.GetLock(ctx, lockTimeout); err != nil {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. trying to acquire lock")
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. trying to acquire lock")
 
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
@@ -305,7 +305,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 
 		// These messages only meant primarily for distributed setup, so only log during distributed setup.
 		if globalIsDistErasure {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. lock acquired")
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. lock acquired")
 		}
 
 		// Migrate all backend configs to encrypted backend configs, optionally
@@ -319,7 +319,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 				// All successful return.
 				if globalIsDistErasure {
 					// These messages only meant primarily for distributed setup, so only log during distributed setup.
-					logger.Info("All ObStor sub-systems initialized successfully")
+					logger.Info("All Obstor sub-systems initialized successfully")
 				}
 				return nil
 			}
@@ -328,13 +328,13 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		txnLk.Unlock() // Unlock the transaction lock and allow other nodes to acquire the lock if possible.
 
 		if configRetriableErrors(err) {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. possible cause (%v)", err)
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. possible cause (%v)", err)
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
 		}
 
 		// Any other unhandled return right here.
-		return fmt.Errorf("Unable to initialize sub-systems: %w", err)
+		return fmt.Errorf("unable to initialize sub-systems: %w", err)
 	}
 }
 
@@ -348,7 +348,7 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 
 	buckets, err := newObject.ListBuckets(ctx)
 	if err != nil {
-		return fmt.Errorf("Unable to list buckets to heal: %w", err)
+		return fmt.Errorf("unable to list buckets to heal: %w", err)
 	}
 
 	if globalIsErasure {
@@ -372,17 +372,17 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 			}, index)
 		}
 		if err := g.WaitErr(); err != nil {
-			return fmt.Errorf("Unable to list buckets to heal: %w", err)
+			return fmt.Errorf("unable to list buckets to heal: %w", err)
 		}
 	}
 
 	// Initialize config system.
 	if err = globalConfigSys.Init(newObject); err != nil {
 		if configRetriableErrors(err) {
-			return fmt.Errorf("Unable to initialize config system: %w", err)
+			return fmt.Errorf("unable to initialize config system: %w", err)
 		}
 		// Any other config errors we simply print a message and proceed forward.
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize config, some features may be missing %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize config, some features may be missing %w", err))
 	}
 
 	// Populate existing buckets to the etcd backend

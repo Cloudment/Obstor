@@ -241,7 +241,7 @@ func NewMQTTTarget(id string, args MQTTArgs, doneCh <-chan struct{}, loggerOnce 
 				ok := token.WaitTimeout(reconnectInterval * time.Second)
 				if ok && token.Error() != nil {
 					target.loggerOnce(context.Background(),
-						fmt.Errorf("Previous connect failed with %w attempting a reconnect",
+						fmt.Errorf("previous connect failed with %w attempting a reconnect",
 							token.Error()),
 						target.ID())
 					time.Sleep(reconnectInterval * time.Second)

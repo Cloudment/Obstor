@@ -56,10 +56,10 @@ func (l *lockServer) Unlock(args *LockArgs, reply *bool) error {
 	defer l.mutex.Unlock()
 	var locksHeld int64
 	if locksHeld, *reply = l.lockMap[args.Resources[0]]; !*reply { // No lock is held on the given name
-		return fmt.Errorf("Unlock attempted on an unlocked entity: %s", args.Resources[0])
+		return fmt.Errorf("unlock attempted on an unlocked entity: %s", args.Resources[0])
 	}
 	if *reply = locksHeld == WriteLock; !*reply { // Unless it is a write lock
-		return fmt.Errorf("Unlock attempted on a read locked entity: %s (%d read locks active)", args.Resources[0], locksHeld)
+		return fmt.Errorf("unlock attempted on a read locked entity: %s (%d read locks active)", args.Resources[0], locksHeld)
 	}
 	delete(l.lockMap, args.Resources[0]) // Remove the write lock
 	return nil
@@ -111,7 +111,7 @@ func (l *lockServer) ForceUnlock(args *LockArgs, reply *bool) error {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	if len(args.UID) != 0 {
-		return fmt.Errorf("ForceUnlock called with non-empty UID: %s", args.UID)
+		return fmt.Errorf("forceUnlock called with non-empty UID: %s", args.UID)
 	}
 	delete(l.lockMap, args.Resources[0]) // Remove the lock (irrespective of write or read lock)
 	*reply = true

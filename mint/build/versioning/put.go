@@ -54,7 +54,7 @@ func testPutObject() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -69,10 +69,10 @@ func testPutObject() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -83,7 +83,7 @@ func testPutObject() {
 	}
 	_, err = s3Client.PutObject(ctx, putInput1)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 	putInput2 := &s3.PutObjectInput{
@@ -93,7 +93,7 @@ func testPutObject() {
 	}
 	_, err = s3Client.PutObject(ctx, putInput2)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -103,12 +103,12 @@ func testPutObject() {
 
 	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 
 	if len(result.Versions) != 2 {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected number of versions")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected number of versions"))
 		return
 	}
 
@@ -116,36 +116,36 @@ func testPutObject() {
 	vid2 := result.Versions[1]
 
 	if *vid1.VersionId == "" || *vid2.VersionId == "" || *vid1.VersionId == *vid2.VersionId {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected VersionId field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected VersionId field"))
 		return
 	}
 
 	if *vid1.IsLatest == false || *vid2.IsLatest == true {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected IsLatest field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected IsLatest field"))
 		return
 	}
 
 	if *vid1.Size != 14 || *vid2.Size != 12 {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Size field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Size field"))
 		return
 	}
 
 	if !etagRegex.MatchString(*vid1.ETag) || !etagRegex.MatchString(*vid2.ETag) {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected ETag field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected ETag field"))
 		return
 	}
 
 	if *vid1.Key != "testObject" || *vid2.Key != "testObject" {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Key field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Key field"))
 		return
 	}
 
 	if (*vid1.LastModified).Before(*vid2.LastModified) {
-		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Last modified field")).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected list content", errors.New("unexpected Last modified field"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Upload object versions with tagging and metadata and check them
@@ -166,7 +166,7 @@ func testPutObjectWithTaggingAndMetadata() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -181,10 +181,10 @@ func testPutObjectWithTaggingAndMetadata() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -218,7 +218,7 @@ func testPutObjectWithTaggingAndMetadata() {
 		}
 		result, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *result.VersionId
@@ -241,7 +241,7 @@ func testPutObjectWithTaggingAndMetadata() {
 		}
 		result, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT object expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *result.VersionId
@@ -257,7 +257,7 @@ func testPutObjectWithTaggingAndMetadata() {
 			}
 			tagResult, err := s3Client.GetObjectTagging(ctx, input)
 			if err != nil {
-				failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err).Fatal()
+				failureLog(function, args, startTime, "", fmt.Sprintf("GET Object tagging expected to succeed but got %v", err), err)
 				return
 			}
 			vals := make(url.Values)
@@ -265,7 +265,7 @@ func testPutObjectWithTaggingAndMetadata() {
 				vals.Add(*tag.Key, *tag.Value)
 			}
 			if uploads[i].tags != vals.Encode() {
-				failureLog(function, args, startTime, "", "PUT Object with tagging header returned unexpected result", nil).Fatal()
+				failureLog(function, args, startTime, "", "PUT Object with tagging header returned unexpected result", nil)
 				return
 
 			}
@@ -279,7 +279,7 @@ func testPutObjectWithTaggingAndMetadata() {
 			}
 			result, err := s3Client.HeadObject(ctx, input)
 			if err != nil {
-				failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object expected to succeed but got %v", err), err).Fatal()
+				failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object expected to succeed but got %v", err), err)
 				return
 			}
 
@@ -288,16 +288,16 @@ func testPutObjectWithTaggingAndMetadata() {
 				normalizedKey := strings.ToLower(expectedKey)
 				gotValue, ok := result.Metadata[normalizedKey]
 				if !ok {
-					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata key result: expected key %q (normalized: %q) not found in %v", expectedKey, normalizedKey, result.Metadata), nil).Fatal()
+					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata key result: expected key %q (normalized: %q) not found in %v", expectedKey, normalizedKey, result.Metadata), nil)
 					return
 				}
 				if expectedVal != gotValue {
-					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata value result: expected %q, got %q for key %q", expectedVal, gotValue, normalizedKey), nil).Fatal()
+					failureLog(function, args, startTime, "", fmt.Sprintf("HEAD Object returned unexpected metadata value result: expected %q, got %q for key %q", expectedVal, gotValue, normalizedKey), nil)
 					return
 				}
 			}
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

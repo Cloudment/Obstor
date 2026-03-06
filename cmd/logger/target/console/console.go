@@ -50,7 +50,7 @@ func (c *Target) String() string {
 func (c *Target) Send(e interface{}, logKind string) error {
 	entry, ok := e.(log.Entry)
 	if !ok {
-		return fmt.Errorf("Uexpected log entry structure %#v", e)
+		return fmt.Errorf("unexpected log entry structure %#v", e)
 	}
 	if logger.IsJSON() {
 		logJSON, err := json.Marshal(&entry)

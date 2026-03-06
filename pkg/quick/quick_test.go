@@ -21,7 +21,6 @@ package quick
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"runtime"
@@ -62,7 +61,7 @@ func TestReadVersionErr(t *testing.T) {
 		t.Fatal("Unexpected should fail in initialization for bad input")
 	}
 
-	err = ioutil.WriteFile("test.json", []byte("{ \"version\":2,"), 0644)
+	err = os.WriteFile("test.json", []byte("{ \"version\":2,"), 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +71,7 @@ func TestReadVersionErr(t *testing.T) {
 		t.Fatal("Unexpected should fail to fetch version")
 	}
 
-	err = ioutil.WriteFile("test.json", []byte("{ \"version\":2 }"), 0644)
+	err = os.WriteFile("test.json", []byte("{ \"version\":2 }"), 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -232,7 +231,7 @@ directories:
 `
 
 	if runtime.GOOS == "windows" {
-		plainYAML = strings.Replace(plainYAML, "\n", "\r\n", -1)
+		plainYAML = strings.ReplaceAll(plainYAML, "\n", "\r\n")
 	}
 
 	saveMe := myStruct{"1", "guest", "nopassword", []string{"Work", "Documents", "Music"}}
@@ -249,7 +248,7 @@ directories:
 	}
 
 	// Check if the saved structure in actually an YAML format
-	b, err := ioutil.ReadFile(testYAML)
+	b, err := os.ReadFile(testYAML)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -298,7 +297,7 @@ func TestJSONFormat(t *testing.T) {
 }`
 
 	if runtime.GOOS == "windows" {
-		plainJSON = strings.Replace(plainJSON, "\n", "\r\n", -1)
+		plainJSON = strings.ReplaceAll(plainJSON, "\n", "\r\n")
 	}
 
 	saveMe := myStruct{"1", "guest", "nopassword", []string{"Work", "Documents", "Music"}}
@@ -315,7 +314,7 @@ func TestJSONFormat(t *testing.T) {
 	}
 
 	// Check if the saved structure in actually an JSON format
-	b, err := ioutil.ReadFile(testJSON)
+	b, err := os.ReadFile(testJSON)
 	if err != nil {
 		t.Fatal(err)
 	}

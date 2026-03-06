@@ -30,7 +30,7 @@ type ServerUpdateStatus struct {
 	UpdatedVersion string `json:"updatedVersion"`
 }
 
-// ServerUpdate - updates and restarts the ObStor cluster to latest version.
+// ServerUpdate - updates and restarts the Obstor cluster to latest version.
 // optionally takes an input URL to specify a custom update binary link
 func (adm *AdminClient) ServerUpdate(ctx context.Context, updateURL string) (us ServerUpdateStatus, err error) {
 	queryValues := url.Values{}

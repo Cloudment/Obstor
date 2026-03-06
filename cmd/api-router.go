@@ -421,7 +421,7 @@ func registerAPIRouter(router *mux.Router) {
 		// DeleteBucket
 		router.Methods(http.MethodDelete).HandlerFunc(
 			collectAPIStats("deletebucket", maxClients(httpTraceAll(api.DeleteBucketHandler))))
-		// ObStor extension API for replication.
+		// Obstor extension API for replication.
 		//
 		// GetBucketReplicationMetrics
 		router.Methods(http.MethodGet).HandlerFunc(

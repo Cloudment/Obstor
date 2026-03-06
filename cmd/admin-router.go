@@ -31,7 +31,7 @@ const (
 	adminAPIVersionV2Prefix = SlashSeparator + adminAPIVersionV2
 )
 
-// adminAPIHandlers provides HTTP handlers for ObStor admin API.
+// adminAPIHandlers provides HTTP handlers for Obstor admin API.
 type adminAPIHandlers struct{}
 
 // registerAdminRouter - Add handler functions for each service REST API routes.
@@ -49,9 +49,9 @@ func registerAdminRouter(router *mux.Router, enableConfigOps, enableIAMOps bool)
 	}
 
 	for _, adminVersion := range adminVersions {
-		// Restart and stop ObStor service.
+		// Restart and stop Obstor service.
 		adminRouter.Methods(http.MethodPost).Path(adminVersion+"/service").HandlerFunc(httpTraceAll(adminAPI.ServiceHandler)).Queries("action", "{action:.*}")
-		// Update ObStor servers.
+		// Update Obstor servers.
 		adminRouter.Methods(http.MethodPost).Path(adminVersion+"/update").HandlerFunc(httpTraceAll(adminAPI.ServerUpdateHandler)).Queries("updateURL", "{updateURL:.*}")
 
 		// Info operations

@@ -164,8 +164,8 @@ func TestAzureToObjectError(t *testing.T) {
 			nil, nil, "", "",
 		},
 		{
-			fmt.Errorf("Non azure error"),
-			fmt.Errorf("Non azure error"), "", "",
+			fmt.Errorf("non azure error"),
+			fmt.Errorf("non azure error"), "", "",
 		},
 	}
 	for i, testCase := range testCases {

@@ -25,7 +25,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -506,7 +505,7 @@ func testListObjectsWebHandler(obj ObjectLayer, instanceType string, t TestErrHa
 		}
 		apiRouter.ServeHTTP(rec, req)
 		if rec.Code != http.StatusOK {
-			return listObjectsReply, fmt.Errorf("Expected the response status to be 200, but instead found `%d`", rec.Code)
+			return listObjectsReply, fmt.Errorf("expected the response status to be 200, but instead found `%d`", rec.Code)
 		}
 		err = getTestWebRPCResponse(rec, &listObjectsReply)
 		if err != nil {
@@ -622,7 +621,7 @@ func testRemoveObjectWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 	if rec.Code != http.StatusOK {
 		t.Fatalf("Expected the response status to be 200, but instead found `%d`", rec.Code)
 	}
-	b, err := ioutil.ReadAll(rec.Body)
+	b, err := io.ReadAll(rec.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -724,7 +723,7 @@ func testUploadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandler
 		req.Header.Set("Accept", "*/*")
 		req.Header.Set("User-Agent", "Mozilla")
 
-		req.Body = ioutil.NopCloser(bytes.NewReader(content))
+		req.Body = io.NopCloser(bytes.NewReader(content))
 
 		if !sendContentLength {
 			req.ContentLength = -1
@@ -1034,7 +1033,7 @@ func testWebPresignedGetHandler(obj ObjectLayer, instanceType string, t TestErrH
 	if arec.Code != http.StatusOK {
 		t.Fatalf("Expected the response status to be 200, but instead found `%d`", arec.Code)
 	}
-	savedData, err := ioutil.ReadAll(arec.Body)
+	savedData, err := io.ReadAll(arec.Body)
 	if err != nil {
 		t.Fatal("Reading body failed", err)
 	}
@@ -1145,7 +1144,7 @@ func TestWebCheckAuthorization(t *testing.T) {
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
 	req.Header.Set("x-amz-date", "20160814T114029Z")
 	req.Header.Set("Accept", "*/*")
-	req.Body = ioutil.NopCloser(bytes.NewReader(content))
+	req.Body = io.NopCloser(bytes.NewReader(content))
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1273,7 +1272,7 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
 	req.Header.Set("x-amz-date", "20160814T114029Z")
 	req.Header.Set("Accept", "*/*")
-	req.Body = ioutil.NopCloser(bytes.NewReader(content))
+	req.Body = io.NopCloser(bytes.NewReader(content))
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}

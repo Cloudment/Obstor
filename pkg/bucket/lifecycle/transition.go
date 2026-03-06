@@ -52,7 +52,7 @@ func (tDate *TransitionDate) UnmarshalXML(d *xml.Decoder, startElement xml.Start
 	hr, min, sec := trnDate.Clock()
 	nsec := trnDate.Nanosecond()
 	loc := trnDate.Location()
-	if !(hr == 0 && min == 0 && sec == 0 && nsec == 0 && loc.String() == time.UTC.String()) {
+	if hr != 0 || min != 0 || sec != 0 || nsec != 0 || loc.String() != time.UTC.String() {
 		return errTransitionDateNotMidnight
 	}
 
@@ -63,7 +63,7 @@ func (tDate *TransitionDate) UnmarshalXML(d *xml.Decoder, startElement xml.Start
 // MarshalXML encodes expiration date if it is non-zero and encodes
 // empty string otherwise
 func (tDate TransitionDate) MarshalXML(e *xml.Encoder, startElement xml.StartElement) error {
-	if tDate.Time.IsZero() {
+	if tDate.IsZero() {
 		return nil
 	}
 	return e.EncodeElement(tDate.Format(time.RFC3339), startElement)
@@ -155,7 +155,7 @@ func (t Transition) IsDaysNull() bool {
 
 // IsDateNull returns true if date field is null
 func (t Transition) IsDateNull() bool {
-	return t.Date.Time.IsZero()
+	return t.Date.IsZero()
 }
 
 // IsNull returns true if both date and days fields are null

@@ -119,7 +119,7 @@ func (f numericGreaterThanEqualsFunc) name() name {
 }
 
 func (f numericGreaterThanEqualsFunc) String() string {
-	return toNumericGreaterThanFuncString(numericGreaterThanEquals, f.numericGreaterThanFunc.k, f.numericGreaterThanFunc.value)
+	return toNumericGreaterThanFuncString(numericGreaterThanEquals, f.k, f.value)
 }
 
 // newNumericGreaterThanFunc - returns new NumericGreaterThan function.

@@ -63,7 +63,7 @@ func TestDecryptData(t *testing.T) {
 				t.Errorf("Expected success, saw failure %v", err)
 			}
 			if err == nil && !test.success {
-				t.Error("Expected failure, saw success")
+				t.Error("expected failure, saw success")
 			}
 			if test.success {
 				if !bytes.Equal(ddata, data) {

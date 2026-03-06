@@ -1,8 +1,8 @@
 # Compression Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor server allows streaming compression to ensure efficient disk space usage.
+Obstor server allows streaming compression to ensure efficient disk space usage.
 Compression happens inflight, i.e objects are compressed before being written to disk(s).
-ObStor uses [`klauspost/compress/s2`](https://github.com/klauspost/compress/tree/master/s2)
+Obstor uses [`klauspost/compress/s2`](https://github.com/klauspost/compress/tree/master/s2)
 streaming compression due to its stability and performance.
 
 This algorithm is specifically optimized for machine generated content.
@@ -19,11 +19,11 @@ will increase speed when the content can be compressed.
 
 ### 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
+Install Obstor - [Obstor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide).
 
-### 2. Run ObStor with compression
+### 2. Run Obstor with compression
 
-Compression can be enabled by updating the `compress` config settings for ObStor server config.
+Compression can be enabled by updating the `compress` config settings for Obstor server config.
 Config `compress` settings take extensions and mime-types to be compressed.
 
 ```bash
@@ -117,7 +117,7 @@ even if compression is enabled for all types.
 
 ### 5. Notes
 
-- ObStor does not support compression for Gateway (Azure/GCS/NAS) implementations.
+- Obstor does not support compression for Gateway (Azure/GCS/NAS) implementations.
 
 ## To test the setup
 
@@ -126,8 +126,8 @@ the data directory to view the size of the object.
 
 ## Explore Further
 
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Use `mc` with Obstor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)
+- [Use `minio-go` SDK with Obstor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
+- [The Obstor documentation website](https://pgg.net/docs/obstor)

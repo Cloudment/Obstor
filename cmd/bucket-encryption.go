@@ -45,7 +45,7 @@ func (sys *BucketSSEConfigSys) Get(bucket string) (*bucketsse.BucketSSEConfig, e
 	return globalBucketMetadataSys.GetSSEConfig(bucket)
 }
 
-// validateBucketSSEConfig parses bucket encryption configuration and validates if it is supported by ObStor.
+// validateBucketSSEConfig parses bucket encryption configuration and validates if it is supported by Obstor.
 func validateBucketSSEConfig(r io.Reader) (*bucketsse.BucketSSEConfig, error) {
 	encConfig, err := bucketsse.ParseBucketSSEConfig(r)
 	if err != nil {
@@ -56,5 +56,5 @@ func validateBucketSSEConfig(r io.Reader) (*bucketsse.BucketSSEConfig, error) {
 		return encConfig, nil
 	}
 
-	return nil, errors.New("Unsupported bucket encryption configuration")
+	return nil, errors.New("unsupported bucket encryption configuration")
 }

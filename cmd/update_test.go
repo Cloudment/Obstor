@@ -19,7 +19,6 @@ package cmd
 import (
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -133,19 +132,19 @@ func TestUserAgent(t *testing.T) {
 			envName:     "",
 			envValue:    "",
 			mode:        globalMinioModeFS,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
 		},
 		{
 			envName:     "MESOS_CONTAINER_NAME",
 			envValue:    "mesos-11111",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
 		},
 		{
 			envName:     "KUBERNETES_SERVICE_HOST",
 			envValue:    "10.11.148.5",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
 		},
 	}
 
@@ -160,7 +159,7 @@ func TestUserAgent(t *testing.T) {
 		str := getUserAgent(testCase.mode)
 		expectedStr := testCase.expectedStr
 		if IsDocker() {
-			expectedStr = strings.Replace(expectedStr, "; source", "; docker; source", -1)
+			expectedStr = strings.ReplaceAll(expectedStr, "; source", "; docker; source")
 		}
 		if str != expectedStr {
 			t.Errorf("Test %d: expected: %s, got: %s", i+1, expectedStr, str)
@@ -211,7 +210,7 @@ func TestIsKubernetes(t *testing.T) {
 // Tests if the environment we are running is Helm chart.
 func TestGetHelmVersion(t *testing.T) {
 	createTempFile := func(content string) string {
-		tmpfile, err := ioutil.TempFile("", "helm-testfile-")
+		tmpfile, err := os.CreateTemp("", "helm-testfile-")
 		if err != nil {
 			t.Fatalf("Unable to create temporary file. %s", err)
 		}
@@ -269,7 +268,7 @@ func TestDownloadReleaseData(t *testing.T) {
 	}{
 		{httpServer1.URL, "", nil},
 		{httpServer2.URL, "fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z\n", nil},
-		{httpServer3.URL, "", fmt.Errorf("Error downloading URL %s. Response: 404 Not Found", httpServer3.URL)},
+		{httpServer3.URL, "", fmt.Errorf("error downloading URL %s. Response: 404 Not Found", httpServer3.URL)},
 	}
 
 	for _, testCase := range testCases {

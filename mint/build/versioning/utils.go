@@ -20,16 +20,15 @@
 package main
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz01234569"
@@ -62,70 +61,39 @@ type errorResponse struct {
 	Headers http.Header `xml:"-" json:"-"`
 }
 
-type mintJSONFormatter struct{}
-
-func (f *mintJSONFormatter) Format(entry *log.Entry) ([]byte, error) {
-	data := make(log.Fields, len(entry.Data))
-	for k, v := range entry.Data {
-		switch v := v.(type) {
-		case error:
-			// Otherwise errors are ignored by `encoding/json`
-			// https://github.com/sirupsen/logrus/issues/137
-			data[k] = v.Error()
-		default:
-			data[k] = v
-		}
-	}
-
-	serialized, err := json.Marshal(data)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal fields to JSON, %w", err)
-	}
-	return append(serialized, '\n'), nil
-}
-
 // log successful test runs
-func successLogger(function string, args map[string]interface{}, startTime time.Time) *log.Entry {
+func successLogger(function string, args map[string]interface{}, startTime time.Time) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
 	// log with the fields as per mint
-	fields := log.Fields{"name": "versioning", "function": function, "args": args, "duration": duration.Nanoseconds() / 1000000, "status": PASS}
-	return log.WithFields(fields)
+	slog.Info("test passed", "name", "versioning", "function", function, "args", args, "duration", duration.Nanoseconds()/1000000, "status", PASS)
 }
 
 // log not applicable test runs
-func ignoreLog(function string, args map[string]interface{}, startTime time.Time, alert string) *log.Entry {
+func ignoreLog(function string, args map[string]interface{}, startTime time.Time, alert string) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
 	// log with the fields as per mint
-	fields := log.Fields{
-		"name": "versioning", "function": function, "args": args,
-		"duration": duration.Nanoseconds() / 1000000, "status": "NA", "alert": strings.Split(alert, " ")[0] + " is NotImplemented",
-	}
-	return log.WithFields(fields)
+	slog.Info("test skipped", "name", "versioning", "function", function, "args", args,
+		"duration", duration.Nanoseconds()/1000000, "status", "NA", "alert", strings.Split(alert, " ")[0]+" is NotImplemented")
 }
 
-// log failed test runs
-func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) *log.Entry {
+// log failed test runs and exit
+func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
-	var fields log.Fields
 	// log with the fields as per mint
 	if pc, file, line, ok := runtime.Caller(1); ok {
 		function = fmt.Sprintf("%s:%d: %s", file, line, runtime.FuncForPC(pc).Name())
 	}
 	if err != nil {
-		fields = log.Fields{
-			"name": "versioning", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": FAIL, "alert": alert, "message": message, "error": err,
-		}
+		slog.Error("test failed", "name", "versioning", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", FAIL, "alert", alert, "message", message, "error", err.Error())
 	} else {
-		fields = log.Fields{
-			"name": "versioning", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": FAIL, "alert": alert, "message": message,
-		}
+		slog.Error("test failed", "name", "versioning", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", FAIL, "alert", alert, "message", message)
 	}
-	return log.WithFields(fields)
+	os.Exit(1)
 }
 
 func randString(n int, src rand.Source, prefix string) string {

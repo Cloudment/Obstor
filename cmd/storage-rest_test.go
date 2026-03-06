@@ -18,7 +18,6 @@ package cmd
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http/httptest"
 	"os"
 	"reflect"
@@ -421,7 +420,7 @@ func newStorageRESTHTTPServerClient(t *testing.T) (*httptest.Server, *storageRES
 		globalMinioHost, globalMinioPort = prevHost, prevPort
 	}()
 
-	endpointPath, err := ioutil.TempDir("", ".TestStorageREST.")
+	endpointPath, err := os.MkdirTemp("", ".TestStorageREST.")
 	if err != nil {
 		t.Fatalf("unexpected error %v", err)
 	}

@@ -10,7 +10,7 @@ Release:        1
 Vendor:         PGG, Inc.
 License:        Apache v2.0
 Group:          Applications/File
-Source0:        https://dl.pgg.net/server/obstor/release/linux-amd64/archive/obstor.%{tag}
+Source0:        https://dl.pgg.net/packages/obstor/release/linux-amd64/archive/obstor.%{tag}
 Source1:        https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/distributed/minio.service
 URL:            https://pgg.net/
 Requires(pre):  /usr/sbin/useradd, /usr/bin/getent
@@ -21,8 +21,8 @@ BuildRoot:      %{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define         debug_package %{nil}
 
 %description
-ObStor is a High Performance Object Storage released under Apache License v2.0.
-It is API compatible with Amazon S3 cloud storage service. Use ObStor to build
+Obstor is a High Performance Object Storage released under Apache License v2.0.
+It is API compatible with Amazon S3 cloud storage service. Use Obstor to build
 high performance infrastructure for machine learning, analytics and application
 data workloads.
 
@@ -38,7 +38,7 @@ install -d $RPM_BUILD_ROOT/etc/default
 install -d $RPM_BUILD_ROOT/usr/local/bin
 
 cat <<EOF >> $RPM_BUILD_ROOT/etc/default/obstor
-# Remote volumes to be used for ObStor server.
+# Remote volumes to be used for Obstor server.
 # Uncomment line before starting the server.
 # OBSTOR_VOLUMES=http://node{1...6}/export{1...32}
 

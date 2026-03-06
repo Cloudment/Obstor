@@ -138,37 +138,37 @@ const (
 	MinioDeploymentID = "x-obstor-deployment-id"
 
 	// Server-Status
-	ObStorServerStatus = "x-obstor-server-status"
+	ObstorServerStatus = "x-obstor-server-status"
 
 	// Delete special flag to force delete a bucket
-	ObStorForceDelete = "x-obstor-force-delete"
+	ObstorForceDelete = "x-obstor-force-delete"
 
 	// Header indicates if the mtime should be preserved by client
-	ObStorSourceMTime = "x-obstor-source-mtime"
+	ObstorSourceMTime = "x-obstor-source-mtime"
 
 	// Header indicates if the etag should be preserved by client
-	ObStorSourceETag = "x-obstor-source-etag"
+	ObstorSourceETag = "x-obstor-source-etag"
 
 	// Writes expected write quorum
-	ObStorWriteQuorum = "x-obstor-write-quorum"
+	ObstorWriteQuorum = "x-obstor-write-quorum"
 
 	// Reports number of drives currently healing
-	ObStorHealingDrives = "x-obstor-healing-drives"
+	ObstorHealingDrives = "x-obstor-healing-drives"
 
 	// Header indicates if the delete marker should be preserved by client
-	ObStorSourceDeleteMarker = "x-obstor-source-deletemarker"
+	ObstorSourceDeleteMarker = "x-obstor-source-deletemarker"
 
 	// Header indicates if the delete marker version needs to be purged.
-	ObStorSourceDeleteMarkerDelete = "x-obstor-source-deletemarker-delete"
+	ObstorSourceDeleteMarkerDelete = "x-obstor-source-deletemarker-delete"
 
 	// Header indicates permanent delete replication status.
-	ObStorDeleteReplicationStatus = "X-Obstor-Replication-Delete-Status"
+	ObstorDeleteReplicationStatus = "X-Obstor-Replication-Delete-Status"
 	// Header indicates delete-marker replication status.
-	ObStorDeleteMarkerReplicationStatus = "X-Obstor-Replication-DeleteMarker-Status"
+	ObstorDeleteMarkerReplicationStatus = "X-Obstor-Replication-DeleteMarker-Status"
 	// Header indicates if its a GET/HEAD proxy request for active-active replication
-	ObStorSourceProxyRequest = "X-Obstor-Source-Proxy-Request"
+	ObstorSourceProxyRequest = "X-Obstor-Source-Proxy-Request"
 	// Header indicates that this request is a replication request to create a REPLICA
-	ObStorSourceReplicationRequest = "X-Obstor-Source-Replication-Request"
+	ObstorSourceReplicationRequest = "X-Obstor-Source-Replication-Request"
 )
 
 // Common http query params S3 API

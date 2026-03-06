@@ -34,7 +34,7 @@ func main() {
 	// dummy values, please replace them with original values.
 
 	// API requests are secure (HTTPS) if secure=true and insecure (HTTP) otherwise.
-	// New returns an ObStor Admin client object.
+	// New returns an Obstor Admin client object.
 	madmClnt, err := madmin.New("your-obstor.example.com:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 	if err != nil {
 		log.Fatalln(err)

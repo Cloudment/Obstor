@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os/user"
 	"path"
@@ -757,7 +756,7 @@ func waitForHTTPResponse(respBody io.Reader) (io.Reader, error) {
 		case 0:
 			return reader, nil
 		case 1:
-			errorText, err := ioutil.ReadAll(reader)
+			errorText, err := io.ReadAll(reader)
 			if err != nil {
 				return nil, err
 			}
@@ -884,7 +883,7 @@ func waitForHTTPStream(respBody io.ReadCloser, w io.Writer) error {
 			}
 			return err
 		case 1:
-			errorText, err := ioutil.ReadAll(respBody)
+			errorText, err := io.ReadAll(respBody)
 			if err != nil {
 				return err
 			}
@@ -973,17 +972,17 @@ func logFatalErrs(err error, endpoint Endpoint, exit bool) {
 	} else if errors.Is(err, errUnsupportedDisk) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, Obstor erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
 		} else {
-			hint = "Disks do not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support"
+			hint = "Disks do not support O_DIRECT flags, Obstor erasure coding requires filesystems with O_DIRECT support"
 		}
 		logger.Fatal(config.ErrUnsupportedBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errDiskNotDir) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' is not a directory, ObStor erasure coding needs a directory", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' is not a directory, Obstor erasure coding needs a directory", endpoint.Path)
 		} else {
-			hint = "Disks are not directories, ObStor erasure coding needs directories"
+			hint = "Disks are not directories, Obstor erasure coding needs directories"
 		}
 		logger.Fatal(config.ErrUnableToWriteInBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errFileAccessDenied) {

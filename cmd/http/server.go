@@ -19,8 +19,8 @@ package http
 import (
 	"crypto/tls"
 	"errors"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"runtime/pprof"
 	"sync"
 	"sync/atomic"
@@ -109,9 +109,9 @@ func (srv *Server) Start() (err error) {
 
 	// Start servicing with listener.
 	if tlsConfig != nil {
-		return srv.Server.Serve(tls.NewListener(listener, tlsConfig))
+		return srv.Serve(tls.NewListener(listener, tlsConfig))
 	}
-	return srv.Server.Serve(listener)
+	return srv.Serve(listener)
 }
 
 // Shutdown - shuts down HTTP server.
@@ -145,7 +145,7 @@ func (srv *Server) Shutdown() error {
 		select {
 		case <-shutdownTimer.C:
 			// Write all running goroutines.
-			tmp, err := ioutil.TempFile("", "minio-goroutines-*.txt")
+			tmp, err := os.CreateTemp("", "minio-goroutines-*.txt")
 			if err == nil {
 				_ = pprof.Lookup("goroutine").WriteTo(tmp, 1)
 				tmp.Close()

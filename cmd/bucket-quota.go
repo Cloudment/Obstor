@@ -57,7 +57,7 @@ func parseBucketQuota(bucket string, data []byte) (quotaCfg *madmin.BucketQuota,
 		return quotaCfg, err
 	}
 	if !quotaCfg.IsValid() {
-		return quotaCfg, fmt.Errorf("Invalid quota config %#v", quotaCfg)
+		return quotaCfg, fmt.Errorf("invalid quota config %#v", quotaCfg)
 	}
 	return
 }

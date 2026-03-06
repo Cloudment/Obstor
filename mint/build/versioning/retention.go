@@ -51,10 +51,10 @@ func testLockingRetentionGovernance() {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -87,7 +87,7 @@ func testLockingRetentionGovernance() {
 		}
 		output, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *output.VersionId
@@ -101,7 +101,7 @@ func testLockingRetentionGovernance() {
 	}
 	deleteOutput, err := s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -119,16 +119,16 @@ func testLockingRetentionGovernance() {
 		}
 		_, err = s3Client.DeleteObject(ctx, deleteInput)
 		if err == nil && uploads[i].retention != "" {
-			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil).Fatal()
+			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil)
 			return
 		}
 		if err != nil && uploads[i].retention == "" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Test locking retention compliance
@@ -151,10 +151,10 @@ func testLockingRetentionCompliance() {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 
@@ -188,7 +188,7 @@ func testLockingRetentionCompliance() {
 		}
 		output, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *output.VersionId
@@ -202,7 +202,7 @@ func testLockingRetentionCompliance() {
 	}
 	deleteOutput, err := s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -220,16 +220,16 @@ func testLockingRetentionCompliance() {
 		}
 		_, err = s3Client.DeleteObject(ctx, deleteInput)
 		if err == nil && uploads[i].retention != "" {
-			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil).Fatal()
+			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil)
 			return
 		}
 		if err != nil && uploads[i].retention == "" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testPutGetDeleteRetentionGovernance() {
@@ -260,10 +260,10 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 
@@ -283,7 +283,7 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 
 	output, err := s3Client.PutObject(ctx, putInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 	versionId := *output.VersionId
@@ -300,7 +300,7 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 	}
 	_, err = s3Client.PutObjectRetention(ctx, putRetentionInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PutObjectRetention expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PutObjectRetention expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -312,13 +312,13 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 
 	retentionOutput, err := s3Client.GetObjectRetention(ctx, getRetentionInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectRetention expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectRetention expected to succeed but got %v", err), err)
 		return
 	}
 
 	// Compare until retention date with truncating precision less than second
 	if retentionOutput.Retention.RetainUntilDate.Truncate(time.Second).String() != twoMinutesRetention.Truncate(time.Second).String() {
-		failureLog(function, args, startTime, "", "Unexpected until retention date", nil).Fatal()
+		failureLog(function, args, startTime, "", "Unexpected until retention date", nil)
 		return
 	}
 
@@ -334,7 +334,7 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 	}
 	_, err = s3Client.PutObjectRetention(ctx, putRetentionInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "PutObjectRetention expected to fail but succeeded", nil).Fatal()
+		failureLog(function, args, startTime, "", "PutObjectRetention expected to fail but succeeded", nil)
 		return
 	}
 
@@ -350,7 +350,7 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 
 	_, err = s3Client.PutObjectRetention(ctx, putRetentionInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "Operation expected to fail but succeeded", nil).Fatal()
+		failureLog(function, args, startTime, "", "Operation expected to fail but succeeded", nil)
 		return
 	}
 
@@ -368,10 +368,10 @@ func testPutGetDeleteLockingRetention(function, retentionMode string) {
 
 		_, err = s3Client.PutObjectRetention(ctx, putRetentionInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("Expected to succeed but failed with %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("Expected to succeed but failed with %v", err), err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

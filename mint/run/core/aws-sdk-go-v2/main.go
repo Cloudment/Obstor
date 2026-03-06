@@ -25,11 +25,11 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"hash/crc32"
+	"log/slog"
 	"math/rand"
 	"net/http"
 	"os"
@@ -42,7 +42,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	log "github.com/sirupsen/logrus"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz01234569"
@@ -75,55 +74,27 @@ type errorResponse struct {
 	Headers http.Header `xml:"-" json:"-"`
 }
 
-type mintJSONFormatter struct{}
-
-func (f *mintJSONFormatter) Format(entry *log.Entry) ([]byte, error) {
-	data := make(log.Fields, len(entry.Data))
-	for k, v := range entry.Data {
-		switch v := v.(type) {
-		case error:
-			// Otherwise errors are ignored by `encoding/json`
-			// https://github.com/sirupsen/logrus/issues/137
-			data[k] = v.Error()
-		default:
-			data[k] = v
-		}
-	}
-
-	serialized, err := json.Marshal(data)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal fields to JSON, %w", err)
-	}
-	return append(serialized, '\n'), nil
-}
-
 // log successful test runs
-func successLogger(function string, args map[string]interface{}, startTime time.Time) *log.Entry {
+func successLogger(function string, args map[string]interface{}, startTime time.Time) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
 	// log with the fields as per mint
-	fields := log.Fields{"name": "aws-sdk-go-v2", "function": function, "args": args, "duration": duration.Nanoseconds() / 1000000, "status": PASS}
-	return log.WithFields(fields)
+	slog.Info("test passed", "name", "aws-sdk-go-v2", "function", function, "args", args, "duration", duration.Nanoseconds()/1000000, "status", PASS)
 }
 
-// log failed test runs
-func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) *log.Entry {
+// log failed test runs and exit
+func failureLog(function string, args map[string]interface{}, startTime time.Time, alert string, message string, err error) {
 	// calculate the test case duration
 	duration := time.Since(startTime)
-	var fields log.Fields
 	// log with the fields as per mint
 	if err != nil {
-		fields = log.Fields{
-			"name": "aws-sdk-go-v2", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": FAIL, "alert": alert, "message": message, "error": err,
-		}
+		slog.Error("test failed", "name", "aws-sdk-go-v2", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", FAIL, "alert", alert, "message", message, "error", err.Error())
 	} else {
-		fields = log.Fields{
-			"name": "aws-sdk-go-v2", "function": function, "args": args,
-			"duration": duration.Nanoseconds() / 1000000, "status": FAIL, "alert": alert, "message": message,
-		}
+		slog.Error("test failed", "name", "aws-sdk-go-v2", "function", function, "args", args,
+			"duration", duration.Nanoseconds()/1000000, "status", FAIL, "alert", alert, "message", message)
 	}
-	return log.WithFields(fields)
+	os.Exit(1)
 }
 
 func randString(n int, src rand.Source, prefix string) string {
@@ -158,7 +129,7 @@ func isObjectTaggingImplemented(ctx context.Context, s3Client *s3.Client) bool {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return false
 	}
 
@@ -169,7 +140,7 @@ func isObjectTaggingImplemented(ctx context.Context, s3Client *s3.Client) bool {
 	})
 
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err)
 		return false
 	}
 
@@ -202,7 +173,7 @@ func cleanup(ctx context.Context, s3Client *s3.Client, bucket string, object str
 			Bucket: aws.String(bucket),
 		})
 		if err != nil {
-			failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteBucket Failed", err).Fatal()
+			failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteBucket Failed", err)
 			return
 		}
 	}
@@ -229,7 +200,7 @@ func cleanupBucket(ctx context.Context, s3Client *s3.Client, bucket string, func
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteBucket Failed", err)
 		return
 	}
 }
@@ -250,7 +221,7 @@ func testPresignedPutInvalidHash(ctx context.Context, s3Client *s3.Client, presi
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -262,13 +233,13 @@ func testPresignedPutInvalidHash(ctx context.Context, s3Client *s3.Client, presi
 	}, s3.WithPresignExpires(expiry))
 
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned Put request creation failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned Put request creation failed", err)
 		return
 	}
 
 	rreq, err := http.NewRequest(http.MethodPut, presignReq.URL, bytes.NewReader([]byte("")))
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned PUT request failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned PUT request failed", err)
 		return
 	}
 
@@ -277,7 +248,7 @@ func testPresignedPutInvalidHash(ctx context.Context, s3Client *s3.Client, presi
 
 	resp, err := http.DefaultClient.Do(rreq)
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned put request failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 presigned put request failed", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -286,16 +257,16 @@ func testPresignedPutInvalidHash(ctx context.Context, s3Client *s3.Client, presi
 	errResp := errorResponse{}
 	err = dec.Decode(&errResp)
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 unmarshalling xml failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 unmarshalling xml failed", err)
 		return
 	}
 
 	if errResp.Code != "SignatureDoesNotMatch" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 presigned PUT expected to fail with SignatureDoesNotMatch but got %v", errResp.Code), errors.New("AWS S3 error code mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 presigned PUT expected to fail with SignatureDoesNotMatch but got %v", errResp.Code), errors.New("aws S3 error code mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testConditionalDeleteWithCorrectETag(ctx context.Context, s3Client *s3.Client) {
@@ -313,7 +284,7 @@ func testConditionalDeleteWithCorrectETag(ctx context.Context, s3Client *s3.Clie
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -325,12 +296,12 @@ func testConditionalDeleteWithCorrectETag(ctx context.Context, s3Client *s3.Clie
 		Body:   bytes.NewReader([]byte("test content")),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
 	if putResp.ETag == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject returned nil ETag", errors.New("nil ETag")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject returned nil ETag", errors.New("nil ETag"))
 		return
 	}
 
@@ -343,7 +314,7 @@ func testConditionalDeleteWithCorrectETag(ctx context.Context, s3Client *s3.Clie
 		IfMatch: aws.String(etag),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with If-Match failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with If-Match failed", err)
 		return
 	}
 
@@ -353,11 +324,11 @@ func testConditionalDeleteWithCorrectETag(ctx context.Context, s3Client *s3.Clie
 		Key:    aws.String(object),
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should have been deleted", errors.New("object still exists")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should have been deleted", errors.New("object still exists"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testConditionalDeleteWithIncorrectETag(ctx context.Context, s3Client *s3.Client) {
@@ -375,7 +346,7 @@ func testConditionalDeleteWithIncorrectETag(ctx context.Context, s3Client *s3.Cl
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -387,7 +358,7 @@ func testConditionalDeleteWithIncorrectETag(ctx context.Context, s3Client *s3.Cl
 		Body:   bytes.NewReader([]byte("test content")),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -398,13 +369,13 @@ func testConditionalDeleteWithIncorrectETag(ctx context.Context, s3Client *s3.Cl
 		IfMatch: aws.String("\"wrong-etag\""),
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wrong ETag should have failed", errors.New("expected precondition failure")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wrong ETag should have failed", errors.New("expected precondition failure"))
 		return
 	}
 
 	// Verify error is PreconditionFailed
 	if !strings.Contains(err.Error(), "PreconditionFailed") && !strings.Contains(err.Error(), "412") {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected PreconditionFailed error but got: %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected PreconditionFailed error but got: %v", err), err)
 		return
 	}
 
@@ -414,11 +385,11 @@ func testConditionalDeleteWithIncorrectETag(ctx context.Context, s3Client *s3.Cl
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should still exist after failed conditional delete", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should still exist after failed conditional delete", err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testConditionalDeleteWithWildcardExists(ctx context.Context, s3Client *s3.Client) {
@@ -436,7 +407,7 @@ func testConditionalDeleteWithWildcardExists(ctx context.Context, s3Client *s3.C
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -448,7 +419,7 @@ func testConditionalDeleteWithWildcardExists(ctx context.Context, s3Client *s3.C
 		Body:   bytes.NewReader([]byte("test content")),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -459,7 +430,7 @@ func testConditionalDeleteWithWildcardExists(ctx context.Context, s3Client *s3.C
 		IfMatch: aws.String("*"),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wildcard If-Match failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wildcard If-Match failed", err)
 		return
 	}
 
@@ -469,11 +440,11 @@ func testConditionalDeleteWithWildcardExists(ctx context.Context, s3Client *s3.C
 		Key:    aws.String(object),
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should have been deleted", errors.New("object still exists")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 object should have been deleted", errors.New("object still exists"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testConditionalDeleteWithWildcardMissing(ctx context.Context, s3Client *s3.Client) {
@@ -491,7 +462,7 @@ func testConditionalDeleteWithWildcardMissing(ctx context.Context, s3Client *s3.
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -503,17 +474,17 @@ func testConditionalDeleteWithWildcardMissing(ctx context.Context, s3Client *s3.
 		IfMatch: aws.String("*"),
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wildcard on missing object should have failed", errors.New("expected precondition failure")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject with wildcard on missing object should have failed", errors.New("expected precondition failure"))
 		return
 	}
 
 	// Verify error is PreconditionFailed
 	if !strings.Contains(err.Error(), "PreconditionFailed") && !strings.Contains(err.Error(), "412") {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected PreconditionFailed error but got: %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected PreconditionFailed error but got: %v", err), err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testChecksumCRC32(ctx context.Context, s3Client *s3.Client) {
@@ -533,7 +504,7 @@ func testChecksumCRC32(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -555,18 +526,18 @@ func testChecksumCRC32(ctx context.Context, s3Client *s3.Client) {
 		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with CRC32 failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with CRC32 failed", err)
 		return
 	}
 
 	// Verify checksum is returned in response
 	if putResp.ChecksumCRC32 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumCRC32", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumCRC32", errors.New("missing checksum"))
 		return
 	}
 
 	if *putResp.ChecksumCRC32 != expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumCRC32), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumCRC32), errors.New("checksum mismatch"))
 		return
 	}
 
@@ -577,22 +548,22 @@ func testChecksumCRC32(ctx context.Context, s3Client *s3.Client) {
 		ChecksumMode: types.ChecksumModeEnabled,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err)
 		return
 	}
 	defer getResp.Body.Close()
 
 	if getResp.ChecksumCRC32 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumCRC32", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumCRC32", errors.New("missing checksum"))
 		return
 	}
 
 	if *getResp.ChecksumCRC32 != expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject ChecksumCRC32 mismatch: expected %s, got %s", expectedChecksum, *getResp.ChecksumCRC32), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject ChecksumCRC32 mismatch: expected %s, got %s", expectedChecksum, *getResp.ChecksumCRC32), errors.New("checksum mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testChecksumCRC32C(ctx context.Context, s3Client *s3.Client) {
@@ -612,7 +583,7 @@ func testChecksumCRC32C(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -635,18 +606,18 @@ func testChecksumCRC32C(ctx context.Context, s3Client *s3.Client) {
 		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32c,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with CRC32C failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with CRC32C failed", err)
 		return
 	}
 
 	// Verify checksum is returned
 	if putResp.ChecksumCRC32C == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumCRC32C", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumCRC32C", errors.New("missing checksum"))
 		return
 	}
 
 	if *putResp.ChecksumCRC32C != expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32C mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumCRC32C), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32C mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumCRC32C), errors.New("checksum mismatch"))
 		return
 	}
 
@@ -657,17 +628,17 @@ func testChecksumCRC32C(ctx context.Context, s3Client *s3.Client) {
 		ChecksumMode: types.ChecksumModeEnabled,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err)
 		return
 	}
 	defer getResp.Body.Close()
 
 	if getResp.ChecksumCRC32C == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumCRC32C", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumCRC32C", errors.New("missing checksum"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testChecksumSHA1(ctx context.Context, s3Client *s3.Client) {
@@ -687,7 +658,7 @@ func testChecksumSHA1(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -704,18 +675,18 @@ func testChecksumSHA1(ctx context.Context, s3Client *s3.Client) {
 		ChecksumAlgorithm: types.ChecksumAlgorithmSha1,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with SHA1 failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with SHA1 failed", err)
 		return
 	}
 
 	// Verify checksum is returned
 	if putResp.ChecksumSHA1 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumSHA1", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumSHA1", errors.New("missing checksum"))
 		return
 	}
 
 	if *putResp.ChecksumSHA1 != expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumSHA1 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumSHA1), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumSHA1 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumSHA1), errors.New("checksum mismatch"))
 		return
 	}
 
@@ -726,17 +697,17 @@ func testChecksumSHA1(ctx context.Context, s3Client *s3.Client) {
 		ChecksumMode: types.ChecksumModeEnabled,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err)
 		return
 	}
 	defer getResp.Body.Close()
 
 	if getResp.ChecksumSHA1 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumSHA1", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumSHA1", errors.New("missing checksum"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testChecksumSHA256(ctx context.Context, s3Client *s3.Client) {
@@ -756,7 +727,7 @@ func testChecksumSHA256(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -773,18 +744,18 @@ func testChecksumSHA256(ctx context.Context, s3Client *s3.Client) {
 		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with SHA256 failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with SHA256 failed", err)
 		return
 	}
 
 	// Verify checksum is returned
 	if putResp.ChecksumSHA256 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumSHA256", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject response missing ChecksumSHA256", errors.New("missing checksum"))
 		return
 	}
 
 	if *putResp.ChecksumSHA256 != expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumSHA256 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumSHA256), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumSHA256 mismatch: expected %s, got %s", expectedChecksum, *putResp.ChecksumSHA256), errors.New("checksum mismatch"))
 		return
 	}
 
@@ -795,17 +766,17 @@ func testChecksumSHA256(ctx context.Context, s3Client *s3.Client) {
 		ChecksumMode: types.ChecksumModeEnabled,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject failed", err)
 		return
 	}
 	defer getResp.Body.Close()
 
 	if getResp.ChecksumSHA256 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumSHA256", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject response missing ChecksumSHA256", errors.New("missing checksum"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testChecksumInvalidValue(ctx context.Context, s3Client *s3.Client) {
@@ -824,7 +795,7 @@ func testChecksumInvalidValue(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -840,17 +811,17 @@ func testChecksumInvalidValue(ctx context.Context, s3Client *s3.Client) {
 
 	// Should fail with BadRequest or similar
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with wrong checksum should have failed", errors.New("expected checksum validation failure")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with wrong checksum should have failed", errors.New("expected checksum validation failure"))
 		return
 	}
 
 	// Verify error indicates checksum mismatch
 	if !strings.Contains(err.Error(), "BadDigest") && !strings.Contains(err.Error(), "InvalidRequest") && !strings.Contains(err.Error(), "400") {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected checksum error but got: %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected checksum error but got: %v", err), err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectAttributesBasic(ctx context.Context, s3Client *s3.Client) {
@@ -869,7 +840,7 @@ func testGetObjectAttributesBasic(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -881,7 +852,7 @@ func testGetObjectAttributesBasic(ctx context.Context, s3Client *s3.Client) {
 		Body:   bytes.NewReader(content),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -898,39 +869,39 @@ func testGetObjectAttributesBasic(ctx context.Context, s3Client *s3.Client) {
 		},
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err)
 		return
 	}
 
 	// Verify ETag
 	if attrResp.ETag == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ETag", errors.New("missing etag")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ETag", errors.New("missing etag"))
 		return
 	}
 	normalizedExpected := strings.Trim(*expectedETag, "\"")
 	normalizedActual := strings.Trim(*attrResp.ETag, "\"")
 	if normalizedActual != normalizedExpected {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ETag mismatch: expected %s, got %s", normalizedExpected, normalizedActual), errors.New("etag mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ETag mismatch: expected %s, got %s", normalizedExpected, normalizedActual), errors.New("etag mismatch"))
 		return
 	}
 
 	// Verify ObjectSize
 	if attrResp.ObjectSize == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectSize", errors.New("missing size")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectSize", errors.New("missing size"))
 		return
 	}
 	if *attrResp.ObjectSize != int64(len(content)) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ObjectSize mismatch: expected %d, got %d", len(content), *attrResp.ObjectSize), errors.New("size mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ObjectSize mismatch: expected %d, got %d", len(content), *attrResp.ObjectSize), errors.New("size mismatch"))
 		return
 	}
 
 	// Verify StorageClass (should be STANDARD)
 	if attrResp.StorageClass == "" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing StorageClass", errors.New("missing storage class")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing StorageClass", errors.New("missing storage class"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectAttributesWithChecksum(ctx context.Context, s3Client *s3.Client) {
@@ -950,7 +921,7 @@ func testGetObjectAttributesWithChecksum(ctx context.Context, s3Client *s3.Clien
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -963,7 +934,7 @@ func testGetObjectAttributesWithChecksum(ctx context.Context, s3Client *s3.Clien
 		ChecksumAlgorithm: types.ChecksumAlgorithmCrc32c,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -979,28 +950,28 @@ func testGetObjectAttributesWithChecksum(ctx context.Context, s3Client *s3.Clien
 		},
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err)
 		return
 	}
 
 	// Verify Checksum is returned
 	if attrResp.Checksum == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing Checksum", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing Checksum", errors.New("missing checksum"))
 		return
 	}
 
 	// Verify ChecksumCRC32C
 	if attrResp.Checksum.ChecksumCRC32C == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ChecksumCRC32C", errors.New("missing crc32c")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ChecksumCRC32C", errors.New("missing crc32c"))
 		return
 	}
 
 	if *attrResp.Checksum.ChecksumCRC32C != *expectedChecksum {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32C mismatch: expected %s, got %s", *expectedChecksum, *attrResp.Checksum.ChecksumCRC32C), errors.New("checksum mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ChecksumCRC32C mismatch: expected %s, got %s", *expectedChecksum, *attrResp.Checksum.ChecksumCRC32C), errors.New("checksum mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) {
@@ -1018,7 +989,7 @@ func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) 
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -1029,7 +1000,7 @@ func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) 
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateMultipartUpload Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateMultipartUpload Failed", err)
 		return
 	}
 
@@ -1053,7 +1024,7 @@ func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) 
 			Body:       bytes.NewReader(partContent),
 		})
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 UploadPart %d Failed", i), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 UploadPart %d Failed", i), err)
 			return
 		}
 		completedParts = append(completedParts, types.CompletedPart{
@@ -1072,7 +1043,7 @@ func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) 
 		},
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload Failed", err)
 		return
 	}
 
@@ -1085,34 +1056,34 @@ func testGetObjectAttributesMultipart(ctx context.Context, s3Client *s3.Client) 
 		},
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err)
 		return
 	}
 
 	// Verify ObjectParts is returned
 	if attrResp.ObjectParts == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectParts", errors.New("missing object parts")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectParts", errors.New("missing object parts"))
 		return
 	}
 
 	if attrResp.ObjectParts.Parts == nil || len(attrResp.ObjectParts.Parts) != 3 {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Parts array mismatch: expected 3 parts, got %d", len(attrResp.ObjectParts.Parts)), errors.New("parts array mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Parts array mismatch: expected 3 parts, got %d", len(attrResp.ObjectParts.Parts)), errors.New("parts array mismatch"))
 		return
 	}
 
 	// Verify each part has PartNumber and Size
 	for i, part := range attrResp.ObjectParts.Parts {
 		if part.PartNumber == nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Part %d missing PartNumber", i), errors.New("missing part number")).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Part %d missing PartNumber", i), errors.New("missing part number"))
 			return
 		}
 		if part.Size == nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Part %d missing Size", i), errors.New("missing part size")).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Part %d missing Size", i), errors.New("missing part size"))
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectAttributesNonExistent(ctx context.Context, s3Client *s3.Client) {
@@ -1130,7 +1101,7 @@ func testGetObjectAttributesNonExistent(ctx context.Context, s3Client *s3.Client
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -1146,17 +1117,17 @@ func testGetObjectAttributesNonExistent(ctx context.Context, s3Client *s3.Client
 
 	// Should fail with 404 NotFound
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes for non-existent object should have failed", errors.New("expected not found error")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes for non-existent object should have failed", errors.New("expected not found error"))
 		return
 	}
 
 	// Verify error is NotFound
 	if !strings.Contains(err.Error(), "NotFound") && !strings.Contains(err.Error(), "404") && !strings.Contains(err.Error(), "NoSuchKey") {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected NotFound error but got: %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 expected NotFound error but got: %v", err), err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectAttributesCombined(ctx context.Context, s3Client *s3.Client) {
@@ -1175,7 +1146,7 @@ func testGetObjectAttributesCombined(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanupBucket(ctx, s3Client, bucket, function, args, startTime)
@@ -1188,7 +1159,7 @@ func testGetObjectAttributesCombined(ctx context.Context, s3Client *s3.Client) {
 		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -1204,37 +1175,37 @@ func testGetObjectAttributesCombined(ctx context.Context, s3Client *s3.Client) {
 		},
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes Failed", err)
 		return
 	}
 
 	// Verify all attributes are present
 	if attrResp.ETag == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ETag", errors.New("missing etag")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ETag", errors.New("missing etag"))
 		return
 	}
 
 	if attrResp.ObjectSize == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectSize", errors.New("missing size")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ObjectSize", errors.New("missing size"))
 		return
 	}
 
 	if attrResp.StorageClass == "" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing StorageClass", errors.New("missing storage class")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing StorageClass", errors.New("missing storage class"))
 		return
 	}
 
 	if attrResp.Checksum == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing Checksum", errors.New("missing checksum")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing Checksum", errors.New("missing checksum"))
 		return
 	}
 
 	if attrResp.Checksum.ChecksumSHA256 == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ChecksumSHA256", errors.New("missing sha256")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObjectAttributes missing ChecksumSHA256", errors.New("missing sha256"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testListObjects(ctx context.Context, s3Client *s3.Client) {
@@ -1262,7 +1233,7 @@ func testListObjects(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object1, function, args, startTime, true)
@@ -1275,11 +1246,11 @@ func testListObjects(ctx context.Context, s3Client *s3.Client) {
 	}
 	result, err := s3Client.ListObjectsV2(ctx, listInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects expected to success but got %v", err), err)
 		return
 	}
 	if result.KeyCount != nil && *result.KeyCount != 0 {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects with prefix '' expected 0 key but got %v, %v", *result.KeyCount, getKeys(result.Contents)), errors.New("AWS S3 key count mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects with prefix '' expected 0 key but got %v, %v", *result.KeyCount, getKeys(result.Contents)), errors.New("aws S3 key count mismatch"))
 		return
 	}
 	putInput1 := &s3.PutObjectInput{
@@ -1289,7 +1260,7 @@ func testListObjects(ctx context.Context, s3Client *s3.Client) {
 	}
 	_, err = s3Client.PutObject(ctx, putInput1)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err)
 		return
 	}
 	putInput2 := &s3.PutObjectInput{
@@ -1299,20 +1270,20 @@ func testListObjects(ctx context.Context, s3Client *s3.Client) {
 	}
 	_, err = s3Client.PutObject(ctx, putInput2)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err)
 		return
 	}
 	result, err = s3Client.ListObjectsV2(ctx, listInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects expected to success but got %v", err), err)
 		return
 	}
 	if result.KeyCount != nil && *result.KeyCount != 2 {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects with prefix '' expected 2 key but got %v, %v", *result.KeyCount, getKeys(result.Contents)), errors.New("AWS S3 key count mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 listobjects with prefix '' expected 2 key but got %v, %v", *result.KeyCount, getKeys(result.Contents)), errors.New("aws S3 key count mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testSelectObject(ctx context.Context, s3Client *s3.Client) {
@@ -1331,7 +1302,7 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 
@@ -1368,7 +1339,7 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 	}
 	_, err = s3Client.PutObject(ctx, putInput1)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err)
 		return
 	}
 
@@ -1395,7 +1366,7 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 
 	resp, err := s3Client.SelectObjectContent(ctx, params)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err)
 		return
 	}
 	defer resp.GetStream().Close()
@@ -1410,12 +1381,12 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 	}
 
 	if err := resp.GetStream().Err(); err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed %v", err), err)
 		return
 	}
 
 	if payload != outputCSV1 {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object output mismatch %v", payload), errors.New("AWS S3 select object mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object output mismatch %v", payload), errors.New("aws S3 select object mismatch"))
 		return
 	}
 
@@ -1452,7 +1423,7 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 	}
 	_, err = s3Client.PutObject(ctx, putInput2)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object upload failed: %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object upload failed: %v", err), err)
 		return
 	}
 
@@ -1479,7 +1450,7 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 
 	resp, err = s3Client.SelectObjectContent(ctx, params2)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed for unicode separator %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed for unicode separator %v", err), err)
 		return
 	}
 	defer resp.GetStream().Close()
@@ -1493,16 +1464,16 @@ func testSelectObject(ctx context.Context, s3Client *s3.Client) {
 	}
 
 	if err := resp.GetStream().Err(); err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed for unicode separator %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object failed for unicode separator %v", err), err)
 		return
 	}
 
 	if payload != outputCSV2 {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object output mismatch %v", payload), errors.New("AWS S3 select object mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Select object output mismatch %v", payload), errors.New("aws S3 select object mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
@@ -1519,7 +1490,7 @@ func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -1539,7 +1510,7 @@ func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
 	})
 
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err)
 		return
 	}
 
@@ -1550,12 +1521,12 @@ func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
 	if err != nil {
 		var apiErr interface{ ErrorCode() string }
 		if errors.As(err, &apiErr) {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err)
 			return
 		}
 	}
 	if !reflect.DeepEqual(tagop.TagSet, tagInputSet) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObject Tag input did not match with GetObjectTagging output %v", nil), nil).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObject Tag input did not match with GetObjectTagging output %v", nil), nil)
 		return
 	}
 
@@ -1575,7 +1546,7 @@ func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
 	if err != nil {
 		var apiErr interface{ ErrorCode() string }
 		if errors.As(err, &apiErr) {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err)
 			return
 		}
 	}
@@ -1587,15 +1558,15 @@ func testObjectTagging(ctx context.Context, s3Client *s3.Client) {
 	if err != nil {
 		var apiErr interface{ ErrorCode() string }
 		if errors.As(err, &apiErr) {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging expected to success but got %v", apiErr.ErrorCode()), err)
 			return
 		}
 	}
 	if !reflect.DeepEqual(tagop.TagSet, taginputSet1) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging input did not match with GetObjectTagging output %v", nil), nil).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUTObjectTagging input did not match with GetObjectTagging output %v", nil), nil)
 		return
 	}
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
@@ -1612,7 +1583,7 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -1624,7 +1595,7 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 	})
 
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to success but got %v", err), err)
 		return
 	}
 
@@ -1651,14 +1622,14 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 
 	_, err = s3Client.PutObjectTagging(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err)
 		return
 	}
 
 	var apiErr interface{ ErrorCode() string }
 	if errors.As(err, &apiErr) {
 		if apiErr.ErrorCode() != "BadRequest" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err)
 			return
 		}
 	}
@@ -1677,13 +1648,13 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 
 	_, err = s3Client.PutObjectTagging(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err)
 		return
 	}
 
 	if errors.As(err, &apiErr) {
 		if apiErr.ErrorCode() != "InvalidTag" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err)
 			return
 		}
 	}
@@ -1705,13 +1676,13 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 
 	_, err = s3Client.PutObjectTagging(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err)
 		return
 	}
 
 	if errors.As(err, &apiErr) {
 		if apiErr.ErrorCode() != "InvalidTag" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err)
 			return
 		}
 	}
@@ -1733,18 +1704,18 @@ func testObjectTaggingErrors(ctx context.Context, s3Client *s3.Client) {
 
 	_, err = s3Client.PutObjectTagging(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PUT expected to fail but succeeded", err)
 		return
 	}
 
 	if errors.As(err, &apiErr) {
 		if apiErr.ErrorCode() != "InvalidTag" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to fail but got %v", err), err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 // Tests bucket re-create errors.
@@ -1768,10 +1739,10 @@ func testCreateBucketError(ctx context.Context, s3Client *s3.Client, origRegion 
 		// different 'regions', we simply skip this test in such scenarios.
 		var apiErr interface{ ErrorCode() string }
 		if errors.As(err, &apiErr) && apiErr.ErrorCode() == "InvalidRegion" {
-			successLogger(function, args, startTime).Info()
+			successLogger(function, args, startTime)
 			return
 		}
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucketName, "", function, args, startTime, true)
@@ -1780,19 +1751,19 @@ func testCreateBucketError(ctx context.Context, s3Client *s3.Client, origRegion 
 		Bucket: aws.String(bucketName),
 	})
 	if errCreating == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Should Return Error for Existing bucket", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Should Return Error for Existing bucket", err)
 		return
 	}
 	// Verify valid error response from server.
 	var apiErr interface{ ErrorCode() string }
 	if errors.As(errCreating, &apiErr) {
 		if apiErr.ErrorCode() != "BucketAlreadyExists" && apiErr.ErrorCode() != "BucketAlreadyOwnedByYou" {
-			failureLog(function, args, startTime, "", "Invalid error returned by server", err).Fatal()
+			failureLog(function, args, startTime, "", "Invalid error returned by server", err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
@@ -1808,7 +1779,7 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if errCreating != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", errCreating).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", errCreating)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -1818,7 +1789,7 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 createMultipartupload API failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 createMultipartupload API failed", err)
 		return
 	}
 	parts := make([]*string, 5)
@@ -1836,7 +1807,7 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 				Key:      aws.String(object),
 				UploadId: multipartUpload.UploadId,
 			})
-			failureLog(function, args, startTime, "", "AWS SDK Go V2 uploadPart API failed for", errUpload).Fatal()
+			failureLog(function, args, startTime, "", "AWS SDK Go V2 uploadPart API failed for", errUpload)
 			return
 		}
 		parts[i] = result.ETag
@@ -1848,12 +1819,12 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 		UploadId: multipartUpload.UploadId,
 	})
 	if errParts != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API failed for", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API failed for", err)
 		return
 	}
 
 	if len(parts) != len(listParts.Parts) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ListParts.Parts len mismatch want: %d got: %d", len(parts), len(listParts.Parts)), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ListParts.Parts len mismatch want: %d got: %d", len(parts), len(listParts.Parts)), err)
 		return
 	}
 
@@ -1861,7 +1832,7 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 	for i, part := range listParts.Parts {
 		tag := parts[i]
 		if *tag != *part.ETag {
-			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ListParts.Parts output mismatch want: %#v got: %#v", tag, part.ETag), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 ListParts.Parts output mismatch want: %#v got: %#v", tag, part.ETag), err)
 			return
 		}
 		completedParts[i] = types.CompletedPart{
@@ -1879,13 +1850,13 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 		UploadId: multipartUpload.UploadId,
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload is expected to fail but succeeded", errors.New("expected nil")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload is expected to fail but succeeded", errors.New("expected nil"))
 		return
 	}
 
 	var apiErr interface{ ErrorCode() string }
 	if errors.As(err, &apiErr) && apiErr.ErrorCode() != "EntityTooSmall" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload is expected to fail with EntityTooSmall", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CompleteMultipartUpload is expected to fail with EntityTooSmall", err)
 		return
 	}
 
@@ -1900,7 +1871,7 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 	}
 	_, err = s3Client.ListParts(ctx, lpInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API (MaxParts < 0) failed for", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API (MaxParts < 0) failed for", err)
 		return
 	}
 
@@ -1908,11 +1879,11 @@ func testListMultipartUploads(ctx context.Context, s3Client *s3.Client) {
 	lpInput.PartNumberMarker = aws.String("-1")
 	_, err = s3Client.ListParts(ctx, lpInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API (PartNumberMarker < 0) failed for", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 ListPartsInput API (PartNumberMarker < 0) failed for", err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
@@ -1929,12 +1900,12 @@ func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucketName),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucketName, object+"-enc", function, args, startTime, true)
 	defer cleanup(ctx, s3Client, bucketName, object+"-noenc", function, args, startTime, false)
-	wrongSuccess := errors.New("Succeeded instead of failing. ")
+	wrongSuccess := errors.New("succeeded instead of failing. ")
 
 	// create encrypted object
 	sseCustomerKey := "32byteslongsecretkeymustbegiven2"
@@ -1946,7 +1917,7 @@ func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
 		SSECustomerKey:       aws.String(sseCustomerKey),
 	})
 	if errPutEnc != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to succeed but got %v", errPutEnc), errPutEnc).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to succeed but got %v", errPutEnc), errPutEnc)
 		return
 	}
 
@@ -1959,12 +1930,12 @@ func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
 		Key:                  aws.String(object + "-copy"),
 	})
 	if errCopyEnc == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CopyObject expected to fail, but it succeeds ", wrongSuccess).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CopyObject expected to fail, but it succeeds ", wrongSuccess)
 		return
 	}
 	invalidSSECustomerAlgorithm := "Requests specifying Server Side Encryption with Customer provided keys must provide a valid encryption algorithm"
 	if !strings.Contains(errCopyEnc.Error(), invalidSSECustomerAlgorithm) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 CopyObject expected error %v got %v", invalidSSECustomerAlgorithm, errCopyEnc), errCopyEnc).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 CopyObject expected error %v got %v", invalidSSECustomerAlgorithm, errCopyEnc), errCopyEnc)
 		return
 	}
 
@@ -1975,7 +1946,7 @@ func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object + "-noenc"),
 	})
 	if errPut != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to succeed but got %v", errPut), errPut).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 PUT expected to succeed but got %v", errPut), errPut)
 		return
 	}
 
@@ -1990,16 +1961,16 @@ func testSSECopyObject(ctx context.Context, s3Client *s3.Client) {
 		Key:                            aws.String(object + "-copy"),
 	})
 	if errCopy == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CopyObject expected to fail, but it succeeds ", wrongSuccess).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CopyObject expected to fail, but it succeeds ", wrongSuccess)
 		return
 	}
 	invalidEncryptionParameters := "The encryption parameters are not applicable to this object."
 	if !strings.Contains(errCopy.Error(), invalidEncryptionParameters) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 CopyObject expected error %v got %v", invalidEncryptionParameters, errCopy), errCopy).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 CopyObject expected error %v got %v", invalidEncryptionParameters, errCopy), errCopy)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
@@ -2007,7 +1978,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 	function := "testBasicObjectOperations"
 	bucket := randString(60, rand.NewSource(time.Now().UnixNano()), "aws-sdk-go-test-")
 	object := "test-object.txt"
-	content := "Hello, ObStor with AWS SDK Go v2!"
+	content := "Hello, Obstor with AWS SDK Go v2!"
 	args := map[string]interface{}{
 		"bucketName": bucket,
 		"objectName": object,
@@ -2018,7 +1989,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -2031,7 +2002,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		ContentType: aws.String("text/plain"),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -2041,7 +2012,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject Failed", err)
 		return
 	}
 	defer getResult.Body.Close()
@@ -2050,11 +2021,11 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 	body := make([]byte, len(content))
 	_, err = getResult.Body.Read(body)
 	if err != nil && err.Error() != "EOF" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject read body failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject read body failed", err)
 		return
 	}
 	if string(body) != content {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject content mismatch: expected '%s', got '%s'", content, string(body)), errors.New("content mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject content mismatch: expected '%s', got '%s'", content, string(body)), errors.New("content mismatch"))
 		return
 	}
 
@@ -2064,15 +2035,15 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 HeadObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 HeadObject Failed", err)
 		return
 	}
 	if *headResult.ContentType != "text/plain" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 HeadObject ContentType mismatch: expected 'text/plain', got '%s'", *headResult.ContentType), errors.New("content type mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 HeadObject ContentType mismatch: expected 'text/plain', got '%s'", *headResult.ContentType), errors.New("content type mismatch"))
 		return
 	}
 	if *headResult.ContentLength != int64(len(content)) {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 HeadObject ContentLength mismatch: expected %d, got %d", len(content), *headResult.ContentLength), errors.New("content length mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 HeadObject ContentLength mismatch: expected %d, got %d", len(content), *headResult.ContentLength), errors.New("content length mismatch"))
 		return
 	}
 
@@ -2082,7 +2053,7 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 DeleteObject Failed", err)
 		return
 	}
 
@@ -2092,11 +2063,11 @@ func testBasicObjectOperations(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err == nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 Object should not exist after DELETE", errors.New("object still exists")).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 Object should not exist after DELETE", errors.New("object still exists"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
@@ -2115,7 +2086,7 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
@@ -2127,7 +2098,7 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 		Body:   strings.NewReader(content),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject Failed", err)
 		return
 	}
 
@@ -2138,7 +2109,7 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 		Range:  aws.String("bytes=0-9"),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with Range Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with Range Failed", err)
 		return
 	}
 	defer getResult1.Body.Close()
@@ -2146,11 +2117,11 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 	body1 := make([]byte, 10)
 	_, err = getResult1.Body.Read(body1)
 	if err != nil && err.Error() != "EOF" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject range read failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject range read failed", err)
 		return
 	}
 	if string(body1) != "0123456789" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject range content mismatch: expected '0123456789', got '%s'", string(body1)), errors.New("range content mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject range content mismatch: expected '0123456789', got '%s'", string(body1)), errors.New("range content mismatch"))
 		return
 	}
 
@@ -2161,7 +2132,7 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 		Range:  aws.String("bytes=10-19"),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with Range Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with Range Failed", err)
 		return
 	}
 	defer getResult2.Body.Close()
@@ -2169,11 +2140,11 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 	body2 := make([]byte, 10)
 	_, err = getResult2.Body.Read(body2)
 	if err != nil && err.Error() != "EOF" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject range read failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject range read failed", err)
 		return
 	}
 	if string(body2) != "ABCDEFGHIJ" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject range content mismatch: expected 'ABCDEFGHIJ', got '%s'", string(body2)), errors.New("range content mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject range content mismatch: expected 'ABCDEFGHIJ', got '%s'", string(body2)), errors.New("range content mismatch"))
 		return
 	}
 
@@ -2184,7 +2155,7 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 		Range:  aws.String("bytes=-10"),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with suffix Range Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject with suffix Range Failed", err)
 		return
 	}
 	defer getResult3.Body.Close()
@@ -2192,15 +2163,15 @@ func testGetObjectRange(ctx context.Context, s3Client *s3.Client) {
 	body3 := make([]byte, 10)
 	_, err = getResult3.Body.Read(body3)
 	if err != nil && err.Error() != "EOF" {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject suffix range read failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject suffix range read failed", err)
 		return
 	}
 	if string(body3) != "qrstuvwxyz" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject suffix range content mismatch: expected 'qrstuvwxyz', got '%s'", string(body3)), errors.New("suffix range content mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GetObject suffix range content mismatch: expected 'qrstuvwxyz', got '%s'", string(body3)), errors.New("suffix range content mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
@@ -2219,14 +2190,14 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 CreateBucket Failed", err)
 		return
 	}
 	defer cleanup(ctx, s3Client, bucket, object, function, args, startTime, true)
 
 	// PUT Object with custom metadata
 	metadata := map[string]string{
-		"author":      "ObStor Test Suite",
+		"author":      "Obstor Test Suite",
 		"environment": "testing",
 		"version":     "1.0",
 	}
@@ -2238,7 +2209,7 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 		Metadata:    metadata,
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with metadata Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 PutObject with metadata Failed", err)
 		return
 	}
 
@@ -2248,21 +2219,21 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 HeadObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 HeadObject Failed", err)
 		return
 	}
 
 	// Verify metadata
-	if headResult.Metadata["author"] != "ObStor Test Suite" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'author' mismatch: expected 'ObStor Test Suite', got '%s'", headResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
+	if headResult.Metadata["author"] != "Obstor Test Suite" {
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'author' mismatch: expected 'Obstor Test Suite', got '%s'", headResult.Metadata["author"]), errors.New("metadata mismatch"))
 		return
 	}
 	if headResult.Metadata["environment"] != "testing" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'environment' mismatch: expected 'testing', got '%s'", headResult.Metadata["environment"]), errors.New("metadata mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'environment' mismatch: expected 'testing', got '%s'", headResult.Metadata["environment"]), errors.New("metadata mismatch"))
 		return
 	}
 	if headResult.Metadata["version"] != "1.0" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'version' mismatch: expected '1.0', got '%s'", headResult.Metadata["version"]), errors.New("metadata mismatch")).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 Metadata 'version' mismatch: expected '1.0', got '%s'", headResult.Metadata["version"]), errors.New("metadata mismatch"))
 		return
 	}
 
@@ -2272,18 +2243,18 @@ func testObjectMetadata(ctx context.Context, s3Client *s3.Client) {
 		Key:    aws.String(object),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject Failed", err).Fatal()
+		failureLog(function, args, startTime, "", "AWS SDK Go V2 GetObject Failed", err)
 		return
 	}
 	defer getResult.Body.Close()
 
 	// Verify metadata from GET
-	if getResult.Metadata["author"] != "ObStor Test Suite" {
-		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GET Metadata 'author' mismatch: expected 'ObStor Test Suite', got '%s'", getResult.Metadata["author"]), errors.New("metadata mismatch")).Fatal()
+	if getResult.Metadata["author"] != "Obstor Test Suite" {
+		failureLog(function, args, startTime, "", fmt.Sprintf("AWS SDK Go V2 GET Metadata 'author' mismatch: expected 'Obstor Test Suite', got '%s'", getResult.Metadata["author"]), errors.New("metadata mismatch"))
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }
 
 func main() {
@@ -2317,7 +2288,8 @@ func main() {
 		config.WithEndpointResolverWithOptions(customResolver),
 	)
 	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
+		slog.Error(fmt.Sprintf("unable to load SDK config, %v", err))
+		os.Exit(1)
 	}
 
 	// Create an S3 service client
@@ -2328,14 +2300,10 @@ func main() {
 	// Create presign client
 	presignClient := s3.NewPresignClient(s3Client)
 
-	// Output to stdout instead of the default stderr
-	log.SetOutput(os.Stdout)
-	// create custom formatter
-	mintFormatter := mintJSONFormatter{}
-	// set custom formatter
-	log.SetFormatter(&mintFormatter)
-	// log Info or above -- success cases are Info level, failures are Fatal level
-	log.SetLevel(log.InfoLevel)
+	// Configure slog to output JSON to stdout
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
 	// execute tests
 	testBasicObjectOperations(ctx, s3Client)
 	testGetObjectRange(ctx, s3Client)

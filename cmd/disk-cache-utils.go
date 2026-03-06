@@ -482,7 +482,7 @@ func (f *fileScorer) queueString() string {
 		if i > 0 {
 			res.WriteByte('\n')
 		}
-		res.WriteString(fmt.Sprintf("%03d: %s (score: %.3f, bytes: %d)", i, v.name, v.score, v.size))
+		fmt.Fprintf(&res, "%03d: %s (score: %.3f, bytes: %d)", i, v.name, v.score, v.size)
 		i++
 		e = e.Next()
 	}

@@ -1384,7 +1384,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 
 	respElements := map[string]string{
 		"x-amz-request-id":         args.RespElements["requestId"],
-		"x-obstor-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
+		"x-obstor-origin-endpoint": globalMinioEndpoint, // Obstor specific custom elements.
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
@@ -1440,7 +1440,7 @@ func sendEvent(args eventArgs) {
 	args.Object.Size, _ = args.Object.GetActualSize()
 
 	// avoid generating a notification for REPLICA creation event.
-	if _, ok := args.ReqParams[xhttp.ObStorSourceReplicationRequest]; ok {
+	if _, ok := args.ReqParams[xhttp.ObstorSourceReplicationRequest]; ok {
 		return
 	}
 	// remove sensitive encryption entries in metadata.

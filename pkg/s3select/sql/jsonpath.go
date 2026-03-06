@@ -24,11 +24,11 @@ import (
 )
 
 var (
-	errKeyLookup                 = errors.New("Cannot look up key in non-object value")
-	errIndexLookup               = errors.New("Cannot look up array index in non-array value")
-	errWildcardObjectLookup      = errors.New("Object wildcard used on non-object value")
-	errWildcardArrayLookup       = errors.New("Array wildcard used on non-array value")
-	errWilcardObjectUsageInvalid = errors.New("Invalid usage of object wildcard")
+	errKeyLookup                 = errors.New("cannot look up key in non-object value")
+	errIndexLookup               = errors.New("cannot look up array index in non-array value")
+	errWildcardObjectLookup      = errors.New("object wildcard used on non-object value")
+	errWildcardArrayLookup       = errors.New("array wildcard used on non-array value")
+	errWilcardObjectUsageInvalid = errors.New("invalid usage of object wildcard")
 )
 
 // jsonpathEval evaluates a JSON path and returns the value at the path.

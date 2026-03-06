@@ -219,12 +219,9 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 		}
 	}
 
-	erasureDistributionReliable := true
-	if inconsistent > len(partsMetadata)/2 {
-		// If there are too many inconsistent files, then we can't trust erasure.Distribution (most likely
-		// because of bugs found in CopyObject/PutObjectTags) https://github.com/cloudment/obstor/pull/10772
-		erasureDistributionReliable = false
-	}
+	// If there are too many inconsistent files, then we can't trust erasure.Distribution (most likely
+	// because of bugs found in CopyObject/PutObjectTags) https://github.com/cloudment/obstor/pull/10772
+	erasureDistributionReliable := inconsistent <= len(partsMetadata)/2
 
 	for i, onlineDisk := range onlineDisks {
 		if errs[i] != nil {

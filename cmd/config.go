@@ -37,7 +37,7 @@ const (
 	// Captures all the previous SetKV operations and allows rollback.
 	minioConfigHistoryPrefix = minioConfigPrefix + "/history"
 
-	// ObStor configuration file.
+	// Obstor configuration file.
 	minioConfigFile = "config.json"
 )
 

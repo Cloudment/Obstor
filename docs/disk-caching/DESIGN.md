@@ -21,7 +21,7 @@ obstor gateway <name> -h
 ...
 ...
 
-  Start ObStor gateway to s3 with edge caching enabled on '/mnt/drive1', '/mnt/drive2' and '/mnt/export1 ... /mnt/export24',
+  Start Obstor gateway to s3 with edge caching enabled on '/mnt/drive1', '/mnt/drive2' and '/mnt/export1 ... /mnt/export24',
      exclude all objects under 'mybucket', exclude all objects with '.pdf' as extension. Cache only those objects accessed atleast 3 times. Garbage collection triggers in at high water mark (i.e. cache disk usage reaches 90% of cache quota) or at 72% and evicts oldest objects by access time until low watermark is reached ( 70% of cache quota) , i.e. 63% of disk usage.
      $ export OBSTOR_CACHE_DRIVES="/mnt/drive1,/mnt/drive2,/mnt/export{1..24}"
      $ export OBSTOR_CACHE_EXCLUDE="mybucket/*,*.pdf"
@@ -33,7 +33,7 @@ obstor gateway <name> -h
      $ obstor gateway s3
 ```
 
-### Run ObStor gateway with cache on Docker Container
+### Run Obstor gateway with cache on Docker Container
 ### Stable
 Cache drives need to have `strictatime` or `relatime` enabled for disk caching feature. In this example, mount the xfs file system on /mnt/cache with `strictatime` or `relatime` enabled.
 
@@ -74,7 +74,7 @@ Disk caching caches objects for **downloaded** objects i.e
 - To ensure security guarantees, encrypted objects are normally not cached. However, if you wish to encrypt cached content on disk, you can set OBSTOR_CACHE_ENCRYPTION_MASTER_KEY environment variable to set a cache KMS
 master key to automatically encrypt all cached content.
 
-  Note that cache KMS master key is not recommended for use in production deployments. If the ObStor server/gateway machine is ever compromised, the cache KMS master key must also be treated as compromised.
+  Note that cache KMS master key is not recommended for use in production deployments. If the Obstor server/gateway machine is ever compromised, the cache KMS master key must also be treated as compromised.
   Support for external KMS to manage cache KMS keys is on the roadmap,and would be ideal for production use cases.
 
 > NOTE: Expiration happens automatically based on the configured interval as explained above, frequently accessed objects stay alive in cache for a significantly longer time.

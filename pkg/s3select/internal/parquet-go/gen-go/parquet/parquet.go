@@ -97,7 +97,7 @@ func (p *Type) UnmarshalText(text []byte) error {
 func (p *Type) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = Type(v)
 	return nil
@@ -258,7 +258,7 @@ func (p *ConvertedType) UnmarshalText(text []byte) error {
 func (p *ConvertedType) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = ConvertedType(v)
 	return nil
@@ -322,7 +322,7 @@ func (p *FieldRepetitionType) UnmarshalText(text []byte) error {
 func (p *FieldRepetitionType) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = FieldRepetitionType(v)
 	return nil
@@ -413,7 +413,7 @@ func (p *Encoding) UnmarshalText(text []byte) error {
 func (p *Encoding) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = Encoding(v)
 	return nil
@@ -502,7 +502,7 @@ func (p *CompressionCodec) UnmarshalText(text []byte) error {
 func (p *CompressionCodec) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = CompressionCodec(v)
 	return nil
@@ -570,7 +570,7 @@ func (p *PageType) UnmarshalText(text []byte) error {
 func (p *PageType) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = PageType(v)
 	return nil
@@ -635,7 +635,7 @@ func (p *BoundaryOrder) UnmarshalText(text []byte) error {
 func (p *BoundaryOrder) Scan(value interface{}) error {
 	v, ok := value.(int64)
 	if !ok {
-		return errors.New("Scan value is not int64")
+		return errors.New("scan value is not int64")
 	}
 	*p = BoundaryOrder(v)
 	return nil
@@ -1443,10 +1443,10 @@ func (p *DecimalType) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetScale {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Scale is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Scale is not set"))
 	}
 	if !issetPrecision {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Precision is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Precision is not set"))
 	}
 	return nil
 }
@@ -1972,10 +1972,10 @@ func (p *TimestampType) Read(ctx context.Context, iprot thrift.TProtocol) error 
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetIsAdjustedToUTC {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field IsAdjustedToUTC is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field IsAdjustedToUTC is not set"))
 	}
 	if !issetUnit {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Unit is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Unit is not set"))
 	}
 	return nil
 }
@@ -2123,10 +2123,10 @@ func (p *TimeType) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetIsAdjustedToUTC {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field IsAdjustedToUTC is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field IsAdjustedToUTC is not set"))
 	}
 	if !issetUnit {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Unit is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Unit is not set"))
 	}
 	return nil
 }
@@ -2267,10 +2267,10 @@ func (p *IntType) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetBitWidth {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field BitWidth is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field BitWidth is not set"))
 	}
 	if !issetIsSigned {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field IsSigned is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field IsSigned is not set"))
 	}
 	return nil
 }
@@ -3405,7 +3405,7 @@ func (p *SchemaElement) Read(ctx context.Context, iprot thrift.TProtocol) error 
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetName {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Name is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Name is not set"))
 	}
 	return nil
 }
@@ -3806,16 +3806,16 @@ func (p *DataPageHeader) Read(ctx context.Context, iprot thrift.TProtocol) error
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetNumValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumValues is not set"))
 	}
 	if !issetEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Encoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Encoding is not set"))
 	}
 	if !issetDefinitionLevelEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DefinitionLevelEncoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field DefinitionLevelEncoding is not set"))
 	}
 	if !issetRepetitionLevelEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RepetitionLevelEncoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field RepetitionLevelEncoding is not set"))
 	}
 	return nil
 }
@@ -4106,10 +4106,10 @@ func (p *DictionaryPageHeader) Read(ctx context.Context, iprot thrift.TProtocol)
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetNumValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumValues is not set"))
 	}
 	if !issetEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Encoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Encoding is not set"))
 	}
 	return nil
 }
@@ -4369,22 +4369,22 @@ func (p *DataPageHeaderV2) Read(ctx context.Context, iprot thrift.TProtocol) err
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetNumValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumValues is not set"))
 	}
 	if !issetNumNulls {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumNulls is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumNulls is not set"))
 	}
 	if !issetNumRows {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumRows is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumRows is not set"))
 	}
 	if !issetEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Encoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Encoding is not set"))
 	}
 	if !issetDefinitionLevelsByteLength {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DefinitionLevelsByteLength is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field DefinitionLevelsByteLength is not set"))
 	}
 	if !issetRepetitionLevelsByteLength {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RepetitionLevelsByteLength is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field RepetitionLevelsByteLength is not set"))
 	}
 	return nil
 }
@@ -4784,13 +4784,13 @@ func (p *PageHeader) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetType {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Type is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Type is not set"))
 	}
 	if !issetUncompressedPageSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field UncompressedPageSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field UncompressedPageSize is not set"))
 	}
 	if !issetCompressedPageSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field CompressedPageSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field CompressedPageSize is not set"))
 	}
 	return nil
 }
@@ -5094,7 +5094,7 @@ func (p *KeyValue) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetKey {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Key is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Key is not set"))
 	}
 	return nil
 }
@@ -5248,13 +5248,13 @@ func (p *SortingColumn) Read(ctx context.Context, iprot thrift.TProtocol) error 
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetColumnIdx {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field ColumnIdx is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field ColumnIdx is not set"))
 	}
 	if !issetDescending {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Descending is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Descending is not set"))
 	}
 	if !issetNullsFirst {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NullsFirst is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NullsFirst is not set"))
 	}
 	return nil
 }
@@ -5429,13 +5429,13 @@ func (p *PageEncodingStats) Read(ctx context.Context, iprot thrift.TProtocol) er
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetPageType {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field PageType is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field PageType is not set"))
 	}
 	if !issetEncoding {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Encoding is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Encoding is not set"))
 	}
 	if !issetCount {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Count is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Count is not set"))
 	}
 	return nil
 }
@@ -5766,28 +5766,28 @@ func (p *ColumnMetaData) Read(ctx context.Context, iprot thrift.TProtocol) error
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetType {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Type is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Type is not set"))
 	}
 	if !issetEncodings {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Encodings is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Encodings is not set"))
 	}
 	if !issetPathInSchema {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field PathInSchema is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field PathInSchema is not set"))
 	}
 	if !issetCodec {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Codec is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Codec is not set"))
 	}
 	if !issetNumValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumValues is not set"))
 	}
 	if !issetTotalUncompressedSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TotalUncompressedSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field TotalUncompressedSize is not set"))
 	}
 	if !issetTotalCompressedSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TotalCompressedSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field TotalCompressedSize is not set"))
 	}
 	if !issetDataPageOffset {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DataPageOffset is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field DataPageOffset is not set"))
 	}
 	return nil
 }
@@ -6399,7 +6399,7 @@ func (p *ColumnChunk) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetFileOffset {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field FileOffset is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field FileOffset is not set"))
 	}
 	return nil
 }
@@ -6704,13 +6704,13 @@ func (p *RowGroup) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetColumns {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Columns is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Columns is not set"))
 	}
 	if !issetTotalByteSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TotalByteSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field TotalByteSize is not set"))
 	}
 	if !issetNumRows {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumRows is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumRows is not set"))
 	}
 	return nil
 }
@@ -7176,13 +7176,13 @@ func (p *PageLocation) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetOffset {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Offset is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Offset is not set"))
 	}
 	if !issetCompressedPageSize {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field CompressedPageSize is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field CompressedPageSize is not set"))
 	}
 	if !issetFirstRowIndex {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field FirstRowIndex is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field FirstRowIndex is not set"))
 	}
 	return nil
 }
@@ -7333,7 +7333,7 @@ func (p *OffsetIndex) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetPageLocations {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field PageLocations is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field PageLocations is not set"))
 	}
 	return nil
 }
@@ -7522,16 +7522,16 @@ func (p *ColumnIndex) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetNullPages {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NullPages is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NullPages is not set"))
 	}
 	if !issetMinValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field MinValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field MinValues is not set"))
 	}
 	if !issetMaxValues {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field MaxValues is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field MaxValues is not set"))
 	}
 	if !issetBoundaryOrder {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field BoundaryOrder is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field BoundaryOrder is not set"))
 	}
 	return nil
 }
@@ -7926,16 +7926,16 @@ func (p *FileMetaData) Read(ctx context.Context, iprot thrift.TProtocol) error {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
 	if !issetVersion {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Version is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Version is not set"))
 	}
 	if !issetSchema {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Schema is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field Schema is not set"))
 	}
 	if !issetNumRows {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NumRows is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field NumRows is not set"))
 	}
 	if !issetRowGroups {
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RowGroups is not set"))
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field RowGroups is not set"))
 	}
 	return nil
 }

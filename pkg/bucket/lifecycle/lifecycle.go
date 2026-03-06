@@ -206,7 +206,7 @@ func (lc Lifecycle) FilterActionableRules(obj ObjectOpts) []Rule {
 		if !strings.HasPrefix(obj.Name, rule.GetPrefix()) {
 			continue
 		}
-		// Indicates whether ObStor will remove a delete marker with no
+		// Indicates whether Obstor will remove a delete marker with no
 		// noncurrent versions. If set to true, the delete marker will
 		// be expired; if set to false the policy takes no action. This
 		// cannot be specified with Days or Date in a Lifecycle
@@ -215,14 +215,14 @@ func (lc Lifecycle) FilterActionableRules(obj ObjectOpts) []Rule {
 			rules = append(rules, rule)
 			continue
 		}
-		// The NoncurrentVersionExpiration action requests ObStor to expire
+		// The NoncurrentVersionExpiration action requests Obstor to expire
 		// noncurrent versions of objects x days after the objects become
 		// noncurrent.
 		if !rule.NoncurrentVersionExpiration.IsDaysNull() {
 			rules = append(rules, rule)
 			continue
 		}
-		// The NoncurrentVersionTransition action requests ObStor to transition
+		// The NoncurrentVersionTransition action requests Obstor to transition
 		// noncurrent versions of objects x days after the objects become
 		// noncurrent.
 		if !rule.NoncurrentVersionTransition.IsDaysNull() {
@@ -273,7 +273,7 @@ func (lc Lifecycle) ComputeAction(obj ObjectOpts) Action {
 
 	for _, rule := range lc.FilterActionableRules(obj) {
 		if obj.ExpiredObjectDeleteMarker() && rule.Expiration.DeleteMarker.val {
-			// Indicates whether ObStor will remove a delete marker with no noncurrent versions.
+			// Indicates whether Obstor will remove a delete marker with no noncurrent versions.
 			// Only latest marker is removed. If set to true, the delete marker will be expired;
 			// if set to false the policy takes no action. This cannot be specified with Days or
 			// Date in a Lifecycle Expiration Policy.

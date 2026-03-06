@@ -22,7 +22,7 @@ time="2020-07-12T20:45:50Z" level=info msg="config id tokens valid for: 3h0m0s"
 time="2020-07-12T20:45:50Z" level=info msg="listening (http) on 0.0.0.0:5556"
 ```
 
-### Configure ObStor server with Dex
+### Configure Obstor server with Dex
 ```
 ~ export OBSTOR_IDENTITY_OPENID_CLAIM_NAME=name
 ~ export OBSTOR_IDENTITY_OPENID_CONFIG_URL=http://127.0.0.1:5556/dex/.well-known/openid-configuration
@@ -66,7 +66,7 @@ You will be redirected to dex login screen - click "Login with email", enter use
 
 and then click "Grant access"
 
-On the browser now you shall see the list of buckets output, along with your temporary credentials obtained from ObStor.
+On the browser now you shall see the list of buckets output, along with your temporary credentials obtained from Obstor.
 ```
 {
 	"buckets": [
@@ -83,16 +83,16 @@ On the browser now you shall see the list of buckets output, along with your tem
 }
 ```
 
-Now you have successfully configured Dex IdP with ObStor.
+Now you have successfully configured Dex IdP with Obstor.
 
 > NOTE: Dex supports groups with external connectors so you can use `groups` as policy claim instead of `name`.
 ```
 export OBSTOR_IDENTITY_OPENID_CLAIM_NAME=groups
 ```
 
-and add relevant policies on ObStor using `mc admin policy add myminio/ <group_name> group-access.json`
+and add relevant policies on Obstor using `mc admin policy add myminio/ <group_name> group-access.json`
 
 ## Explore Further
 
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor STS Quickstart Guide](https://pgg.net/docs/obstor/obstor-sts-quickstart-guide)
+- [The Obstor documentation website](https://pgg.net/docs/obstor)

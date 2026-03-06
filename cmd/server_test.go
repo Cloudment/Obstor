@@ -21,8 +21,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -62,7 +60,7 @@ func (c *check) Assert(gotValue interface{}, expectedValue interface{}) {
 }
 
 func verifyError(c *check, response *http.Response, code, description string, statusCode int) {
-	data, err := ioutil.ReadAll(response.Body)
+	data, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	errorResponse := APIErrorResponse{}
 	err = xml.Unmarshal(data, &errorResponse)
@@ -362,7 +360,7 @@ func (s *TestSuiteCommon) TestBucketPolicy(c *check) {
 	c.Assert(err, nil)
 	c.Assert(response.StatusCode, http.StatusOK)
 
-	bucketPolicyReadBuf, err := ioutil.ReadAll(response.Body)
+	bucketPolicyReadBuf, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	// Verify if downloaded policy matches with previously uploaded.
 	expectedPolicy, err := policy.ParseConfig(strings.NewReader(bucketPolicyStr), bucketName)
@@ -570,7 +568,7 @@ func (s *TestSuiteCommon) TestDeleteMultipleObjects(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 
 	var deleteResp = DeleteObjectsResponse{}
-	delRespBytes, err := ioutil.ReadAll(response.Body)
+	delRespBytes, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	err = xml.Unmarshal(delRespBytes, &deleteResp)
 	c.Assert(err, nil)
@@ -593,7 +591,7 @@ func (s *TestSuiteCommon) TestDeleteMultipleObjects(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 
 	deleteResp = DeleteObjectsResponse{}
-	delRespBytes, err = ioutil.ReadAll(response.Body)
+	delRespBytes, err = io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	err = xml.Unmarshal(delRespBytes, &deleteResp)
 	c.Assert(err, nil)
@@ -733,7 +731,7 @@ func (s *TestSuiteCommon) TestEmptyObject(c *check) {
 
 	var buffer bytes.Buffer
 	// extract the body of the response.
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	// assert the http response body content.
 	c.Assert(true, bytes.Equal(responseBody, buffer.Bytes()))
@@ -854,7 +852,7 @@ func (s *TestSuiteCommon) TestMultipleObjects(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 
 	// extract the response body.
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	// assert the content body for the expected object data.
 	c.Assert(true, bytes.Equal(responseBody, []byte("hello one")))
@@ -883,7 +881,7 @@ func (s *TestSuiteCommon) TestMultipleObjects(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 
 	// verify response data
-	responseBody, err = ioutil.ReadAll(response.Body)
+	responseBody, err = io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	c.Assert(true, bytes.Equal(responseBody, []byte("hello two")))
 
@@ -910,7 +908,7 @@ func (s *TestSuiteCommon) TestMultipleObjects(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 
 	// verify object.
-	responseBody, err = ioutil.ReadAll(response.Body)
+	responseBody, err = io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	c.Assert(true, bytes.Equal(responseBody, []byte("hello three")))
 }
@@ -1036,7 +1034,7 @@ func (s *TestSuiteCommon) TestCopyObject(c *check) {
 	c.Assert(response.StatusCode, http.StatusOK)
 	// reading the response body.
 	// response body is expected to have the copied content of the first uploaded object.
-	object, err := ioutil.ReadAll(response.Body)
+	object, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 	c.Assert(string(object), "hello world")
 }
@@ -1210,7 +1208,7 @@ func (s *TestSuiteCommon) TestSHA256Mismatch(c *check) {
 	// Set the body to generate signature mismatch.
 	helloReader := bytes.NewReader([]byte("Hello, World"))
 	request.ContentLength = helloReader.Size()
-	request.Body = ioutil.NopCloser(helloReader)
+	request.Body = io.NopCloser(helloReader)
 	c.Assert(err, nil)
 
 	// execute the HTTP request.
@@ -1540,7 +1538,7 @@ func (s *TestSuiteCommon) TestPartialContent(c *check) {
 	response, err = s.client.Do(request)
 	c.Assert(err, nil)
 	c.Assert(response.StatusCode, http.StatusPartialContent)
-	partialObject, err := ioutil.ReadAll(response.Body)
+	partialObject, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 
 	c.Assert(string(partialObject), "Wo")
@@ -1604,7 +1602,7 @@ func (s *TestSuiteCommon) TestListObjectsHandler(c *check) {
 		c.Assert(err, nil)
 		c.Assert(response.StatusCode, http.StatusOK)
 
-		getContent, err := ioutil.ReadAll(response.Body)
+		getContent, err := io.ReadAll(response.Body)
 		c.Assert(err, nil)
 
 		for _, expectedStr := range testCase.expectedStrings {
@@ -1711,7 +1709,7 @@ func (s *TestSuiteCommon) TestGetObjectLarge10MiB(c *check) {
 	1234567890,1234567890,1234567890,1234567890,1234567890,123"`
 	// Create 10MiB content where each line contains 1024 characters.
 	for i := 0; i < 10*1024; i++ {
-		buffer.WriteString(fmt.Sprintf("[%05d] %s\n", i, line))
+		fmt.Fprintf(&buffer, "[%05d] %s\n", i, line)
 	}
 	putContent := buffer.String()
 
@@ -1739,7 +1737,7 @@ func (s *TestSuiteCommon) TestGetObjectLarge10MiB(c *check) {
 	c.Assert(err, nil)
 	c.Assert(response.StatusCode, http.StatusOK)
 	// extract the content from response body.
-	getContent, err := ioutil.ReadAll(response.Body)
+	getContent, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 
 	// Compare putContent and getContent.
@@ -1773,7 +1771,7 @@ func (s *TestSuiteCommon) TestGetObjectLarge11MiB(c *check) {
 	1234567890,1234567890,1234567890,123`
 	// Create 11MiB content where each line contains 1024 characters.
 	for i := 0; i < 11*1024; i++ {
-		buffer.WriteString(fmt.Sprintf("[%05d] %s\n", i, line))
+		fmt.Fprintf(&buffer, "[%05d] %s\n", i, line)
 	}
 	putMD5 := getMD5Hash(buffer.Bytes())
 
@@ -1800,7 +1798,7 @@ func (s *TestSuiteCommon) TestGetObjectLarge11MiB(c *check) {
 	c.Assert(err, nil)
 	c.Assert(response.StatusCode, http.StatusOK)
 	// fetch the content from response body.
-	getContent, err := ioutil.ReadAll(response.Body)
+	getContent, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 
 	// Get etag of the response content.
@@ -1829,10 +1827,8 @@ func (s *TestSuiteCommon) TestGetPartialObjectMisAligned(c *check) {
 	var buffer bytes.Buffer
 	// data to be written into buffer.
 	data := "1234567890"
-	// seed the random number generator once.
-	rand.Seed(3)
 	// generate a random number between 13 and 200.
-	randInt := getRandomRange(13, 200, -1)
+	randInt := getRandomRange(13, 200, 3)
 	// write into buffer till length of the buffer is greater than the generated random number.
 	for i := 0; i <= randInt; i += 10 {
 		buffer.WriteString(data)
@@ -1888,7 +1884,7 @@ func (s *TestSuiteCommon) TestGetPartialObjectMisAligned(c *check) {
 		// Since only part of the object is requested, expecting response status to be http.StatusPartialContent .
 		c.Assert(response.StatusCode, http.StatusPartialContent)
 		// parse the HTTP response body.
-		getContent, err := ioutil.ReadAll(response.Body)
+		getContent, err := io.ReadAll(response.Body)
 		c.Assert(err, nil)
 
 		// Compare putContent and getContent.
@@ -1924,7 +1920,7 @@ func (s *TestSuiteCommon) TestGetPartialObjectLarge11MiB(c *check) {
 	// Create 11MiB content where each line contains 1024
 	// characters.
 	for i := 0; i < 11*1024; i++ {
-		buffer.WriteString(fmt.Sprintf("[%05d] %s\n", i, line))
+		fmt.Fprintf(&buffer, "[%05d] %s\n", i, line)
 	}
 	putContent := buffer.String()
 
@@ -1954,7 +1950,7 @@ func (s *TestSuiteCommon) TestGetPartialObjectLarge11MiB(c *check) {
 	// Since only part of the object is requested, expecting response status to be http.StatusPartialContent .
 	c.Assert(response.StatusCode, http.StatusPartialContent)
 	// read the downloaded content from the response body.
-	getContent, err := ioutil.ReadAll(response.Body)
+	getContent, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 
 	// Compare putContent and getContent.
@@ -1990,7 +1986,7 @@ func (s *TestSuiteCommon) TestGetPartialObjectLarge10MiB(c *check) {
 	1234567890,1234567890,1234567890,123`
 	// Create 10MiB content where each line contains 1024 characters.
 	for i := 0; i < 10*1024; i++ {
-		buffer.WriteString(fmt.Sprintf("[%05d] %s\n", i, line))
+		fmt.Fprintf(&buffer, "[%05d] %s\n", i, line)
 	}
 
 	putContent := buffer.String()
@@ -2021,7 +2017,7 @@ func (s *TestSuiteCommon) TestGetPartialObjectLarge10MiB(c *check) {
 	// Since only part of the object is requested, expecting response status to be http.StatusPartialContent .
 	c.Assert(response.StatusCode, http.StatusPartialContent)
 	// read the downloaded content from the response body.
-	getContent, err := ioutil.ReadAll(response.Body)
+	getContent, err := io.ReadAll(response.Body)
 	c.Assert(err, nil)
 
 	// Compare putContent and getContent.

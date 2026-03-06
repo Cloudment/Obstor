@@ -270,7 +270,7 @@ func IsBackendOnline(ctx context.Context, host string) bool {
 	return true
 }
 
-// ErrorRespToObjectError converts ObStor errors to obstor object layer errors.
+// ErrorRespToObjectError converts Obstor errors to obstor object layer errors.
 func ErrorRespToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -291,7 +291,7 @@ func ErrorRespToObjectError(err error, params ...string) error {
 
 	minioErr, ok := err.(obstor.ErrorResponse)
 	if !ok {
-		// We don't interpret non ObStor errors. As obstor errors will
+		// We don't interpret non Obstor errors. As obstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}
@@ -383,7 +383,7 @@ func gatewayHandleEnvVars() {
 
 // shouldMeterRequest checks whether incoming request should be added to prometheus gateway metrics
 func shouldMeterRequest(req *http.Request) bool {
-	return !(guessIsBrowserReq(req) || guessIsHealthCheckReq(req) || guessIsMetricsReq(req))
+	return !guessIsBrowserReq(req) && !guessIsHealthCheckReq(req) && !guessIsMetricsReq(req)
 }
 
 // MetricsTransport is a custom wrapper around Transport to track metrics

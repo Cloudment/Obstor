@@ -182,17 +182,17 @@ func TestIsMinioMetaBucketName(t *testing.T) {
 		bucket string
 		result bool
 	}{
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaBucket,
 			result: true,
 		},
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaMultipartBucket,
 			result: true,
 		},
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaTmpBucket,
 			result: true,

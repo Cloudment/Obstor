@@ -252,7 +252,7 @@ func NewRedisTarget(id string, args RedisArgs, doneCh <-chan struct{}, loggerOnc
 		Password:        args.Password,
 		MaxIdleConns:    3,
 		ConnMaxIdleTime: 2 * 60 * time.Second,
-		ClientName:      "ObStor",
+		ClientName:      "Obstor",
 	})
 
 	var store Store
@@ -277,7 +277,7 @@ func NewRedisTarget(id string, args RedisArgs, doneCh <-chan struct{}, loggerOnc
 	ctx := context.Background()
 	_, pingErr := target.client.Ping(ctx).Result()
 	if pingErr != nil {
-		if target.store == nil || !(IsConnRefusedErr(pingErr) || IsConnResetErr(pingErr)) {
+		if target.store == nil || (!IsConnRefusedErr(pingErr) && !IsConnResetErr(pingErr)) {
 			target.loggerOnce(context.Background(), pingErr, target.ID())
 			return target, pingErr
 		}

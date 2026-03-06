@@ -82,9 +82,9 @@ const (
 // User Agent should always following the below style.
 // Please open an issue to discuss any new changes here.
 //
-//	ObStor (OS; ARCH) LIB/VER APP/VER
+//	Obstor (OS; ARCH) LIB/VER APP/VER
 const (
-	libraryUserAgentPrefix = "ObStor (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
+	libraryUserAgentPrefix = "Obstor (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
 	libraryUserAgent       = libraryUserAgentPrefix + libraryName + "/" + libraryVersion
 )
 
@@ -305,7 +305,7 @@ func (adm AdminClient) do(req *http.Request) (*http.Response, error) {
 				return nil, &url.Error{
 					Op:  urlErr.Op,
 					URL: urlErr.URL,
-					Err: errors.New("Connection closed by foreign host " + urlErr.URL + ". Retry again."),
+					Err: errors.New("connection closed by foreign host " + urlErr.URL + ". Retry again."),
 				}
 			}
 		}

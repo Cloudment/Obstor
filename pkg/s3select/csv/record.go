@@ -125,7 +125,7 @@ func (r *Record) Raw() (sql.SelectObjectFormat, interface{}) {
 
 // Replace - is not supported for CSV
 func (r *Record) Replace(_ interface{}) error {
-	return errors.New("Replace is not supported for CSV")
+	return errors.New("replace is not supported for CSV")
 }
 
 // NewRecord - creates new CSV record.

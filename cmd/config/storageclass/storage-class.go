@@ -182,12 +182,12 @@ func ValidateParity(ssParity, setDriveCount int) error {
 	// SS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if ssParity > 0 && ssParity < minParityDisks {
-		return fmt.Errorf("Standard storage class parity %d should be greater than or equal to %d",
+		return fmt.Errorf("standard storage class parity %d should be greater than or equal to %d",
 			ssParity, minParityDisks)
 	}
 
 	if ssParity > setDriveCount/2 {
-		return fmt.Errorf("Standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
+		return fmt.Errorf("standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
 	}
 
 	return nil
@@ -198,27 +198,27 @@ func validateParity(ssParity, rrsParity, setDriveCount int) (err error) {
 	// SS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if ssParity > 0 && ssParity < minParityDisks {
-		return fmt.Errorf("Standard storage class parity %d should be greater than or equal to %d",
+		return fmt.Errorf("standard storage class parity %d should be greater than or equal to %d",
 			ssParity, minParityDisks)
 	}
 
 	// RRS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if rrsParity > 0 && rrsParity < minParityDisks {
-		return fmt.Errorf("Reduced redundancy storage class parity %d should be greater than or equal to %d", rrsParity, minParityDisks)
+		return fmt.Errorf("reduced redundancy storage class parity %d should be greater than or equal to %d", rrsParity, minParityDisks)
 	}
 
 	if ssParity > setDriveCount/2 {
-		return fmt.Errorf("Standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
+		return fmt.Errorf("standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
 	}
 
 	if rrsParity > setDriveCount/2 {
-		return fmt.Errorf("Reduced redundancy storage class parity %d should be less than  or equal to %d", rrsParity, setDriveCount/2)
+		return fmt.Errorf("reduced redundancy storage class parity %d should be less than or equal to %d", rrsParity, setDriveCount/2)
 	}
 
 	if ssParity > 0 && rrsParity > 0 {
 		if ssParity > 0 && ssParity < rrsParity {
-			return fmt.Errorf("Standard storage class parity disks %d should be greater than or equal to Reduced redundancy storage class parity disks %d", ssParity, rrsParity)
+			return fmt.Errorf("standard storage class parity disks %d should be greater than or equal to reduced redundancy storage class parity disks %d", ssParity, rrsParity)
 		}
 	}
 	return nil

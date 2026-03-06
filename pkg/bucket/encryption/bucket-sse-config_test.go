@@ -96,19 +96,19 @@ func TestParseBucketSSEConfig(t *testing.T) {
 		// 4. Invalid XML - master key ID present along with AES256
 		{
 			inputXML:    `<ServerSideEncryptionConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Rule><ApplyServerSideEncryptionByDefault><SSEAlgorithm>AES256</SSEAlgorithm><KMSMasterKeyID>arn:aws:kms:us-east-1:1234/5678example</KMSMasterKeyID></ApplyServerSideEncryptionByDefault></Rule></ServerSideEncryptionConfiguration>`,
-			expectedErr: errors.New("MasterKeyID is allowed with aws:kms only"),
+			expectedErr: errors.New("masterKeyID is allowed with aws:kms only"),
 			shouldPass:  false,
 		},
 		// 5. Invalid XML - master key ID not provided when algorithm is set to aws:kms algorithm
 		{
 			inputXML:    `<ServerSideEncryptionConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Rule><ApplyServerSideEncryptionByDefault><SSEAlgorithm>aws:kms</SSEAlgorithm></ApplyServerSideEncryptionByDefault></Rule></ServerSideEncryptionConfiguration>`,
-			expectedErr: errors.New("MasterKeyID is missing with aws:kms"),
+			expectedErr: errors.New("masterKeyID is missing with aws:kms"),
 			shouldPass:  false,
 		},
 		// 6. Invalid Algorithm
 		{
 			inputXML:    `<ServerSideEncryptionConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Rule><ApplyServerSideEncryptionByDefault><SSEAlgorithm>InvalidAlgorithm</SSEAlgorithm></ApplyServerSideEncryptionByDefault></Rule></ServerSideEncryptionConfiguration>`,
-			expectedErr: errors.New("Unknown SSE algorithm"),
+			expectedErr: errors.New("unknown SSE algorithm"),
 			shouldPass:  false,
 		},
 		// 7. Valid XML without the namespace set

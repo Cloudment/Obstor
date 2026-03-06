@@ -224,7 +224,7 @@ func NewNSQTarget(id string, args NSQArgs, doneCh <-chan struct{}, loggerOnce fu
 
 	if err := target.producer.Ping(); err != nil {
 		// To treat "connection refused" errors as errNotConnected.
-		if target.store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if target.store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

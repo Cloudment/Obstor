@@ -95,10 +95,10 @@ func (sses3) CreateMetadata(metadata map[string]string, keyID string, kmsKey []b
 	// - We use a K/V -> There must be no key ID and no KMS data key.
 	// Otherwise, the caller has passed an invalid argument combination.
 	if keyID == "" && len(kmsKey) != 0 {
-		logger.CriticalIf(context.Background(), errors.New("The key ID must not be empty if a KMS data key is present"))
+		logger.CriticalIf(context.Background(), errors.New("the key ID must not be empty if a KMS data key is present"))
 	}
 	if keyID != "" && len(kmsKey) == 0 {
-		logger.CriticalIf(context.Background(), errors.New("The KMS data key must not be empty if a key ID is present"))
+		logger.CriticalIf(context.Background(), errors.New("the KMS data key must not be empty if a key ID is present"))
 	}
 
 	if metadata == nil {

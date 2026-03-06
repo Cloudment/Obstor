@@ -66,7 +66,7 @@ func (l *GatewayLocker) Walk(ctx context.Context, bucket, prefix string, results
 
 			for {
 				// set maxKeys to '0' to list maximum possible objects in single call.
-				loi, err := l.ObjectLayer.ListObjects(ctx, bucket, prefix, marker, "", 0)
+				loi, err := l.ListObjects(ctx, bucket, prefix, marker, "", 0)
 				if err != nil {
 					logger.LogIf(ctx, err)
 					return
@@ -128,7 +128,7 @@ func ParseGatewayEndpoint(arg string) (endPoint string, secure bool, err error) 
 	case "https":
 		return u.Host, true, nil
 	default:
-		return "", false, fmt.Errorf("Unrecognized scheme %s", u.Scheme)
+		return "", false, fmt.Errorf("unrecognized scheme %s", u.Scheme)
 	}
 }
 

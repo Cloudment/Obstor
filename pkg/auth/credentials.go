@@ -32,17 +32,17 @@ import (
 )
 
 const (
-	// Minimum length for ObStor access key.
+	// Minimum length for Obstor access key.
 	accessKeyMinLen = 3
 
-	// Maximum length for ObStor access key.
+	// Maximum length for Obstor access key.
 	// There is no max length enforcement for access keys
 	accessKeyMaxLen = 20
 
-	// Minimum length for ObStor secret key for both server and gateway mode.
+	// Minimum length for Obstor secret key for both server and gateway mode.
 	secretKeyMinLen = 8
 
-	// Maximum secret key length for ObStor, this
+	// Maximum secret key length for Obstor, this
 	// is used when autogenerating new credentials.
 	// There is no max length enforcement for secret keys
 	secretKeyMaxLen = 40
@@ -198,7 +198,7 @@ func GetNewCredentialsWithMetadata(m map[string]interface{}, tokenSecret string)
 		if n, err = rand.Read(data); err != nil {
 			return nil, err
 		} else if n != size {
-			return nil, fmt.Errorf("Not enough data. Expected to read: %v bytes, got: %v bytes", size, n)
+			return nil, fmt.Errorf("not enough data, expected to read: %v bytes, got: %v bytes", size, n)
 		}
 		return data, nil
 	}
@@ -219,8 +219,8 @@ func GetNewCredentialsWithMetadata(m map[string]interface{}, tokenSecret string)
 		return cred, err
 	}
 
-	secretKey := strings.Replace(string([]byte(base64.StdEncoding.EncodeToString(keyBytes))[:secretKeyMaxLen]),
-		"/", "+", -1)
+	secretKey := strings.ReplaceAll(string([]byte(base64.StdEncoding.EncodeToString(keyBytes))[:secretKeyMaxLen]),
+		"/", "+")
 
 	return CreateNewCredentialsWithMetadata(accessKey, secretKey, m, tokenSecret)
 }

@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"testing"
 )
 
@@ -45,7 +44,7 @@ type DummyDataGen struct {
 // Given the function:
 //
 //	f := func(r io.Reader) string {
-//	          b, _ := ioutil.ReadAll(r)
+//	          b, _ := io.ReadAll(r)
 //	          return string(b)
 //	}
 //
@@ -95,17 +94,17 @@ func (d *DummyDataGen) Seek(offset int64, whence int) (int64, error) {
 	switch whence {
 	case io.SeekStart:
 		if offset < 0 {
-			return 0, errors.New("Invalid offset")
+			return 0, errors.New("invalid offset")
 		}
 		d.idx = offset
 	case io.SeekCurrent:
 		if d.idx+offset < 0 {
-			return 0, errors.New("Invalid offset")
+			return 0, errors.New("invalid offset")
 		}
 		d.idx += offset
 	case io.SeekEnd:
 		if d.length+offset < 0 {
-			return 0, errors.New("Invalid offset")
+			return 0, errors.New("invalid offset")
 		}
 		d.idx = d.length + offset
 	}
@@ -114,7 +113,7 @@ func (d *DummyDataGen) Seek(offset int64, whence int) (int64, error) {
 
 func TestDummyDataGenerator(t *testing.T) {
 	readAll := func(r io.Reader) string {
-		b, _ := ioutil.ReadAll(r)
+		b, _ := io.ReadAll(r)
 		return string(b)
 	}
 	checkEq := func(a, b string) {
@@ -166,7 +165,7 @@ func TestCmpReaders(t *testing.T) {
 		r1 := bytes.NewReader([]byte("abc"))
 		r2 := bytes.NewReader([]byte("abc"))
 		ok, msg := cmpReaders(r1, r2)
-		if !(ok && msg == "") {
+		if !ok || msg != "" {
 			t.Fatalf("unexpected")
 		}
 	}

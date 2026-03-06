@@ -119,7 +119,7 @@ func (f numericLessThanEqualsFunc) name() name {
 }
 
 func (f numericLessThanEqualsFunc) String() string {
-	return toNumericLessThanFuncString(numericLessThanEquals, f.numericLessThanFunc.k, f.numericLessThanFunc.value)
+	return toNumericLessThanFuncString(numericLessThanEquals, f.k, f.value)
 }
 
 // newNumericLessThanFunc - returns new NumericLessThan function.

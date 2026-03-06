@@ -1028,12 +1028,12 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Testing for failure cases with both perfix and marker (Test number 10).
 		// The prefix and marker combination to be valid it should satisfy strings.HasPrefix(marker, prefix).
 		{bucketNames[0], "asia", "europe-object", "", "", 0, ListMultipartsInfo{},
-			fmt.Errorf("Invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
+			fmt.Errorf("invalid combination of marker '%s' and prefix '%s'", "europe-object", "asia"), false},
 		// Setting an invalid combination of uploadIDMarker and Marker (Test number 11-12).
 		{bucketNames[0], "asia", "asia/europe/", "abc", "", 0, ListMultipartsInfo{},
-			fmt.Errorf("Invalid combination of uploadID marker '%s' and marker '%s'", "abc", "asia/europe/"), false},
+			fmt.Errorf("invalid combination of uploadID marker '%s' and marker '%s'", "abc", "asia/europe/"), false},
 		{bucketNames[0], "asia", "asia/europe", "abc", "", 0, ListMultipartsInfo{},
-			fmt.Errorf("Malformed upload id %s", "abc"), false},
+			fmt.Errorf("malformed upload id %s", "abc"), false},
 
 		// Setting up valid case of ListMultiPartUploads.
 		// Test case with multiple parts for a single uploadID (Test number 13).

@@ -32,10 +32,10 @@ func (p Port) String() string {
 // ParsePort - parses string into Port
 func ParsePort(s string) (p Port, err error) {
 	switch s {
-		case "https":
-			return Port(443), nil
-		case "http":
-			return Port(80), nil
+	case "https":
+		return Port(443), nil
+	case "http":
+		return Port(80), nil
 	}
 
 	var i int

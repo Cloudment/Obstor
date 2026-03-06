@@ -39,7 +39,7 @@ class Web {
         }
         if (err.status)
           throw new Error(`Server returned error [${err.status}]`)
-        throw new Error('ObStor server is unreachable')
+        throw new Error('Obstor server is unreachable')
       })
       .then(res => {
         let json = JSON.parse(res.text)

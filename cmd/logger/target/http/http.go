@@ -71,7 +71,7 @@ func (h *Target) Validate() error {
 
 	req.Header.Set(xhttp.ContentType, "application/json")
 
-	// Set user-agent to indicate ObStor release
+	// Set user-agent to indicate Obstor release
 	// version to the configured log endpoint
 	req.Header.Set("User-Agent", h.userAgent)
 
@@ -119,7 +119,7 @@ func (h *Target) startHTTPLogger() {
 			}
 			req.Header.Set(xhttp.ContentType, "application/json")
 
-			// Set user-agent to indicate ObStor release
+			// Set user-agent to indicate Obstor release
 			// version to the configured log endpoint
 			req.Header.Set("User-Agent", h.userAgent)
 

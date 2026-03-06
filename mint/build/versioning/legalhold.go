@@ -53,10 +53,10 @@ func testLockingLegalhold() {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -83,7 +83,7 @@ func testLockingLegalhold() {
 		}
 		output, err := s3Client.PutObject(ctx, putInput)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 			return
 		}
 		uploads[i].versionId = *output.VersionId
@@ -97,7 +97,7 @@ func testLockingLegalhold() {
 	}
 	deleteOutput, err := s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -115,11 +115,11 @@ func testLockingLegalhold() {
 		}
 		_, err = s3Client.DeleteObject(ctx, deleteInput)
 		if err == nil && uploads[i].legalhold == "ON" {
-			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil).Fatal()
+			failureLog(function, args, startTime, "", "DELETE expected to fail but succeed instead", nil)
 			return
 		}
 		if err != nil && uploads[i].legalhold == "OFF" {
-			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("DELETE expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -135,7 +135,7 @@ func testLockingLegalhold() {
 		}
 		_, err := s3Client.GetObjectLegalHold(ctx, input)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to succeed but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to succeed but got %v", err), err)
 			return
 		}
 	}
@@ -152,7 +152,7 @@ func testLockingLegalhold() {
 		}
 		_, err := s3Client.PutObjectLegalHold(ctx, input)
 		if err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold failed with %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold failed with %v", err), err)
 			return
 		}
 	}
@@ -171,7 +171,7 @@ func testLockingLegalhold() {
 			// legalhold = ""    => The specified method is not allowed against this resource.
 			_, err := s3Client.GetObjectLegalHold(ctx, input)
 			if err == nil {
-				failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err).Fatal()
+				failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err)
 				return
 			}
 		}
@@ -181,7 +181,7 @@ func testLockingLegalhold() {
 	creds := credentials.NewStaticCredentialsProvider("test", "test", "")
 	cfg2, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(creds))
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("LoadDefaultConfig expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("LoadDefaultConfig expected to succeed but got %v", err), err)
 		return
 	}
 	s3ClientTest := s3.NewFromConfig(cfg2)
@@ -194,7 +194,7 @@ func testLockingLegalhold() {
 	// The Access Key Id you provided does not exist in our records.
 	_, err = s3ClientTest.GetObjectLegalHold(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err)
 		return
 	}
 
@@ -205,7 +205,7 @@ func testLockingLegalhold() {
 		ObjectLockEnabledForBucket: aws.Bool(false),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucketWithoutLock, function, args, startTime)
@@ -217,7 +217,7 @@ func testLockingLegalhold() {
 	// Bucket is missing ObjectLockConfiguration
 	_, err = s3Client.GetObjectLegalHold(ctx, input)
 	if err == nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("GetObjectLegalHold expected to fail but got %v", err), err)
 		return
 	}
 
@@ -233,7 +233,7 @@ func testLockingLegalhold() {
 		// The Access Key Id you provided does not exist in our records.
 		_, err := s3ClientTest.PutObjectLegalHold(ctx, input)
 		if err == nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold expected to fail but got %v", err), err)
 			return
 		}
 	}
@@ -250,7 +250,7 @@ func testLockingLegalhold() {
 		// Bucket is missing ObjectLockConfiguration
 		_, err := s3Client.PutObjectLegalHold(ctx, input)
 		if err == nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold expected to fail but got %v", err), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("Turning off legalhold expected to fail but got %v", err), err)
 			return
 		}
 	}
@@ -264,7 +264,7 @@ func testLockingLegalhold() {
 	}
 	output, err := s3Client.PutObject(ctx, putInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 	uploads[0].versionId = *output.VersionId
@@ -277,7 +277,7 @@ func testLockingLegalhold() {
 	// We encountered an internal error, please try again.: cause(EOF)
 	_, err = s3Client.PutObjectLegalHold(ctx, polhInput)
 	if err == nil {
-		failureLog(function, args, startTime, "", "PutObjectLegalHold expected to fail but got success", nil).Fatal()
+		failureLog(function, args, startTime, "", "PutObjectLegalHold expected to fail but got success", nil)
 		return
 	}
 
@@ -289,9 +289,9 @@ func testLockingLegalhold() {
 	}
 	_, err = s3Client.PutObjectLegalHold(ctx, polhInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PutObjectLegalHold to turn-off legalhold expected to succeed, but got%v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PutObjectLegalHold to turn-off legalhold expected to succeed, but got%v", err), err)
 		return
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

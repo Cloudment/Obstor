@@ -51,7 +51,7 @@ func testStatObject() {
 		Bucket: aws.String(bucket),
 	})
 	if err != nil {
-		failureLog(function, args, startTime, "", "CreateBucket failed", err).Fatal()
+		failureLog(function, args, startTime, "", "CreateBucket failed", err)
 		return
 	}
 	defer cleanupBucket(bucket, function, args, startTime)
@@ -66,10 +66,10 @@ func testStatObject() {
 	_, err = s3Client.PutBucketVersioning(ctx, putVersioningInput)
 	if err != nil {
 		if strings.Contains(err.Error(), "NotImplemented: A header you provided implies functionality that is not implemented") {
-			ignoreLog(function, args, startTime, "Versioning is not implemented").Info()
+			ignoreLog(function, args, startTime, "Versioning is not implemented")
 			return
 		}
-		failureLog(function, args, startTime, "", "Put versioning failed", err).Fatal()
+		failureLog(function, args, startTime, "", "Put versioning failed", err)
 		return
 	}
 
@@ -80,7 +80,7 @@ func testStatObject() {
 	}
 	_, err = s3Client.PutObject(ctx, putInput1)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 	putInput2 := &s3.PutObjectInput{
@@ -90,7 +90,7 @@ func testStatObject() {
 	}
 	_, err = s3Client.PutObject(ctx, putInput2)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("PUT expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -101,7 +101,7 @@ func testStatObject() {
 
 	_, err = s3Client.DeleteObject(ctx, deleteInput)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("Delete expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -111,7 +111,7 @@ func testStatObject() {
 
 	result, err := s3Client.ListObjectVersions(ctx, input)
 	if err != nil {
-		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err).Fatal()
+		failureLog(function, args, startTime, "", fmt.Sprintf("ListObjectVersions expected to succeed but got %v", err), err)
 		return
 	}
 
@@ -135,12 +135,12 @@ func testStatObject() {
 
 		result, err := s3Client.HeadObject(ctx, headInput)
 		if testCase.deleteMarker && err == nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) expected to fail but succeeded", i+1), nil).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) expected to fail but succeeded", i+1), nil)
 			return
 		}
 
 		if !testCase.deleteMarker && err != nil {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) expected to succeed but failed", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) expected to succeed but failed", i+1), err)
 			return
 		}
 
@@ -148,23 +148,23 @@ func testStatObject() {
 			var apiErr smithy.APIError
 			if errors.As(err, &apiErr) {
 				if apiErr.ErrorCode() != "MethodNotAllowed" {
-					failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected error code with delete marker", i+1), err).Fatal()
+					failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected error code with delete marker", i+1), err)
 					return
 				}
 			} else {
-				failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected error with delete marker", i+1), err).Fatal()
+				failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected error with delete marker", i+1), err)
 				return
 			}
 			continue
 		}
 
 		if *result.ContentLength != testCase.size {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected Content-Length", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected Content-Length", i+1), err)
 			return
 		}
 
 		if !etagRegex.MatchString(*result.ETag) {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected ETag", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected ETag", i+1), err)
 			return
 		}
 
@@ -179,20 +179,20 @@ func testStatObject() {
 		if expectedContentType == "binary/octet-stream" && actualContentType == "application/octet-stream" {
 			// Accept application/octet-stream as equivalent to binary/octet-stream
 		} else if actualContentType != expectedContentType {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected Content-Type: expected %q, got %q", i+1, expectedContentType, actualContentType), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected Content-Type: expected %q, got %q", i+1, expectedContentType, actualContentType), err)
 			return
 		}
 
 		if result.DeleteMarker != nil && *result.DeleteMarker {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected DeleteMarker", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected DeleteMarker", i+1), err)
 			return
 		}
 
 		if time.Since(*result.LastModified) > time.Hour {
-			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected LastModified", i+1), err).Fatal()
+			failureLog(function, args, startTime, "", fmt.Sprintf("StatObject (%d) unexpected LastModified", i+1), err)
 			return
 		}
 	}
 
-	successLogger(function, args, startTime).Info()
+	successLogger(function, args, startTime)
 }

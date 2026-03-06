@@ -96,10 +96,7 @@ func listObjectsNonSlash(ctx context.Context, bucket, prefix, marker, delimiter 
 	var eof bool
 	var prevPrefix string
 
-	for {
-		if len(objInfos) == maxKeys {
-			break
-		}
+	for len(objInfos) != maxKeys {
 		result, ok := <-walkResultCh
 		if !ok {
 			eof = true
@@ -261,10 +258,7 @@ func listObjects(ctx context.Context, obj ObjectLayer, bucket, prefix, marker, d
 	}
 
 	// Default is recursive, if delimiter is set then list non recursive.
-	recursive := true
-	if delimiter == SlashSeparator {
-		recursive = false
-	}
+	recursive := delimiter != SlashSeparator
 
 	walkResultCh, endWalkCh := tpool.Release(listParams{bucket, recursive, marker, prefix})
 	if walkResultCh == nil {

@@ -18,7 +18,6 @@ package gcs
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
@@ -190,7 +189,7 @@ func TestFromMinioClientListBucketResultToV2Info(t *testing.T) {
 
 // Test for gcsParseProjectID
 func TestGCSParseProjectID(t *testing.T) {
-	f, err := ioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -234,7 +233,7 @@ func TestGCSToObjectError(t *testing.T) {
 			[]string{}, nil, nil,
 		},
 		{
-			[]string{}, fmt.Errorf("Not *Error"), fmt.Errorf("Not *Error"),
+			[]string{}, fmt.Errorf("not *Error"), fmt.Errorf("not *Error"),
 		},
 		{
 			[]string{"bucket"},
@@ -260,8 +259,8 @@ func TestGCSToObjectError(t *testing.T) {
 		},
 		{
 			[]string{},
-			fmt.Errorf("Unknown error"),
-			fmt.Errorf("Unknown error"),
+			fmt.Errorf("unknown error"),
+			fmt.Errorf("unknown error"),
 		},
 		{
 			[]string{"bucket", "object"},

@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -50,12 +49,12 @@ type KesConfig struct {
 	Endpoint []string
 
 	// The path to the TLS private key used
-	// by ObStor to authenticate to the kes
+	// by Obstor to authenticate to the kes
 	// server during the TLS handshake (mTLS).
 	KeyFile string
 
 	// The path to the TLS certificate used
-	// by ObStor to authenticate to the kes
+	// by Obstor to authenticate to the kes
 	// server during the TLS handshake (mTLS).
 	//
 	// The kes server will also allow or deny
@@ -72,7 +71,7 @@ type KesConfig struct {
 	// This is required if the TLS certificate
 	// of the kes server has not been issued
 	// (e.g. b/c it's self-signed) by a CA that
-	// ObStor trusts.
+	// Obstor trusts.
 	CAPath string
 
 	// The default key ID returned by KMS.KeyID().
@@ -206,7 +205,7 @@ func (kes *kesService) DecryptKey(keyID string, ciphertext []byte, ctx Context) 
 }
 
 // kesClient implements the bare minimum functionality needed for
-// ObStor to talk to a KES server. In particular, it implements
+// Obstor to talk to a KES server. In particular, it implements
 //   - CreateKey       (API: /v1/key/create/)
 //   - GenerateDataKey (API: /v1/key/generate/)
 //   - DecryptDataKey  (API: /v1/key/decrypt/)
@@ -455,7 +454,7 @@ func loadCACertificates(path string, rootCAs *x509.CertPool) error {
 	// and try to add it to the CertPool. If this fails
 	// return an error.
 	if !stat.IsDir() {
-		cert, err := ioutil.ReadFile(path)
+		cert, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -470,12 +469,12 @@ func loadCACertificates(path string, rootCAs *x509.CertPool) error {
 	// certificate and add it to the CertPool.
 	// If a file is not a PEM-encoded certificate
 	// we ignore it.
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return err
 	}
 	for _, file := range files {
-		cert, err := ioutil.ReadFile(filepath.Join(path, file.Name()))
+		cert, err := os.ReadFile(filepath.Join(path, file.Name()))
 		if err != nil {
 			continue // ignore files which are not readable
 		}

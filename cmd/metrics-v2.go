@@ -682,7 +682,7 @@ func getNodeOnlineTotalMD() MetricDescription {
 		Namespace: clusterMetricNamespace,
 		Subsystem: nodesSubsystem,
 		Name:      onlineTotal,
-		Help:      "Total number of ObStor nodes online.",
+		Help:      "Total number of Obstor nodes online.",
 		Type:      gaugeMetric,
 	}
 }
@@ -691,25 +691,25 @@ func getNodeOfflineTotalMD() MetricDescription {
 		Namespace: clusterMetricNamespace,
 		Subsystem: nodesSubsystem,
 		Name:      offlineTotal,
-		Help:      "Total number of ObStor nodes offline.",
+		Help:      "Total number of Obstor nodes offline.",
 		Type:      gaugeMetric,
 	}
 }
-func getObStorVersionMD() MetricDescription {
+func getObstorVersionMD() MetricDescription {
 	return MetricDescription{
 		Namespace: minioMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      versionInfo,
-		Help:      "ObStor Release tag for the server",
+		Help:      "Obstor Release tag for the server",
 		Type:      gaugeMetric,
 	}
 }
-func getObStorCommitMD() MetricDescription {
+func getObstorCommitMD() MetricDescription {
 	return MetricDescription{
 		Namespace: minioMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      commitInfo,
-		Help:      "Git commit hash for the ObStor release.",
+		Help:      "Git commit hash for the Obstor release.",
 		Type:      gaugeMetric,
 	}
 }
@@ -727,7 +727,7 @@ func getMinioFDOpenMD() MetricDescription {
 		Namespace: nodeMetricNamespace,
 		Subsystem: fileDescriptorSubsystem,
 		Name:      openTotal,
-		Help:      "Total number of open file descriptors by the ObStor Server process.",
+		Help:      "Total number of open file descriptors by the Obstor Server process.",
 		Type:      gaugeMetric,
 	}
 }
@@ -736,7 +736,7 @@ func getMinioFDLimitMD() MetricDescription {
 		Namespace: nodeMetricNamespace,
 		Subsystem: fileDescriptorSubsystem,
 		Name:      limitTotal,
-		Help:      "Limit on total number of open file descriptors for the ObStor Server process.",
+		Help:      "Limit on total number of open file descriptors for the Obstor Server process.",
 		Type:      gaugeMetric,
 	}
 }
@@ -776,7 +776,7 @@ func getMinioProcessIOReadCachedBytesMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getObStorProcessSysCallRMD() MetricDescription {
+func getObstorProcessSysCallRMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: sysCallSubsystem,
@@ -785,7 +785,7 @@ func getObStorProcessSysCallRMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getObStorProcessSysCallWMD() MetricDescription {
+func getObstorProcessSysCallWMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: sysCallSubsystem,
@@ -794,7 +794,7 @@ func getObStorProcessSysCallWMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getObStorGORoutineCountMD() MetricDescription {
+func getObstorGORoutineCountMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: goRoutines,
@@ -803,21 +803,21 @@ func getObStorGORoutineCountMD() MetricDescription {
 		Type:      gaugeMetric,
 	}
 }
-func getObStorProcessStartTimeMD() MetricDescription {
+func getObstorProcessStartTimeMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: processSubsystem,
 		Name:      startTime,
-		Help:      "Start time for ObStor process per node, time in seconds since Unix epoc.",
+		Help:      "Start time for Obstor process per node, time in seconds since Unix epoc.",
 		Type:      gaugeMetric,
 	}
 }
-func getObStorProcessUptimeMD() MetricDescription {
+func getObstorProcessUptimeMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: processSubsystem,
 		Name:      upTime,
-		Help:      "Uptime for ObStor process per node in seconds.",
+		Help:      "Uptime for Obstor process per node in seconds.",
 		Type:      gaugeMetric,
 	}
 }
@@ -875,12 +875,12 @@ func getMinioProcMetrics() MetricsGroup {
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getObStorProcessSysCallRMD(),
+					Description: getObstorProcessSysCallRMD(),
 					Value:       float64(io.SyscR),
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getObStorProcessSysCallWMD(),
+					Description: getObstorProcessSysCallWMD(),
 					Value:       float64(io.SyscW),
 				})
 			metrics = append(metrics,
@@ -905,12 +905,12 @@ func getMinioProcMetrics() MetricsGroup {
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getObStorProcessStartTimeMD(),
+					Description: getObstorProcessStartTimeMD(),
 					Value:       startTime,
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getObStorProcessUptimeMD(),
+					Description: getObstorProcessUptimeMD(),
 					Value:       time.Since(globalBootTime).Seconds(),
 				})
 			return
@@ -923,7 +923,7 @@ func getGoMetrics() MetricsGroup {
 		cachedRead: cachedRead,
 		read: func(ctx context.Context) (metrics []Metric) {
 			metrics = append(metrics, Metric{
-				Description: getObStorGORoutineCountMD(),
+				Description: getObstorGORoutineCountMD(),
 				Value:       float64(runtime.NumGoroutine()),
 			})
 			return
@@ -983,11 +983,11 @@ func getMinioVersionMetrics() MetricsGroup {
 		cachedRead: cachedRead,
 		read: func(_ context.Context) (metrics []Metric) {
 			metrics = append(metrics, Metric{
-				Description:    getObStorCommitMD(),
+				Description:    getObstorCommitMD(),
 				VariableLabels: map[string]string{"commit": CommitID},
 			})
 			metrics = append(metrics, Metric{
-				Description:    getObStorVersionMD(),
+				Description:    getObstorVersionMD(),
 				VariableLabels: map[string]string{"version": Version},
 			})
 			return
@@ -1427,7 +1427,7 @@ type minioClusterCollector struct {
 
 func newMinioClusterCollector() *minioClusterCollector {
 	return &minioClusterCollector{
-		desc: prometheus.NewDesc("minio_stats", "Statistics exposed by ObStor server", nil, nil),
+		desc: prometheus.NewDesc("minio_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 
@@ -1547,7 +1547,7 @@ func populateAndPublish(generatorFn func() []MetricsGenerator, publish func(m Me
 // Collect is called by the Prometheus registry when collecting metrics.
 func (c *minioCollectorV2) Collect(ch chan<- prometheus.Metric) {
 
-	// Expose ObStor's version information
+	// Expose Obstor's version information
 	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	populateAndPublish(c.generator, func(metric Metric) bool {
@@ -1616,7 +1616,7 @@ func getOrderedLabelValueArrays(labelsWithValue map[string]string) (labels, valu
 func newMinioCollectorV2(generator func() []MetricsGenerator) *minioCollectorV2 {
 	return &minioCollectorV2{
 		generator: generator,
-		desc:      prometheus.NewDesc("minio_stats", "Statistics exposed by ObStor server", nil, nil),
+		desc:      prometheus.NewDesc("minio_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 

@@ -22,9 +22,9 @@ import (
 )
 
 var (
-	errMalformedEscapeSequence  = errors.New("Malformed escape sequence in LIKE clause")
-	errInvalidTrimArg           = errors.New("Trim argument is invalid - this should not happen")
-	errInvalidSubstringIndexLen = errors.New("Substring start index or length falls outside the string")
+	errMalformedEscapeSequence  = errors.New("malformed escape sequence in LIKE clause")
+	errInvalidTrimArg           = errors.New("trim argument is invalid - this should not happen")
+	errInvalidSubstringIndexLen = errors.New("substring start index or length falls outside the string")
 )
 
 const (

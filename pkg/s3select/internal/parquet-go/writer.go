@@ -131,7 +131,7 @@ func (writer *Writer) finalize() (err error) {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	footerBuf, err := ts.Write(context.TODO(), writer.footer)
 	if err != nil {
 		return err

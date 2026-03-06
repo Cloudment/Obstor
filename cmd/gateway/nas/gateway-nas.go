@@ -112,7 +112,7 @@ func (n *nasObjects) StorageInfo(ctx context.Context) (si obstor.StorageInfo, _ 
 	return si, errs
 }
 
-// nasObjects implements gateway for ObStor and S3 compatible object storage servers.
+// nasObjects implements gateway for Obstor and S3 compatible object storage servers.
 type nasObjects struct {
 	obstor.ObjectLayer
 }

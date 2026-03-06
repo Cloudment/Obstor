@@ -48,7 +48,7 @@ func TestExpToInt64(t *testing.T) {
 				t.Errorf("Expected success but got failure %s", err)
 			}
 			if err == nil && testCase.expectedFailure {
-				t.Error("Expected failure but got success")
+				t.Error("expected failure but got success")
 			}
 		})
 	}

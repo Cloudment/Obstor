@@ -4,13 +4,13 @@ ARG TARGETARCH
 
 ARG RELEASE
 
-LABEL name="ObStor" \
+LABEL name="Obstor" \
       vendor="PGG Inc <oss@pgg.net>" \
       maintainer="PGG Inc <oss@pgg.net>" \
       version="${RELEASE}" \
       release="${RELEASE}" \
-      summary="ObStor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
-      description="ObStor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. ObStor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
+      summary="Obstor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
+      description="Obstor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. Obstor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
 ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_SECRET_KEY_FILE=secret_key \
@@ -29,9 +29,9 @@ RUN \
      microdnf install curl ca-certificates shadow-utils util-linux --nodocs && \
      rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
      microdnf install minisign --nodocs && \
-     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE} -o /usr/bin/obstor && \
-     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.sha256sum -o /usr/bin/obstor.sha256sum && \
-     curl -s -q https://dl.pgg.net/server/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.minisig -o /usr/bin/obstor.minisig && \
+     curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE} -o /usr/bin/obstor && \
+     curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.sha256sum -o /usr/bin/obstor.sha256sum && \
+     curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.minisig -o /usr/bin/obstor.minisig && \
      microdnf clean all && \
      chmod +x /usr/bin/obstor && \
      chmod +x /usr/bin/docker-entrypoint.sh && \

@@ -119,7 +119,7 @@ export class ChangePasswordModal extends React.Component {
         <Modal bsSize="sm" animation={false} show={true}>
           <ModalHeader>Change Password</ModalHeader>
           <ModalBody>
-            Credentials of this user cannot be updated through ObStor Browser.
+            Credentials of this user cannot be updated through Obstor Browser.
           </ModalBody>
           <div className="modal-footer">
             <button

@@ -106,7 +106,7 @@ func (f dateNotEqualsFunc) name() name {
 }
 
 func (f dateNotEqualsFunc) String() string {
-	return toDateEqualsFuncString(dateNotEquals, f.dateEqualsFunc.k, f.dateEqualsFunc.value)
+	return toDateEqualsFuncString(dateNotEquals, f.k, f.value)
 }
 
 func valueToTime(n name, values ValueSet) (v time.Time, err error) {

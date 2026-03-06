@@ -64,7 +64,7 @@ func (d *NVMeDevice) readLogPage(logID uint8, buf *[]byte) error {
 	bufLen := len(*buf)
 
 	if (bufLen < 4) || (bufLen > 0x4000) || (bufLen%4 != 0) {
-		return fmt.Errorf("Invalid buffer size")
+		return fmt.Errorf("invalid buffer size")
 	}
 
 	cmd := nvmePassthruCommand{

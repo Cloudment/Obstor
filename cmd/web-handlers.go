@@ -35,7 +35,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
-	"github.com/minio/minio-go/v7"
 	miniogo "github.com/minio/minio-go/v7"
 	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
@@ -305,7 +304,7 @@ func (web *webAPIHandlers) DeleteBucket(r *http.Request, args *RemoveBucketArgs,
 
 	if globalDNSConfig != nil {
 		if err := globalDNSConfig.Delete(args.BucketName); err != nil {
-			logger.LogIf(ctx, fmt.Errorf("Unable to delete bucket DNS entry %w, please delete it manually", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to delete bucket DNS entry %w, please delete it manually", err))
 			return toJSONError(ctx, err)
 		}
 	}
@@ -705,7 +704,7 @@ func (web *webAPIHandlers) RemoveObject(r *http.Request, args *RemoveObjectArgs,
 			}
 		}()
 
-		for resp := range core.RemoveObjects(ctx, args.BucketName, objectsCh, minio.RemoveObjectsOptions{}) {
+		for resp := range core.RemoveObjects(ctx, args.BucketName, objectsCh, miniogo.RemoveObjectsOptions{}) {
 			if resp.Err != nil {
 				return toJSONError(ctx, resp.Err, args.BucketName, resp.ObjectName)
 			}
@@ -2235,7 +2234,7 @@ type LoginSTSArgs struct {
 	Token string `json:"token" form:"token"`
 }
 
-var errSTSNotInitialized = errors.New("STS API not initialized, please configure STS support")
+var errSTSNotInitialized = errors.New("sts API not initialized, please configure STS support")
 
 // LoginSTS - STS user login handler.
 func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *LoginRep) error {
@@ -2257,7 +2256,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 	}
 
 	// JWT has requested a custom claim with policy value set.
-	// This is a ObStor STS API specific value, this value should
+	// This is a Obstor STS API specific value, this value should
 	// be set and configured on your identity provider as part of
 	// JWT custom claims.
 	var policyName string
@@ -2281,7 +2280,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 		return toJSONError(ctx, err)
 	}
 
-	// Notify all other ObStor peers to reload temp users
+	// Notify all other Obstor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
