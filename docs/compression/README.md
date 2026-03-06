@@ -27,26 +27,26 @@ Compression can be enabled by updating the `compress` config settings for Obstor
 Config `compress` settings take extensions and mime-types to be compressed.
 
 ```bash
-~ mc admin config get myminio compression
+~ mc admin config get myobstor compression
 compression extensions=".txt,.log,.csv,.json,.tar,.xml,.bin" mime_types="text/*,application/json,application/xml"
 ```
 
 Default config includes most common highly compressible content extensions and mime-types.
 
 ```bash
-~ mc admin config set myminio compression extensions=".pdf" mime_types="application/pdf"
+~ mc admin config set myobstor compression extensions=".pdf" mime_types="application/pdf"
 ```
 
 To show help on setting compression config values.
 ```bash
-~ mc admin config set myminio compression
+~ mc admin config set myobstor compression
 ```
 
 To enable compression for all content, no matter the extension and content type
 (except for the default excluded types) set BOTH extensions and mime types to empty.
 
 ```bash
-~ mc admin config set myminio compression enable="on" extensions="" mime_types=""
+~ mc admin config set myobstor compression enable="on" extensions="" mime_types=""
 ```
 
 The compression settings may also be set through environment variables.
@@ -72,7 +72,7 @@ your setup can use this feature combination safely.
 To enable compression+encryption use:
 
 ```bash
-~ mc admin config set myminio compression allow_encryption=on
+~ mc admin config set myobstor compression allow_encryption=on
 ```
 
 Or alternatively through the environment variable `OBSTOR_COMPRESS_ALLOW_ENCRYPTION=on`.

@@ -15,13 +15,13 @@ HTTP target logs to a generic HTTP endpoint in JSON format and is not enabled by
 
 Assuming `mc` is already [configured](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 ```
-mc admin config get myminio/ logger_webhook
+mc admin config get myobstor/ logger_webhook
 logger_webhook:name1 auth_token="" endpoint=""
 ```
 
 ```
-mc admin config set myminio logger_webhook:name1 auth_token="" endpoint="http://endpoint:port/path"
-mc admin service restart myminio
+mc admin config set myobstor logger_webhook:name1 auth_token="" endpoint="http://endpoint:port/path"
+mc admin service restart myobstor
 ```
 
 NOTE: `http://endpoint:port/path` is a placeholder value to indicate the URL format, please change this accordingly as per your configuration.
@@ -37,13 +37,13 @@ obstor server /mnt/data
 ## Audit Targets
 Assuming `mc` is already [configured](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 ```
-mc admin config get myminio/ audit_webhook
+mc admin config get myobstor/ audit_webhook
 audit_webhook:name1 enable=off endpoint= auth_token= client_cert= client_key=
 ```
 
 ```
-mc admin config set myminio audit_webhook:name1 auth_token="" endpoint="http://endpoint:port/path"
-mc admin service restart myminio
+mc admin config set myobstor audit_webhook:name1 auth_token="" endpoint="http://endpoint:port/path"
+mc admin service restart myobstor
 ```
 
 NOTE: `http://endpoint:port/path` is a placeholder value to indicate the URL format, please change this accordingly as per your configuration.

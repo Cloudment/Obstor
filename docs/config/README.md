@@ -215,15 +215,15 @@ All configuration changes can be made using [`mc admin config` get/set/reset/exp
 
 #### List all config keys available
 ```
-~ mc admin config set myminio/
+~ mc admin config set myobstor/
 ```
 
 #### Obtain help for each key
 ```
-~ mc admin config set myminio/ <key>
+~ mc admin config set myobstor/ <key>
 ```
 
-e.g: `mc admin config set myminio/ etcd` returns available `etcd` config args
+e.g: `mc admin config set myobstor/ etcd` returns available `etcd` config args
 
 ```
 ~ mc admin config set play/ etcd

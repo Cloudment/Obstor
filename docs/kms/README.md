@@ -77,12 +77,12 @@ Auto-Encryption is useful when Obstor administrator wants to ensure that all dat
 ### Using `mc encrypt` (recommended)
 Obstor automatically encrypts all objects on buckets if KMS is successfully configured and bucket encryption configuration is enabled for each bucket as shown below:
 ```
-mc encrypt set sse-s3 myminio/bucket/
+mc encrypt set sse-s3 myobstor/bucket/
 ```
 
 Verify if Obstor has `sse-s3` enabled
 ```
-mc encrypt info myminio/bucket/
+mc encrypt info myobstor/bucket/
 Auto encryption 'sse-s3' is enabled
 ```
 
@@ -102,12 +102,12 @@ export OBSTOR_KMS_AUTO_ENCRYPTION=on
 To verify auto-encryption, use the following `mc` command:
 
 ```
-mc cp test.file myminio/bucket/
+mc cp test.file myobstor/bucket/
 test.file:              5 B / 5 B  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  100.00% 337 B/s 0s
 ```
 
 ```
-mc stat myminio/bucket/test.file
+mc stat myobstor/bucket/test.file
 Name      : test.file
 ...
 Encrypted :

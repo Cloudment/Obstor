@@ -30,7 +30,7 @@
 // table name in the configuration. A sample SQL command that creates
 // a table with the required structure is:
 //
-//     CREATE TABLE myminio (
+//     CREATE TABLE myobstor (
 //         key VARCHAR PRIMARY KEY,
 //         value JSONB
 //     );
@@ -47,7 +47,7 @@
 // A different table schema is used for this format. A sample SQL
 // commant that creates a table with the required structure is:
 //
-// CREATE TABLE myminio (
+// CREATE TABLE myobstor (
 //     event_time TIMESTAMP WITH TIME ZONE NOT NULL,
 //     event_data JSONB
 // );

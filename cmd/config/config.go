@@ -80,6 +80,7 @@ const (
 	HealSubSys           = "heal"
 	ScannerSubSys        = "scanner"
 	CrawlerSubSys        = "crawler"
+	SftpSubSys           = "sftp"
 
 	// Add new constants here if you add new fields to config.
 )
@@ -118,6 +119,7 @@ var SubSystems = set.CreateStringSet(
 	IdentityOpenIDSubSys,
 	ScannerSubSys,
 	HealSubSys,
+	SftpSubSys,
 	NotifyAMQPSubSys,
 	NotifyESSubSys,
 	NotifyKafkaSubSys,
@@ -454,7 +456,7 @@ func CheckValidKeys(subSys string, kv KVS, validKVS KVS) error {
 	}
 	if len(nkv) > 0 {
 		return Errorf(
-			"found invalid keys (%s) for '%s' sub-system, use 'mc admin config reset myminio %s' to fix invalid keys", nkv.String(), subSys, subSys)
+			"found invalid keys (%s) for '%s' sub-system, use 'mc admin config reset myobstor %s' to fix invalid keys", nkv.String(), subSys, subSys)
 	}
 	return nil
 }

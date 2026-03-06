@@ -103,7 +103,7 @@ obstor server /mnt/export
 
 or using `mc`
 ```
-mc admin config get myminio identity_openid
+mc admin config get myobstor identity_openid
 identity_openid config_url=https://accounts.google.com/.well-known/openid-configuration client_id=843351d4-1080-11ea-aa20-271ecba3924a
 ```
 
@@ -145,11 +145,11 @@ $ go run web-identity.go -cid 204367807228-ok7601k6gj1pgge7m09h7d79co8p35xx.apps
 To support WebIdentity login on Obstor Browser, set openid configuration and restart Obstor
 
 ```
-mc admin config set myminio identity_openid config_url="<CONFIG_URL>" client_id="<client_identifier>"
+mc admin config set myobstor identity_openid config_url="<CONFIG_URL>" client_id="<client_identifier>"
 ```
 
 ```
-mc admin service restart myminio
+mc admin service restart myobstor
 ```
 
 Sample URLs for Keycloak are

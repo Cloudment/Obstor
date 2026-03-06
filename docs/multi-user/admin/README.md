@@ -44,29 +44,29 @@ EOF
 
 Create new canned policy by name `userManager` using `userManager.json` policy file.
 ```
-mc admin policy add myminio userManager adminManageUser.json
+mc admin policy add myobstor userManager adminManageUser.json
 ```
 
 Create a new admin user `admin1` on Obstor use `mc admin user`.
 ```
-mc admin user add myminio admin1 admin123
+mc admin user add myobstor admin1 admin123
 ```
 
 Once the user is successfully created you can now apply the `userManage` policy for this user.
 
 ```
-mc admin policy set myminio userManager user=admin1
+mc admin policy set myobstor userManager user=admin1
 ```
 
 This admin user will then be allowed to perform create/delete user operations via `mc admin user`
 
 ### 3. Configure `mc` and create another user user1 with attached policy user1policy
 ```
-mc alias set myminio-admin1 http://localhost:9000 admin1 admin123 --api s3v4
+mc alias set myobstor-admin1 http://localhost:9000 admin1 admin123 --api s3v4
 
-mc admin user add myminio-admin1 user1 user123
-mc admin policy add myminio-admin1 user1policy ~/user1policy.json
-mc admin policy set myminio-admin1 user1policy user=user1
+mc admin user add myobstor-admin1 user1 user123
+mc admin policy add myobstor-admin1 user1policy ~/user1policy.json
+mc admin policy set myobstor-admin1 user1policy user=user1
 ```
 
 ### 4. List of permissions defined for admin operations

@@ -18,23 +18,23 @@ Buckets can be configured to have one of two types of quota configuration - FIFO
 ### Set a hard quota of 1GB for a bucket `mybucket` on Obstor object storage:
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --hard 1gb
+$ mc admin bucket quota myobstor/mybucket --hard 1gb
 ```
 
 ### Set FIFO quota of 5GB for a bucket "mybucket" on Obstor to allow automatic deletion of older content to ensure bucket usage remains within 5GB
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --fifo 5gb
+$ mc admin bucket quota myobstor/mybucket --fifo 5gb
 ```
 
 ### Verify the quota configured on `mybucket` on Obstor
 
 ```sh
-$ mc admin bucket quota myminio/mybucket
+$ mc admin bucket quota myobstor/mybucket
 ```
 
 ### Clear bucket quota configuration for `mybucket` on Obstor
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --clear
+$ mc admin bucket quota myobstor/mybucket --clear
 ```

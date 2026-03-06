@@ -79,7 +79,7 @@ func printStartupMessage(apiEndpoints []string, err error) {
 
 	// Prints `mc` cli configuration message chooses
 	// first endpoint as default.
-	printCLIAccessMsg(strippedAPIEndpoints[0], "myminio")
+	printCLIAccessMsg(strippedAPIEndpoints[0], "myobstor")
 
 	// Prints documentation message.
 	printObjectAPIMsg()

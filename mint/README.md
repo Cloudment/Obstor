@@ -45,7 +45,7 @@ Below environment variables are required to be passed to the podman container. S
 | `ENABLE_HTTPS`         | (Optional) Set `1` to indicate to use HTTPS to access `SERVER_ENDPOINT`. Defaults to `0` (HTTP)                                                | `1`                                        |
 | `MINT_MODE`            | (Optional) Set mode indicating what category of tests to be run by values `core`, `full`. Defaults to `core`                                   | `full`                                     |
 | `MINT_MC_VARIANT`      | (Optional) Select `mc` test variant by values `mc`, `ec`. Defaults to `mc`. (Using `ec` requires providing the `ec` repo in the container.)    | `ec`                                       |                               |
-| `DOMAIN`               | (Optional) Value of OBSTOR_DOMAIN environment variable used in Minio server                                                                     | `myminio.com`                              |
+| `DOMAIN`               | (Optional) Value of OBSTOR_DOMAIN environment variable used in Minio server                                                                     | `myobstor.com`                              |
 | `ENABLE_VIRTUAL_STYLE` | (Optional) Set `1` to indicate virtual style access . Defaults to `0` (Path style)                                                             | `1`                                        |
 | `RUN_ON_FAIL`          | (Optional) Set `1` to indicate execute all tests independent of failures (currently implemented for minio-go and minio-java) . Defaults to `0` | `1`                                        |
 | `SERVER_REGION`        | (Optional) Set custom region for region specific tests                                                                                         | `us-west-1`                                |
@@ -54,9 +54,9 @@ Below environment variables are required to be passed to the podman container. S
 
 To test Minio server virtual style access with Mint, follow these steps:
 
-- Set a domain in your Minio server using environment variable OBSTOR_DOMAIN. For example `export OBSTOR_DOMAIN=myminio.com`.
+- Set a domain in your Minio server using environment variable OBSTOR_DOMAIN. For example `export OBSTOR_DOMAIN=myobstor.com`.
 - Start Minio server.
-- Execute Mint against Minio server (with `OBSTOR_DOMAIN` set to `myminio.com`) using this command
+- Execute Mint against Minio server (with `OBSTOR_DOMAIN` set to `myobstor.com`) using this command
 ```sh
 $ podman run -e "SERVER_ENDPOINT=192.168.86.133:9000" -e "DOMAIN=obstor.com"  \
 	     -e "ACCESS_KEY=obstor" -e "SECRET_KEY=obstor123" -e "ENABLE_HTTPS=0" \

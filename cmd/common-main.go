@@ -35,6 +35,7 @@ import (
 	"time"
 
 	"github.com/cloudment/obstor/cmd/config"
+	sftpCfg "github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -327,6 +328,16 @@ func handleCommonEnvVars() {
 				"Unable to validate credentials inherited from the shell environment")
 		}
 		globalActiveCred = cred
+	}
+
+	// Check SFTP env vars early so the flag is set before config system init.
+	if env.IsSet(sftpCfg.EnvSFTPEnable) || env.IsSet(sftpCfg.EnvSFTPAddress) {
+		sftpEnabled := env.Get(sftpCfg.EnvSFTPEnable, "")
+		if sftpEnabled == config.EnableOn {
+			globalSFTPConfig.Enabled = true
+			globalSFTPConfig.Address = env.Get(sftpCfg.EnvSFTPAddress, sftpCfg.DefaultAddress)
+			globalSFTPConfig.HostKeyPath = env.Get(sftpCfg.EnvSFTPHostKey, "")
+		}
 	}
 
 	if env.IsSet(config.EnvKMSSecretKey) && env.IsSet(config.EnvKESEndpoint) {

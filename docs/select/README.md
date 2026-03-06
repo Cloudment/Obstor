@@ -76,9 +76,9 @@ for event in r['Payload']:
 Upload a sample dataset to Obstor using the following commands.
 ```sh
 $ curl "https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv" > TotalPopulation.csv
-$ mc mb myminio/mycsvbucket
+$ mc mb myobstor/mycsvbucket
 $ gzip TotalPopulation.csv
-$ mc cp TotalPopulation.csv.gz myminio/mycsvbucket/sampledata/
+$ mc cp TotalPopulation.csv.gz myobstor/mycsvbucket/sampledata/
 ```
 
 Now let us proceed to run our select example to query for `Location` which matches `United States`.

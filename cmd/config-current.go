@@ -36,6 +36,7 @@ import (
 	"github.com/cloudment/obstor/cmd/config/notify"
 	"github.com/cloudment/obstor/cmd/config/policy/opa"
 	"github.com/cloudment/obstor/cmd/config/scanner"
+	"github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
@@ -61,6 +62,7 @@ func initHelp() {
 		config.AuditWebhookSubSys:   logger.DefaultAuditKVS,
 		config.HealSubSys:           heal.DefaultKVS,
 		config.ScannerSubSys:        scanner.DefaultKVS,
+		config.SftpSubSys:           sftp.DefaultKVS,
 	}
 	for k, v := range notify.DefaultNotificationKVS {
 		kvs[k] = v
@@ -119,6 +121,10 @@ func initHelp() {
 		config.HelpKV{
 			Key:         config.ScannerSubSys,
 			Description: "manage namespace scanning for usage calculation, lifecycle, healing and more",
+		},
+		config.HelpKV{
+			Key:         config.SftpSubSys,
+			Description: "enable SFTP server for file transfer access to object storage",
 		},
 		config.HelpKV{
 			Key:             config.LoggerWebhookSubSys,
@@ -201,6 +207,7 @@ func initHelp() {
 		config.CompressionSubSys:    compress.Help,
 		config.HealSubSys:           heal.Help,
 		config.ScannerSubSys:        scanner.Help,
+		config.SftpSubSys:           sftp.Help,
 		config.IdentityOpenIDSubSys: openid.Help,
 		config.IdentityLDAPSubSys:   xldap.Help,
 		config.PolicyOPASubSys:      opa.Help,
@@ -277,6 +284,10 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 	}
 
 	if _, err = scanner.LookupConfig(s[config.ScannerSubSys][config.Default]); err != nil {
+		return err
+	}
+
+	if _, err := sftp.LookupConfig(s[config.SftpSubSys][config.Default]); err != nil {
 		return err
 	}
 
@@ -451,6 +462,12 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 			}
 		}
 	}
+
+	sftpCfg, err := sftp.LookupConfig(s[config.SftpSubSys][config.Default])
+	if err != nil {
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize SFTP config: %w", err))
+	}
+	globalSFTPConfig = sftpCfg
 
 	globalAutoEncryption = crypto.LookupAutoEncryption() // Enable auto-encryption if enabled
 	if globalAutoEncryption && GlobalKMS == nil {

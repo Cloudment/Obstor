@@ -35,82 +35,82 @@ EOF
 
 Create new canned policy by name `getonly` using `getonly.json` policy file.
 ```
-mc admin policy add myminio getonly getonly.json
+mc admin policy add myobstor getonly getonly.json
 ```
 
 Create a new user `newuser` on Obstor use `mc admin user`.
 ```
-mc admin user add myminio newuser newuser123
+mc admin user add myobstor newuser newuser123
 ```
 
 Once the user is successfully created you can now apply the `getonly` policy for this user.
 ```
-mc admin policy set myminio getonly user=newuser
+mc admin policy set myobstor getonly user=newuser
 ```
 
 ### 3. Create a new group
 ```
-mc admin group add myminio newgroup newuser
+mc admin group add myobstor newgroup newuser
 ```
 
 Once the group is successfully created you can now apply the `getonly` policy for this group.
 ```
-mc admin policy set myminio getonly group=newgroup
+mc admin policy set myobstor getonly group=newgroup
 ```
 
 ### 4. Disable user
 Disable user `newuser`.
 ```
-mc admin user disable myminio newuser
+mc admin user disable myobstor newuser
 ```
 
 Disable group `newgroup`.
 ```
-mc admin group disable myminio newgroup
+mc admin group disable myobstor newgroup
 ```
 
 ### 5. Remove user
 Remove the user `newuser`.
 ```
-mc admin user remove myminio newuser
+mc admin user remove myobstor newuser
 ```
 
 Remove the user `newuser` from a group.
 ```
-mc admin group remove myminio newgroup newuser
+mc admin group remove myobstor newgroup newuser
 ```
 
 Remove the group `newgroup`.
 ```
-mc admin group remove myminio newgroup
+mc admin group remove myobstor newgroup
 ```
 
 ### 6. Change user or group policy
 Change the policy for user `newuser` to `putonly` canned policy.
 ```
-mc admin policy set myminio putonly user=newuser
+mc admin policy set myobstor putonly user=newuser
 ```
 
 Change the policy for group `newgroup` to `putonly` canned policy.
 ```
-mc admin policy set myminio putonly group=newgroup
+mc admin policy set myobstor putonly group=newgroup
 ```
 
 ### 7. List all users or groups
 List all enabled and disabled users.
 ```
-mc admin user list myminio
+mc admin user list myobstor
 ```
 
 List all enabled or disabled groups.
 ```
-mc admin group list myminio
+mc admin group list myobstor
 ```
 
 ### 8. Configure `mc`
 ```
-mc alias set myminio-newuser http://localhost:9000 newuser newuser123 --api s3v4
-mc cat myminio-newuser/my-bucketname/my-objectname
+mc alias set myobstor-newuser http://localhost:9000 newuser newuser123 --api s3v4
+mc cat myobstor-newuser/my-bucketname/my-objectname
 ```
 
 ### Policy Variables

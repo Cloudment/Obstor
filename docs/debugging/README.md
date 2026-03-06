@@ -10,17 +10,17 @@ obstor server /data
 
 Default trace is succinct only to indicate the API operations being called and the HTTP response status.
 ```sh
-mc admin trace myminio
+mc admin trace myobstor
 ```
 
 To trace entire HTTP request
 ```sh
-mc admin trace --verbose myminio
+mc admin trace --verbose myobstor
 ```
 
 To trace entire HTTP request and also internode communication
 ```sh
-mc admin trace --all --verbose myminio
+mc admin trace --all --verbose myobstor
 ```
 
 
@@ -34,7 +34,7 @@ obstor server /data
 
 The command takes no flags
 ```sh
-mc admin subnet health myminio
+mc admin subnet health myobstor
 ```
 
 The output printed will be of the form

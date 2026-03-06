@@ -44,7 +44,7 @@ LDAP STS configuration can be performed via Obstor's standard configuration API 
 LDAP is configured via the following environment variables:
 
 ```
-$ mc admin config set myminio identity_ldap --env
+$ mc admin config set myobstor identity_ldap --env
 KEY:
 identity_ldap  enable LDAP SSO support
 
@@ -142,17 +142,17 @@ Access policies may be configured on a group or on a user directly. Access polic
 To define a new policy, you can use the [AWS policy generator](https://awspolicygen.s3.amazonaws.com/policygen.html). Copy the policy into a text file `mypolicy.json` and issue the command like so:
 
 ```sh
-mc admin policy add myminio mypolicy mypolicy.json
+mc admin policy add myobstor mypolicy mypolicy.json
 ```
 
 To assign the policy to a user or group, use the full DN of the user or group:
 
 ```sh
-mc admin policy set myminio mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
+mc admin policy set myobstor mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
 ```
 
 ```sh
-mc admin policy set myminio mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
+mc admin policy set myobstor mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
 ```
 
 **Please note that when AD/LDAP is configured, Obstor will not support long term users defined internally.** Only AD/LDAP users are allowed. In addition to this, the server will not support operations on users or groups using `mc admin user` or `mc admin group` commands except `mc admin user info` and `mc admin group info` to list set policies for users and groups. This is because users and groups are defined externally in AD/LDAP.

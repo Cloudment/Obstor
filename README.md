@@ -282,7 +282,7 @@ Obstor Server comes with an embedded web based object browser. Point your web br
 Obstor server supports rolling upgrades, i.e. you can update one Obstor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the Obstor client (mc):
 
 ```
-mc admin update <obstor alias, e.g., myminio>
+mc admin update <obstor alias, e.g., myobstor>
 ```
 
 > NOTE: some releases might not allow rolling upgrades, this is always called out in the release notes and it is generally advised to read release notes before upgrading. In such a situation `mc admin update` is the recommended upgrading mechanism to upgrade all servers at once.

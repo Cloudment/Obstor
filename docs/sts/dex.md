@@ -90,7 +90,7 @@ Now you have successfully configured Dex IdP with Obstor.
 export OBSTOR_IDENTITY_OPENID_CLAIM_NAME=groups
 ```
 
-and add relevant policies on Obstor using `mc admin policy add myminio/ <group_name> group-access.json`
+and add relevant policies on Obstor using `mc admin policy add myobstor/ <group_name> group-access.json`
 
 ## Explore Further
 

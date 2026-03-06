@@ -45,7 +45,7 @@ $ obstor server /mnt/export
 
 Here are all the available options to configure OpenID connect
 ```
-mc admin config set myminio/ identity_openid
+mc admin config set myobstor/ identity_openid
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -61,7 +61,7 @@ comment       (sentence)  optionally add a comment to this setting
 
 and ENV based options
 ```
-mc admin config set myminio/ identity_openid --env
+mc admin config set myobstor/ identity_openid --env
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -77,13 +77,13 @@ OBSTOR_IDENTITY_OPENID_COMMENT       (sentence)  optionally add a comment to thi
 
 Set `identity_openid` config with `config_url`, `client_id` and restart Obstor
 ```
-~ mc admin config set myminio identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
+~ mc admin config set myobstor identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
 ```
 > NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by obstor to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
 
 Once successfully set restart the Obstor instance.
 ```
-mc admin service restart myminio
+mc admin service restart myobstor
 ```
 
 ### Using WebIdentiy API

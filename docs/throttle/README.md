@@ -23,8 +23,8 @@ obstor server http://server{1...8}/mnt/hdd{1...16}
 or
 
 ```sh
-mc admin config set myminio/ api requests_max=1600
-mc admin service restart myminio/
+mc admin config set myobstor/ api requests_max=1600
+mc admin service restart myobstor/
 ```
 
 > NOTE: A zero value of `requests_max` means unlimited and that is the default behavior.
@@ -47,7 +47,7 @@ obstor server http://server{1...8}/mnt/hdd{1...16}
 or
 
 ```sh
-mc admin config set myminio/ api requests_max=1600 requests_deadline=2m
-mc admin service restart myminio/
+mc admin config set myobstor/ api requests_max=1600 requests_deadline=2m
+mc admin service restart myobstor/
 ```
 

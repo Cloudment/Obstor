@@ -551,6 +551,11 @@ func serverMain(ctx *cli.Context) {
 	// Initialize users credentials and policies in background right after config has initialized.
 	go globalIAMSys.Init(GlobalContext, newObject)
 
+	// Start SFTP server if enabled.
+	if globalSFTPConfig.Enabled {
+		startSFTPServer(globalSFTPConfig)
+	}
+
 	// Prints the formatted startup message, if err is not nil then it prints additional information as well.
 	printStartupMessage(getAPIEndpoints(), err)
 

@@ -18,7 +18,7 @@ Ensure that versioning is enabled on the source and target buckets with `mc vers
 Create a replication target on the source cluster as shown below:
 
 ```
-mc admin bucket remote add myminio/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1
+mc admin bucket remote add myobstor/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1
 Role ARN = 'arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
@@ -99,7 +99,7 @@ Please note that the permissions required by the admin user on the target cluste
 
 Once successfully created and authorized, the `mc admin bucket remote add` command generates a replication target ARN.  This command lists all the currently authorized replication targets:
 ```
-mc admin bucket remote ls myminio/srcbucket --service "replication"
+mc admin bucket remote ls myobstor/srcbucket --service "replication"
 Role ARN = 'arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
@@ -163,8 +163,8 @@ To add a replication rule allowing both delete marker replication, versioned del
 
 Additional permission of "s3:ReplicateDelete" action would need to be specified on the access key configured for the target cluster if Delete Marker replication or versioned delete replication is enabled.
 ```
-mc replicate add myminio/srcbucket/Tax --priority 1 --arn "arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --remote-bucket "destbucket" --replicate "delete,delete-marker"
-Replication configuration applied successfully to myminio/srcbucket.
+mc replicate add myobstor/srcbucket/Tax --priority 1 --arn "arn:obstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --remote-bucket "destbucket" --replicate "delete,delete-marker"
+Replication configuration applied successfully to myobstor/srcbucket.
 ```
 
 > NOTE: Both source and target instance need to be upgraded to latest release to take advantage of Delete marker replication.
@@ -181,7 +181,7 @@ On the target bucket, `s3:PutObject` event shows `X-Amz-Replication-Status` stat
 By default, replication is completed asynchronously. If synchronous replication is desired, set the --sync flag while adding a
 remote replication target using the `mc admin bucket remote add` command
 ```
- mc admin bucket remote add myminio/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1 --sync --healthcheck-seconds 100
+ mc admin bucket remote add myobstor/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1 --sync --healthcheck-seconds 100
 ```
 
 ## Explore Further
