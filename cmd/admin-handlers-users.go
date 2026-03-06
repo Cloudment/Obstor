@@ -378,8 +378,9 @@ func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Not allowed to add a user with same access key as root credential
-	if owner && accessKey == cred.AccessKey {
+	// CVE-2023-27589: Never allow creating a user with the same access key
+	// as root credentials, regardless of who the caller is.
+	if accessKey == globalActiveCred.AccessKey {
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAddUserInvalidArgument), r.URL)
 		return
 	}
@@ -444,6 +445,9 @@ func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// CVE-2021-43858: Do not allow policy to be set via AddUser API.
+	uinfo.PolicyName = ""
+
 	if err = globalIAMSys.CreateUser(accessKey, uinfo); err != nil {
 		writeErrorResponseJSON(ctx, w, toAdminAPIErr(ctx, err), r.URL)
 		return
@@ -503,8 +507,9 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 
 	targetUser = createReq.TargetUser
 
-	// Need permission if we are creating a service acccount
-	// for a user <> to the request sender
+	// CVE-2022-24842: Only allow creating service accounts for yourself,
+	// unless the caller has explicit admin permission. Never allow targeting
+	// a different user without CreateServiceAccountAdminAction.
 	if targetUser != "" && targetUser != cred.AccessKey {
 		if !globalIAMSys.IsAllowed(iampolicy.Args{
 			AccountName:     cred.AccessKey,
@@ -516,6 +521,14 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 			writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
 			return
 		}
+	}
+
+	// CVE-2022-24842: When targeting a different user, verify the caller
+	// is the owner (root). Non-root users must only create service accounts
+	// for themselves.
+	if targetUser != "" && targetUser != cred.AccessKey && !owner {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
+		return
 	}
 
 	if globalLDAPConfig.Enabled && targetUser != "" {
@@ -535,6 +548,14 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 			targetUser = cred.ParentUser
 		}
 		targetGroups = cred.Groups
+	}
+
+	// CVE-2025-62506: If the caller is a temporary/STS credential with a
+	// restricted session policy, the new service account must also have a
+	// session policy to prevent bypassing the caller's restrictions.
+	if cred.IsTemp() && createReq.Policy == nil {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
+		return
 	}
 
 	opts := newServiceAccountOpts{sessionPolicy: createReq.Policy, accessKey: createReq.AccessKey, secretKey: createReq.SecretKey}
@@ -608,6 +629,14 @@ func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Re
 	svcAccount, _, err := globalIAMSys.GetServiceAccount(ctx, accessKey)
 	if err != nil {
 		writeErrorResponseJSON(ctx, w, toAdminAPIErr(ctx, err), r.URL)
+		return
+	}
+
+	// CVE-2024-24747: Service accounts must not be allowed to update
+	// service accounts (including themselves) to prevent privilege escalation
+	// through inherited admin:* permissions.
+	if cred.IsServiceAccount() {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
 		return
 	}
 

@@ -1340,10 +1340,6 @@ func (sys *IAMSys) CreateUser(accessKey string, uinfo madmin.UserInfo) error {
 
 	sys.iamUsersMap[accessKey] = u.Credentials
 
-	// Set policy if specified.
-	if uinfo.PolicyName != "" {
-		return sys.policyDBSet(accessKey, uinfo.PolicyName, regularUser, false)
-	}
 	return nil
 }
 

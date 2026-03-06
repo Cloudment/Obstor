@@ -523,15 +523,17 @@ func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string
 func doUpdate(u *url.URL, lrTime time.Time, sha256Sum []byte, releaseInfo string, mode string) (err error) {
 	transport := getUpdateTransport(30 * time.Second)
 	var reader io.ReadCloser
+	// CVE-2022-35919: Only allow HTTP(S) update URLs to prevent arbitrary file reads.
 	if u.Scheme == "https" || u.Scheme == "http" {
 		reader, err = getUpdateReaderFromURL(u, transport, mode)
 		if err != nil {
 			return err
 		}
 	} else {
-		reader, err = getUpdateReaderFromFile(u)
-		if err != nil {
-			return err
+		return AdminError{
+			Code:       AdminUpdateUnexpectedFailure,
+			Message:    fmt.Sprintf("unsupported update URL scheme: %s", u.Scheme),
+			StatusCode: http.StatusBadRequest,
 		}
 	}
 

@@ -192,9 +192,9 @@ func checkObjectNameForLengthAndSlash(bucket, object string) error {
 		}
 	}
 	if runtime.GOOS == globalWindowsOSName {
-		// Explicitly disallowed characters on windows.
-		// Avoids most problematic names.
-		if strings.ContainsAny(object, `:*?"|<>`) {
+		// CVE-2023-28433: Explicitly disallowed characters on windows.
+		// Backslash must be rejected to prevent path traversal across buckets.
+		if strings.ContainsAny(object, `\:*?"|<>`) {
 			return ObjectNameInvalid{
 				Bucket: bucket,
 				Object: object,

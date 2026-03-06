@@ -159,9 +159,10 @@ func enforceRetentionBypassForDelete(ctx context.Context, r *http.Request, bucke
 			// https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html#object-lock-retention-modes
 			// If you try to delete objects protected by governance mode and have s3:BypassGovernanceRetention
 			// or s3:GetBucketObjectLockConfiguration permissions, the operation will succeed.
+			// CVE-2023-25812: Require BOTH permissions, not just one of them.
 			govBypassPerms1 := checkRequestAuthType(ctx, r, policy.BypassGovernanceRetentionAction, bucket, object.ObjectName)
 			govBypassPerms2 := checkRequestAuthType(ctx, r, policy.GetBucketObjectLockConfigurationAction, bucket, object.ObjectName)
-			if govBypassPerms1 != ErrNone && govBypassPerms2 != ErrNone {
+			if govBypassPerms1 != ErrNone || govBypassPerms2 != ErrNone {
 				return ErrAccessDenied
 			}
 		}

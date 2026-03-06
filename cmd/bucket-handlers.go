@@ -945,6 +945,17 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 			return
 		}
 
+		// CVE-2023-28434: Verify that the policy's bucket condition matches
+		// the bucket from the URL to prevent cross-bucket writes.
+		for _, policy := range postPolicyForm.Conditions.Policies {
+			if policy.Key == "$bucket" && policy.Operator == policyCondEqual {
+				if policy.Value != bucket {
+					writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL, guessIsBrowserReq(r))
+					return
+				}
+			}
+		}
+
 		// Make sure formValues adhere to policy restrictions.
 		if err = checkPostPolicy(formValues, postPolicyForm); err != nil {
 			writeErrorResponse(ctx, w, errorCodes.ToAPIErrWithErr(ErrAccessDenied, err), r.URL, guessIsBrowserReq(r))
