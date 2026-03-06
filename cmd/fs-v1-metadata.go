@@ -227,7 +227,6 @@ func (m *fsMetaV1) ReadFrom(ctx context.Context, lk *lock.LockedFile) (n int64, 
 		return 0, io.EOF
 	}
 
-
 	if err = json.Unmarshal(fsMetaBuf, m); err != nil {
 		return 0, err
 	}

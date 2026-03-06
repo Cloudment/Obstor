@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/klauspost/reedsolomon"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/klauspost/reedsolomon"
 )
 
 // getDataBlockLen - get length of data blocks from encoded blocks.

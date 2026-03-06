@@ -21,7 +21,7 @@ import (
 	"io"
 	"strings"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/minio/minio-go/v7/pkg/set"
 )

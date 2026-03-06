@@ -22,10 +22,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 const (

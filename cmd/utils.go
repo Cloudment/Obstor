@@ -40,14 +40,14 @@ import (
 	"sync"
 	"time"
 
-	humanize "github.com/dustin/go-humanize"
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/cmd/rest"
 	"github.com/cloudment/obstor/pkg/certs"
 	"github.com/cloudment/obstor/pkg/handlers"
 	"github.com/cloudment/obstor/pkg/madmin"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/http2"
 )
 
@@ -150,7 +150,7 @@ func hasContentMD5(h http.Header) bool {
 	return ok
 }
 
-/// http://docs.aws.amazon.com/AmazonS3/latest/dev/UploadingObjects.html
+// / http://docs.aws.amazon.com/AmazonS3/latest/dev/UploadingObjects.html
 const (
 	// Maximum object size per PUT request is 5TB.
 	// This is a divergence from S3 limit on purpose to support

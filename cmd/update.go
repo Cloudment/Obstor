@@ -122,8 +122,7 @@ func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
 //
 // https://github.com/moby/moby/blob/master/daemon/initlayer/setup_unix.go#L25
 //
-//     "/.dockerenv":      "file",
-//
+//	"/.dockerenv":      "file",
 func IsDocker() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		_, err := os.Stat("/.dockerenv")
@@ -224,7 +223,7 @@ func IsPCFTile() bool {
 // DO NOT CHANGE USER AGENT STYLE.
 // The style should be
 //
-//   ObStor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) ObStor/<VERSION> ObStor/<RELEASE-TAG> ObStor/<COMMIT-ID> [ObStor/universe-<PACKAGE-NAME>] [ObStor/helm-<HELM-VERSION>]
+//	ObStor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) ObStor/<VERSION> ObStor/<RELEASE-TAG> ObStor/<COMMIT-ID> [ObStor/universe-<PACKAGE-NAME>] [ObStor/helm-<HELM-VERSION>]
 //
 // Any change here should be discussed by opening an issue at
 // https://github.com/cloudment/obstor/issues.

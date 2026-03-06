@@ -24,8 +24,8 @@ import (
 	"strings"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/hash"
+	humanize "github.com/dustin/go-humanize"
 )
 
 // Wrapper for calling NewMultipartUpload tests for both Erasure multiple disks and single node setup.

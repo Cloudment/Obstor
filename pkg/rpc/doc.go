@@ -16,10 +16,10 @@ This package derives from the standard net/rpc package but uses a single HTTP
 request per call instead of persistent connections. Other differences
 compared to net/rpc:
 
-	- Multiple codecs can be registered in the same server.
-	- A codec is chosen based on the "Content-Type" header from the request.
-	- Service methods also receive http.Request as parameter.
-	- This package can be used on Google App Engine.
+  - Multiple codecs can be registered in the same server.
+  - A codec is chosen based on the "Content-Type" header from the request.
+  - Service methods also receive http.Request as parameter.
+  - This package can be used on Google App Engine.
 
 Let's setup a server and register a codec and service:
 
@@ -71,11 +71,11 @@ The service must be exported (begin with an upper case letter) or local
 When a service is registered, the server inspects the service methods
 and make available the ones that follow these rules:
 
-	- The method name is exported.
-	- The method has three arguments: *http.Request, *args, *reply.
-	- All three arguments are pointers.
-	- The second and third arguments are exported or local.
-	- The method has return type error.
+  - The method name is exported.
+  - The method has three arguments: *http.Request, *args, *reply.
+  - All three arguments are pointers.
+  - The second and third arguments are exported or local.
+  - The method has return type error.
 
 All other methods are ignored.
 */

@@ -29,11 +29,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/handlers"
 	jsonrpc "github.com/cloudment/obstor/pkg/rpc"
 	trace "github.com/cloudment/obstor/pkg/trace"
+	"github.com/gorilla/mux"
 )
 
 // recordRequest - records the first recLen bytes

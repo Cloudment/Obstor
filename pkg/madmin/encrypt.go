@@ -34,8 +34,9 @@ import (
 // derived from password using the Argon2id PBKDF.
 //
 // The returned ciphertext data consists of:
-//    salt | AEAD ID | nonce | encrypted data
-//     32      1         8      ~ len(data)
+//
+//	salt | AEAD ID | nonce | encrypted data
+//	 32      1         8      ~ len(data)
 func EncryptData(password string, data []byte) ([]byte, error) {
 	salt := sioutil.MustRandom(32)
 

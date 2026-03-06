@@ -1383,7 +1383,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	uniqueID := fmt.Sprintf("%X", eventTime.UnixNano())
 
 	respElements := map[string]string{
-		"x-amz-request-id":        args.RespElements["requestId"],
+		"x-amz-request-id":         args.RespElements["requestId"],
 		"x-obstor-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
 	}
 	// Add deployment as part of

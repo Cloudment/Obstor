@@ -21,8 +21,8 @@ import (
 	"strings"
 	"sync"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	humanize "github.com/dustin/go-humanize"
 )
 
 const (
@@ -51,7 +51,7 @@ var globalObjLayerMutex sync.RWMutex
 // Global object layer, only accessed by globalObjectAPI.
 var globalObjectAPI ObjectLayer
 
-//Global cacheObjects, only accessed by newCacheObjectsFn().
+// Global cacheObjects, only accessed by newCacheObjectsFn().
 var globalCacheObjectAPI CacheObjectLayer
 
 // Checks if the object is a directory, this logic uses

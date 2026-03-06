@@ -20,9 +20,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/wildcard"
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
 

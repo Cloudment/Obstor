@@ -654,12 +654,12 @@ func (a *azureObjects) DeleteBucket(ctx context.Context, bucket string, forceDel
 // distinguish between Azure continuation tokens and application
 // supplied markers.
 //
-// - NextMarker in ListObjectsV1 response is constructed by
-//   prefixing "{obstor}" to the Azure continuation token,
-//   e.g, "{obstor}CgRvYmoz"
+//   - NextMarker in ListObjectsV1 response is constructed by
+//     prefixing "{obstor}" to the Azure continuation token,
+//     e.g, "{obstor}CgRvYmoz"
 //
-// - Application supplied markers are used as-is to list
-//   object keys that appear after it in the lexicographical order.
+//   - Application supplied markers are used as-is to list
+//     object keys that appear after it in the lexicographical order.
 func (a *azureObjects) ListObjects(ctx context.Context, bucket, prefix, marker, delimiter string, maxKeys int) (result obstor.ListObjectsInfo, err error) {
 	var objects []obstor.ObjectInfo
 	var prefixes []string

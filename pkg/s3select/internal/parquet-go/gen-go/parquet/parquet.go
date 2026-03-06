@@ -5,12 +5,12 @@ package parquet
 
 import (
 	"bytes"
+	"context"
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"context"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -18,10 +18,10 @@ var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
 
-//Types supported by Parquet.  These types are intended to be used in combination
-//with the encodings to control the on disk storage format.
-//For example INT16 is not included as a type since a good encoding of INT32
-//would handle this.
+// Types supported by Parquet.  These types are intended to be used in combination
+// with the encodings to control the on disk storage format.
+// For example INT16 is not included as a type since a good encoding of INT32
+// would handle this.
 type Type int64
 
 const (
@@ -110,9 +110,9 @@ func (p *Type) Value() (driver.Value, error) {
 	return int64(*p), nil
 }
 
-//Common types used by frameworks(e.g. hive, pig) using parquet.  This helps map
-//between types in those frameworks to the base types in parquet.  This is only
-//metadata and not needed to read or write the data.
+// Common types used by frameworks(e.g. hive, pig) using parquet.  This helps map
+// between types in those frameworks to the base types in parquet.  This is only
+// metadata and not needed to read or write the data.
 type ConvertedType int64
 
 const (
@@ -271,7 +271,7 @@ func (p *ConvertedType) Value() (driver.Value, error) {
 	return int64(*p), nil
 }
 
-//Representation of Schemas
+// Representation of Schemas
 type FieldRepetitionType int64
 
 const (
@@ -335,9 +335,9 @@ func (p *FieldRepetitionType) Value() (driver.Value, error) {
 	return int64(*p), nil
 }
 
-//Encodings supported by Parquet.  Not all encodings are valid for all types.  These
-//enums are also used to specify the encoding of definition and repetition levels.
-//See the accompanying doc for the details of the more complicated encodings.
+// Encodings supported by Parquet.  Not all encodings are valid for all types.  These
+// enums are also used to specify the encoding of definition and repetition levels.
+// See the accompanying doc for the details of the more complicated encodings.
 type Encoding int64
 
 const (
@@ -426,12 +426,12 @@ func (p *Encoding) Value() (driver.Value, error) {
 	return int64(*p), nil
 }
 
-//Supported compression algorithms.
+// Supported compression algorithms.
 //
-//Codecs added in 2.4 can be read by readers based on 2.4 and later.
-//Codec support may vary between readers based on the format version and
-//libraries available at runtime. Gzip, Snappy, and LZ4 codecs are
-//widely available, while Zstd and Brotli require additional libraries.
+// Codecs added in 2.4 can be read by readers based on 2.4 and later.
+// Codec support may vary between readers based on the format version and
+// libraries available at runtime. Gzip, Snappy, and LZ4 codecs are
+// widely available, while Zstd and Brotli require additional libraries.
 type CompressionCodec int64
 
 const (
@@ -583,8 +583,8 @@ func (p *PageType) Value() (driver.Value, error) {
 	return int64(*p), nil
 }
 
-//Enum to annotate whether lists of min/max elements inside ColumnIndex
-//are ordered and if so, in which direction.
+// Enum to annotate whether lists of min/max elements inside ColumnIndex
+// are ordered and if so, in which direction.
 type BoundaryOrder int64
 
 const (
@@ -652,7 +652,7 @@ func (p *BoundaryOrder) Value() (driver.Value, error) {
 // All fields are optional.
 //
 // Attributes:
-//  - Max: DEPRECATED: min and max value of the column. Use min_value and max_value.
+//   - Max: DEPRECATED: min and max value of the column. Use min_value and max_value.
 //
 // Values are encoded using PLAIN encoding, except that variable-length byte
 // arrays do not include a length prefix.
@@ -663,14 +663,14 @@ func (p *BoundaryOrder) Value() (driver.Value, error) {
 //
 // To support older readers, these may be set when the column order is
 // signed.
-//  - Min
-//  - NullCount: count of null value in the column
-//  - DistinctCount: count of distinct values occurring
-//  - MaxValue: Min and max values for the column, determined by its ColumnOrder.
+//   - Min
+//   - NullCount: count of null value in the column
+//   - DistinctCount: count of distinct values occurring
+//   - MaxValue: Min and max values for the column, determined by its ColumnOrder.
 //
 // Values are encoded using PLAIN encoding, except that variable-length byte
 // arrays do not include a length prefix.
-//  - MinValue
+//   - MinValue
 type Statistics struct {
 	Max           []byte `thrift:"max,1" db:"max" json:"max,omitempty"`
 	Min           []byte `thrift:"min,2" db:"min" json:"min,omitempty"`
@@ -1385,8 +1385,8 @@ func (p *NullType) String() string {
 // Allowed for physical types: INT32, INT64, FIXED, and BINARY
 //
 // Attributes:
-//  - Scale
-//  - Precision
+//   - Scale
+//   - Precision
 type DecimalType struct {
 	Scale     int32 `thrift:"scale,1,required" db:"scale" json:"scale"`
 	Precision int32 `thrift:"precision,2,required" db:"precision" json:"precision"`
@@ -1690,9 +1690,9 @@ func (p *NanoSeconds) String() string {
 }
 
 // Attributes:
-//  - MILLIS
-//  - MICROS
-//  - NANOS
+//   - MILLIS
+//   - MICROS
+//   - NANOS
 type TimeUnit struct {
 	MILLIS *MilliSeconds `thrift:"MILLIS,1" db:"MILLIS" json:"MILLIS,omitempty"`
 	MICROS *MicroSeconds `thrift:"MICROS,2" db:"MICROS" json:"MICROS,omitempty"`
@@ -1905,8 +1905,8 @@ func (p *TimeUnit) String() string {
 // Allowed for physical types: INT64
 //
 // Attributes:
-//  - IsAdjustedToUTC
-//  - Unit
+//   - IsAdjustedToUTC
+//   - Unit
 type TimestampType struct {
 	IsAdjustedToUTC bool      `thrift:"isAdjustedToUTC,1,required" db:"isAdjustedToUTC" json:"isAdjustedToUTC"`
 	Unit            *TimeUnit `thrift:"unit,2,required" db:"unit" json:"unit"`
@@ -2056,8 +2056,8 @@ func (p *TimestampType) String() string {
 // Allowed for physical types: INT32 (millis), INT64 (micros, nanos)
 //
 // Attributes:
-//  - IsAdjustedToUTC
-//  - Unit
+//   - IsAdjustedToUTC
+//   - Unit
 type TimeType struct {
 	IsAdjustedToUTC bool      `thrift:"isAdjustedToUTC,1,required" db:"isAdjustedToUTC" json:"isAdjustedToUTC"`
 	Unit            *TimeUnit `thrift:"unit,2,required" db:"unit" json:"unit"`
@@ -2209,8 +2209,8 @@ func (p *TimeType) String() string {
 // Allowed for physical types: INT32, INT64
 //
 // Attributes:
-//  - BitWidth
-//  - IsSigned
+//   - BitWidth
+//   - IsSigned
 type IntType struct {
 	BitWidth int8 `thrift:"bitWidth,1,required" db:"bitWidth" json:"bitWidth"`
 	IsSigned bool `thrift:"isSigned,2,required" db:"isSigned" json:"isSigned"`
@@ -2471,19 +2471,19 @@ func (p *BsonType) String() string {
 // following table.
 //
 // Attributes:
-//  - STRING
-//  - MAP
-//  - LIST
-//  - ENUM
-//  - DECIMAL
-//  - DATE
-//  - TIME
-//  - TIMESTAMP
-//  - INTEGER
-//  - UNKNOWN
-//  - JSON
-//  - BSON
-//  - UUID
+//   - STRING
+//   - MAP
+//   - LIST
+//   - ENUM
+//   - DECIMAL
+//   - DATE
+//   - TIME
+//   - TIMESTAMP
+//   - INTEGER
+//   - UNKNOWN
+//   - JSON
+//   - BSON
+//   - UUID
 type LogicalType struct {
 	STRING    *StringType    `thrift:"STRING,1" db:"STRING" json:"STRING,omitempty"`
 	MAP       *MapType       `thrift:"MAP,2" db:"MAP" json:"MAP,omitempty"`
@@ -3163,31 +3163,38 @@ func (p *LogicalType) String() string {
 }
 
 // Represents a element inside a schema definition.
-//  - if it is a group (inner node) then type is undefined and num_children is defined
-//  - if it is a primitive type (leaf) then type is defined and num_children is undefined
+//   - if it is a group (inner node) then type is undefined and num_children is defined
+//   - if it is a primitive type (leaf) then type is defined and num_children is undefined
+//
 // the nodes are listed in depth first traversal order.
 //
 // Attributes:
-//  - Type: Data type for this field. Not set if the current element is a non-leaf node
-//  - TypeLength: If type is FIXED_LEN_BYTE_ARRAY, this is the byte length of the vales.
+//   - Type: Data type for this field. Not set if the current element is a non-leaf node
+//   - TypeLength: If type is FIXED_LEN_BYTE_ARRAY, this is the byte length of the vales.
+//
 // Otherwise, if specified, this is the maximum bit length to store any of the values.
 // (e.g. a low cardinality INT col could have this set to 3).  Note that this is
 // in the schema, and therefore fixed for the entire file.
-//  - RepetitionType: repetition of the field. The root of the schema does not have a repetition_type.
+//   - RepetitionType: repetition of the field. The root of the schema does not have a repetition_type.
+//
 // All other nodes must have one
-//  - Name: Name of the field in the schema
-//  - NumChildren: Nested fields.  Since thrift does not support nested fields,
+//   - Name: Name of the field in the schema
+//   - NumChildren: Nested fields.  Since thrift does not support nested fields,
+//
 // the nesting is flattened to a single list by a depth-first traversal.
 // The children count is used to construct the nested relationship.
 // This field is not set when the element is a primitive type
-//  - ConvertedType: When the schema is the result of a conversion from another model
+//   - ConvertedType: When the schema is the result of a conversion from another model
+//
 // Used to record the original type to help with cross conversion.
-//  - Scale: Used when this column contains decimal data.
+//   - Scale: Used when this column contains decimal data.
+//
 // See the DECIMAL converted type for more details.
-//  - Precision
-//  - FieldID: When the original schema supports field ids, this will save the
+//   - Precision
+//   - FieldID: When the original schema supports field ids, this will save the
+//
 // original field id in the parquet schema
-//  - LogicalType: The logical type of this SchemaElement
+//   - LogicalType: The logical type of this SchemaElement
 //
 // LogicalType replaces ConvertedType, but ConvertedType is still required
 // for some logical types to ensure forward-compatibility in format v1.
@@ -3698,11 +3705,11 @@ func (p *SchemaElement) String() string {
 // Data page header
 //
 // Attributes:
-//  - NumValues: Number of values, including NULLs, in this data page. *
-//  - Encoding: Encoding used for this data page *
-//  - DefinitionLevelEncoding: Encoding used for definition levels *
-//  - RepetitionLevelEncoding: Encoding used for repetition levels *
-//  - Statistics: Optional statistics for the data in this page*
+//   - NumValues: Number of values, including NULLs, in this data page. *
+//   - Encoding: Encoding used for this data page *
+//   - DefinitionLevelEncoding: Encoding used for definition levels *
+//   - RepetitionLevelEncoding: Encoding used for repetition levels *
+//   - Statistics: Optional statistics for the data in this page*
 type DataPageHeader struct {
 	NumValues               int32       `thrift:"num_values,1,required" db:"num_values" json:"num_values"`
 	Encoding                Encoding    `thrift:"encoding,2,required" db:"encoding" json:"encoding"`
@@ -4022,9 +4029,9 @@ func (p *IndexPageHeader) String() string {
 // TODO: *
 //
 // Attributes:
-//  - NumValues: Number of values in the dictionary *
-//  - Encoding: Encoding using this dictionary page *
-//  - IsSorted: If true, the entries in the dictionary are sorted in ascending order *
+//   - NumValues: Number of values in the dictionary *
+//   - Encoding: Encoding using this dictionary page *
+//   - IsSorted: If true, the entries in the dictionary are sorted in ascending order *
 type DictionaryPageHeader struct {
 	NumValues int32    `thrift:"num_values,1,required" db:"num_values" json:"num_values"`
 	Encoding  Encoding `thrift:"encoding,2,required" db:"encoding" json:"encoding"`
@@ -4211,21 +4218,22 @@ func (p *DictionaryPageHeader) String() string {
 // Repetition and definition levels are uncompressed
 // The remaining section containing the data is compressed if is_compressed is true
 //
-//
 // Attributes:
-//  - NumValues: Number of values, including NULLs, in this data page. *
-//  - NumNulls: Number of NULL values, in this data page.
+//   - NumValues: Number of values, including NULLs, in this data page. *
+//   - NumNulls: Number of NULL values, in this data page.
+//
 // Number of non-null = num_values - num_nulls which is also the number of values in the data section *
-//  - NumRows: Number of rows in this data page. which means pages change on record boundaries (r = 0) *
-//  - Encoding: Encoding used for data in this page *
-//  - DefinitionLevelsByteLength: length of the definition levels
-//  - RepetitionLevelsByteLength: length of the repetition levels
-//  - IsCompressed: whether the values are compressed.
+//   - NumRows: Number of rows in this data page. which means pages change on record boundaries (r = 0) *
+//   - Encoding: Encoding used for data in this page *
+//   - DefinitionLevelsByteLength: length of the definition levels
+//   - RepetitionLevelsByteLength: length of the repetition levels
+//   - IsCompressed: whether the values are compressed.
+//
 // Which means the section of the page between
 // definition_levels_byte_length + repetition_levels_byte_length + 1 and compressed_page_size (included)
 // is compressed with the compression_codec.
 // If missing it is considered compressed
-//  - Statistics: optional statistics for this column chunk
+//   - Statistics: optional statistics for this column chunk
 type DataPageHeaderV2 struct {
 	NumValues                  int32       `thrift:"num_values,1,required" db:"num_values" json:"num_values"`
 	NumNulls                   int32       `thrift:"num_nulls,2,required" db:"num_nulls" json:"num_nulls"`
@@ -4608,16 +4616,17 @@ func (p *DataPageHeaderV2) String() string {
 }
 
 // Attributes:
-//  - Type: the type of the page: indicates which of the *_header fields is set *
-//  - UncompressedPageSize: Uncompressed page size in bytes (not including this header) *
-//  - CompressedPageSize: Compressed page size in bytes (not including this header) *
-//  - Crc: 32bit crc for the data below. This allows for disabling checksumming in HDFS
+//   - Type: the type of the page: indicates which of the *_header fields is set *
+//   - UncompressedPageSize: Uncompressed page size in bytes (not including this header) *
+//   - CompressedPageSize: Compressed page size in bytes (not including this header) *
+//   - Crc: 32bit crc for the data below. This allows for disabling checksumming in HDFS
+//
 // if only a few pages needs to be read
 //
-//  - DataPageHeader
-//  - IndexPageHeader
-//  - DictionaryPageHeader
-//  - DataPageHeaderV2
+//   - DataPageHeader
+//   - IndexPageHeader
+//   - DictionaryPageHeader
+//   - DataPageHeaderV2
 type PageHeader struct {
 	Type                 PageType              `thrift:"type,1,required" db:"type" json:"type"`
 	UncompressedPageSize int32                 `thrift:"uncompressed_page_size,2,required" db:"uncompressed_page_size" json:"uncompressed_page_size"`
@@ -5020,8 +5029,8 @@ func (p *PageHeader) String() string {
 // Wrapper struct to store key values
 //
 // Attributes:
-//  - Key
-//  - Value
+//   - Key
+//   - Value
 type KeyValue struct {
 	Key   string  `thrift:"key,1,required" db:"key" json:"key"`
 	Value *string `thrift:"value,2" db:"value" json:"value,omitempty"`
@@ -5167,9 +5176,10 @@ func (p *KeyValue) String() string {
 // Wrapper struct to specify sort order
 //
 // Attributes:
-//  - ColumnIdx: The column index (in this row group) *
-//  - Descending: If true, indicates this column is sorted in descending order. *
-//  - NullsFirst: If true, nulls will come before non-null values, otherwise,
+//   - ColumnIdx: The column index (in this row group) *
+//   - Descending: If true, indicates this column is sorted in descending order. *
+//   - NullsFirst: If true, nulls will come before non-null values, otherwise,
+//
 // nulls go at the end.
 type SortingColumn struct {
 	ColumnIdx  int32 `thrift:"column_idx,1,required" db:"column_idx" json:"column_idx"`
@@ -5349,9 +5359,9 @@ func (p *SortingColumn) String() string {
 // statistics of a given page type and encoding
 //
 // Attributes:
-//  - PageType: the page type (data/dic/...) *
-//  - Encoding: encoding of the page *
-//  - Count: number of pages of this type with this encoding *
+//   - PageType: the page type (data/dic/...) *
+//   - Encoding: encoding of the page *
+//   - Count: number of pages of this type with this encoding *
 type PageEncodingStats struct {
 	PageType PageType `thrift:"page_type,1,required" db:"page_type" json:"page_type"`
 	Encoding Encoding `thrift:"encoding,2,required" db:"encoding" json:"encoding"`
@@ -5532,20 +5542,22 @@ func (p *PageEncodingStats) String() string {
 // Description for column metadata
 //
 // Attributes:
-//  - Type: Type of this column *
-//  - Encodings: Set of all encodings used for this column. The purpose is to validate
+//   - Type: Type of this column *
+//   - Encodings: Set of all encodings used for this column. The purpose is to validate
+//
 // whether we can decode those pages. *
-//  - PathInSchema: Path in schema *
-//  - Codec: Compression codec *
-//  - NumValues: Number of values in this column *
-//  - TotalUncompressedSize: total byte size of all uncompressed pages in this column chunk (including the headers) *
-//  - TotalCompressedSize: total byte size of all compressed pages in this column chunk (including the headers) *
-//  - KeyValueMetadata: Optional key/value metadata *
-//  - DataPageOffset: Byte offset from beginning of file to first data page *
-//  - IndexPageOffset: Byte offset from beginning of file to root index page *
-//  - DictionaryPageOffset: Byte offset from the beginning of file to first (only) dictionary page *
-//  - Statistics: optional statistics for this column chunk
-//  - EncodingStats: Set of all encodings used for pages in this column chunk.
+//   - PathInSchema: Path in schema *
+//   - Codec: Compression codec *
+//   - NumValues: Number of values in this column *
+//   - TotalUncompressedSize: total byte size of all uncompressed pages in this column chunk (including the headers) *
+//   - TotalCompressedSize: total byte size of all compressed pages in this column chunk (including the headers) *
+//   - KeyValueMetadata: Optional key/value metadata *
+//   - DataPageOffset: Byte offset from beginning of file to first data page *
+//   - IndexPageOffset: Byte offset from beginning of file to root index page *
+//   - DictionaryPageOffset: Byte offset from the beginning of file to first (only) dictionary page *
+//   - Statistics: optional statistics for this column chunk
+//   - EncodingStats: Set of all encodings used for pages in this column chunk.
+//
 // This information can be used to determine if all data pages are
 // dictionary encoded for example *
 type ColumnMetaData struct {
@@ -6220,18 +6232,20 @@ func (p *ColumnMetaData) String() string {
 }
 
 // Attributes:
-//  - FilePath: File where column data is stored.  If not set, assumed to be same file as
+//   - FilePath: File where column data is stored.  If not set, assumed to be same file as
+//
 // metadata.  This path is relative to the current file.
 //
-//  - FileOffset: Byte offset in file_path to the ColumnMetaData *
-//  - MetaData: Column metadata for this chunk. This is the same content as what is at
+//   - FileOffset: Byte offset in file_path to the ColumnMetaData *
+//   - MetaData: Column metadata for this chunk. This is the same content as what is at
+//
 // file_path/file_offset.  Having it here has it replicated in the file
 // metadata.
 //
-//  - OffsetIndexOffset: File offset of ColumnChunk's OffsetIndex *
-//  - OffsetIndexLength: Size of ColumnChunk's OffsetIndex, in bytes *
-//  - ColumnIndexOffset: File offset of ColumnChunk's ColumnIndex *
-//  - ColumnIndexLength: Size of ColumnChunk's ColumnIndex, in bytes *
+//   - OffsetIndexOffset: File offset of ColumnChunk's OffsetIndex *
+//   - OffsetIndexLength: Size of ColumnChunk's OffsetIndex, in bytes *
+//   - ColumnIndexOffset: File offset of ColumnChunk's ColumnIndex *
+//   - ColumnIndexLength: Size of ColumnChunk's ColumnIndex, in bytes *
 type ColumnChunk struct {
 	FilePath          *string         `thrift:"file_path,1" db:"file_path" json:"file_path,omitempty"`
 	FileOffset        int64           `thrift:"file_offset,2,required" db:"file_offset" json:"file_offset"`
@@ -6599,12 +6613,14 @@ func (p *ColumnChunk) String() string {
 }
 
 // Attributes:
-//  - Columns: Metadata for each column chunk in this row group.
+//   - Columns: Metadata for each column chunk in this row group.
+//
 // This list must have the same order as the SchemaElement list in FileMetaData.
 //
-//  - TotalByteSize: Total byte size of all the uncompressed column data in this row group *
-//  - NumRows: Number of rows in this row group *
-//  - SortingColumns: If set, specifies a sort ordering of the rows in this RowGroup.
+//   - TotalByteSize: Total byte size of all the uncompressed column data in this row group *
+//   - NumRows: Number of rows in this row group *
+//   - SortingColumns: If set, specifies a sort ordering of the rows in this RowGroup.
+//
 // The sorting columns can be a subset of all the columns.
 type RowGroup struct {
 	Columns        []*ColumnChunk   `thrift:"columns,1,required" db:"columns" json:"columns"`
@@ -6922,54 +6938,56 @@ func (p *TypeDefinedOrder) String() string {
 // elements (which will be needed for a collation-based ordering in the future).
 //
 // Possible values are:
-// * TypeDefinedOrder - the column uses the order defined by its logical or
-//                      physical type (if there is no logical type).
+//   - TypeDefinedOrder - the column uses the order defined by its logical or
+//     physical type (if there is no logical type).
 //
 // If the reader does not support the value of this union, min and max stats
 // for this column should be ignored.
 //
 // Attributes:
-//  - TYPE_ORDER: The sort orders for logical types are:
-//   UTF8 - unsigned byte-wise comparison
-//   INT8 - signed comparison
-//   INT16 - signed comparison
-//   INT32 - signed comparison
-//   INT64 - signed comparison
-//   UINT8 - unsigned comparison
-//   UINT16 - unsigned comparison
-//   UINT32 - unsigned comparison
-//   UINT64 - unsigned comparison
-//   DECIMAL - signed comparison of the represented value
-//   DATE - signed comparison
-//   TIME_MILLIS - signed comparison
-//   TIME_MICROS - signed comparison
-//   TIMESTAMP_MILLIS - signed comparison
-//   TIMESTAMP_MICROS - signed comparison
-//   INTERVAL - unsigned comparison
-//   JSON - unsigned byte-wise comparison
-//   BSON - unsigned byte-wise comparison
-//   ENUM - unsigned byte-wise comparison
-//   LIST - undefined
-//   MAP - undefined
+//   - TYPE_ORDER: The sort orders for logical types are:
+//     UTF8 - unsigned byte-wise comparison
+//     INT8 - signed comparison
+//     INT16 - signed comparison
+//     INT32 - signed comparison
+//     INT64 - signed comparison
+//     UINT8 - unsigned comparison
+//     UINT16 - unsigned comparison
+//     UINT32 - unsigned comparison
+//     UINT64 - unsigned comparison
+//     DECIMAL - signed comparison of the represented value
+//     DATE - signed comparison
+//     TIME_MILLIS - signed comparison
+//     TIME_MICROS - signed comparison
+//     TIMESTAMP_MILLIS - signed comparison
+//     TIMESTAMP_MICROS - signed comparison
+//     INTERVAL - unsigned comparison
+//     JSON - unsigned byte-wise comparison
+//     BSON - unsigned byte-wise comparison
+//     ENUM - unsigned byte-wise comparison
+//     LIST - undefined
+//     MAP - undefined
 //
 // In the absence of logical types, the sort order is determined by the physical type:
-//   BOOLEAN - false, true
-//   INT32 - signed comparison
-//   INT64 - signed comparison
-//   INT96 (only used for legacy timestamps) - undefined
-//   FLOAT - signed comparison of the represented value (*)
-//   DOUBLE - signed comparison of the represented value (*)
-//   BYTE_ARRAY - unsigned byte-wise comparison
-//   FIXED_LEN_BYTE_ARRAY - unsigned byte-wise comparison
+//
+//	BOOLEAN - false, true
+//	INT32 - signed comparison
+//	INT64 - signed comparison
+//	INT96 (only used for legacy timestamps) - undefined
+//	FLOAT - signed comparison of the represented value (*)
+//	DOUBLE - signed comparison of the represented value (*)
+//	BYTE_ARRAY - unsigned byte-wise comparison
+//	FIXED_LEN_BYTE_ARRAY - unsigned byte-wise comparison
 //
 // (*) Because the sorting order is not specified properly for floating
-//     point values (relations vs. total ordering) the following
-//     compatibility rules should be applied when reading statistics:
-//     - If the min is a NaN, it should be ignored.
-//     - If the max is a NaN, it should be ignored.
-//     - If the min is +0, the row group may contain -0 values as well.
-//     - If the max is -0, the row group may contain +0 values as well.
-//     - When looking for NaN values, min and max should be ignored.
+//
+//	point values (relations vs. total ordering) the following
+//	compatibility rules should be applied when reading statistics:
+//	- If the min is a NaN, it should be ignored.
+//	- If the max is a NaN, it should be ignored.
+//	- If the min is +0, the row group may contain -0 values as well.
+//	- If the max is -0, the row group may contain +0 values as well.
+//	- When looking for NaN values, min and max should be ignored.
 type ColumnOrder struct {
 	TYPE_ORDER *TypeDefinedOrder `thrift:"TYPE_ORDER,1" db:"TYPE_ORDER" json:"TYPE_ORDER,omitempty"`
 }
@@ -7084,10 +7102,12 @@ func (p *ColumnOrder) String() string {
 }
 
 // Attributes:
-//  - Offset: Offset of the page in the file *
-//  - CompressedPageSize: Size of the page, including header. Sum of compressed_page_size and header
+//   - Offset: Offset of the page in the file *
+//   - CompressedPageSize: Size of the page, including header. Sum of compressed_page_size and header
+//
 // length
-//  - FirstRowIndex: Index within the RowGroup of the first row of the page; this means pages
+//   - FirstRowIndex: Index within the RowGroup of the first row of the page; this means pages
+//
 // change on record boundaries (r = 0).
 type PageLocation struct {
 	Offset             int64 `thrift:"offset,1,required" db:"offset" json:"offset"`
@@ -7265,7 +7285,8 @@ func (p *PageLocation) String() string {
 }
 
 // Attributes:
-//  - PageLocations: PageLocations, ordered by increasing PageLocation.offset. It is required
+//   - PageLocations: PageLocations, ordered by increasing PageLocation.offset. It is required
+//
 // that page_locations[i].first_row_index < page_locations[i+1].first_row_index.
 type OffsetIndex struct {
 	PageLocations []*PageLocation `thrift:"page_locations,1,required" db:"page_locations" json:"page_locations"`
@@ -7387,24 +7408,27 @@ func (p *OffsetIndex) String() string {
 // Each <array-field>[i] refers to the page at OffsetIndex.page_locations[i]
 //
 // Attributes:
-//  - NullPages: A list of Boolean values to determine the validity of the corresponding
+//   - NullPages: A list of Boolean values to determine the validity of the corresponding
+//
 // min and max values. If true, a page contains only null values, and writers
 // have to set the corresponding entries in min_values and max_values to
 // byte[0], so that all lists have the same length. If false, the
 // corresponding entries in min_values and max_values must be valid.
-//  - MinValues: Two lists containing lower and upper bounds for the values of each page.
+//   - MinValues: Two lists containing lower and upper bounds for the values of each page.
+//
 // These may be the actual minimum and maximum values found on a page, but
 // can also be (more compact) values that do not exist on a page. For
 // example, instead of storing ""Blart Versenwald III", a writer may set
 // min_values[i]="B", max_values[i]="C". Such more compact values must still
 // be valid values within the column's logical type. Readers must make sure
 // that list entries are populated before using them by inspecting null_pages.
-//  - MaxValues
-//  - BoundaryOrder: Stores whether both min_values and max_values are orderd and if so, in
+//   - MaxValues
+//   - BoundaryOrder: Stores whether both min_values and max_values are orderd and if so, in
+//
 // which direction. This allows readers to perform binary searches in both
 // lists. Readers cannot assume that max_values[i] <= min_values[i+1], even
 // if the lists are ordered.
-//  - NullCounts: A list containing the number of null values for each page *
+//   - NullCounts: A list containing the number of null values for each page *
 type ColumnIndex struct {
 	NullPages     []bool        `thrift:"null_pages,1,required" db:"null_pages" json:"null_pages"`
 	MinValues     [][]byte      `thrift:"min_values,2,required" db:"min_values" json:"min_values"`
@@ -7749,21 +7773,24 @@ func (p *ColumnIndex) String() string {
 // Description for file metadata
 //
 // Attributes:
-//  - Version: Version of this file *
-//  - Schema: Parquet schema for this file.  This schema contains metadata for all the columns.
+//   - Version: Version of this file *
+//   - Schema: Parquet schema for this file.  This schema contains metadata for all the columns.
+//
 // The schema is represented as a tree with a single root.  The nodes of the tree
 // are flattened to a list by doing a depth-first traversal.
 // The column metadata contains the path in the schema for that column which can be
 // used to map columns to nodes in the schema.
 // The first element is the root *
-//  - NumRows: Number of rows in this file *
-//  - RowGroups: Row groups in this file *
-//  - KeyValueMetadata: Optional key/value metadata *
-//  - CreatedBy: String for application that wrote this file.  This should be in the format
+//   - NumRows: Number of rows in this file *
+//   - RowGroups: Row groups in this file *
+//   - KeyValueMetadata: Optional key/value metadata *
+//   - CreatedBy: String for application that wrote this file.  This should be in the format
+//
 // <Application> version <App Version> (build <App Build Hash>).
 // e.g. impala version 1.0 (build 6cf94d29b2b7115df4de2c06e2ab4326d721eb55)
 //
-//  - ColumnOrders: Sort order used for the min_value and max_value fields of each column in
+//   - ColumnOrders: Sort order used for the min_value and max_value fields of each column in
+//
 // this file. Each sort order corresponds to one column, determined by its
 // position in the list, matching the position of the column in the schema.
 //

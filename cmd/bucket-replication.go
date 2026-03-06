@@ -888,7 +888,7 @@ func (p *ReplicationPool) AddWorker() {
 
 }
 
-//Resize replication pool to new size
+// Resize replication pool to new size
 func (p *ReplicationPool) Resize(n int) {
 	p.mu.Lock()
 	defer p.mu.Unlock()

@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/gorilla/mux"
 
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
@@ -50,9 +50,9 @@ func concurrentDecryptETag(ctx context.Context, objects []ObjectInfo) {
 // Validate all the ListObjects query arguments, returns an APIErrorCode
 // if one of the args do not meet the required conditions.
 // Special conditions required by ObStor server are as below
-// - delimiter if set should be equal to '/', otherwise the request is rejected.
-// - marker if set should have a common prefix with 'prefix' param, otherwise
-//   the request is rejected.
+//   - delimiter if set should be equal to '/', otherwise the request is rejected.
+//   - marker if set should have a common prefix with 'prefix' param, otherwise
+//     the request is rejected.
 func validateListObjectsArgs(marker, delimiter, encodingType string, maxKeys int) APIErrorCode {
 	// Max keys cannot be negative.
 	if maxKeys < 0 {
@@ -299,7 +299,6 @@ func proxyRequestByNodeIndex(ctx context.Context, w http.ResponseWriter, r *http
 // This implementation of the GET operation returns some or all (up to 10000)
 // of the objects in a bucket. You can use the request parameters as selection
 // criteria to return a subset of the objects in a bucket.
-//
 func (api objectAPIHandlers) ListObjectsV1Handler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListObjectsV1")
 

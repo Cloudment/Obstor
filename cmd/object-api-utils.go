@@ -821,7 +821,7 @@ func (g *GetObjectReader) Read(p []byte) (n int, err error) {
 	return g.pReader.Read(p)
 }
 
-//SealMD5CurrFn seals md5sum with object encryption key and returns sealed
+// SealMD5CurrFn seals md5sum with object encryption key and returns sealed
 // md5sum
 type SealMD5CurrFn func([]byte) []byte
 

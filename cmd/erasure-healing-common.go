@@ -193,8 +193,8 @@ func getLatestFileInfo(ctx context.Context, partsMetadata []FileInfo, errs []err
 //
 // - disks which have all parts specified in the latest xl.meta.
 //
-// - slice of errors about the state of data files on disk - can have
-//   a not-found error or a hash-mismatch error.
+//   - slice of errors about the state of data files on disk - can have
+//     a not-found error or a hash-mismatch error.
 func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetadata []FileInfo, errs []error, bucket,
 	object string, scanMode madmin.HealScanMode) ([]StorageAPI, []error) {
 	availableDisks := make([]StorageAPI, len(onlineDisks))

@@ -22,10 +22,10 @@ import (
 	"io/ioutil"
 	"sync"
 
+	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/snappy"
 	"github.com/klauspost/compress/zstd"
-	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/pierrec/lz4"
 )
 

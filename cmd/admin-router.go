@@ -19,8 +19,8 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 const (

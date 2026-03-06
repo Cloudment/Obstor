@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/klauspost/compress/snappy"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
+	"github.com/klauspost/compress/snappy"
 	"github.com/pierrec/lz4"
 )
 

@@ -25,23 +25,22 @@ import (
 	"math"
 	"strings"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 )
 
 // getBitWidth - returns bits required to place num e.g.
 //
-//    num | width
-//   -----|-------
-//     0  |   0
-//     1  |   1
-//     2  |   2
-//     3  |   2
-//     4  |   3
-//     5  |   3
-//    ... |  ...
-//    ... |  ...
-//
+//	 num | width
+//	-----|-------
+//	  0  |   0
+//	  1  |   1
+//	  2  |   2
+//	  3  |   2
+//	  4  |   3
+//	  5  |   3
+//	 ... |  ...
+//	 ... |  ...
 func getBitWidth(num uint64) (width uint64) {
 	for ; num != 0; num >>= 1 {
 		width++

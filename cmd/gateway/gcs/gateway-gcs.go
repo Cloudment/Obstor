@@ -1166,7 +1166,7 @@ func (l *gcsGateway) GetMultipartInfo(ctx context.Context, bucket, object, uploa
 	return result, nil
 }
 
-//  ListObjectParts returns all object parts for specified object in specified bucket
+// ListObjectParts returns all object parts for specified object in specified bucket
 func (l *gcsGateway) ListObjectParts(ctx context.Context, bucket string, key string, uploadID string, partNumberMarker int, maxParts int, opts obstor.ObjectOptions) (obstor.ListPartsInfo, error) {
 	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{
 		Prefix: path.Join(gcsMinioMultipartPathV1, uploadID),

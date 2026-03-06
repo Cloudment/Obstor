@@ -19,15 +19,15 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
-	"encoding/json"
 	"sync"
 
-	"github.com/klauspost/compress/s2"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/klauspost/compress/s2"
 	"github.com/tinylib/msgp/msgp"
 )
 

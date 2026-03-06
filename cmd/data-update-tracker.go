@@ -31,10 +31,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/color"
 	"github.com/cloudment/obstor/pkg/console"
-	"github.com/bits-and-blooms/bloom/v3"
 )
 
 const (

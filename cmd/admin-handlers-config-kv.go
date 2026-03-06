@@ -25,7 +25,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/config"
 	"github.com/cloudment/obstor/cmd/config/cache"
 	"github.com/cloudment/obstor/cmd/config/etcd"
@@ -37,6 +36,7 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 func validateAdminReqConfigKV(ctx context.Context, w http.ResponseWriter, r *http.Request) (auth.Credentials, ObjectLayer) {

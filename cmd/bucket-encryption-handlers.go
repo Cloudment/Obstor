@@ -22,9 +22,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/gorilla/mux"
 )
 
 const (

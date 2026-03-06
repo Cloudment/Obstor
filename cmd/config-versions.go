@@ -33,14 +33,14 @@ import (
 	"github.com/cloudment/obstor/pkg/quick"
 )
 
-/////////////////// Config V1 ///////////////////
+// ///////////////// Config V1 ///////////////////
 type configV1 struct {
 	Version   string `json:"version"`
 	AccessKey string `json:"accessKeyId"`
 	SecretKey string `json:"secretAccessKey"`
 }
 
-/////////////////// Config V2 ///////////////////
+// ///////////////// Config V2 ///////////////////
 type configV2 struct {
 	Version     string `json:"version"`
 	Credentials struct {
@@ -62,7 +62,7 @@ type configV2 struct {
 	} `json:"fileLogger"`
 }
 
-/////////////////// Config V3 ///////////////////
+// ///////////////// Config V3 ///////////////////
 // backendV3 type.
 type backendV3 struct {
 	Type  string   `json:"type"`

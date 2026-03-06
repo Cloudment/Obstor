@@ -30,8 +30,8 @@ import (
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
 
-	sarama "github.com/Shopify/sarama"
-	saramatls "github.com/Shopify/sarama/tools/tls"
+	sarama "github.com/IBM/sarama"
+	saramatls "github.com/IBM/sarama/tools/tls"
 )
 
 // Kafka input constants

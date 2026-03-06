@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"io"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/data"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/schema"

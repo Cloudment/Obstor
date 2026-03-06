@@ -27,8 +27,8 @@ import (
 	"strconv"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
+	humanize "github.com/dustin/go-humanize"
 )
 
 func TestRepeatPutObjectPart(t *testing.T) {

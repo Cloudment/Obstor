@@ -21,10 +21,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	policy "github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/event"
+	"github.com/gorilla/mux"
 )
 
 func (api objectAPIHandlers) ListenNotificationHandler(w http.ResponseWriter, r *http.Request) {

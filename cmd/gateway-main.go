@@ -37,9 +37,9 @@ import (
 
 var (
 	gatewayCmd = cli.Command{
-		Name:            "gateway",
-		Usage:           "start object storage gateway",
-		Flags:           append(ServerFlags, GlobalFlags...),
+		Name:     "gateway",
+		Usage:    "start object storage gateway",
+		Flags:    append(ServerFlags, GlobalFlags...),
 		HideHelp: true,
 	}
 )

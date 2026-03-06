@@ -30,9 +30,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/cloudment/obstor/cmd/config"
 	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var (

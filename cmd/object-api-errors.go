@@ -311,7 +311,7 @@ func (e ObjectExistsAsDirectory) Error() string {
 	return "Object exists on : " + e.Bucket + " as directory " + e.Object
 }
 
-//PrefixAccessDenied object access is denied.
+// PrefixAccessDenied object access is denied.
 type PrefixAccessDenied GenericError
 
 func (e PrefixAccessDenied) Error() string {

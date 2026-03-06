@@ -21,10 +21,10 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/gorilla/mux"
 )
 
 // Data types used for returning dummy access control

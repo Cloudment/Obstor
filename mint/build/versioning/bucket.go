@@ -29,7 +29,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-
 )
 
 // Tests bucket versioned bucket and get its versioning configuration to check

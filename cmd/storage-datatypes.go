@@ -24,8 +24,9 @@ import (
 
 // DiskInfo is an extended type which returns current
 // disk usage per path.
-//msgp:tuple DiskInfo
 // The above means that any added/deleted fields are incompatible.
+//
+//msgp:tuple DiskInfo
 type DiskInfo struct {
 	Total      uint64
 	Free       uint64
@@ -53,8 +54,9 @@ type DiskMetrics struct {
 type VolsInfo []VolInfo
 
 // VolInfo - represents volume stat information.
-//msgp:tuple VolInfo
 // The above means that any added/deleted fields are incompatible.
+//
+//msgp:tuple VolInfo
 type VolInfo struct {
 	// Name of the volume.
 	Name string
@@ -109,8 +111,9 @@ func (f *FileInfoVersions) findVersionIndex(v string) int {
 }
 
 // FileInfo - represents file stat information.
-//msgp:tuple FileInfo
 // The above means that any added/deleted fields are incompatible.
+//
+//msgp:tuple FileInfo
 type FileInfo struct {
 	// Name of the volume.
 	Volume string

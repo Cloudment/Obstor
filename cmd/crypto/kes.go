@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"encoding/json"
+
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/kms"
 	xnet "github.com/cloudment/obstor/pkg/net"
@@ -206,9 +207,9 @@ func (kes *kesService) DecryptKey(keyID string, ciphertext []byte, ctx Context) 
 
 // kesClient implements the bare minimum functionality needed for
 // ObStor to talk to a KES server. In particular, it implements
-//   • CreateKey       (API: /v1/key/create/)
-//   • GenerateDataKey (API: /v1/key/generate/)
-//   • DecryptDataKey  (API: /v1/key/decrypt/)
+//   - CreateKey       (API: /v1/key/create/)
+//   - GenerateDataKey (API: /v1/key/generate/)
+//   - DecryptDataKey  (API: /v1/key/decrypt/)
 type kesClient struct {
 	endpoints  []string
 	httpClient http.Client
@@ -309,7 +310,8 @@ func (c *kesClient) DecryptDataKey(name string, ciphertext, context []byte) ([]b
 //
 // Two errors with the same status code and
 // error message are equal:
-//   e1 == e2 // true.
+//
+//	e1 == e2 // true.
 func NewKESError(code int, text string) error {
 	return kesError{
 		code:    code,

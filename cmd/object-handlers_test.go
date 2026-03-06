@@ -25,10 +25,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"runtime"
 	"strings"
 
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -36,10 +36,10 @@ import (
 	"sync"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
 	ioutilx "github.com/cloudment/obstor/pkg/ioutil"
+	humanize "github.com/dustin/go-humanize"
 )
 
 // Type to capture different modifications to API request to simulate failure cases.
@@ -3443,7 +3443,8 @@ func testAPIPutObjectPartHandlerStreaming(obj ObjectLayer, instanceType, bucketN
 }
 
 // TestAPIPutObjectPartHandler - Tests validate the response of PutObjectPart HTTP handler
-//  for variety of inputs.
+//
+//	for variety of inputs.
 func TestAPIPutObjectPartHandler(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecExtendedObjectLayerAPITest(t, testAPIPutObjectPartHandler, []string{"PutObjectPart"})
@@ -3759,7 +3760,8 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 }
 
 // TestAPIListObjectPartsHandlerPreSign - Tests validate the response of ListObjectParts HTTP handler
-//  when signature type of the HTTP request is `Presigned`.
+//
+//	when signature type of the HTTP request is `Presigned`.
 func TestAPIListObjectPartsHandlerPreSign(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecObjectLayerAPITest(t, testAPIListObjectPartsHandlerPreSign,
@@ -3848,7 +3850,8 @@ func testAPIListObjectPartsHandlerPreSign(obj ObjectLayer, instanceType, bucketN
 }
 
 // TestAPIListObjectPartsHandler - Tests validate the response of ListObjectParts HTTP handler
-//  for variety of success/failure cases.
+//
+//	for variety of success/failure cases.
 func TestAPIListObjectPartsHandler(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecExtendedObjectLayerAPITest(t, testAPIListObjectPartsHandler, []string{"ListObjectParts"})

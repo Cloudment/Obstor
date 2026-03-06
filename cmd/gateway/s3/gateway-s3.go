@@ -134,9 +134,9 @@ func randString(n int, src rand.Source, prefix string) string {
 }
 
 // Chains all credential types, in the following order:
-//  - AWS env vars (i.e. AWS_ACCESS_KEY_ID)
-//  - AWS creds file (i.e. AWS_SHARED_CREDENTIALS_FILE or ~/.aws/credentials)
-//  - Static credentials provided by user (i.e. OBSTOR_ROOT_USER/OBSTOR_ACCESS_KEY)
+//   - AWS env vars (i.e. AWS_ACCESS_KEY_ID)
+//   - AWS creds file (i.e. AWS_SHARED_CREDENTIALS_FILE or ~/.aws/credentials)
+//   - Static credentials provided by user (i.e. OBSTOR_ROOT_USER/OBSTOR_ACCESS_KEY)
 var defaultProviders = []credentials.Provider{
 	&credentials.EnvAWS{},
 	&credentials.FileAWSCredentials{},
@@ -144,12 +144,12 @@ var defaultProviders = []credentials.Provider{
 }
 
 // Chains all credential types, in the following order:
-//  - AWS env vars (i.e. AWS_ACCESS_KEY_ID)
-//  - AWS creds file (i.e. AWS_SHARED_CREDENTIALS_FILE or ~/.aws/credentials)
-//  - IAM profile based credentials. (performs an HTTP
-//    call to a pre-defined endpoint, only valid inside
-//    configured ec2 instances)
-//  - Static credentials provided by user (i.e. OBSTOR_ROOT_USER/OBSTOR_ACCESS_KEY)
+//   - AWS env vars (i.e. AWS_ACCESS_KEY_ID)
+//   - AWS creds file (i.e. AWS_SHARED_CREDENTIALS_FILE or ~/.aws/credentials)
+//   - IAM profile based credentials. (performs an HTTP
+//     call to a pre-defined endpoint, only valid inside
+//     configured ec2 instances)
+//   - Static credentials provided by user (i.e. OBSTOR_ROOT_USER/OBSTOR_ACCESS_KEY)
 var defaultAWSCredProviders = []credentials.Provider{
 	&credentials.EnvAWS{},
 	&credentials.FileAWSCredentials{},
@@ -587,9 +587,9 @@ func (l *s3Objects) NewMultipartUpload(ctx context.Context, bucket string, objec
 func (l *s3Objects) PutObjectPart(ctx context.Context, bucket string, object string, uploadID string, partID int, r *obstor.PutObjReader, opts obstor.ObjectOptions) (pi obstor.PartInfo, e error) {
 	data := r.Reader
 	info, err := l.Client.PutObjectPart(ctx, bucket, object, uploadID, partID, data, data.Size(), miniogo.PutObjectPartOptions{
-		Md5Base64:  data.MD5Base64String(),
-		Sha256Hex:  data.SHA256HexString(),
-		SSE:        opts.ServerSideEncryption,
+		Md5Base64: data.MD5Base64String(),
+		Sha256Hex: data.SHA256HexString(),
+		SSE:       opts.ServerSideEncryption,
 	})
 	if err != nil {
 		return pi, obstor.ErrorRespToObjectError(err, bucket, object)

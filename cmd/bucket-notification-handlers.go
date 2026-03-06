@@ -22,10 +22,10 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/event"
+	"github.com/gorilla/mux"
 )
 
 const (

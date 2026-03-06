@@ -21,11 +21,11 @@ import (
 	"io"
 	"net/http"
 
-	humanize "github.com/dustin/go-humanize"
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
 	"github.com/cloudment/obstor/pkg/bucket/versioning"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
 )
 
 const (

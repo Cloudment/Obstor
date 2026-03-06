@@ -26,8 +26,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/urfave/cli"
 	"github.com/tinylib/msgp/msgp"
+	"github.com/urfave/cli"
 )
 
 func main() {

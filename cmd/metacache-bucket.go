@@ -29,10 +29,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/klauspost/compress/s2"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/console"
 	"github.com/cloudment/obstor/pkg/hash"
+	"github.com/klauspost/compress/s2"
 	"github.com/tinylib/msgp/msgp"
 )
 

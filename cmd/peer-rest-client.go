@@ -31,7 +31,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/http"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -41,6 +40,7 @@ import (
 	"github.com/cloudment/obstor/pkg/madmin"
 	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/cloudment/obstor/pkg/trace"
+	"github.com/dustin/go-humanize"
 	"github.com/tinylib/msgp/msgp"
 )
 
