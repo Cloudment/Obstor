@@ -11,7 +11,7 @@ require (
 	github.com/apache/thrift v0.22.0
 	github.com/bits-and-blooms/bloom/v3 v3.7.1
 	github.com/colinmarc/hdfs/v2 v2.4.0
-	github.com/coredns/coredns v1.14.1
+	github.com/coredns/coredns v1.14.2
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/go-ldap/ldap/v3 v3.4.12
