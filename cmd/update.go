@@ -342,13 +342,10 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 			}
 		}
 	} else {
-		reader, err = os.Open(u.Path)
-		if err != nil {
-			return content, AdminError{
-				Code:       AdminUpdateURLNotReachable,
-				Message:    err.Error(),
-				StatusCode: http.StatusServiceUnavailable,
-			}
+		return content, AdminError{
+			Code:       AdminUpdateUnexpectedFailure,
+			Message:    fmt.Sprintf("unsupported update URL scheme: %s", u.Scheme),
+			StatusCode: http.StatusBadRequest,
 		}
 	}
 
@@ -475,17 +472,6 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 	return minioReleaseURL + "obstor"
 }
 
-func getUpdateReaderFromFile(u *url.URL) (io.ReadCloser, error) {
-	r, err := os.Open(u.Path)
-	if err != nil {
-		return nil, AdminError{
-			Code:       AdminUpdateUnexpectedFailure,
-			Message:    err.Error(),
-			StatusCode: http.StatusInternalServerError,
-		}
-	}
-	return r, nil
-}
 
 func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string) (io.ReadCloser, error) {
 	clnt := &http.Client{

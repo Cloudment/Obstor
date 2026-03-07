@@ -30,7 +30,7 @@
     "@babel/preset-react": "^7.28.5",
     "async": "^3.2.6",
     "babel-jest": "^30.2.0",
-    "babel-loader": "^10.0.0",
+    "babel-loader": "^10.1.0",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.4",
     "enzyme": "^3.11.0",

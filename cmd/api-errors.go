@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
@@ -2187,7 +2188,7 @@ func getAPIErrorResponse(ctx context.Context, err APIError, resource, requestID,
 		Message:    err.Description,
 		BucketName: reqInfo.BucketName,
 		Key:        reqInfo.ObjectName,
-		Resource:   resource,
+		Resource:   path.Clean(resource),
 		Region:     globalServerRegion,
 		RequestID:  requestID,
 		HostID:     hostID,

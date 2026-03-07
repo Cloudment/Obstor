@@ -11,13 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xml.etree import cElementTree
-from xml.etree.cElementTree import ParseError
+from xml.etree import ElementTree
 
-if hasattr(cElementTree, 'ParseError'):
-    _ETREE_EXCEPTIONS = (ParseError, AttributeError, ValueError, TypeError)
-else:
-    _ETREE_EXCEPTIONS = (SyntaxError, AttributeError, ValueError, TypeError)
+_ETREE_EXCEPTIONS = (ElementTree.ParseError, AttributeError, ValueError, TypeError)
 
 _STS_NS = {'sts': 'https://sts.amazonaws.com/doc/2011-06-15/'}
 
@@ -42,7 +38,7 @@ class STSElement(object):
         :return: Returns an STSElement.
         """
         try:
-            return cls(root_name, cElementTree.fromstring(data))
+            return cls(root_name, ElementTree.fromstring(data))
         except _ETREE_EXCEPTIONS as error:
             raise InvalidXMLError(
                 '"{}" XML is not parsable. Message: {}'.format(

@@ -475,7 +475,7 @@ func loadCACertificates(path string, rootCAs *x509.CertPool) error {
 		return err
 	}
 	for _, file := range files {
-		cert, err := os.ReadFile(filepath.Join(path, file.Name()))
+		cert, err := os.ReadFile(filepath.Join(path, filepath.Base(file.Name())))
 		if err != nil {
 			continue // ignore files which are not readable
 		}

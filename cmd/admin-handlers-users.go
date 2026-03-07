@@ -1102,8 +1102,7 @@ func (a adminAPIHandlers) InfoCannedPolicyV2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Write(data)
-	w.(http.Flusher).Flush()
+	writeSuccessResponseJSON(w, data)
 }
 
 // InfoCannedPolicy - GET /obstor/admin/v3/info-canned-policy?name={policyName}

@@ -33,8 +33,9 @@ func TestNewReader(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, file := range files {
-		t.Run(file.Name(), func(t *testing.T) {
-			f, err := os.Open(filepath.Join("testdata", file.Name()))
+		name := filepath.Base(file.Name())
+		t.Run(name, func(t *testing.T) {
+			f, err := os.Open(filepath.Join("testdata", name))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -48,12 +49,12 @@ func TestNewReader(t *testing.T) {
 			}
 			r.Close()
 			if err != io.EOF {
-				t.Fatalf("Reading failed with %s, %s", err, file.Name())
+				t.Fatalf("Reading failed with %s, %s", err, name)
 			}
 		})
 
-		t.Run(file.Name()+"-close", func(t *testing.T) {
-			f, err := os.Open(filepath.Join("testdata", file.Name()))
+		t.Run(name+"-close", func(t *testing.T) {
+			f, err := os.Open(filepath.Join("testdata", name))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -67,7 +68,7 @@ func TestNewReader(t *testing.T) {
 				}
 			}
 			if err != io.EOF {
-				t.Fatalf("Reading failed with %s, %s", err, file.Name())
+				t.Fatalf("Reading failed with %s, %s", err, name)
 			}
 		})
 	}
@@ -79,8 +80,9 @@ func BenchmarkReader(b *testing.B) {
 		b.Fatal(err)
 	}
 	for _, file := range files {
-		b.Run(file.Name(), func(b *testing.B) {
-			f, err := os.ReadFile(filepath.Join("testdata", file.Name()))
+		name := filepath.Base(file.Name())
+		b.Run(name, func(b *testing.B) {
+			f, err := os.ReadFile(filepath.Join("testdata", name))
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -98,7 +100,7 @@ func BenchmarkReader(b *testing.B) {
 				}
 				r.Close()
 				if err != io.EOF {
-					b.Fatalf("Reading failed with %s, %s", err, file.Name())
+					b.Fatalf("Reading failed with %s, %s", err, name)
 				}
 			}
 		})
