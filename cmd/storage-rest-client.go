@@ -647,6 +647,52 @@ func (client *storageRESTClient) Close() error {
 	return nil
 }
 
+func (client *storageRESTClient) WriteBlock(ctx context.Context, hash string, data []byte) error {
+	values := make(url.Values)
+	values.Set(storageRESTDiskID, client.diskID)
+	values.Set(storageRESTBlockHash, hash)
+	respBody, err := client.call(ctx, storageRESTMethodWriteBlock, values, bytes.NewReader(data), int64(len(data)))
+	defer xhttp.DrainBody(respBody)
+	return toStorageErr(err)
+}
+
+func (client *storageRESTClient) ReadBlock(ctx context.Context, hash string) ([]byte, error) {
+	values := make(url.Values)
+	values.Set(storageRESTDiskID, client.diskID)
+	values.Set(storageRESTBlockHash, hash)
+	respBody, err := client.call(ctx, storageRESTMethodReadBlock, values, nil, -1)
+	if err != nil {
+		return nil, toStorageErr(err)
+	}
+	defer xhttp.DrainBody(respBody)
+	data, err := io.ReadAll(respBody)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (client *storageRESTClient) HasBlock(ctx context.Context, hash string) (bool, error) {
+	values := make(url.Values)
+	values.Set(storageRESTDiskID, client.diskID)
+	values.Set(storageRESTBlockHash, hash)
+	respBody, err := client.call(ctx, storageRESTMethodHasBlock, values, nil, -1)
+	defer xhttp.DrainBody(respBody)
+	if err != nil {
+		return false, toStorageErr(err)
+	}
+	return true, nil
+}
+
+func (client *storageRESTClient) DeleteBlock(ctx context.Context, hash string) error {
+	values := make(url.Values)
+	values.Set(storageRESTDiskID, client.diskID)
+	values.Set(storageRESTBlockHash, hash)
+	respBody, err := client.call(ctx, storageRESTMethodDeleteBlock, values, nil, -1)
+	defer xhttp.DrainBody(respBody)
+	return toStorageErr(err)
+}
+
 // Returns a storage rest client.
 func newStorageRESTClient(endpoint Endpoint, healthcheck bool) *storageRESTClient {
 	serverURL := &url.URL{

@@ -35,6 +35,7 @@ import (
 	"github.com/cloudment/obstor/cmd/config/identity/openid"
 	"github.com/cloudment/obstor/cmd/config/notify"
 	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/replication"
 	"github.com/cloudment/obstor/cmd/config/scanner"
 	"github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
@@ -63,6 +64,7 @@ func initHelp() {
 		config.HealSubSys:           heal.DefaultKVS,
 		config.ScannerSubSys:        scanner.DefaultKVS,
 		config.SftpSubSys:           sftp.DefaultKVS,
+		config.ReplicationSubSys:    replication.DefaultKVS,
 	}
 	for k, v := range notify.DefaultNotificationKVS {
 		kvs[k] = v
@@ -125,6 +127,10 @@ func initHelp() {
 		config.HelpKV{
 			Key:         config.SftpSubSys,
 			Description: "enable SFTP server for file transfer access to object storage",
+		},
+		config.HelpKV{
+			Key:         config.ReplicationSubSys,
+			Description: "configure zone-aware block replication",
 		},
 		config.HelpKV{
 			Key:             config.LoggerWebhookSubSys,
@@ -208,6 +214,7 @@ func initHelp() {
 		config.HealSubSys:           heal.Help,
 		config.ScannerSubSys:        scanner.Help,
 		config.SftpSubSys:           sftp.Help,
+		config.ReplicationSubSys:    replication.Help,
 		config.IdentityOpenIDSubSys: openid.Help,
 		config.IdentityLDAPSubSys:   xldap.Help,
 		config.PolicyOPASubSys:      opa.Help,
@@ -288,6 +295,10 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 	}
 
 	if _, err := sftp.LookupConfig(s[config.SftpSubSys][config.Default]); err != nil {
+		return err
+	}
+
+	if _, err := replication.LookupConfig(s[config.ReplicationSubSys][config.Default]); err != nil {
 		return err
 	}
 
@@ -468,6 +479,12 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize SFTP config: %w", err))
 	}
 	globalSFTPConfig = sftpCfg
+
+	replCfg, err := replication.LookupConfig(s[config.ReplicationSubSys][config.Default])
+	if err != nil {
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize replication config: %w", err))
+	}
+	globalReplicationConfig = replCfg
 
 	globalAutoEncryption = crypto.LookupAutoEncryption() // Enable auto-encryption if enabled
 	if globalAutoEncryption && GlobalKMS == nil {

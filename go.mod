@@ -24,7 +24,6 @@ require (
 	github.com/klauspost/compress v1.18.4
 	github.com/klauspost/cpuid/v2 v2.3.0
 	github.com/klauspost/pgzip v1.2.6
-	github.com/klauspost/reedsolomon v1.13.2
 	github.com/lib/pq v1.11.2
 	github.com/miekg/dns v1.1.72
 	github.com/minio/highwayhash v1.0.4-0.20251030100505-070ab1a87a76
@@ -162,7 +161,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.3 // indirect
+	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect

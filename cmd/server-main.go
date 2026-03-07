@@ -420,7 +420,6 @@ func serverMain(ctx *cli.Context) {
 
 	// Perform any self-tests
 	bitrotSelfTest()
-	erasureSelfTest()
 	compressSelfTest()
 
 	// Handle all server command args.

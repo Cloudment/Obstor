@@ -35,6 +35,9 @@ const (
 
 	// GatewaySetupType - gateway setup type enum.
 	GatewaySetupType
+
+	// ReplicatedSetupType - block replication setup type enum.
+	ReplicatedSetupType
 )
 
 func (setupType SetupType) String() string {
@@ -47,6 +50,8 @@ func (setupType SetupType) String() string {
 		return globalMinioModeDistErasure
 	case GatewaySetupType:
 		return globalMinioModeGatewayPrefix
+	case ReplicatedSetupType:
+		return "mode-server-replicated"
 	}
 
 	return "unknown"

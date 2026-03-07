@@ -161,6 +161,9 @@ type FileInfo struct {
 	// Erasure info for all objects.
 	Erasure ErasureInfo
 
+	// Blocks holds the content-addressed block references for block-replicated objects.
+	Blocks []BlockRef `json:"blocks,omitempty" msg:"blocks,omitempty"`
+
 	// DeleteMarkerReplicationStatus is set when this FileInfo represents
 	// replication on a DeleteMarker
 	MarkDeleted                   bool // mark this version as deleted

@@ -81,6 +81,12 @@ type StorageAPI interface {
 
 	GetDiskLoc() (poolIdx, setIdx, diskIdx int) // Retrieve location indexes.
 	SetDiskLoc(poolIdx, setIdx, diskIdx int)    // Set location indexes.
+
+	// Block-level operations for content-addressed block storage.
+	WriteBlock(ctx context.Context, hash string, data []byte) error
+	ReadBlock(ctx context.Context, hash string) ([]byte, error)
+	HasBlock(ctx context.Context, hash string) (bool, error)
+	DeleteBlock(ctx context.Context, hash string) error
 }
 
 // storageReader is an io.Reader view of a disk

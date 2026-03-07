@@ -619,6 +619,34 @@ func storageTrace(s storageMetric, startTime time.Time, duration time.Duration, 
 	}
 }
 
+func (p *xlStorageDiskIDCheck) WriteBlock(ctx context.Context, hash string, data []byte) error {
+	if err := p.checkDiskStale(); err != nil {
+		return err
+	}
+	return p.storage.WriteBlock(ctx, hash, data)
+}
+
+func (p *xlStorageDiskIDCheck) ReadBlock(ctx context.Context, hash string) ([]byte, error) {
+	if err := p.checkDiskStale(); err != nil {
+		return nil, err
+	}
+	return p.storage.ReadBlock(ctx, hash)
+}
+
+func (p *xlStorageDiskIDCheck) HasBlock(ctx context.Context, hash string) (bool, error) {
+	if err := p.checkDiskStale(); err != nil {
+		return false, err
+	}
+	return p.storage.HasBlock(ctx, hash)
+}
+
+func (p *xlStorageDiskIDCheck) DeleteBlock(ctx context.Context, hash string) error {
+	if err := p.checkDiskStale(); err != nil {
+		return err
+	}
+	return p.storage.DeleteBlock(ctx, hash)
+}
+
 // Update storage metrics
 func (p *xlStorageDiskIDCheck) updateStorageMetrics(s storageMetric, paths ...string) func() {
 	startTime := time.Now()

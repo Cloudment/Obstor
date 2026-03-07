@@ -52,6 +52,10 @@ const (
 	storageRESTMethodRenameFile     = "/renamefile"
 	storageRESTMethodVerifyFile     = "/verifyfile"
 	storageRESTMethodWalkDir        = "/walkdir"
+	storageRESTMethodWriteBlock     = "/writeblock"
+	storageRESTMethodReadBlock      = "/readblock"
+	storageRESTMethodHasBlock       = "/hasblock"
+	storageRESTMethodDeleteBlock    = "/deleteblock"
 )
 
 const (
@@ -78,4 +82,5 @@ const (
 	storageRESTBitrotHash     = "bitrot-hash"
 	storageRESTDiskID         = "disk-id"
 	storageRESTForceDelete    = "force-delete"
+	storageRESTBlockHash      = "block-hash"
 )

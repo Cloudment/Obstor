@@ -406,7 +406,7 @@ type sftpFileInfo struct {
 	isDir   bool
 }
 
-func (fi *sftpFileInfo) Name() string      { return fi.name }
+func (fi *sftpFileInfo) Name() string       { return fi.name }
 func (fi *sftpFileInfo) Size() int64        { return fi.size }
 func (fi *sftpFileInfo) Mode() os.FileMode  { return fi.mode }
 func (fi *sftpFileInfo) ModTime() time.Time { return fi.modTime }

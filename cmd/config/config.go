@@ -81,6 +81,7 @@ const (
 	ScannerSubSys        = "scanner"
 	CrawlerSubSys        = "crawler"
 	SftpSubSys           = "sftp"
+	ReplicationSubSys    = "replication"
 
 	// Add new constants here if you add new fields to config.
 )
@@ -120,6 +121,7 @@ var SubSystems = set.CreateStringSet(
 	ScannerSubSys,
 	HealSubSys,
 	SftpSubSys,
+	ReplicationSubSys,
 	NotifyAMQPSubSys,
 	NotifyESSubSys,
 	NotifyKafkaSubSys,
@@ -156,6 +158,7 @@ var SubSystemsSingleTargets = set.CreateStringSet([]string{
 	IdentityOpenIDSubSys,
 	HealSubSys,
 	ScannerSubSys,
+	ReplicationSubSys,
 }...)
 
 // Constant separators

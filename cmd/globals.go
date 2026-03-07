@@ -36,6 +36,7 @@ import (
 	xldap "github.com/cloudment/obstor/cmd/config/identity/ldap"
 	"github.com/cloudment/obstor/cmd/config/identity/openid"
 	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/replication"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
@@ -294,6 +295,10 @@ var (
 	globalDNSCache *xhttp.DNSCache
 
 	globalForwarder *handlers.Forwarder
+
+	// Block replication config.
+	globalReplicationConfig replication.Config
+	globalIsReplicated      bool
 	// Add new variable global values here.
 )
 

@@ -20,10 +20,16 @@ package cmd
 import "errors"
 
 // errErasureReadQuorum - did not meet read quorum.
-var errErasureReadQuorum = errors.New("read failed. Insufficient number of disks online")
+var errErasureReadQuorum = errors.New("read failed. Insufficient number of nodes online")
 
 // errErasureWriteQuorum - did not meet write quorum.
-var errErasureWriteQuorum = errors.New("write failed. Insufficient number of disks online")
+var errErasureWriteQuorum = errors.New("write failed. Insufficient number of nodes online")
 
-// errNoHealRequired - returned when healing is attempted on a previously healed disks.
+// errNoHealRequired - returned when healing is attempted on a previously healed object.
 var errNoHealRequired = errors.New("no healing is required")
+
+// errBlockNotFound - block hash not found on any node.
+var errBlockNotFound = errors.New("block not found")
+
+// errBlockCorrupt - block data does not match its hash.
+var errBlockCorrupt = errors.New("block data corrupt")

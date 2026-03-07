@@ -235,6 +235,11 @@ func (er erasureObjects) GetObject(ctx context.Context, bucket, object string, s
 }
 
 func (er erasureObjects) getObjectWithFileInfo(ctx context.Context, bucket, object string, startOffset int64, length int64, writer io.Writer, fi FileInfo, metaArr []FileInfo, onlineDisks []StorageAPI) error {
+	// Block-replicated objects use a different read path.
+	if len(fi.Blocks) > 0 {
+		return er.getBlockReplicatedObject(ctx, bucket, object, startOffset, length, writer, fi, onlineDisks)
+	}
+
 	// Reorder online disks based on erasure distribution order.
 	// Reorder parts metadata based on erasure distribution order.
 	onlineDisks, metaArr = shuffleDisksAndPartsMetadataByIndex(onlineDisks, metaArr, fi)
@@ -353,6 +358,52 @@ func (er erasureObjects) getObjectWithFileInfo(ctx context.Context, bucket, obje
 		partOffset = 0
 	} // End of read all parts loop.
 	// Return success.
+	return nil
+}
+
+// getBlockReplicatedObject reads an object stored as content-addressed blocks.
+func (er erasureObjects) getBlockReplicatedObject(ctx context.Context, bucket, object string, startOffset int64, length int64, writer io.Writer, fi FileInfo, onlineDisks []StorageAPI) error {
+	if length < 0 {
+		length = fi.Size - startOffset
+	}
+	if startOffset > fi.Size || startOffset+length > fi.Size {
+		return InvalidRange{startOffset, length, fi.Size}
+	}
+
+	blockSize := globalReplicationConfig.BlockSize
+	if blockSize <= 0 {
+		blockSize = 1 << 20 // 1 MiB default
+	}
+
+	replicator := NewBlockReplicator(blockSize, globalReplicationConfig.ReplicationFactor)
+	startBlock, endBlock := replicator.BlockRange(startOffset, length, fi.Size)
+
+	var written int64
+	for i := startBlock; i <= endBlock && i < len(fi.Blocks); i++ {
+		blk := fi.Blocks[i]
+		data, err := replicator.ReadBlock(ctx, blk.Hash, onlineDisks)
+		if err != nil {
+			return toObjectErr(err, bucket, object)
+		}
+
+		// Calculate the slice of this block that overlaps the requested range.
+		blockStart := int64(i) * blockSize
+		readFrom := int64(0)
+		readTo := blk.Size
+		if blockStart < startOffset {
+			readFrom = startOffset - blockStart
+		}
+		remaining := length - written
+		if readTo-readFrom > remaining {
+			readTo = readFrom + remaining
+		}
+
+		n, err := writer.Write(data[readFrom:readTo])
+		if err != nil {
+			return err
+		}
+		written += int64(n)
+	}
 	return nil
 }
 
@@ -589,7 +640,132 @@ func rename(ctx context.Context, disks []StorageAPI, srcBucket, srcEntry, dstBuc
 // writes `xl.meta` which carries the necessary metadata for future
 // object operations.
 func (er erasureObjects) PutObject(ctx context.Context, bucket string, object string, data *PutObjReader, opts ObjectOptions) (objInfo ObjectInfo, err error) {
+	if globalIsReplicated {
+		return er.putBlockReplicatedObject(ctx, bucket, object, data, opts)
+	}
 	return er.putObject(ctx, bucket, object, data, opts)
+}
+
+// putBlockReplicatedObject stores an object using content-addressed block replication.
+func (er erasureObjects) putBlockReplicatedObject(ctx context.Context, bucket string, object string, r *PutObjReader, opts ObjectOptions) (objInfo ObjectInfo, err error) {
+	defer ObjectPathUpdated(pathJoin(bucket, object))
+
+	data := r.Reader
+	if opts.UserDefined == nil {
+		opts.UserDefined = make(map[string]string)
+	}
+
+	storageDisks := er.getDisks()
+	writeQuorum := globalReplicationConfig.WriteQuorum()
+	blockSize := globalReplicationConfig.BlockSize
+	if blockSize <= 0 {
+		blockSize = 1 << 20
+	}
+
+	if data.Size() < -1 {
+		return ObjectInfo{}, toObjectErr(errInvalidArgument)
+	}
+
+	if opts.ParentIsObject != nil && opts.ParentIsObject(ctx, bucket, path.Dir(object)) {
+		return ObjectInfo{}, toObjectErr(errFileParentIsFile, bucket, object)
+	}
+
+	replicator := NewBlockReplicator(blockSize, globalReplicationConfig.ReplicationFactor)
+
+	// Stream data in block-sized chunks: hash, store locally, replicate.
+	var blockRefs []BlockRef
+	buf := make([]byte, blockSize)
+	idx := 0
+	var totalSize int64
+
+	for {
+		n, readErr := io.ReadFull(data, buf)
+		if readErr != nil && readErr != io.EOF && readErr != io.ErrUnexpectedEOF {
+			return ObjectInfo{}, readErr
+		}
+		if n == 0 {
+			break
+		}
+
+		blockData := buf[:n]
+		blockHash := hashBlockData(blockData)
+		blockRefs = append(blockRefs, BlockRef{
+			Hash:  blockHash,
+			Size:  int64(n),
+			Index: idx,
+		})
+		totalSize += int64(n)
+
+		// Write block to quorum of disks.
+		if err := replicator.WriteBlock(ctx, blockHash, blockData, storageDisks, writeQuorum); err != nil {
+			return ObjectInfo{}, toObjectErr(err, bucket, object)
+		}
+
+		idx++
+		if readErr == io.EOF || readErr == io.ErrUnexpectedEOF {
+			break
+		}
+	}
+
+	// Acquire lock for metadata write.
+	if !opts.NoLock {
+		lk := er.NewNSLock(bucket, object)
+		ctx, err = lk.GetLock(ctx, globalOperationTimeout)
+		if err != nil {
+			return ObjectInfo{}, err
+		}
+		defer lk.Unlock()
+	}
+
+	// Build FileInfo with block references.
+	fi := FileInfo{
+		Volume:  bucket,
+		Name:    object,
+		Size:    totalSize,
+		ModTime: UTCNow(),
+		Blocks:  blockRefs,
+		Erasure: ErasureInfo{
+			Algorithm:    "block-replication",
+			DataBlocks:   1,
+			ParityBlocks: 0,
+			BlockSize:    blockSize,
+			Index:        1,
+			Distribution: []int{1},
+		},
+	}
+
+	if opts.MTime.IsZero() {
+		fi.ModTime = UTCNow()
+	} else {
+		fi.ModTime = opts.MTime
+	}
+	if opts.Versioned {
+		fi.VersionID = opts.VersionID
+		if fi.VersionID == "" {
+			fi.VersionID = mustGetUUID()
+		}
+	}
+	fi.DataDir = mustGetUUID()
+	fi.Metadata = opts.UserDefined
+	if fi.Metadata["etag"] == "" {
+		fi.Metadata["etag"] = r.MD5CurrentHexString()
+	}
+	if fi.Metadata["content-type"] == "" {
+		fi.Metadata["content-type"] = mimedb.TypeByExtension(path.Ext(object))
+	}
+	fi.AddObjectPart(1, "", totalSize, data.ActualSize())
+
+	// Write metadata to all disks.
+	partsMetadata := make([]FileInfo, len(storageDisks))
+	for i := range partsMetadata {
+		partsMetadata[i] = fi
+	}
+
+	if _, err = writeUniqueFileInfo(ctx, storageDisks, bucket, object, partsMetadata, writeQuorum); err != nil {
+		return ObjectInfo{}, toObjectErr(err, bucket, object)
+	}
+
+	return fi.ToObjectInfo(bucket, object), nil
 }
 
 // putObject wrapper for erasureObjects PutObject

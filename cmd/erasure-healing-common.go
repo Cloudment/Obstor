@@ -201,6 +201,34 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 	availableDisks := make([]StorageAPI, len(onlineDisks))
 	dataErrs := make([]error, len(onlineDisks))
 
+	// Check if this is a block-replicated object.
+	blockReplicated := false
+	for _, meta := range partsMetadata {
+		if meta.IsValid() && len(meta.Blocks) > 0 {
+			blockReplicated = true
+			break
+		}
+	}
+
+	// Block-replicated objects: every disk that has valid metadata is available.
+	// Block data integrity is verified by content-addressing (SHA-256).
+	if blockReplicated {
+		for i, onlineDisk := range onlineDisks {
+			if errs[i] != nil {
+				dataErrs[i] = errs[i]
+				continue
+			}
+			if onlineDisk == nil {
+				dataErrs[i] = errDiskNotFound
+				continue
+			}
+			if partsMetadata[i].IsValid() {
+				availableDisks[i] = onlineDisk
+			}
+		}
+		return availableDisks, dataErrs
+	}
+
 	inconsistent := 0
 	for i, meta := range partsMetadata {
 		if !meta.IsValid() {

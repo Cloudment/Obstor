@@ -340,6 +340,11 @@ func handleCommonEnvVars() {
 		}
 	}
 
+	// Detect block replication mode early from env vars.
+	if env.IsSet("OBSTOR_ZONE") || env.IsSet("OBSTOR_REPLICATION_FACTOR") {
+		globalIsReplicated = true
+	}
+
 	if env.IsSet(config.EnvKMSSecretKey) && env.IsSet(config.EnvKESEndpoint) {
 		logger.Fatal(errors.New("ambigious KMS configuration"), "The environment contains %q as well as %q", config.EnvKMSSecretKey, config.EnvKESEndpoint)
 	}

@@ -1023,6 +1023,69 @@ func logFatalErrs(err error, endpoint Endpoint, exit bool) {
 	}
 }
 
+// WriteBlockHandler handles writing a content-addressed block.
+func (s *storageRESTServer) WriteBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	err = s.storage.WriteBlock(r.Context(), hash, data)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+}
+
+// ReadBlockHandler handles reading a content-addressed block.
+func (s *storageRESTServer) ReadBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	data, err := s.storage.ReadBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	w.Header().Set(xhttp.ContentLength, strconv.Itoa(len(data)))
+	w.Write(data)
+}
+
+// HasBlockHandler checks if a content-addressed block exists.
+func (s *storageRESTServer) HasBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	has, err := s.storage.HasBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	if !has {
+		s.writeErrorResponse(w, errFileNotFound)
+		return
+	}
+}
+
+// DeleteBlockHandler handles deleting a content-addressed block.
+func (s *storageRESTServer) DeleteBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	err := s.storage.DeleteBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+}
+
 // registerStorageRPCRouter - register storage rpc router.
 func registerStorageRESTHandlers(router *mux.Router, endpointServerPools EndpointServerPools) {
 	for _, ep := range endpointServerPools {
@@ -1093,6 +1156,15 @@ func registerStorageRESTHandlers(router *mux.Router, endpointServerPools Endpoin
 				Queries(restQueries(storageRESTVolume, storageRESTFilePath)...)
 			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodWalkDir).HandlerFunc(httpTraceHdrs(server.WalkDirHandler)).
 				Queries(restQueries(storageRESTVolume, storageRESTDirPath, storageRESTRecursive)...)
+
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodWriteBlock).HandlerFunc(httpTraceHdrs(server.WriteBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodReadBlock).HandlerFunc(httpTraceHdrs(server.ReadBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodHasBlock).HandlerFunc(httpTraceHdrs(server.HasBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodDeleteBlock).HandlerFunc(httpTraceHdrs(server.DeleteBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
 		}
 	}
 }

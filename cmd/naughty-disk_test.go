@@ -286,3 +286,31 @@ func (d *naughtyDisk) VerifyFile(ctx context.Context, volume, path string, fi Fi
 	}
 	return d.disk.VerifyFile(ctx, volume, path, fi)
 }
+
+func (d *naughtyDisk) WriteBlock(ctx context.Context, hash string, data []byte) error {
+	if err := d.calcError(); err != nil {
+		return err
+	}
+	return d.disk.WriteBlock(ctx, hash, data)
+}
+
+func (d *naughtyDisk) ReadBlock(ctx context.Context, hash string) ([]byte, error) {
+	if err := d.calcError(); err != nil {
+		return nil, err
+	}
+	return d.disk.ReadBlock(ctx, hash)
+}
+
+func (d *naughtyDisk) HasBlock(ctx context.Context, hash string) (bool, error) {
+	if err := d.calcError(); err != nil {
+		return false, err
+	}
+	return d.disk.HasBlock(ctx, hash)
+}
+
+func (d *naughtyDisk) DeleteBlock(ctx context.Context, hash string) error {
+	if err := d.calcError(); err != nil {
+		return err
+	}
+	return d.disk.DeleteBlock(ctx, hash)
+}
