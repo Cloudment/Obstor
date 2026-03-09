@@ -239,7 +239,7 @@ $ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=obstorad,dc=local;dc=some
 $ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=group)(member=%s))'
 $ obstor server ~/test
 ```
-You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/master/docs/sts/ldap.go):
+You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/main/docs/sts/ldap.go):
 ```
 $ go run ldap.go -u foouser -p foopassword
 

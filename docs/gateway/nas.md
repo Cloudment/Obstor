@@ -28,7 +28,7 @@ obstor gateway nas /shared/nasvol
 
 Obstor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/master/docs/screenshots/obstor-browser-gateway.png)
+![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/obstor-browser-gateway.png)
 
 ## Test using Obstor Client `mc`
 

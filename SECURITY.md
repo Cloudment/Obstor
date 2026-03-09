@@ -7,7 +7,7 @@ Whenever there is a security update you just need to upgrade to the latest versi
 
 ## Reporting a Vulnerability
 
-All security bugs in [cloudment/obstor](https://github.com/cloudment/obstor) (or other obstor/* repositories)
+All security bugs in [cloudment/obstor](https://github.com/cloudment/obstor) (or other [minio](https://github.com/minio) repositories)
 should be reported by email to security@pgg.net. Your email will be acknowledged within 48 hours,
 and you'll receive a more detailed response to your email within 72 hours indicating the next steps
 in handling your report.
@@ -18,9 +18,7 @@ you need access credentials for a successful exploit).
 
 If you have not received a reply to your email within 48 hours or you have not heard from the security team
 for the past five days please contact the security team directly:
-   - Primary security coordinator: aead@pgg.net
-   - Secondary coordinator: harsha@pgg.net
-   - If you receive no response: oss@pgg.net
+   - Primary security coordinator: security@pgg.net
 
 ### Disclosure Process
 

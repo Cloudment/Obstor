@@ -39,7 +39,7 @@ To test this setup, access the Obstor gateway via browser or [`mc`](https://pgg.
 
 # Explore Further
 
-- [Disk cache design](https://github.com/cloudment/obstor/blob/master/docs/disk-caching/DESIGN.md)
+- [Disk cache design](https://github.com/cloudment/obstor/blob/main/docs/disk-caching/DESIGN.md)
 - [Use `mc` with Obstor Server](https://pgg.net/docs/obstor/obstor-client-quickstart-guide)
 - [Use `aws-cli` with Obstor Server](https://pgg.net/docs/obstor/aws-cli-with-obstor)
 - [Use `s3cmd` with Obstor Server](https://pgg.net/docs/obstor/s3cmd-with-obstor)

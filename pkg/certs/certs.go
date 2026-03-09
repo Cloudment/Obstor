@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rjeczalik/notify"
+	"github.com/fsnotify/fsnotify"
 )
 
 // LoadX509KeyPairFunc is a function that parses a private key and
@@ -57,7 +57,7 @@ type Manager struct {
 	defaultCert  pair
 
 	loadX509KeyPair LoadX509KeyPairFunc
-	events          chan notify.EventInfo
+	watcher         *fsnotify.Watcher
 	ctx             context.Context
 }
 
@@ -84,6 +84,11 @@ func NewManager(ctx context.Context, certFile, keyFile string, loadX509KeyPair L
 		return nil, err
 	}
 
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil, err
+	}
+
 	manager = &Manager{
 		certificates: map[pair]*tls.Certificate{},
 		defaultCert: pair{
@@ -91,7 +96,7 @@ func NewManager(ctx context.Context, certFile, keyFile string, loadX509KeyPair L
 			CertFile: certFile,
 		},
 		loadX509KeyPair: loadX509KeyPair,
-		events:          make(chan notify.EventInfo, 1),
+		watcher:         watcher,
 		ctx:             ctx,
 	}
 	if err := manager.AddCertificate(certFile, keyFile); err != nil {
@@ -170,10 +175,10 @@ func (m *Manager) AddCertificate(certFile, keyFile string) (err error) {
 		// for directory changes only, while we can still watch for changes
 		// on files on other platforms. Watch parent directory on all platforms
 		// for simplicity.
-		if err = notify.Watch(filepath.Dir(certFile), m.events, eventWrite...); err != nil {
+		if err = m.watcher.Add(filepath.Dir(certFile)); err != nil {
 			return err
 		}
-		if err = notify.Watch(filepath.Dir(keyFile), m.events, eventWrite...); err != nil {
+		if err = m.watcher.Add(filepath.Dir(keyFile)); err != nil {
 			return err
 		}
 	}
@@ -218,13 +223,13 @@ func (m *Manager) watchFileEvents() {
 		select {
 		case <-m.ctx.Done():
 			return
-		case event := <-m.events:
-			if !isWriteEvent(event.Event()) {
+		case event := <-m.watcher.Events:
+			if !isWriteEvent(event.Op) {
 				continue
 			}
 
 			for pair := range m.certificates {
-				if p := event.Path(); pair.KeyFile == p || pair.CertFile == p {
+				if p := event.Name; pair.KeyFile == p || pair.CertFile == p {
 					certificate, err := m.loadX509KeyPair(pair.CertFile, pair.KeyFile)
 					if err != nil {
 						continue

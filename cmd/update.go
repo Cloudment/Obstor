@@ -472,7 +472,6 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 	return minioReleaseURL + "obstor"
 }
 
-
 func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string) (io.ReadCloser, error) {
 	clnt := &http.Client{
 		Transport: transport,

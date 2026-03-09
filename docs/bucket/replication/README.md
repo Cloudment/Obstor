@@ -95,7 +95,7 @@ The access key provided for the replication *target* cluster should have these m
  ]
 }
 ```
-Please note that the permissions required by the admin user on the target cluster can be more fine grained to exclude permissions like "s3:ReplicateDelete", "s3:GetBucketObjectLockConfiguration" etc depending on whether delete replication rules are set up or if object locking is disabled on `destbucket`. The above policies assume that replication of objects, tags and delete marker replication are all enabled on object lock enabled buckets. A sample script to setup replication is provided [here](https://github.com/cloudment/obstor/blob/master/docs/bucket/replication/setup_replication.sh)
+Please note that the permissions required by the admin user on the target cluster can be more fine grained to exclude permissions like "s3:ReplicateDelete", "s3:GetBucketObjectLockConfiguration" etc depending on whether delete replication rules are set up or if object locking is disabled on `destbucket`. The above policies assume that replication of objects, tags and delete marker replication are all enabled on object lock enabled buckets. A sample script to setup replication is provided [here](https://github.com/cloudment/obstor/blob/main/docs/bucket/replication/setup_replication.sh)
 
 Once successfully created and authorized, the `mc admin bucket remote add` command generates a replication target ARN.  This command lists all the currently authorized replication targets:
 ```
@@ -146,9 +146,9 @@ Replication status can be seen in the metadata on the source and destination obj
 
 To perform bi-directional replication, repeat the above process on the target site - this time setting the source bucket as the replication target. It is recommended that replication be run in a system with atleast two CPU's available to the process, so that replication can run in its own thread.
 
-![put](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/PUT_bucket_replication.png)
+![put](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/replication/PUT_bucket_replication.png)
 
-![head](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/HEAD_bucket_replication.png)
+![head](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/replication/HEAD_bucket_replication.png)
 
 ## Obstor Extension
 ### Replicating Deletes
@@ -171,11 +171,11 @@ Replication configuration applied successfully to myobstor/srcbucket.
 
 Status of delete marker replication can be viewed by doing a GET/HEAD on the object version - it will return a `X-Obstor-Replication-DeleteMarker-Status` header and http response code of `405`. In the case of permanent deletes, if the delete replication is pending or failed to propagate to the target cluster, GET/HEAD will return additional `X-Obstor-Replication-Delete-Status` header and a http response code of `405`.
 
-![delete](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DELETE_bucket_replication.png)
+![delete](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/replication/DELETE_bucket_replication.png)
 
 The status of replication can be monitored by configuring event notifications on the source and target buckets using `mc event add`.On the source side, the `s3:PutObject`, `s3:Replication:OperationCompletedReplication` and `s3:Replication:OperationFailedReplication` events show the status of replication in the `X-Amz-Replication-Status` metadata.
 
-On the target bucket, `s3:PutObject` event shows `X-Amz-Replication-Status` status of `REPLICA` in the metadata. Additional metrics to monitor backlog state for the purpose of bandwidth management and resource allocation are exposed via Prometheus - see https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/list.md for more details.
+On the target bucket, `s3:PutObject` event shows `X-Amz-Replication-Status` status of `REPLICA` in the metadata. Additional metrics to monitor backlog state for the purpose of bandwidth management and resource allocation are exposed via Prometheus - see https://github.com/cloudment/obstor/blob/main/docs/metrics/prometheus/list.md for more details.
 
 ### Sync/Async Replication
 By default, replication is completed asynchronously. If synchronous replication is desired, set the --sync flag while adding a
@@ -185,6 +185,6 @@ remote replication target using the `mc admin bucket remote add` command
 ```
 
 ## Explore Further
-- [Obstor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/replication/DESIGN.md)
+- [Obstor Bucket Replication Design](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/replication/DESIGN.md)
 - [Obstor Bucket Versioning Implementation](https://pgg.net/docs/obstor/obstor-bucket-versioning-guide.html)
 - [Obstor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)

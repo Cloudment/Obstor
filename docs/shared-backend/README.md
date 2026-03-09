@@ -2,7 +2,7 @@
 
 Obstor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple Obstor servers. Synchronization among Obstor servers is taken care by design.
-Read more about the Obstor shared mode design [here](https://github.com/cloudment/obstor/blob/master/docs/shared-backend/DESIGN.md).
+Read more about the Obstor shared mode design [here](https://github.com/cloudment/obstor/blob/main/docs/shared-backend/DESIGN.md).
 
 Obstor shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
 

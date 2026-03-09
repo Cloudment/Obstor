@@ -1,7 +1,7 @@
 # Obstor Quickstart Guide
 [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
-[![Obstor](https://raw.githubusercontent.com/cloudment/obstor/master/.github/logo.svg?sanitize=true)](https://pgg.net)
+[![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://pgg.net)
 
 Obstor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use Obstor to build high performance infrastructure for machine learning, analytics and application data workloads.
 
@@ -273,7 +273,7 @@ The above statement is also valid for all gateway backends.
 ## Test using Obstor Browser
 Obstor Server comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure your server has started successfully.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/obstor-browser.png?raw=true)
+![Screenshot](https://github.com/cloudment/obstor/blob/main/docs/screenshots/obstor-browser.png?raw=true)
 
 ## Test using Obstor Client `mc`
 `mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services. Follow the Obstor Client [Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide) for further instructions.
@@ -306,7 +306,7 @@ mc admin update <obstor alias, e.g., myobstor>
 - [The Obstor documentation website](https://pgg.net/docs/obstor)
 
 # Contribute to Obstor Project
-Please follow Obstor [Contributor's Guide](https://github.com/cloudment/obstor/blob/master/CONTRIBUTING.md)
+Please follow Obstor [Contributor's Guide](https://github.com/cloudment/obstor/blob/main/CONTRIBUTING.md)
 
 # License
-Use of Obstor is governed by the Apache 2.0 License found at [LICENSE](https://github.com/cloudment/obstor/blob/master/LICENSE).
+Use of Obstor is governed by the Apache 2.0 License found at [LICENSE](https://github.com/cloudment/obstor/blob/main/LICENSE).

@@ -7,7 +7,7 @@ In this document we will explain in detail on how to configure multiple users.
 ### 1. Prerequisites
 - Install mc - [Obstor Client Quickstart Guide](https://pgg.net/docs/obstor/obstor-client-quickstart-guide.html)
 - Install Obstor - [Obstor Quickstart Guide](https://pgg.net/docs/obstor/obstor-quickstart-guide)
-- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/master/docs/sts/etcd.md)
+- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/main/docs/sts/etcd.md)
 
 ### 2. Create a new user with canned policy
 Use [`mc admin policy`](https://pgg.net/docs/obstor/obstor-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.

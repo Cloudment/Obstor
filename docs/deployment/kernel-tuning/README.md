@@ -1,6 +1,6 @@
 # Kernel Tuning for Obstor Production Deployment on Linux Servers [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
-List of kernel tuning recommendations for Obstor server deployments, a copy of this [script](https://github.com/cloudment/obstor/blob/master/docs/deployment/kernel-tuning/sysctl.sh) is available here that can be applied on the servers.
+List of kernel tuning recommendations for Obstor server deployments, a copy of this [script](https://github.com/cloudment/obstor/blob/main/docs/deployment/kernel-tuning/sysctl.sh) is available here that can be applied on the servers.
 
 > NOTE: These are common recommendations on any Linux servers, users must be careful on any premature optimization.
 > These settings are not mandatory, these settings do not fix any hardware issues and should not be considered as an

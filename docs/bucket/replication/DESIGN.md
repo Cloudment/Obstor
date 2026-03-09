@@ -1,6 +1,6 @@
 # Bucket Replication Design [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
 
-This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/cloudment/obstor/blob/master/docs/bucket/replication/README.md) first.
+This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/cloudment/obstor/blob/main/docs/bucket/replication/README.md) first.
 
 ## Overview
 Replication relies on immutability provided by versioning to sync objects between the configured source and replication target.
@@ -37,7 +37,7 @@ Existing object replication, replica modification sync for 2-way replication and
 
 ### Internal metadata for replication
 
-`xl.meta` that is in use for [versioning](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/versioning/DESIGN.md) has additional metadata for replication of objects,delete markers and versioned deletes.
+`xl.meta` that is in use for [versioning](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/versioning/DESIGN.md) has additional metadata for replication of objects,delete markers and versioned deletes.
 
 ### Metadata for object replication
 

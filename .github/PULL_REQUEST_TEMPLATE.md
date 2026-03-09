@@ -13,7 +13,17 @@
 - [ ] Optimization (provides speedup with no functional changes)
 - [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
+## Benchmarks
+<!-- If this PR includes performance-related changes, include benchmark results -->
+<!-- Use `go test -bench=. -benchmem` before and after your changes -->
+```
+Before:
+
+After:
+```
+
 ## Checklist:
 - [ ] Fixes a regression (If yes, please add `commit-id` or `PR #` here)
 - [ ] Documentation updated
 - [ ] Unit tests added/updated
+- [ ] Benchmarks included (if performance-related)

@@ -42,7 +42,7 @@ obstor gateway gcs yourprojectid
 
 Obstor Gateway comes with an embedded web-based object browser that outputs content to http://127.0.0.1:9000. To test that Obstor Gateway is running, open a web browser, navigate to http://127.0.0.1:9000, and ensure that the object browser is displayed.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/master/docs/screenshots/obstor-browser-gateway.png?raw=true)
+![Screenshot](https://github.com/cloudment/obstor/blob/main/docs/screenshots/obstor-browser-gateway.png?raw=true)
 
 ## <a name="test-using-obstor-client"></a>3. Test Using Obstor Client
 

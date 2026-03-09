@@ -4,13 +4,13 @@
 
 ## Prerequisites
 
-- Prometheus and Obstor configured as explained in [document here](https://github.com/cloudment/obstor/blob/master/docs/metrics/prometheus/README.md).
+- Prometheus and Obstor configured as explained in [document here](https://github.com/cloudment/obstor/blob/main/docs/metrics/prometheus/README.md).
 - Grafana installed as explained [here](https://grafana.com/grafana/download).
 
 ## Obstor Grafana Dashboard
 
 Visualize Obstor metrics with our official Grafana dashboard available on the [Grafana dashboard portal](https://grafana.com/grafana/dashboards/13502).
 
-Refer to the dashboard [json file here](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/obstor-overview.json).
+Refer to the dashboard [json file here](https://raw.githubusercontent.com/cloudment/obstor/main/docs/metrics/prometheus/grafana/obstor-overview.json).
 
-![Grafana](https://raw.githubusercontent.com/cloudment/obstor/master/docs/metrics/prometheus/grafana/grafana-obstor.png)
+![Grafana](https://raw.githubusercontent.com/cloudment/obstor/main/docs/metrics/prometheus/grafana/grafana-obstor.png)
