@@ -18,6 +18,8 @@ RUN go build -trimpath -ldflags "-s -w -X github.com/cloudment/obstor/cmd.Versio
 
 FROM node:25-alpine AS node-builder
 
+ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm install -g pnpm
 
 WORKDIR /app

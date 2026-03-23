@@ -49,7 +49,7 @@ import (
 // ServerFlags - server command specific flags
 var ServerFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:  "api-address",
+		Name:  "api-address, address",
 		Value: ":" + GlobalMinioDefaultPort,
 		Usage: "bind the S3 API to ADDRESS:PORT (default :9000)",
 	},
