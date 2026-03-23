@@ -65,6 +65,47 @@ const assetPrefix = "production"
 // specialAssets are files which are unique files not embedded inside index_bundle.js.
 const specialAssets = "index_bundle.*.js|loader.css|logo.svg|firefox.png|safari.png|chrome.png|favicon-16x16.png|favicon-32x32.png|favicon-96x96.png"
 
+// registerWebRPCRouter register JSON-RPC upload/download handlers
+func registerWebRPCRouter(router *mux.Router) error {
+	web := &webAPIHandlers{
+		ObjectAPI: newObjectLayerFn,
+		CacheAPI:  newCachedObjectLayerFn,
+	}
+
+	codec := json2.NewCodec()
+	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
+
+	webRPC := jsonrpc.NewServer()
+	webRPC.RegisterCodec(codec, "application/json")
+	webRPC.RegisterCodec(codec, "application/json; charset=UTF-8")
+	webRPC.RegisterAfterFunc(func(ri *jsonrpc.RequestInfo) {
+		if ri != nil {
+			claims, _, _ := webRequestAuthenticate(ri.Request)
+			bucketName, objectName := extractBucketObject(ri.Args)
+			ri.Request = mux.SetURLVars(ri.Request, map[string]string{
+				"bucket": bucketName,
+				"object": objectName,
+			})
+			if globalTrace.NumSubscribers() > 0 {
+				globalTrace.Publish(WebTrace(ri))
+			}
+			ctx := newContext(ri.Request, ri.ResponseWriter, ri.Method)
+			logger.AuditLog(ctx, ri.ResponseWriter, ri.Request, claims.Map())
+		}
+	})
+
+	if err := webRPC.RegisterService(web, "web"); err != nil {
+		return err
+	}
+
+	webBrowserRouter.Methods(http.MethodPost).Path("/webrpc").Handler(webRPC)
+	webBrowserRouter.Methods(http.MethodPut).Path("/upload/{bucket}/{object:.+}").HandlerFunc(httpTraceHdrs(web.Upload))
+	webBrowserRouter.Methods(http.MethodGet).Path("/download/{bucket}/{object:.+}").Queries("token", "{token:.*}").HandlerFunc(httpTraceHdrs(web.Download))
+	webBrowserRouter.Methods(http.MethodPost).Path("/zip").Queries("token", "{token:.*}").HandlerFunc(httpTraceHdrs(web.DownloadZip))
+
+	return nil
+}
+
 // registerWebRouter - registers web router for serving obstor browser.
 func registerWebRouter(router *mux.Router) error {
 	// Initialize Web.

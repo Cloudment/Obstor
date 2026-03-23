@@ -40,8 +40,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   if (authFailed) {
-    const cs = await cookies();
-    cs.delete("obstor_token");
     redirect("/login");
   }
 

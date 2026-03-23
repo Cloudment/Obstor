@@ -213,9 +213,9 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 	}
 
 	// Fetch address option
-	globalCLIContext.Addr = ctx.GlobalString("address")
+	globalCLIContext.Addr = ctx.GlobalString("api-address")
 	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+GlobalMinioDefaultPort {
-		globalCLIContext.Addr = ctx.String("address")
+		globalCLIContext.Addr = ctx.String("api-address")
 	}
 
 	// Check "no-compat" flag from command line argument.

@@ -162,19 +162,7 @@ func setRedirectHandler(h http.Handler) http.Handler {
 }
 
 func setBrowserRedirectHandler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Re-direction is handled specifically for browser requests.
-		if globalBrowserEnabled && guessIsBrowserReq(r) {
-			// Fetch the redirect location if any.
-			redirectLocation := getRedirectLocation(r.URL.Path)
-			if redirectLocation != "" {
-				// Employ a temporary re-direct.
-				http.Redirect(w, r, redirectLocation, http.StatusTemporaryRedirect)
-				return
-			}
-		}
-		h.ServeHTTP(w, r)
-	})
+	return h
 }
 
 func shouldProxy() bool {

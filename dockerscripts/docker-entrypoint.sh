@@ -23,31 +23,6 @@ if [ "${1}" != "obstor" ]; then
     fi
 fi
 
-## Look for docker secrets at given absolute path or in default documented location.
-docker_secrets_env_old() {
-    if [ -f "$OBSTOR_ACCESS_KEY_FILE" ]; then
-        ACCESS_KEY_FILE="$OBSTOR_ACCESS_KEY_FILE"
-    else
-        ACCESS_KEY_FILE="/run/secrets/$OBSTOR_ACCESS_KEY_FILE"
-    fi
-    if [ -f "$OBSTOR_SECRET_KEY_FILE" ]; then
-        SECRET_KEY_FILE="$OBSTOR_SECRET_KEY_FILE"
-    else
-        SECRET_KEY_FILE="/run/secrets/$OBSTOR_SECRET_KEY_FILE"
-    fi
-
-    if [ -f "$ACCESS_KEY_FILE" ] && [ -f "$SECRET_KEY_FILE" ]; then
-        if [ -f "$ACCESS_KEY_FILE" ]; then
-            OBSTOR_ACCESS_KEY="$(cat "$ACCESS_KEY_FILE")"
-            export OBSTOR_ACCESS_KEY
-        fi
-        if [ -f "$SECRET_KEY_FILE" ]; then
-            OBSTOR_SECRET_KEY="$(cat "$SECRET_KEY_FILE")"
-            export OBSTOR_SECRET_KEY
-        fi
-    fi
-}
-
 docker_secrets_env() {
     if [ -f "$OBSTOR_ROOT_USER_FILE" ]; then
         ROOT_USER_FILE="$OBSTOR_ROOT_USER_FILE"
@@ -86,21 +61,10 @@ docker_kms_encryption_env() {
     fi
 }
 
-## Legacy
-## Set SSE_MASTER_KEY from docker secrets if provided
-docker_sse_encryption_env() {
-    KMS_SECRET_KEY_FILE="/run/secrets/$OBSTOR_KMS_MASTER_KEY_FILE"
-
-    if [ -f "$KMS_SECRET_KEY_FILE" ]; then
-        OBSTOR_KMS_SECRET_KEY="$(cat "$KMS_SECRET_KEY_FILE")"
-        export OBSTOR_KMS_SECRET_KEY
-    fi
-}
-
 # su-exec to requested user, if service cannot run exec will fail.
 docker_switch_user() {
-    if [ ! -z "${OBSTOR_USERNAME}" ] && [ ! -z "${OBSTOR_GROUPNAME}" ]; then
-        if [ ! -z "${OBSTOR_UID}" ] && [ ! -z "${OBSTOR_GID}" ]; then
+    if [ -n "${OBSTOR_USERNAME}" ] && [ -n "${OBSTOR_GROUPNAME}" ]; then
+        if [ -n "${OBSTOR_UID}" ] && [ -n "${OBSTOR_GID}" ]; then
             groupadd -g "$OBSTOR_GID" "$OBSTOR_GROUPNAME" && \
                 useradd -u "$OBSTOR_UID" -g "$OBSTOR_GROUPNAME" "$OBSTOR_USERNAME"
         else
@@ -113,17 +77,28 @@ docker_switch_user() {
     fi
 }
 
-## Set access env from secrets if necessary.
-docker_secrets_env_old
+# Start frontend if available.
+start_frontend() {
+    if [ -f /opt/frontend/server.js ]; then
+        FRONTEND_PORT=9001
+        for arg in "$@"; do
+            case "$arg" in
+                --frontend-address=*) FRONTEND_PORT="${arg#*=:}" ;;
+            esac
+        done
+        PORT=$FRONTEND_PORT \
+        OBSTOR_ENDPOINT=${OBSTOR_ENDPOINT:-http://127.0.0.1:9000} \
+        OBSTOR_HOST=${OBSTOR_HOST:-127.0.0.1:9000} \
+        node /opt/frontend/server.js &
+    fi
+}
 
-## Set access env from secrets if necessary.
+## Load secrets
 docker_secrets_env
-
-## Set kms encryption from secrets if necessary.
 docker_kms_encryption_env
 
-## Set sse encryption from secrets if necessary. Legacy
-docker_sse_encryption_env
+## Start frontend
+start_frontend "$@"
 
-## Switch to user if applicable.
+## Switch to user and exec obstor
 docker_switch_user "$@"

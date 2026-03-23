@@ -93,7 +93,7 @@ func configureServerHandler(endpointServerPools EndpointServerPools) (http.Handl
 
 	// Register web router when its enabled.
 	if globalBrowserEnabled {
-		if err := registerWebRouter(router); err != nil {
+		if err := registerWebRPCRouter(router); err != nil {
 			return nil, err
 		}
 	}

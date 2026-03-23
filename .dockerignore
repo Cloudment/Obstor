@@ -4,15 +4,6 @@ docs
 default.etcd
 browser/node_modules
 browser/.next
-browser/src
-browser/biome.json
-browser/next.config.ts
-browser/next-env.d.ts
-browser/package.json
-browser/pnpm-lock.yaml
-browser/postcss.config.mjs
-browser/tailwind.config.ts
-browser/tsconfig.json
 *.gz
 *.tar.gz
 *.bzip2

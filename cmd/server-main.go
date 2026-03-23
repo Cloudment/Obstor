@@ -49,9 +49,14 @@ import (
 // ServerFlags - server command specific flags
 var ServerFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:  "address",
+		Name:  "api-address",
 		Value: ":" + GlobalMinioDefaultPort,
-		Usage: "bind to a specific ADDRESS:PORT, ADDRESS can be an IP or hostname",
+		Usage: "bind the S3 API to ADDRESS:PORT (default :9000)",
+	},
+	cli.StringFlag{
+		Name:  "frontend-address",
+		Value: ":9001",
+		Usage: "bind the frontend dashboard to ADDRESS:PORT (default :9001)",
 	},
 }
 

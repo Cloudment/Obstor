@@ -786,17 +786,6 @@ func writeErrorResponse(ctx context.Context, w http.ResponseWriter, err APIError
 	case "AuthorizationHeaderMalformed":
 		err.Description = fmt.Sprintf("The authorization header is malformed; the region is wrong; expecting '%s'.", globalServerRegion)
 	case "AccessDenied":
-		// The request is from browser and also if browser
-		// is enabled we need to redirect to the console login.
-		// But only for paths that look like console navigation
-		// (no file extension) - not for S3 object requests.
-		if browser && globalBrowserEnabled {
-			if path.Ext(reqURL.Path) == "" {
-				w.Header().Set(xhttp.Location, minioReservedBucketPath+reqURL.Path)
-				w.WriteHeader(http.StatusTemporaryRedirect)
-				return
-			}
-		}
 	}
 
 	// Generate error response.
