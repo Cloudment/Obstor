@@ -18,7 +18,7 @@ RUN go build -trimpath -ldflags "-s -w -X github.com/cloudment/obstor/cmd.Versio
 
 FROM node:25-alpine AS node-builder
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm
 
 WORKDIR /app
 COPY browser/package.json browser/pnpm-lock.yaml ./
