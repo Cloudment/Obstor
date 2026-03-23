@@ -380,7 +380,7 @@ func azurePropertiesToS3Meta(meta azblob.Metadata, props azblob.BlobHTTPHeaders,
 
 	s3Metadata := make(map[string]string)
 	for k, v := range meta {
-		// k's `x-ms-meta-` prefix is already stripped by
+		// K's `x-ms-meta-` prefix is already stripped by
 		// Azure SDK, so we add the AMZ prefix.
 		k = "X-Amz-Meta-" + decodeKey(k)
 		k = http.CanonicalHeaderKey(k)
@@ -521,7 +521,7 @@ func checkAzureUploadID(ctx context.Context, uploadID string) (err error) {
 	return nil
 }
 
-// parses partID from part metadata file name
+// Parses partID from part metadata file name
 func parseAzurePart(metaPartFileName, prefix string) (partID int, err error) {
 	partStr := strings.TrimPrefix(metaPartFileName, prefix+obstor.SlashSeparator)
 	if partID, err = strconv.Atoi(partStr); err != nil || partID <= 0 {
@@ -1028,13 +1028,13 @@ func getAzureMetadataObjectName(objectName, uploadID string) string {
 	return fmt.Sprintf(metadataObjectNameTemplate, uploadID, sha256.Sum256([]byte(objectName)))
 }
 
-// gets the name of part metadata file for multipart upload operations
+// Gets the name of part metadata file for multipart upload operations
 func getAzureMetadataPartName(objectName, uploadID string, partID int) string {
 	partMetaPrefix := getAzureMetadataPartPrefix(uploadID, objectName)
 	return path.Join(partMetaPrefix, fmt.Sprintf("%d", partID))
 }
 
-// gets the prefix of part metadata file
+// Gets the prefix of part metadata file
 func getAzureMetadataPartPrefix(uploadID, objectName string) string {
 	return fmt.Sprintf(metadataPartNamePrefix, uploadID, sha256.Sum256([]byte(objectName)))
 }
@@ -1120,7 +1120,7 @@ func (a *azureObjects) PutObjectPart(ctx context.Context, bucket, object, upload
 	partMetaV1.ETag = r.MD5CurrentHexString()
 	partMetaV1.Size = data.Size()
 
-	// maintain per part md5sum in a temporary part metadata file until upload
+	// Maintain per part md5sum in a temporary part metadata file until upload
 	// is finalized.
 	metadataObject := getAzureMetadataPartName(object, uploadID, partID)
 	var jsonData []byte
@@ -1189,7 +1189,7 @@ func (a *azureObjects) ListObjectParts(ctx context.Context, bucket, object, uplo
 			// We filter out non obstor.GatewayObstorSysTmp entries in the recursive listing.
 			continue
 		}
-		// filter temporary metadata file for blob
+		// Filter temporary metadata file for blob
 		if strings.HasSuffix(blob.Name, "azure.json") {
 			continue
 		}

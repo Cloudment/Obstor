@@ -111,11 +111,11 @@ func (c *FSChecksumInfoV1) UnmarshalJSON(data []byte) error {
 // A fsMetaV1 represents a metadata header mapping keys to sets of values.
 type fsMetaV1 struct {
 	Version string `json:"version"`
-	// checksums of blocks on disk.
+	// Checksums of blocks on disk.
 	Checksum FSChecksumInfoV1 `json:"checksum,omitempty"`
 	// Metadata map for current object.
 	Meta map[string]string `json:"meta,omitempty"`
-	// parts info for current object - used in encryption.
+	// Parts info for current object - used in encryption.
 	Parts []ObjectPartInfo `json:"parts,omitempty"`
 }
 

@@ -142,7 +142,7 @@ func (iamOS *IAMObjectStore) migrateUsersConfigToV1(ctx context.Context, isSTS b
 		// the zero value for the struct.
 		var zeroCred auth.Credentials
 		if cred.Equal(zeroCred) {
-			// nothing to do
+			// Nothing to do
 			continue
 		}
 
@@ -450,7 +450,7 @@ func (iamOS *IAMObjectStore) deleteGroupInfo(ctx context.Context, name string) e
 	return err
 }
 
-// helper type for listIAMConfigItems
+// Helper type for listIAMConfigItems
 type itemOrErr struct {
 	Item string
 	Err  error

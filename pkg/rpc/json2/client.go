@@ -16,10 +16,6 @@ import (
 	"math/rand"
 )
 
-// ----------------------------------------------------------------------------
-// Request and Response
-// ----------------------------------------------------------------------------
-
 // clientRequest represents a JSON-RPC request sent by a client.
 type clientRequest struct {
 	// JSON-RPC protocol.

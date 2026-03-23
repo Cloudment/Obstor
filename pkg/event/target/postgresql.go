@@ -348,7 +348,7 @@ func (target *PostgreSQLTarget) executeStmts() error {
 
 	switch target.args.Format {
 	case event.NamespaceFormat:
-		// insert or update statement
+		// Insert or update statement
 		if target.updateStmt, err = target.db.Prepare(fmt.Sprintf(psqlUpdateRow, target.args.Table)); err != nil {
 			return err
 		}
@@ -357,7 +357,7 @@ func (target *PostgreSQLTarget) executeStmts() error {
 			return err
 		}
 	case event.AccessFormat:
-		// insert statement
+		// Insert statement
 		if target.insertStmt, err = target.db.Prepare(fmt.Sprintf(psqlInsertRow, target.args.Table)); err != nil {
 			return err
 		}

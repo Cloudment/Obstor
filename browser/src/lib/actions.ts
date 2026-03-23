@@ -5,10 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { rpc } from "./rpc";
 
-// ---------------------------------------------------------------------------
 // Types
-// ---------------------------------------------------------------------------
-
 interface BucketSettings {
   name: string;
   versioning: boolean;
@@ -28,10 +25,7 @@ interface BucketSettings {
   tags: { key: string; value: string }[];
 }
 
-// ---------------------------------------------------------------------------
 // Auth
-// ---------------------------------------------------------------------------
-
 export async function loginAction(formData: FormData) {
   const accessKey = formData.get("accessKey") as string;
   const secretKey = formData.get("secretKey") as string;
@@ -90,10 +84,7 @@ export async function changePasswordAction(formData: FormData) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Buckets - CRUD
-// ---------------------------------------------------------------------------
-
+// Buckets CRUD
 export async function createBucketAction(formData: FormData) {
   const bucketName = formData.get("bucketName") as string;
   try {
@@ -126,10 +117,7 @@ export async function setBucketPolicyAction(formData: FormData) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Buckets - Settings (modal)
-// ---------------------------------------------------------------------------
-
+// Buckets Settings
 function accessPolicyToBackend(
   policy: "private" | "public-read" | "public-read-write" | "custom",
 ): string {
@@ -242,10 +230,7 @@ async function applyBucketSettings(settings: BucketSettings) {
   });
 }
 
-// ---------------------------------------------------------------------------
 // Objects
-// ---------------------------------------------------------------------------
-
 export async function deleteObjectAction(bucketName: string, objectName: string) {
   try {
     await rpc("RemoveObject", { bucketname: bucketName, objects: [objectName] });

@@ -155,14 +155,14 @@ func (sc *StorageClass) String() string {
 func parseStorageClass(storageClassEnv string) (sc StorageClass, err error) {
 	s := strings.Split(storageClassEnv, ":")
 
-	// only two elements allowed in the string - "scheme" and "number of parity disks"
+	// Only two elements allowed in the string - "scheme" and "number of parity disks"
 	if len(s) > 2 {
 		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Too many sections in %s", storageClassEnv)
 	} else if len(s) < 2 {
 		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Too few sections in %s", storageClassEnv)
 	}
 
-	// only allowed scheme is "EC"
+	// Only allowed scheme is "EC"
 	if s[0] != schemePrefix {
 		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Unsupported scheme %s. Supported scheme is EC", s[0])
 	}
@@ -244,7 +244,7 @@ func (sCfg Config) GetParityForSC(sc string) (parity int) {
 	defer ConfigLock.RUnlock()
 	switch strings.TrimSpace(sc) {
 	case RRS:
-		// set the rrs parity if available
+		// Set the rrs parity if available
 		if sCfg.RRS.Parity == 0 {
 			return defaultRRSParity
 		}

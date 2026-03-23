@@ -161,7 +161,7 @@ func newConfigDirFromCtx(ctx *cli.Context, option string, getDefaultDir func() s
 	case ctx.GlobalIsSet(option):
 		dir = ctx.GlobalString(option)
 		dirSet = true
-		// cli package does not expose parent's option option.  Below code is workaround.
+		// Cli package does not expose parent's option option.  Below code is workaround.
 		if dir == "" || dir == getDefaultDir() {
 			dirSet = false // Unset to false since GlobalIsSet() true is a false positive.
 			if ctx.Parent().GlobalIsSet(option) {
@@ -459,7 +459,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 		if file.Mode()&os.ModeSymlink == os.ModeSymlink {
 			file, err = os.Stat(filepath.Join(root.Name(), file.Name()))
 			if err != nil {
-				// not accessible ignore
+				// Not accessible ignore
 				continue
 			}
 			if !file.IsDir() {

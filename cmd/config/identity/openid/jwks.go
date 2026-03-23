@@ -59,7 +59,7 @@ func (key *JWKS) DecodePublicKey() (crypto.PublicKey, error) {
 			return nil, errMalformedJWKRSAKey
 		}
 
-		// decode exponent
+		// Decode exponent
 		ebuf, err := base64.RawURLEncoding.DecodeString(key.E)
 		if err != nil {
 			return nil, errMalformedJWKRSAKey

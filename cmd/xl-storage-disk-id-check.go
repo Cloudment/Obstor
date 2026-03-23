@@ -65,7 +65,7 @@ const (
 
 // Detects change in underlying disk.
 type xlStorageDiskIDCheck struct {
-	// fields position optimized for memory please
+	// Fields position optimized for memory please
 	// do not re-order them, if you add new fields
 	// please use `fieldalignment ./...` to check
 	// if your changes are not causing any problems.
@@ -200,7 +200,7 @@ func (p *xlStorageDiskIDCheck) checkDiskStale() error {
 	if err == nil && p.diskID == storedDiskID {
 		return nil
 	}
-	// not the same disk we remember, take it offline.
+	// Not the same disk we remember, take it offline.
 	return errDiskNotFound
 }
 
@@ -217,7 +217,7 @@ func (p *xlStorageDiskIDCheck) DiskInfo(ctx context.Context) (info DiskInfo, err
 	}
 
 	info.Metrics = p.getMetrics()
-	// check cached diskID against backend
+	// Check cached diskID against backend
 	// only if its non-empty.
 	if p.diskID != "" {
 		if p.diskID != info.ID {

@@ -88,7 +88,7 @@ func setPartsCountHeaders(w http.ResponseWriter, objInfo ObjectInfo) {
 
 // Write object header
 func setObjectHeaders(w http.ResponseWriter, objInfo ObjectInfo, rs *HTTPRangeSpec, opts ObjectOptions) (err error) {
-	// set common headers
+	// Set common headers
 	setCommonHeaders(w)
 
 	// Set last modified time.

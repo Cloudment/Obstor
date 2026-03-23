@@ -271,11 +271,11 @@ func CopyAligned(w *os.File, r io.Reader, alignedBuf []byte, totalSize int64) (i
 		var nw int64
 		if len(buf)%directioAlignSize == 0 {
 			var n int
-			// buf is aligned for directio write()
+			// Buf is aligned for directio write()
 			n, err = w.Write(buf)
 			nw = int64(n)
 		} else {
-			// buf is not aligned, hence use writeUnaligned()
+			// Buf is not aligned, hence use writeUnaligned()
 			nw, err = writeUnaligned(w, buf)
 		}
 		if nw > 0 {

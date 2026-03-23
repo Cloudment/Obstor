@@ -53,7 +53,7 @@ var (
 	errInvalidRuleStatus = Errorf("Status must be set to either Enabled or Disabled")
 )
 
-// generates random UUID
+// Generates random UUID
 func getNewUUID() (string, error) {
 	u, err := uuid.NewRandom()
 	if err != nil {
@@ -66,7 +66,7 @@ func getNewUUID() (string, error) {
 // validateID - checks if ID is valid or not.
 func (r *Rule) validateID() error {
 	IDLen := len(string(r.ID))
-	// generate new ID when not provided
+	// Generate new ID when not provided
 	// cannot be longer than 255 characters
 	if IDLen == 0 {
 		if newID, err := getNewUUID(); err == nil {

@@ -116,7 +116,7 @@ type PostPolicyForm struct {
 	}
 }
 
-// implemented to ensure that duplicate keys in JSON
+// Implemented to ensure that duplicate keys in JSON
 // are merged together into a single JSON key, also
 // to remove any extraneous JSON bodies.
 //

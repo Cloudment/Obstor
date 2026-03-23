@@ -124,7 +124,7 @@ func privateNew(endpoint string, creds *credentials.Credentials, secure bool) (*
 		return nil, err
 	}
 
-	// construct endpoint.
+	// Construct endpoint.
 	endpointURL, err := getEndpointURL(endpoint, secure)
 	if err != nil {
 		return nil, err
@@ -372,7 +372,7 @@ func (adm AdminClient) executeMethod(ctx context.Context, method string, reqData
 			if err == context.Canceled || err == context.DeadlineExceeded {
 				return nil, err
 			}
-			// retry all network errors.
+			// Retry all network errors.
 			continue
 		}
 
@@ -423,7 +423,7 @@ func (adm AdminClient) executeMethod(ctx context.Context, method string, reqData
 	return res, err
 }
 
-// set User agent.
+// Set User agent.
 func (adm AdminClient) setUserAgent(req *http.Request) {
 	req.Header.Set("User-Agent", libraryUserAgent)
 	if adm.appInfo.appName != "" && adm.appInfo.appVersion != "" {

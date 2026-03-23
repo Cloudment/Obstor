@@ -77,7 +77,7 @@ const (
 
 	// When an upload exceeds encryptBufferThreshold ...
 	encryptBufferThreshold = 1 << 20
-	// add an input buffer of this size.
+	// Add an input buffer of this size.
 	encryptBufferSize = 1 << 20
 )
 
@@ -125,7 +125,7 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 		return
 	}
 
-	// get gateway encryption options
+	// Get gateway encryption options
 	opts, err := getOpts(ctx, r, bucket, object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -217,11 +217,11 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 		return
 	}
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	getRetPerms := checkRequestAuthType(ctx, r, policy.GetObjectRetentionAction, bucket, object)
 	legalHoldPerms := checkRequestAuthType(ctx, r, policy.GetObjectLegalHoldAction, bucket, object)
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	objInfo.UserDefined = objectlock.FilterObjectLockMetadata(objInfo.UserDefined, getRetPerms != ErrNone, legalHoldPerms != ErrNone)
 
 	if objectAPI.IsEncryptionSupported() {
@@ -329,7 +329,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// get gateway encryption options
+	// Get gateway encryption options
 	opts, err := getOpts(ctx, r, bucket, object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -422,7 +422,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			proxy  bool
 		)
 		if isProxyable(ctx, bucket) {
-			// proxy to replication target if active-active replication is in place.
+			// Proxy to replication target if active-active replication is in place.
 			reader, proxy = proxyGetToReplicationTarget(ctx, bucket, object, rs, r.Header, opts)
 			if reader != nil && proxy {
 				gr = reader
@@ -466,11 +466,11 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		}
 	}
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	getRetPerms := checkRequestAuthType(ctx, r, policy.GetObjectRetentionAction, bucket, object)
 	legalHoldPerms := checkRequestAuthType(ctx, r, policy.GetObjectLegalHoldAction, bucket, object)
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	objInfo.UserDefined = objectlock.FilterObjectLockMetadata(objInfo.UserDefined, getRetPerms != ErrNone, legalHoldPerms != ErrNone)
 
 	// Set encryption response headers
@@ -506,7 +506,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 	// Write object content to response body
 	if _, err = io.Copy(httpWriter, gr); err != nil {
 		if !httpWriter.HasWritten() && !statusCodeWritten {
-			// write error response only if no data or headers has been written to client yet
+			// Write error response only if no data or headers has been written to client yet
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 			return
 		}
@@ -617,7 +617,7 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 			perr  error
 			oi    ObjectInfo
 		)
-		// proxy HEAD to replication target if active-active replication configured on bucket
+		// Proxy HEAD to replication target if active-active replication configured on bucket
 		if isProxyable(ctx, bucket) {
 			oi, proxy, perr = proxyHeadToReplicationTarget(ctx, bucket, object, opts)
 			if proxy && perr == nil {
@@ -655,11 +655,11 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 		}
 	}
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	getRetPerms := checkRequestAuthType(ctx, r, policy.GetObjectRetentionAction, bucket, object)
 	legalHoldPerms := checkRequestAuthType(ctx, r, policy.GetObjectLegalHoldAction, bucket, object)
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	objInfo.UserDefined = objectlock.FilterObjectLockMetadata(objInfo.UserDefined, getRetPerms != ErrNone, legalHoldPerms != ErrNone)
 
 	if objectAPI.IsEncryptionSupported() {
@@ -756,7 +756,7 @@ func getCpObjMetadataFromHeader(ctx context.Context, r *http.Request, userMeta m
 		defaultMeta[k] = v
 	}
 
-	// remove SSE Headers from source info
+	// Remove SSE Headers from source info
 	crypto.RemoveSSEHeaders(defaultMeta)
 
 	// Storage class is special, it can be replaced regardless of the
@@ -937,7 +937,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// check if tag directive is valid
+	// Check if tag directive is valid
 	if !isDirectiveValid(r.Header.Get(xhttp.AmzTagDirective)) {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidTagDirective), r.URL, guessIsBrowserReq(r))
 		return
@@ -966,7 +966,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 	}
 	srcOpts.VersionID = vid
 
-	// convert copy src encryption options for GET calls
+	// Convert copy src encryption options for GET calls
 	var getOpts = ObjectOptions{VersionID: srcOpts.VersionID, Versioned: srcOpts.Versioned}
 	getSSE := encrypt.SSE(srcOpts.ServerSideEncryption)
 	if getSSE != srcOpts.ServerSideEncryption {
@@ -1027,7 +1027,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 	defer gr.Close()
 	srcInfo := gr.ObjInfo
 
-	// maximum Upload size for object in a single CopyObject operation.
+	// Maximum Upload size for object in a single CopyObject operation.
 	if isMaxObjectSize(srcInfo.Size) {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrEntityTooLarge), r.URL, guessIsBrowserReq(r))
 		return
@@ -1198,7 +1198,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 				crypto.RemoveInternalEntries(srcInfo.UserDefined)
 			}
 
-			// do not try to verify encrypted content
+			// Do not try to verify encrypted content
 			srcInfo.Reader, err = hash.NewReader(reader, targetSize, "", "", actualSize)
 			if err != nil {
 				writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -1249,7 +1249,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		getObjectInfo = api.CacheAPI().GetObjectInfo
 	}
 
-	// apply default bucket configuration/governance headers for dest side.
+	// Apply default bucket configuration/governance headers for dest side.
 	retentionMode, retentionDate, legalHold, s3Err := checkPutObjectLockAllowed(ctx, r, dstBucket, dstObject, getObjectInfo, retPerms, holdPerms)
 	if s3Err == ErrNone && retentionMode.Valid() {
 		srcInfo.UserDefined[strings.ToLower(xhttp.AmzObjectLockMode)] = string(retentionMode)
@@ -1574,7 +1574,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	rawReader := hashReader
 	pReader := NewPutObjReader(rawReader)
 
-	// get gateway encryption options
+	// Get gateway encryption options
 	var opts ObjectOptions
 	opts, err = putOpts(ctx, r, bucket, object, metadata)
 	if err != nil {
@@ -1635,7 +1635,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 				wantSize = info.EncryptedSize()
 			}
 
-			// do not try to verify encrypted content
+			// Do not try to verify encrypted content
 			hashReader, err = hash.NewReader(etag.Wrap(reader, hashReader), wantSize, "", "", actualSize)
 			if err != nil {
 				writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -1890,7 +1890,7 @@ func (api objectAPIHandlers) PutObjectExtractHandler(w http.ResponseWriter, r *h
 		rawReader := hashReader
 		pReader := NewPutObjReader(rawReader)
 
-		// get encryption options
+		// Get encryption options
 		opts, err := putOpts(ctx, r, bucket, object, metadata)
 		if err != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -1944,7 +1944,7 @@ func (api objectAPIHandlers) PutObjectExtractHandler(w http.ResponseWriter, r *h
 					wantSize = info.EncryptedSize()
 				}
 
-				// do not try to verify encrypted content
+				// Do not try to verify encrypted content
 				hashReader, err = hash.NewReader(etag.Wrap(reader, hashReader), wantSize, "", "", actualSize)
 				if err != nil {
 					writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -2202,7 +2202,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	// check partID with maximum part ID for multipart objects
+	// Check partID with maximum part ID for multipart objects
 	if isMaxPartID(partID) {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidMaxParts), r.URL, guessIsBrowserReq(r))
 		return
@@ -2216,7 +2216,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 	}
 	srcOpts.VersionID = vid
 
-	// convert copy src and dst encryption options for GET/PUT calls
+	// Convert copy src and dst encryption options for GET/PUT calls
 	var getOpts = ObjectOptions{VersionID: srcOpts.VersionID}
 	if srcOpts.ServerSideEncryption != nil {
 		getOpts.ServerSideEncryption = encrypt.SSE(srcOpts.ServerSideEncryption)
@@ -2539,7 +2539,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	// check partID with maximum part ID for multipart objects
+	// Check partID with maximum part ID for multipart objects
 	if isMaxPartID(partID) {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidMaxParts), r.URL, guessIsBrowserReq(r))
 		return
@@ -2587,7 +2587,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 
 	actualSize := size
 
-	// get encryption options
+	// Get encryption options
 	var opts ObjectOptions
 	if crypto.SSEC.IsRequested(r.Header) {
 		opts, err = getOpts(ctx, r, bucket, object)
@@ -2678,7 +2678,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 			info := ObjectInfo{Size: size}
 			wantSize = info.EncryptedSize()
 		}
-		// do not try to verify encrypted content
+		// Do not try to verify encrypted content
 		hashReader, err = hash.NewReader(etag.Wrap(reader, hashReader), wantSize, "", "", actualSize)
 		if err != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -3171,7 +3171,7 @@ func (api objectAPIHandlers) DeleteObjectHandler(w http.ResponseWriter, r *http.
 
 	vID := opts.VersionID
 	if r.Header.Get(xhttp.AmzBucketReplicationStatus) == replication.Replica.String() {
-		// check if replica has permission to be deleted.
+		// Check if replica has permission to be deleted.
 		if apiErrCode := checkRequestAuthType(ctx, r, policy.ReplicateDeleteAction, bucket, object); apiErrCode != ErrNone {
 			writeErrorResponse(ctx, w, errorCodes.ToAPIErr(apiErrCode), r.URL, guessIsBrowserReq(r))
 			return
@@ -3878,7 +3878,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 		writeErrorResponse(ctx, w, apiErr, r.URL, guessIsBrowserReq(r))
 		return
 	}
-	// validate the request
+	// Validate the request
 	if err := rreq.validate(ctx, objectAPI); err != nil {
 		apiErr := errorCodes.ToAPIErr(ErrMalformedXML)
 		apiErr.Description = err.Error()
@@ -3897,11 +3897,11 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 			alreadyRestored = true
 		}
 	}
-	// set or upgrade restore expiry
+	// Set or upgrade restore expiry
 	restoreExpiry := lifecycle.ExpectedExpiryTime(time.Now(), rreq.Days)
 	metadata := cloneMSS(objInfo.UserDefined)
 
-	// update self with restore metadata
+	// Update self with restore metadata
 	if rreq.Type != SelectRestoreRequest {
 		objInfo.metadataOnly = true // Perform only metadata updates.
 		ongoingReq := true
@@ -3945,7 +3945,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 		UserAgent:  r.UserAgent(),
 		Host:       handlers.GetSourceIP(r),
 	})
-	// now process the restore in background
+	// Now process the restore in background
 	go func() {
 		rctx := GlobalContext
 		if !rreq.SelectParameters.IsEmpty() {

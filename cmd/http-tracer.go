@@ -45,9 +45,9 @@ type recordRequest struct {
 	logBody bool
 	// Internal recording buffer
 	buf bytes.Buffer
-	// request headers
+	// Request headers
 	headers http.Header
-	// total bytes read including header size
+	// Total bytes read including header size
 	bytesRead int
 }
 
@@ -83,7 +83,7 @@ func (r *recordRequest) Data() []byte {
 
 var ldapPwdRegex = regexp.MustCompile("(^.*?)LDAPPassword=([^&]*?)(&(.*?))?$")
 
-// redact LDAP password if part of string
+// Redact LDAP password if part of string
 func redactLDAPPwd(s string) string {
 	parts := ldapPwdRegex.FindStringSubmatch(s)
 	if len(parts) > 0 {
@@ -134,7 +134,7 @@ func WebTrace(ri *jsonrpc.RequestInfo) trace.Info {
 		t.NodeName = globalLocalNodeName
 	}
 
-	// strip only standard port from the host address
+	// Strip only standard port from the host address
 	if host, port, err := net.SplitHostPort(t.NodeName); err == nil {
 		if port == "443" || port == "80" {
 			t.NodeName = host
@@ -206,7 +206,7 @@ func Trace(f http.HandlerFunc, logBody bool, w http.ResponseWriter, r *http.Requ
 		t.NodeName = globalLocalNodeName
 	}
 
-	// strip only standard port from the host address
+	// Strip only standard port from the host address
 	if host, port, err := net.SplitHostPort(t.NodeName); err == nil {
 		if port == "443" || port == "80" {
 			t.NodeName = host

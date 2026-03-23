@@ -259,7 +259,7 @@ func initAutoHeal(ctx context.Context, objAPI ObjectLayer) {
 		// Start with format healing
 		if err := bgSeq.healDiskFormat(); err != nil {
 			if newObjectLayerFn() != nil {
-				// log only in situations, when object layer
+				// Log only in situations, when object layer
 				// has fully initialized.
 				logger.LogIf(bgSeq.ctx, err)
 			}
@@ -268,7 +268,7 @@ func initAutoHeal(ctx context.Context, objAPI ObjectLayer) {
 
 	if err := bgSeq.healDiskMeta(objAPI); err != nil {
 		if newObjectLayerFn() != nil {
-			// log only in situations, when object layer
+			// Log only in situations, when object layer
 			// has fully initialized.
 			logger.LogIf(bgSeq.ctx, err)
 		}
@@ -344,7 +344,7 @@ func monitorLocalDisksAndHeal(ctx context.Context, z *erasureServerPools, bgSeq 
 				console.Debugf(color.Green("healDisk:")+" disk check timer fired, attempting to heal %d drives\n", len(healDisks))
 			}
 
-			// heal only if new disks found.
+			// Heal only if new disks found.
 			for _, endpoint := range healDisks {
 				disk, format, err := connectEndpoint(endpoint)
 				if err != nil {

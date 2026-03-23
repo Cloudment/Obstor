@@ -27,13 +27,13 @@ import (
 
 // metaCacheEntry is an object or a directory within an unknown bucket.
 type metaCacheEntry struct {
-	// name is the full name of the object including prefixes
+	// Name is the full name of the object including prefixes
 	name string
 	// Metadata. If none is present it is not an object but only a prefix.
 	// Entries without metadata will only be present in non-recursive scans.
 	metadata []byte
 
-	// cached contains the metadata if decoded.
+	// Cached contains the metadata if decoded.
 	cached *FileInfo
 }
 
@@ -271,7 +271,7 @@ func (m metaCacheEntries) names() []string {
 // metaCacheEntriesSorted contains metacache entries that are sorted.
 type metaCacheEntriesSorted struct {
 	o metaCacheEntries
-	// list id is not serialized
+	// List id is not serialized
 	listID string
 }
 

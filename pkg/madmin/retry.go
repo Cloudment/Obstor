@@ -70,10 +70,10 @@ func (r *lockedRandSource) Seed(seed int64) {
 func (adm AdminClient) newRetryTimer(ctx context.Context, maxRetry int, unit time.Duration, cap time.Duration, jitter float64) <-chan int {
 	attemptCh := make(chan int)
 
-	// computes the exponential backoff duration according to
+	// Computes the exponential backoff duration according to
 	// https://www.awsarchitectureblog.com/2015/03/backoff.html
 	exponentialBackoffWait := func(attempt int) time.Duration {
-		// normalize jitter to the range [0, 1.0]
+		// Normalize jitter to the range [0, 1.0]
 		if jitter < NoJitter {
 			jitter = NoJitter
 		}

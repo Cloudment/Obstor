@@ -336,7 +336,7 @@ func checkPutObjectLockAllowed(ctx context.Context, rq *http.Request, bucket, ob
 		}
 
 		if !legalHoldRequested && retentionCfg.LockEnabled {
-			// inherit retention from bucket configuration
+			// Inherit retention from bucket configuration
 			return retentionCfg.Mode, objectlock.RetentionDate{Time: t.Add(retentionCfg.Validity)}, legalHold, ErrNone
 		}
 		return "", objectlock.RetentionDate{}, legalHold, ErrNone

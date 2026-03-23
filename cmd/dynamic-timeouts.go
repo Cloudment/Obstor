@@ -32,7 +32,7 @@ const (
 	maxDynamicTimeout                  = 24 * time.Hour // Never set timeout bigger than this.
 )
 
-// timeouts that are dynamically adapted based on actual usage results
+// Timeouts that are dynamically adapted based on actual usage results
 type dynamicTimeout struct {
 	timeout int64
 	minimum int64
@@ -86,7 +86,7 @@ func (dt *dynamicTimeout) logEntry(duration time.Duration) {
 			logCopy := [dynamicTimeoutLogSize]time.Duration{}
 			copy(logCopy[:], dt.log[:])
 
-			// reset log entries
+			// Reset log entries
 			atomic.StoreInt64(&dt.entries, 0)
 			dt.mutex.Unlock()
 

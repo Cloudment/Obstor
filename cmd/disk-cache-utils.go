@@ -66,7 +66,7 @@ func (c *cacheControl) isStale(modTime time.Time) bool {
 	if c == nil {
 		return false
 	}
-	// response will never be stale if only-if-cached is set
+	// Response will never be stale if only-if-cached is set
 	if c.onlyIfCached {
 		return false
 	}
@@ -99,7 +99,7 @@ func (c *cacheControl) isStale(modTime time.Time) bool {
 	return false
 }
 
-// returns struct with cache-control settings from user metadata.
+// Returns struct with cache-control settings from user metadata.
 func cacheControlOpts(o ObjectInfo) *cacheControl {
 	c := cacheControl{}
 	m := o.UserDefined
@@ -181,7 +181,7 @@ func (o ObjectInfo) IsCacheable() bool {
 	return !ok
 }
 
-// reads file cached on disk from offset upto length
+// Reads file cached on disk from offset upto length
 func readCacheFileStream(filePath string, offset, length int64) (io.ReadCloser, error) {
 	if filePath == "" || offset < 0 {
 		return nil, errInvalidArgument
@@ -258,7 +258,7 @@ func decryptCacheObjectETag(info *ObjectInfo) error {
 			return err
 		}
 		etagStr := tryDecryptETag(objectKey[:], info.ETag, false)
-		// backend ETag was hex encoded before encrypting, so hex decode to get actual ETag
+		// Backend ETag was hex encoded before encrypting, so hex decode to get actual ETag
 		etag, err := hex.DecodeString(etagStr)
 		if err != nil {
 			return err
@@ -295,7 +295,7 @@ type fileScorer struct {
 	// 1/size for consistent score.
 	sizeMult float64
 
-	// queue is a linked list of files we want to delete.
+	// Queue is a linked list of files we want to delete.
 	// The list is kept sorted according to score, highest at top, lowest at bottom.
 	queue       list.List
 	queuedBytes uint64

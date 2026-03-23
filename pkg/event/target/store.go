@@ -93,7 +93,7 @@ func IsConnResetErr(err error) bool {
 	if strings.Contains(err.Error(), "connection reset by peer") {
 		return true
 	}
-	// incase if error message is wrapped.
+	// Incase if error message is wrapped.
 	return errors.Is(err, syscall.ECONNRESET)
 }
 
@@ -130,7 +130,7 @@ func sendEvents(target event.Target, eventKeyCh <-chan string, doneCh <-chan str
 		select {
 		case eventKey, ok := <-eventKeyCh:
 			if !ok {
-				// closed channel.
+				// Closed channel.
 				return
 			}
 

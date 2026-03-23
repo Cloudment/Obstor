@@ -245,7 +245,7 @@ func (s *xlStorage) WalkDir(ctx context.Context, opts WalkDirOptions, wr io.Writ
 					}
 				}
 			case isSysErrNotDir(err):
-				// skip
+				// Skip
 			default:
 				logger.LogIf(ctx, err)
 			}

@@ -32,7 +32,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 )
 
-// set encryption options for pass through to backend in the case of gateway and UserDefined metadata
+// Set encryption options for pass through to backend in the case of gateway and UserDefined metadata
 func getDefaultOpts(header http.Header, copySource bool, metadata map[string]string) (opts ObjectOptions, err error) {
 	var clientKey [32]byte
 	var sse encrypt.ServerSide
@@ -74,7 +74,7 @@ func getDefaultOpts(header http.Header, copySource bool, metadata map[string]str
 	return
 }
 
-// get ObjectOptions for GET calls from encryption headers
+// Get ObjectOptions for GET calls from encryption headers
 func getOpts(ctx context.Context, r *http.Request, bucket, object string) (ObjectOptions, error) {
 	var (
 		encryption encrypt.ServerSide
@@ -206,7 +206,7 @@ func delOpts(ctx context.Context, r *http.Request, bucket, object string) (opts 
 	return opts, nil
 }
 
-// get ObjectOptions for PUT calls from encryption headers and metadata
+// Get ObjectOptions for PUT calls from encryption headers and metadata
 func putOpts(ctx context.Context, r *http.Request, bucket, object string, metadata map[string]string) (opts ObjectOptions, err error) {
 	versioned := globalBucketVersioningSys.Enabled(bucket)
 	vid := strings.TrimSpace(r.URL.Query().Get(xhttp.VersionID))
@@ -294,12 +294,12 @@ func putOpts(ctx context.Context, r *http.Request, bucket, object string, metada
 	return opts, nil
 }
 
-// get ObjectOptions for Copy calls with encryption headers provided on the target side and source side metadata
+// Get ObjectOptions for Copy calls with encryption headers provided on the target side and source side metadata
 func copyDstOpts(ctx context.Context, r *http.Request, bucket, object string, metadata map[string]string) (opts ObjectOptions, err error) {
 	return putOpts(ctx, r, bucket, object, metadata)
 }
 
-// get ObjectOptions for Copy calls with encryption headers provided on the source side
+// Get ObjectOptions for Copy calls with encryption headers provided on the source side
 func copySrcOpts(ctx context.Context, r *http.Request, bucket, object string) (ObjectOptions, error) {
 	var (
 		ssec encrypt.ServerSide

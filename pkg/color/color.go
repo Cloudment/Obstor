@@ -21,7 +21,7 @@ import (
 	"fmt"
 )
 
-// global colors.
+// Global colors.
 var (
 	// Check if we stderr, stdout are dumb terminals, we do not apply
 	// ansi coloring on dumb terminals.

@@ -40,7 +40,7 @@ var ErrDomainMissing = errors.New("domain is missing")
 
 const etcdPathSeparator = "/"
 
-// create a new coredns service record for the bucket.
+// Create a new coredns service record for the bucket.
 func newCoreDNSMsg(ip string, port string, ttl uint32, t time.Time) ([]byte, error) {
 	return json.Marshal(&SrvRecord{
 		Host:         ip,
@@ -127,7 +127,7 @@ func (c *CoreDNS) list(key string, domain bool) ([]SrvRecord, error) {
 		if err != nil {
 			return nil, err
 		}
-		// only if we are looking at `domain` as true
+		// Only if we are looking at `domain` as true
 		// we should return error here.
 		if domain && r.Count == 0 {
 			return nil, ErrDomainMissing
@@ -286,7 +286,7 @@ func NewCoreDNS(cfg clientv3.Config, setters ...EtcdOption) (Store, error) {
 		return nil, errors.New("invalid argument")
 	}
 
-	// strip ports off of domainIPs
+	// Strip ports off of domainIPs
 	domainIPsWithoutPorts := args.domainIPs.ApplyFunc(func(ip string) string {
 		host, _, err := net.SplitHostPort(ip)
 		if err != nil {

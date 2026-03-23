@@ -34,12 +34,12 @@ import (
 )
 
 const (
-	// name of custom multipart metadata file for s3 backend.
+	// Name of custom multipart metadata file for s3 backend.
 	gwdareMetaJSON string = "dare.meta"
 
-	// name of temporary per part metadata file
+	// Name of temporary per part metadata file
 	gwpartMetaJSON string = "part.meta"
-	// custom multipart files are stored under the defaultMinioGWPrefix
+	// Custom multipart files are stored under the defaultMinioGWPrefix
 	defaultMinioGWPrefix     = ".obstor"
 	defaultGWContentFileName = "data"
 )
@@ -86,7 +86,7 @@ func (l *s3EncObjects) ListObjectsV2(ctx context.Context, bucket, prefix, contin
 	var prefixes []string
 	var isTruncated bool
 
-	// filter out objects that contain a .obstor prefix, but is not a dare.meta metadata file.
+	// Filter out objects that contain a .obstor prefix, but is not a dare.meta metadata file.
 	for {
 		loi, e = l.s3Objects.ListObjectsV2(ctx, bucket, prefix, continuationToken, delimiter, 1000, fetchOwner, startAfter)
 		if e != nil {
@@ -102,7 +102,7 @@ func (l *s3EncObjects) ListObjectsV2(ctx context.Context, bucket, prefix, contin
 			if !isGWObject(obj.Name) {
 				continue
 			}
-			// get objectname and ObjectInfo from the custom metadata file
+			// Get objectname and ObjectInfo from the custom metadata file
 			if strings.HasSuffix(obj.Name, gwdareMetaJSON) {
 				objSlice := strings.Split(obj.Name, obstor.SlashSeparator+defaultMinioGWPrefix)
 				gwMeta, e := l.getGWMetadata(ctx, bucket, getDareMetaPath(objSlice[0]))
@@ -162,7 +162,7 @@ func isGWObject(objName string) bool {
 	if !isEncrypted {
 		return true
 	}
-	// ignore temp part.meta files
+	// Ignore temp part.meta files
 	if strings.Contains(objName, gwpartMetaJSON) {
 		return false
 	}
@@ -181,7 +181,7 @@ func isGWObject(objName string) bool {
 			break
 		}
 	}
-	// incomplete uploads would have a uploadID between defaultMinioGWPrefix and gwdareMetaJSON
+	// Incomplete uploads would have a uploadID between defaultMinioGWPrefix and gwdareMetaJSON
 	return i2 > 0 && i1 > 0 && i2-i1 == 1
 }
 
@@ -234,7 +234,7 @@ func (l *s3EncObjects) getGWMetadata(ctx context.Context, bucket, metaFileName s
 	return readGWMetadata(ctx, buffer)
 }
 
-// writes dare metadata to the s3 backend
+// Writes dare metadata to the s3 backend
 func (l *s3EncObjects) writeGWMetadata(ctx context.Context, bucket, metaFileName string, m gwMetaV1, o obstor.ObjectOptions) error {
 	reader, err := getGWMetadata(ctx, bucket, metaFileName, m)
 	if err != nil {
@@ -245,22 +245,22 @@ func (l *s3EncObjects) writeGWMetadata(ctx context.Context, bucket, metaFileName
 	return err
 }
 
-// returns path of temporary metadata json file for the upload
+// Returns path of temporary metadata json file for the upload
 func getTmpDareMetaPath(object, uploadID string) string {
 	return path.Join(getGWMetaPath(object), uploadID, gwdareMetaJSON)
 }
 
-// returns path of metadata json file for encrypted objects
+// Returns path of metadata json file for encrypted objects
 func getDareMetaPath(object string) string {
 	return path.Join(getGWMetaPath(object), gwdareMetaJSON)
 }
 
-// returns path of temporary part metadata file for multipart uploads
+// Returns path of temporary part metadata file for multipart uploads
 func getPartMetaPath(object, uploadID string, partID int) string {
 	return path.Join(object, defaultMinioGWPrefix, uploadID, strconv.Itoa(partID), gwpartMetaJSON)
 }
 
-// deletes the custom dare metadata file saved at the backend
+// Deletes the custom dare metadata file saved at the backend
 func (l *s3EncObjects) deleteGWMetadata(ctx context.Context, bucket, metaFileName string) (obstor.ObjectInfo, error) {
 	return l.s3Objects.DeleteObject(ctx, bucket, metaFileName, obstor.ObjectOptions{})
 }
@@ -272,7 +272,7 @@ func (l *s3EncObjects) getObject(ctx context.Context, bucket string, key string,
 	}
 	dmeta, err := l.getGWMetadata(ctx, bucket, getDareMetaPath(key))
 	if err != nil {
-		// unencrypted content
+		// Unencrypted content
 		return l.s3Objects.getObject(ctx, bucket, key, startOffset, length, writer, etag, o)
 	}
 	if startOffset < 0 {

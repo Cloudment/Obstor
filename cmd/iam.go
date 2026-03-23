@@ -171,7 +171,7 @@ type MappedPolicy struct {
 	Policies string `json:"policy"`
 }
 
-// converts a mapped policy into a slice of distinct policies
+// Converts a mapped policy into a slice of distinct policies
 func (mp MappedPolicy) toSlice() []string {
 	var policies []string
 	for _, policy := range strings.Split(mp.Policies, ",") {
@@ -235,7 +235,7 @@ const (
 	srvAccUser
 )
 
-// key options
+// Key options
 type options struct {
 	ttl int64 //expiry in seconds
 }
@@ -305,7 +305,7 @@ func (sys *IAMSys) LoadGroup(objAPI ObjectLayer, group string) error {
 	}
 
 	if err == errNoSuchGroup {
-		// group does not exist - so remove from memory.
+		// Group does not exist - so remove from memory.
 		sys.removeGroupFromMembershipsMap(group)
 		delete(sys.iamGroupsMap, group)
 		delete(sys.iamGroupPolicyMap, group)
@@ -472,12 +472,12 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 		}
 	}
 
-	// load polices mapped to users
+	// Load polices mapped to users
 	if err := store.loadMappedPolicies(ctx, regularUser, false, iamUserPolicyMap); err != nil {
 		return err
 	}
 
-	// load policies mapped to groups
+	// Load policies mapped to groups
 	if err := store.loadMappedPolicies(ctx, regularUser, true, iamGroupPolicyMap); err != nil {
 		return err
 	}
@@ -486,12 +486,12 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 		return err
 	}
 
-	// load STS temp users
+	// Load STS temp users
 	if err := store.loadUsers(ctx, stsUser, iamUsersMap); err != nil {
 		return err
 	}
 
-	// load STS policy mappings
+	// Load STS policy mappings
 	if err := store.loadMappedPolicies(ctx, stsUser, false, iamUserPolicyMap); err != nil {
 		return err
 	}
@@ -516,7 +516,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 		sys.iamUserPolicyMap[k] = v
 	}
 
-	// purge any expired entries which became expired now.
+	// Purge any expired entries which became expired now.
 	var expiredEntries []string
 	for k, v := range sys.iamUsersMap {
 		if v.IsExpired() {
@@ -538,7 +538,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 		}
 	}
 
-	// purge any expired entries which became expired now.
+	// Purge any expired entries which became expired now.
 	for k, v := range sys.iamUsersMap {
 		if v.IsExpired() {
 			delete(sys.iamUsersMap, k)
@@ -577,13 +577,13 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 	// Hold the lock for migration only.
 	txnLk := objAPI.NewNSLock(minioMetaBucket, minioConfigPrefix+"/iam.lock")
 
-	// allocate dynamic timeout once before the loop
+	// Allocate dynamic timeout once before the loop
 	iamLockTimeout := newDynamicTimeout(5*time.Second, 3*time.Second)
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for {
-		// let one of the server acquire the lock, if not let them timeout.
+		// Let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err := txnLk.GetLock(retryCtx, iamLockTimeout); err != nil {
 			logger.Info("Waiting for all Obstor IAM sub-system to be initialized.. trying to acquire lock")
@@ -805,7 +805,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 	sys.store.deleteMappedPolicy(context.Background(), accessKey, regularUser, false)
 	err := sys.store.deleteUserIdentity(context.Background(), accessKey, regularUser)
 	if err == errNoSuchUser {
-		// ignore if user is already deleted.
+		// Ignore if user is already deleted.
 		err = nil
 	}
 
@@ -1293,7 +1293,7 @@ func (sys *IAMSys) DeleteServiceAccount(ctx context.Context, accessKey string) e
 	// It is ok to ignore deletion error on the mapped policy
 	err := sys.store.deleteUserIdentity(context.Background(), accessKey, srvAccUser)
 	if err != nil {
-		// ignore if user is already deleted.
+		// Ignore if user is already deleted.
 		if err == errNoSuchUser {
 			return nil
 		}
@@ -1377,7 +1377,7 @@ func (sys *IAMSys) loadUserFromStore(accessKey string) {
 	if _, found := sys.iamUsersMap[accessKey]; !found {
 		sys.store.loadUser(context.Background(), accessKey, regularUser, sys.iamUsersMap)
 		if _, found = sys.iamUsersMap[accessKey]; found {
-			// found user, load its mapped policies
+			// Found user, load its mapped policies
 			sys.store.loadMappedPolicy(context.Background(), accessKey, regularUser, false, sys.iamUserPolicyMap)
 		} else {
 			sys.store.loadUser(context.Background(), accessKey, srvAccUser, sys.iamUsersMap)
@@ -1500,7 +1500,7 @@ func (sys *IAMSys) AddUsersToGroup(group string, members []string) error {
 
 	sys.iamGroupsMap[group] = gi
 
-	// update user-group membership map
+	// Update user-group membership map
 	for _, member := range members {
 		gset := sys.iamUserGroupMemberships[member]
 		if gset == nil {
@@ -1582,7 +1582,7 @@ func (sys *IAMSys) RemoveUsersFromGroup(group string, members []string) error {
 	}
 	sys.iamGroupsMap[group] = gi
 
-	// update user-group membership map
+	// Update user-group membership map
 	for _, member := range members {
 		gset := sys.iamUserGroupMemberships[member]
 		if gset == nil {
@@ -1847,7 +1847,7 @@ func (sys *IAMSys) policyDBGet(name string, isGroup bool) (policies []string, er
 		}
 	}
 
-	// returned policy could be empty
+	// Returned policy could be empty
 	policies = append(policies, mp.toSlice()...)
 
 	for _, group := range sys.iamUserGroupMemberships[name].ToSlice() {
@@ -1973,16 +1973,16 @@ func (sys *IAMSys) IsAllowedLDAPSTS(args iampolicy.Args, parentUser string) bool
 	if ok {
 		parentInClaim, ok := parentInClaimIface.(string)
 		if !ok {
-			// ldap parentInClaim name is not a string reject it.
+			// Ldap parentInClaim name is not a string reject it.
 			return false
 		}
 
 		if parentInClaim != parentUser {
-			// ldap claim has been modified maliciously reject it.
+			// Ldap claim has been modified maliciously reject it.
 			return false
 		}
 	} else {
-		// no ldap parentInClaim claim present reject it.
+		// No ldap parentInClaim claim present reject it.
 		return false
 	}
 
@@ -2065,7 +2065,7 @@ func (sys *IAMSys) IsAllowedSTS(args iampolicy.Args, parentUser string) bool {
 	for pname := range policies {
 		p, found := sys.iamPolicyDocsMap[pname]
 		if !found {
-			// all policies presented in the claim should exist
+			// All policies presented in the claim should exist
 			logger.LogIf(GlobalContext, fmt.Errorf("expected policy (%s) missing from the JWT claim %s, rejecting the request", pname, iamPolicyClaimNameOpenID()))
 			return false
 		}

@@ -38,7 +38,7 @@ type dateEqualsFunc struct {
 	value time.Time
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f dateEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -58,12 +58,12 @@ func (f dateEqualsFunc) evaluate(values map[string][]string) bool {
 	return f.value.Equal(t)
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f dateEqualsFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "DateEquals" condition name.
+// Name() - returns "DateEquals" condition name.
 func (f dateEqualsFunc) name() name {
 	return dateEquals
 }
@@ -95,13 +95,13 @@ type dateNotEqualsFunc struct {
 	dateEqualsFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f dateNotEqualsFunc) evaluate(values map[string][]string) bool {
 	return !f.dateEqualsFunc.evaluate(values)
 }
 
-// name() - returns "DateNotEquals" condition name.
+// Name() - returns "DateNotEquals" condition name.
 func (f dateNotEqualsFunc) name() name {
 	return dateNotEquals
 }

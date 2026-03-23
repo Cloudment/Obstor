@@ -47,7 +47,7 @@ func handleSignals() {
 	stopProcess := func() bool {
 		var err, oerr error
 
-		// send signal to various go-routines that they need to quit.
+		// Send signal to various go-routines that they need to quit.
 		cancelGlobalContext()
 
 		if globalNotificationSys != nil {

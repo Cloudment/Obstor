@@ -109,7 +109,7 @@ func formatCacheGetVersion(r io.ReadSeeker) (string, error) {
 
 // Creates a new cache format.json if unformatted.
 func createFormatCache(fsFormatPath string, format *formatCacheV1) error {
-	// open file using READ & WRITE permission
+	// Open file using READ & WRITE permission
 	var file, err = os.OpenFile(fsFormatPath, os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		return err
@@ -178,7 +178,7 @@ func loadFormatCache(ctx context.Context, drives []string) ([]*formatCacheV2, bo
 	return formats, migrating, nil
 }
 
-// unmarshalls the cache format.json into formatCacheV1
+// Unmarshalls the cache format.json into formatCacheV1
 func formatMetaCacheV1(r io.ReadSeeker) (*formatCacheV1, error) {
 	format := &formatCacheV1{}
 	if err := jsonLoad(r, format); err != nil {
@@ -192,7 +192,7 @@ func checkFormatCacheValue(format *formatCacheV2, migrating bool) error {
 		return fmt.Errorf("unsupported cache format [%s] found", format.Format)
 	}
 
-	// during migration one or more cache drive(s) formats can be out of sync
+	// During migration one or more cache drive(s) formats can be out of sync
 	if migrating {
 		// Validate format version and format type.
 		if format.Version != formatMetaVersion1 {
@@ -289,7 +289,7 @@ func findCacheDiskIndex(disk string, disks []string) int {
 	return -1
 }
 
-// validate whether cache drives order has changed
+// Validate whether cache drives order has changed
 func validateCacheFormats(ctx context.Context, migrating bool, formats []*formatCacheV2) error {
 	count := 0
 	for _, format := range formats {
@@ -326,7 +326,7 @@ func cacheDrivesUnformatted(drives []string) bool {
 	return count == len(drives)
 }
 
-// create format.json for each cache drive if fresh disk or load format from disk
+// Create format.json for each cache drive if fresh disk or load format from disk
 // Then validate the format for all drives in the cache to ensure order
 // of cache drives has not changed.
 func loadAndValidateCacheFormat(ctx context.Context, drives []string) (formats []*formatCacheV2, migrating bool, err error) {
@@ -344,7 +344,7 @@ func loadAndValidateCacheFormat(ctx context.Context, drives []string) (formats [
 	return formats, migrating, nil
 }
 
-// reads cached object on disk and writes it back after adding bitrot
+// Reads cached object on disk and writes it back after adding bitrot
 // hashsum per block as per the new disk cache format.
 func migrateCacheData(ctx context.Context, c *diskCache, bucket, object, oldfile, destDir string, metadata map[string]string) error {
 	st, err := os.Stat(oldfile)
@@ -370,7 +370,7 @@ func migrateCacheData(ctx context.Context, c *diskCache, bucket, object, oldfile
 	return err
 }
 
-// migrate cache contents from old cacheFS format to new backend format
+// Migrate cache contents from old cacheFS format to new backend format
 // new format is flat
 //
 //	sha(bucket,object)/  <== dir name
@@ -381,12 +381,12 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 	cacheFormatPath := pathJoin(c.dir, minioMetaBucket, formatConfigFile)
 
 	if _, err := os.Stat(oldCacheBucketsPath); err != nil {
-		// remove .obstor.sys sub directories
+		// Remove .obstor.sys sub directories
 		removeAll(path.Join(c.dir, minioMetaBucket, "multipart"))
 		removeAll(path.Join(c.dir, minioMetaBucket, "tmp"))
 		removeAll(path.Join(c.dir, minioMetaBucket, "trash"))
 		removeAll(path.Join(c.dir, minioMetaBucket, "buckets"))
-		// just migrate cache format
+		// Just migrate cache format
 		return migrateCacheFormatJSON(cacheFormatPath)
 	}
 
@@ -419,20 +419,20 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 			}
 			prevCachedPath := path.Join(c.dir, bucket, object)
 
-			// get old cached metadata
+			// Get old cached metadata
 			oldMetaPath := pathJoin(oldCacheBucketsPath, bucket, object, cacheMetaJSONFile)
 			metaPath := pathJoin(destdir, cacheMetaJSONFile)
 			metaBytes, err := os.ReadFile(oldMetaPath)
 			if err != nil {
 				return err
 			}
-			// marshal cache metadata after adding version and stat info
+			// Marshal cache metadata after adding version and stat info
 			meta := &cacheMeta{}
 
 			if err = json.Unmarshal(metaBytes, &meta); err != nil {
 				return err
 			}
-			// move cached object to new cache directory path
+			// Move cached object to new cache directory path
 			// migrate cache data and add bit-rot protection hash sum
 			// at the start of each block
 			if err := migrateCacheData(ctx, c, bucket, object, prevCachedPath, destdir, meta.Meta); err != nil {
@@ -446,11 +446,11 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 				logger.LogIf(ctx, err)
 				return err
 			}
-			// old cached file can now be removed
+			// Old cached file can now be removed
 			if err := os.Remove(prevCachedPath); err != nil {
 				return err
 			}
-			// move cached metadata after changing cache metadata version
+			// Move cached metadata after changing cache metadata version
 			meta.Checksum = CacheChecksumInfoV1{Algorithm: HighwayHash256S.String(), Blocksize: cacheBlkSize}
 			meta.Version = cacheMetaVersion
 			meta.Stat.Size = stat.Size()
@@ -469,7 +469,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 		removeAll(path.Join(c.dir, bucket))
 	}
 
-	// remove .obstor.sys sub directories
+	// Remove .obstor.sys sub directories
 	removeAll(path.Join(c.dir, minioMetaBucket, "multipart"))
 	removeAll(path.Join(c.dir, minioMetaBucket, "tmp"))
 	removeAll(path.Join(c.dir, minioMetaBucket, "trash"))
@@ -480,7 +480,7 @@ func migrateOldCache(ctx context.Context, c *diskCache) error {
 }
 
 func migrateCacheFormatJSON(cacheFormatPath string) error {
-	// now migrate format.json
+	// Now migrate format.json
 	f, err := os.OpenFile(cacheFormatPath, os.O_RDWR, 0)
 	if err != nil {
 		return err

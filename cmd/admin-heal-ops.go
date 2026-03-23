@@ -42,7 +42,7 @@ const (
 )
 
 const (
-	// a heal sequence with this many un-consumed heal result
+	// A heal sequence with this many un-consumed heal result
 	// items blocks until heal-status consumption resumes or is
 	// aborted due to timeout.
 	maxUnconsumedHealResultItems = 1000
@@ -51,7 +51,7 @@ const (
 	// for this timeout duration, the heal sequence is aborted.
 	healUnconsumedTimeout = 24 * time.Hour
 
-	// time-duration to keep heal sequence state after it
+	// Time-duration to keep heal sequence state after it
 	// completes.
 	keepHealSeqStateDuration = time.Minute * 10
 
@@ -73,19 +73,19 @@ var (
 
 // healSequenceStatus - accumulated status of the heal sequence
 type healSequenceStatus struct {
-	// summary and detail for failures
+	// Summary and detail for failures
 	Summary       healStatusSummary `json:"Summary"`
 	FailureDetail string            `json:"Detail,omitempty"`
 	StartTime     time.Time         `json:"StartTime"`
 
-	// settings for the heal sequence
+	// Settings for the heal sequence
 	HealSettings madmin.HealOpts `json:"Settings"`
 
-	// slice of available heal result records
+	// Slice of available heal result records
 	Items []madmin.HealResultItem `json:"Items"`
 }
 
-// structure to hold state of all heal sequences in server memory
+// Structure to hold state of all heal sequences in server memory
 type allHealState struct {
 	sync.RWMutex
 
@@ -203,7 +203,7 @@ func (ahs *allHealState) periodicHealSeqsClean(ctx context.Context) {
 			}
 			ahs.Unlock()
 		case <-ctx.Done():
-			// server could be restarting - need
+			// Server could be restarting - need
 			// to exit immediately
 			return
 		}
@@ -339,10 +339,10 @@ func (ahs *allHealState) LaunchNewHealSequence(h *healSequence, objAPI ObjectLay
 func (ahs *allHealState) PopHealStatusJSON(hpath string,
 	clientToken string) ([]byte, APIErrorCode) {
 
-	// fetch heal state for given path
+	// Fetch heal state for given path
 	h, exists := ahs.getHealSequence(hpath)
 	if !exists {
-		// heal sequence doesn't exist, must have finished.
+		// Heal sequence doesn't exist, must have finished.
 		jbytes, err := json.Marshal(healSequenceStatus{
 			Summary: healFinishedStatus,
 		})
@@ -360,7 +360,7 @@ func (ahs *allHealState) PopHealStatusJSON(hpath string,
 
 	numItems := len(h.currentStatus.Items)
 
-	// calculate index of most recently available heal result
+	// Calculate index of most recently available heal result
 	// record.
 	lastResultIndex := h.lastSentResultIndex
 	if numItems > 0 {
@@ -393,7 +393,7 @@ type healSource struct {
 // healSequence - state for each heal sequence initiated on the
 // server.
 type healSequence struct {
-	// bucket, and object on which heal seq. was initiated
+	// Bucket, and object on which heal seq. was initiated
 	bucket, object string
 
 	// A channel of entities (format, buckets, objects) to heal
@@ -405,32 +405,32 @@ type healSequence struct {
 	// Report healing progress
 	reportProgress bool
 
-	// time at which heal sequence was started
+	// Time at which heal sequence was started
 	startTime time.Time
 
-	// time at which heal sequence has ended
+	// Time at which heal sequence has ended
 	endTime time.Time
 
 	// Heal client info
 	clientToken, clientAddress string
 
-	// was this heal sequence force started?
+	// Was this heal sequence force started?
 	forceStarted bool
 
-	// heal settings applied to this heal sequence
+	// Heal settings applied to this heal sequence
 	settings madmin.HealOpts
 
-	// current accumulated status of the heal sequence
+	// Current accumulated status of the heal sequence
 	currentStatus healSequenceStatus
 
-	// channel signaled by background routine when traversal has
+	// Channel signaled by background routine when traversal has
 	// completed
 	traverseAndHealDoneCh chan error
 
-	// canceler to cancel heal sequence.
+	// Canceler to cancel heal sequence.
 	cancelCtx context.CancelFunc
 
-	// the last result index sent to client
+	// The last result index sent to client
 	lastSentResultIndex int64
 
 	// Number of total items scanned against item type
@@ -448,7 +448,7 @@ type healSequence struct {
 	// Holds the request-info for logging
 	ctx context.Context
 
-	// used to lock this structure as it is concurrently accessed
+	// Used to lock this structure as it is concurrently accessed
 	mutex sync.RWMutex
 }
 
@@ -568,18 +568,18 @@ func (h *healSequence) isQuitting() bool {
 	}
 }
 
-// check if the heal sequence has ended
+// Check if the heal sequence has ended
 func (h *healSequence) hasEnded() bool {
 	h.mutex.RLock()
 	defer h.mutex.RUnlock()
-	// background heal never ends
+	// Background heal never ends
 	if h.clientToken == bgHealingUUID {
 		return false
 	}
 	return !h.endTime.IsZero()
 }
 
-// stops the heal sequence - safe to call multiple times.
+// Stops the heal sequence - safe to call multiple times.
 func (h *healSequence) stop() {
 	h.cancelCtx()
 }
@@ -593,14 +593,14 @@ func (h *healSequence) stop() {
 // sequence automatically resumes. The return value indicates if the
 // operation succeeded.
 func (h *healSequence) pushHealResultItem(r madmin.HealResultItem) error {
-	// start a timer to keep an upper time limit to find an empty
+	// Start a timer to keep an upper time limit to find an empty
 	// slot to add the given heal result - if no slot is found it
 	// means that the server is holding the maximum amount of
 	// heal-results in memory and the client has not consumed it
 	// for too long.
 	unconsumedTimer := time.NewTimer(healUnconsumedTimeout)
 	defer func() {
-		// stop the timeout timer so it is garbage collected.
+		// Stop the timeout timer so it is garbage collected.
 		if !unconsumedTimer.Stop() {
 			<-unconsumedTimer.C
 		}
@@ -611,7 +611,7 @@ func (h *healSequence) pushHealResultItem(r madmin.HealResultItem) error {
 		h.mutex.Lock()
 		itemsLen = len(h.currentStatus.Items)
 		if itemsLen == maxUnconsumedHealResultItems {
-			// wait for a second, or quit if an external
+			// Wait for a second, or quit if an external
 			// stop signal is received or the
 			// unconsumedTimer fires.
 			select {
@@ -622,7 +622,7 @@ func (h *healSequence) pushHealResultItem(r madmin.HealResultItem) error {
 
 			case <-h.ctx.Done():
 				h.mutex.Unlock()
-				// discard result and return.
+				// Discard result and return.
 				return errHealStopSignalled
 
 			// Timeout if no results consumed for too long.
@@ -644,7 +644,7 @@ func (h *healSequence) pushHealResultItem(r madmin.HealResultItem) error {
 	// append to results
 	h.currentStatus.Items = append(h.currentStatus.Items, r)
 
-	// release lock
+	// Release lock
 	h.mutex.Unlock()
 
 	return nil
@@ -679,10 +679,10 @@ func (h *healSequence) healSequenceStart(objAPI ObjectLayer) {
 		h.endTime = UTCNow()
 		// Heal traversal is complete.
 		if err == nil {
-			// heal traversal succeeded.
+			// Heal traversal succeeded.
 			h.currentStatus.Summary = healFinishedStatus
 		} else {
-			// heal traversal had an error.
+			// Heal traversal had an error.
 			h.currentStatus.Summary = healStoppedStatus
 			h.currentStatus.FailureDetail = err.Error()
 		}
@@ -693,7 +693,7 @@ func (h *healSequence) healSequenceStart(objAPI ObjectLayer) {
 		h.currentStatus.Summary = healFinishedStatus
 		h.mutex.Unlock()
 
-		// drain traverse channel so the traversal
+		// Drain traverse channel so the traversal
 		// go-routine does not leak.
 		go func() {
 			// Eventually the traversal go-routine closes

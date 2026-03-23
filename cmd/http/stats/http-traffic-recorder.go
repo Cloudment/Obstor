@@ -42,7 +42,7 @@ func (r IncomingTrafficMeter) BytesCount() int {
 
 // OutgoingTrafficMeter counts the outgoing bytes through the responseWriter.
 type OutgoingTrafficMeter struct {
-	// wrapper for underlying http.ResponseWriter.
+	// Wrapper for underlying http.ResponseWriter.
 	http.ResponseWriter
 	countBytes int
 }

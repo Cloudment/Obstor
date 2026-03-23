@@ -175,7 +175,7 @@ func (c *ChecksumInfo) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// constant and shouldn't be changed.
+// Constant and shouldn't be changed.
 const legacyDataDir = "legacy"
 
 func (m *xlMetaV1Object) ToFileInfo(volume, path string) (FileInfo, error) {

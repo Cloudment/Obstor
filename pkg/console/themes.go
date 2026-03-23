@@ -50,6 +50,6 @@ func SetColorOn() {
 func SetColor(tag string, cl *color.Color) {
 	privateMutex.Lock()
 	defer privateMutex.Unlock()
-	// add new theme
+	// Add new theme
 	Theme[tag] = cl
 }

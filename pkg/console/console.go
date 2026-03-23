@@ -140,7 +140,7 @@ var (
 	}
 )
 
-// wrap around standard fmt functions.
+// Wrap around standard fmt functions.
 // consolePrint prints a message prefixed with message type and program name.
 func consolePrint(tag string, c *color.Color, a ...interface{}) {
 	privateMutex.Lock()
@@ -336,10 +336,10 @@ func ProgramName() string {
 
 // Table - data to print in table format with fixed row widths.
 type Table struct {
-	// per-row colors
+	// Per-row colors
 	RowColors []*color.Color
 
-	// per-column align-right flag (aligns left by default)
+	// Per-column align-right flag (aligns left by default)
 	AlignRight []bool
 
 	// Left margin width for table

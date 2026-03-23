@@ -37,7 +37,7 @@ type dateGreaterThanFunc struct {
 	value time.Time
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f dateGreaterThanFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -57,12 +57,12 @@ func (f dateGreaterThanFunc) evaluate(values map[string][]string) bool {
 	return t.After(f.value)
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f dateGreaterThanFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "DateGreaterThan" condition name.
+// Name() - returns "DateGreaterThan" condition name.
 func (f dateGreaterThanFunc) name() name {
 	return dateGreaterThan
 }
@@ -94,7 +94,7 @@ type dateGreaterThanEqualsFunc struct {
 	dateGreaterThanFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f dateGreaterThanEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -114,7 +114,7 @@ func (f dateGreaterThanEqualsFunc) evaluate(values map[string][]string) bool {
 	return t.After(f.value) || t.Equal(f.value)
 }
 
-// name() - returns "DateNotEquals" condition name.
+// Name() - returns "DateNotEquals" condition name.
 func (f dateGreaterThanEqualsFunc) name() name {
 	return dateGreaterThanEquals
 }

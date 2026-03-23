@@ -182,7 +182,7 @@ func doTreeWalk(ctx context.Context, bucket, prefixDir, entryPrefixMatch, marker
 		return true, nil
 	}
 
-	// example:
+	// Example:
 	// If markerDir="four/" Search() returns the index of "four/" in the sorted
 	// entries list so we skip all the entries till "four/"
 	idx := sort.Search(len(entries), func(i int) bool {

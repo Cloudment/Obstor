@@ -44,7 +44,7 @@ import (
 	"github.com/tinylib/msgp/msgp"
 )
 
-// client to talk to peer Nodes.
+// Client to talk to peer Nodes.
 type peerRESTClient struct {
 	host       *xnet.Host
 	restClient *rest.Client
@@ -136,7 +136,7 @@ func (client *peerRESTClient) doNetTest(ctx context.Context, dataSize int64, thr
 
 	var totalTransferred int64
 
-	// ensure enough samples to obtain normal distribution
+	// Ensure enough samples to obtain normal distribution
 	maxSamples := int(10 * threadCount)
 
 	innerCtx, cancel := context.WithCancel(ctx)
@@ -818,7 +818,7 @@ func (client *peerRESTClient) Trace(traceCh chan interface{}, doneCh <-chan stru
 func (client *peerRESTClient) ConsoleLog(logCh chan interface{}, doneCh <-chan struct{}) {
 	go func() {
 		for {
-			// get cancellation context to properly unsubscribe peers
+			// Get cancellation context to properly unsubscribe peers
 			ctx, cancel := context.WithCancel(GlobalContext)
 			respBody, err := client.callWithContext(ctx, peerRESTMethodLog, nil, nil, -1)
 			if err != nil {

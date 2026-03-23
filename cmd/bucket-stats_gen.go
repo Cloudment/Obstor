@@ -84,7 +84,7 @@ func (z *BucketReplicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "PendingSize")
 		return
 	}
-	// write "ReplicatedSize"
+	// Write "ReplicatedSize"
 	err = en.Append(0xae, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x65, 0x64, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -94,7 +94,7 @@ func (z *BucketReplicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ReplicatedSize")
 		return
 	}
-	// write "ReplicaSize"
+	// Write "ReplicaSize"
 	err = en.Append(0xab, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -104,7 +104,7 @@ func (z *BucketReplicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ReplicaSize")
 		return
 	}
-	// write "FailedSize"
+	// Write "FailedSize"
 	err = en.Append(0xaa, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -114,7 +114,7 @@ func (z *BucketReplicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "FailedSize")
 		return
 	}
-	// write "PendingCount"
+	// Write "PendingCount"
 	err = en.Append(0xac, 0x50, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x75, 0x6e, 0x74)
 	if err != nil {
 		return
@@ -124,7 +124,7 @@ func (z *BucketReplicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "PendingCount")
 		return
 	}
-	// write "FailedCount"
+	// Write "FailedCount"
 	err = en.Append(0xab, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74)
 	if err != nil {
 		return

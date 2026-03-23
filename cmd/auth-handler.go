@@ -135,7 +135,7 @@ func validateAdminSignature(ctx context.Context, r *http.Request, region string)
 			return cred, nil, owner, s3Err
 		}
 
-		// we only support V4 (no presign) with auth body
+		// We only support V4 (no presign) with auth body
 		s3Err = isReqAuthenticated(ctx, r, region, serviceS3)
 	}
 	if s3Err != ErrNone {
@@ -484,7 +484,7 @@ func isSupportedS3AuthType(aType authType) bool {
 
 // setAuthHandler to validate authorization header for the incoming request.
 func setAuthHandler(h http.Handler) http.Handler {
-	// handler for validating incoming authorization headers.
+	// Handler for validating incoming authorization headers.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		aType := getRequestAuthType(r)
 		if isSupportedS3AuthType(aType) {

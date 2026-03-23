@@ -430,7 +430,7 @@ func parseChunkSignature(chunk []byte) []byte {
 	return chunkSplits[1]
 }
 
-// parse hex to uint64.
+// Parse hex to uint64.
 func parseHexUint(v []byte) (n uint64, err error) {
 	for i, b := range v {
 		switch {

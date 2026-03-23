@@ -204,7 +204,7 @@ func formatErasureMigrate(export string) error {
 		// version = formatXLVersionV3
 		fallthrough
 	case formatErasureVersionV3:
-		// v3 is the latest version, return.
+		// V3 is the latest version, return.
 		return nil
 	}
 	return fmt.Errorf(`disk %s: unknown format version %s`, export, version)
@@ -363,7 +363,7 @@ func saveFormatErasure(disk StorageAPI, format *formatErasureV3, heal bool) erro
 	// Purge any existing temporary file, okay to ignore errors here.
 	defer disk.Delete(context.TODO(), minioMetaBucket, tmpFormat, false)
 
-	// write to unique file.
+	// Write to unique file.
 	if err = disk.WriteAll(context.TODO(), minioMetaBucket, tmpFormat, formatBytes); err != nil {
 		return err
 	}
@@ -732,7 +732,7 @@ func saveFormatErasureAll(ctx context.Context, storageDisks []StorageAPI, format
 	return reduceWriteQuorumErrs(ctx, g.Wait(), nil, writeQuorum)
 }
 
-// relinquishes the underlying connection for all storage disks.
+// Relinquishes the underlying connection for all storage disks.
 func closeStorageDisks(storageDisks []StorageAPI) {
 	for _, disk := range storageDisks {
 		if disk == nil {

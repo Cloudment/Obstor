@@ -83,7 +83,7 @@ func (z *DiskInfo) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *DiskInfo) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 12
+	// Array header, size 12
 	err = en.Append(0x9c)
 	if err != nil {
 		return
@@ -154,7 +154,7 @@ func (z *DiskInfo) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *DiskInfo) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 12
+	// Array header, size 12
 	o = append(o, 0x9c)
 	o = msgp.AppendUint64(o, z.Total)
 	o = msgp.AppendUint64(o, z.Free)
@@ -371,7 +371,7 @@ func (z *DiskMetrics) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "APICalls"
+	// Write "APICalls"
 	err = en.Append(0xa8, 0x41, 0x50, 0x49, 0x43, 0x61, 0x6c, 0x6c, 0x73)
 	if err != nil {
 		return
@@ -684,7 +684,7 @@ func (z *FileInfo) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *FileInfo) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 20
+	// Array header, size 20
 	err = en.Append(0xdc, 0x0, 0x14)
 	if err != nil {
 		return
@@ -814,7 +814,7 @@ func (z *FileInfo) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *FileInfo) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 20
+	// Array header, size 20
 	o = append(o, 0xdc, 0x0, 0x14)
 	o = msgp.AppendString(o, z.Volume)
 	o = msgp.AppendString(o, z.Name)
@@ -1113,7 +1113,7 @@ func (z *FileInfoVersions) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Volume")
 		return
 	}
-	// write "Name"
+	// Write "Name"
 	err = en.Append(0xa4, 0x4e, 0x61, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -1123,7 +1123,7 @@ func (z *FileInfoVersions) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Name")
 		return
 	}
-	// write "IsEmptyDir"
+	// Write "IsEmptyDir"
 	err = en.Append(0xaa, 0x49, 0x73, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x44, 0x69, 0x72)
 	if err != nil {
 		return
@@ -1133,7 +1133,7 @@ func (z *FileInfoVersions) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "IsEmptyDir")
 		return
 	}
-	// write "LatestModTime"
+	// Write "LatestModTime"
 	err = en.Append(0xad, 0x4c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x4d, 0x6f, 0x64, 0x54, 0x69, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -1143,7 +1143,7 @@ func (z *FileInfoVersions) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "LatestModTime")
 		return
 	}
-	// write "Versions"
+	// Write "Versions"
 	err = en.Append(0xa8, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73)
 	if err != nil {
 		return
@@ -1348,7 +1348,7 @@ func (z *FilesInfo) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "IsTruncated"
+	// Write "IsTruncated"
 	err = en.Append(0xab, 0x49, 0x73, 0x54, 0x72, 0x75, 0x6e, 0x63, 0x61, 0x74, 0x65, 0x64)
 	if err != nil {
 		return
@@ -1520,7 +1520,7 @@ func (z *FilesInfoVersions) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "IsTruncated"
+	// Write "IsTruncated"
 	err = en.Append(0xab, 0x49, 0x73, 0x54, 0x72, 0x75, 0x6e, 0x63, 0x61, 0x74, 0x65, 0x64)
 	if err != nil {
 		return
@@ -1697,7 +1697,7 @@ func (z *VolInfo) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z VolInfo) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 2
+	// Array header, size 2
 	err = en.Append(0x92)
 	if err != nil {
 		return
@@ -1718,7 +1718,7 @@ func (z VolInfo) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z VolInfo) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 2
+	// Array header, size 2
 	o = append(o, 0x92)
 	o = msgp.AppendString(o, z.Name)
 	o = msgp.AppendTime(o, z.Created)
@@ -1803,7 +1803,7 @@ func (z VolsInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		return
 	}
 	for zb0004 := range z {
-		// array header, size 2
+		// Array header, size 2
 		err = en.Append(0x92)
 		if err != nil {
 			return
@@ -1827,7 +1827,7 @@ func (z VolsInfo) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
 	o = msgp.AppendArrayHeader(o, uint32(len(z)))
 	for zb0004 := range z {
-		// array header, size 2
+		// Array header, size 2
 		o = append(o, 0x92)
 		o = msgp.AppendString(o, z[zb0004].Name)
 		o = msgp.AppendTime(o, z[zb0004].Created)

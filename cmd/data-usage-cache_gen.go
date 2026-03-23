@@ -103,7 +103,7 @@ func (z *dataUsageCache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Info")
 		return
 	}
-	// write "Cache"
+	// Write "Cache"
 	err = en.Append(0xa5, 0x43, 0x61, 0x63, 0x68, 0x65)
 	if err != nil {
 		return
@@ -125,7 +125,7 @@ func (z *dataUsageCache) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "Disks"
+	// Write "Disks"
 	err = en.Append(0xa5, 0x44, 0x69, 0x73, 0x6b, 0x73)
 	if err != nil {
 		return
@@ -338,14 +338,14 @@ func (z *dataUsageCacheInfo) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(5)
 	var zb0001Mask uint8 /* 5 bits */
 	if z.BloomFilter == nil {
 		zb0001Len--
 		zb0001Mask |= 0x10
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	err = en.Append(0x80 | uint8(zb0001Len))
 	if err != nil {
 		return
@@ -353,7 +353,7 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 	if zb0001Len == 0 {
 		return
 	}
-	// write "Name"
+	// Write "Name"
 	err = en.Append(0xa4, 0x4e, 0x61, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -363,7 +363,7 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Name")
 		return
 	}
-	// write "NextCycle"
+	// Write "NextCycle"
 	err = en.Append(0xa9, 0x4e, 0x65, 0x78, 0x74, 0x43, 0x79, 0x63, 0x6c, 0x65)
 	if err != nil {
 		return
@@ -373,7 +373,7 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "NextCycle")
 		return
 	}
-	// write "LastUpdate"
+	// Write "LastUpdate"
 	err = en.Append(0xaa, 0x4c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65)
 	if err != nil {
 		return
@@ -383,7 +383,7 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "LastUpdate")
 		return
 	}
-	// write "SkipHealing"
+	// Write "SkipHealing"
 	err = en.Append(0xab, 0x53, 0x6b, 0x69, 0x70, 0x48, 0x65, 0x61, 0x6c, 0x69, 0x6e, 0x67)
 	if err != nil {
 		return
@@ -394,7 +394,7 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		return
 	}
 	if (zb0001Mask & 0x10) == 0 { // if not empty
-		// write "BloomFilter"
+		// Write "BloomFilter"
 		err = en.Append(0xab, 0x42, 0x6c, 0x6f, 0x6f, 0x6d, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72)
 		if err != nil {
 			return
@@ -411,14 +411,14 @@ func (z *dataUsageCacheInfo) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *dataUsageCacheInfo) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(5)
 	var zb0001Mask uint8 /* 5 bits */
 	if z.BloomFilter == nil {
 		zb0001Len--
 		zb0001Mask |= 0x10
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	o = append(o, 0x80|uint8(zb0001Len))
 	if zb0001Len == 0 {
 		return
@@ -606,7 +606,7 @@ func (z *dataUsageCacheV2) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Info")
 		return
 	}
-	// write "Disks"
+	// Write "Disks"
 	err = en.Append(0xa5, 0x44, 0x69, 0x73, 0x6b, 0x73)
 	if err != nil {
 		return
@@ -623,7 +623,7 @@ func (z *dataUsageCacheV2) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "Cache"
+	// Write "Cache"
 	err = en.Append(0xa5, 0x43, 0x61, 0x63, 0x68, 0x65)
 	if err != nil {
 		return
@@ -877,7 +877,7 @@ func (z *dataUsageCacheV3) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Info")
 		return
 	}
-	// write "Disks"
+	// Write "Disks"
 	err = en.Append(0xa5, 0x44, 0x69, 0x73, 0x6b, 0x73)
 	if err != nil {
 		return
@@ -894,7 +894,7 @@ func (z *dataUsageCacheV3) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "Cache"
+	// Write "Cache"
 	err = en.Append(0xa5, 0x43, 0x61, 0x63, 0x68, 0x65)
 	if err != nil {
 		return
@@ -1105,7 +1105,7 @@ func (z *dataUsageEntry) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *dataUsageEntry) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 5
+	// Array header, size 5
 	err = en.Append(0x95)
 	if err != nil {
 		return
@@ -1148,7 +1148,7 @@ func (z *dataUsageEntry) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *dataUsageEntry) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 5
+	// Array header, size 5
 	o = append(o, 0x95)
 	o, err = z.Children.MarshalMsg(o)
 	if err != nil {
@@ -1277,7 +1277,7 @@ func (z *dataUsageEntryV2) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *dataUsageEntryV2) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 4
+	// Array header, size 4
 	err = en.Append(0x94)
 	if err != nil {
 		return
@@ -1315,7 +1315,7 @@ func (z *dataUsageEntryV2) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *dataUsageEntryV2) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 4
+	// Array header, size 4
 	o = append(o, 0x94)
 	o = msgp.AppendInt64(o, z.Size)
 	o = msgp.AppendUint64(o, z.Objects)
@@ -1454,7 +1454,7 @@ func (z *dataUsageEntryV3) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *dataUsageEntryV3) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 8
+	// Array header, size 8
 	err = en.Append(0x98)
 	if err != nil {
 		return
@@ -1512,7 +1512,7 @@ func (z *dataUsageEntryV3) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *dataUsageEntryV3) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 8
+	// Array header, size 8
 	o = append(o, 0x98)
 	o = msgp.AppendInt64(o, z.Size)
 	o = msgp.AppendUint64(o, z.ReplicatedSize)
@@ -1725,7 +1725,7 @@ func (z *replicationStats) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *replicationStats) EncodeMsg(en *msgp.Writer) (err error) {
-	// array header, size 10
+	// Array header, size 10
 	err = en.Append(0x9a)
 	if err != nil {
 		return
@@ -1786,7 +1786,7 @@ func (z *replicationStats) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *replicationStats) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// array header, size 10
+	// Array header, size 10
 	o = append(o, 0x9a)
 	o = msgp.AppendUint64(o, z.PendingSize)
 	o = msgp.AppendUint64(o, z.ReplicatedSize)

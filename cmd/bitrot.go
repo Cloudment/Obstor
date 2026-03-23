@@ -30,7 +30,7 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
-// magic HH-256 key as HH-256 hash of the first 100 decimals of π as utf-8 string with a zero key.
+// Magic HH-256 key as HH-256 hash of the first 100 decimals of π as utf-8 string with a zero key.
 var magicHighwayHash256Key = []byte("\x4b\xe7\x34\xfa\x8e\x23\x8a\xcd\x26\x3e\x83\xe6\xbb\x96\x85\x52\x04\x0f\x93\x5d\xa3\x9f\x44\x14\x97\xe0\x9d\x13\x22\xde\x36\xa0")
 
 var bitrotAlgorithms = map[BitrotAlgorithm]string{

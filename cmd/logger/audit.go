@@ -40,7 +40,7 @@ type ResponseWriter struct {
 
 	TimeToFirstByte time.Duration
 	StartTime       time.Time
-	// number of bytes written
+	// Number of bytes written
 	bytesWritten int
 	// Internal recording buffer
 	headers bytes.Buffer
@@ -194,7 +194,7 @@ func AuditLog(ctx context.Context, w http.ResponseWriter, r *http.Request, reqCl
 		entry.API.StatusCode = statusCode
 		entry.API.TimeToResponse = strconv.FormatInt(timeToResponse.Nanoseconds(), 10) + "ns"
 		entry.Tags = reqInfo.GetTagsMap()
-		// ttfb will be recorded only for GET requests, Ignore such cases where ttfb will be empty.
+		// Ttfb will be recorded only for GET requests, Ignore such cases where ttfb will be empty.
 		if timeToFirstByte != 0 {
 			entry.API.TimeToFirstByte = strconv.FormatInt(timeToFirstByte.Nanoseconds(), 10) + "ns"
 		}

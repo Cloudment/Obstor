@@ -39,15 +39,15 @@ import (
 
 //go:generate msgp -file $GOFILE -unexported
 
-// a bucketMetacache keeps track of all caches generated
+// A bucketMetacache keeps track of all caches generated
 // for a bucket.
 type bucketMetacache struct {
 	// Name of bucket
 	bucket string
 
-	// caches indexed by id.
+	// Caches indexed by id.
 	caches map[string]metacache
-	// cache ids indexed by root paths
+	// Cache ids indexed by root paths
 	cachesRoot map[string][]string `msg:"-"`
 
 	// Internal state

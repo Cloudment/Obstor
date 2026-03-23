@@ -174,7 +174,7 @@ func shuffleDisksAndPartsMetadataByIndex(disks []StorageAPI, metaArr []FileInfo,
 			inconsistent++
 			continue
 		}
-		// check if erasure distribution order matches the index
+		// Check if erasure distribution order matches the index
 		// position if this is not correct we discard the disk
 		// and move to collect others
 		if distribution[i] != meta.Erasure.Index {
@@ -192,7 +192,7 @@ func shuffleDisksAndPartsMetadataByIndex(disks []StorageAPI, metaArr []FileInfo,
 		return shuffledDisks, shuffledPartsMetadata
 	}
 
-	// fall back to original distribution based order.
+	// Fall back to original distribution based order.
 	return shuffleDisksAndPartsMetadata(disks, metaArr, fi)
 }
 

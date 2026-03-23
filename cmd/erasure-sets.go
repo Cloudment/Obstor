@@ -431,7 +431,7 @@ func newErasureSets(ctx context.Context, endpoints Endpoints, storageDisks []Sto
 		}
 	}
 
-	// cleanup ".trash/" folder every 5m minutes with sufficient sleep cycles, between each
+	// Cleanup ".trash/" folder every 5m minutes with sufficient sleep cycles, between each
 	// deletes a dynamic sleeper is used with a factor of 10 ratio with max delay between
 	// deletes to be 2 seconds.
 	deletedObjectsCleanupInterval, err := time.ParseDuration(env.Get(envMinioDeleteCleanupInterval, "5m"))
@@ -439,10 +439,10 @@ func newErasureSets(ctx context.Context, endpoints Endpoints, storageDisks []Sto
 		return nil, err
 	}
 
-	// start cleanup stale uploads go-routine.
+	// Start cleanup stale uploads go-routine.
 	go s.cleanupStaleUploads(ctx, GlobalStaleUploadsCleanupInterval, GlobalStaleUploadsExpiry)
 
-	// start cleanup of deleted objects.
+	// Start cleanup of deleted objects.
 	go s.cleanupDeletedObjects(ctx, deletedObjectsCleanupInterval)
 
 	// Start the disk monitoring and connect routine.
@@ -562,7 +562,7 @@ func (s *erasureSets) StorageUsageInfo(ctx context.Context) StorageInfo {
 		for index := range s.sets {
 			index := index
 			g.Go(func() error {
-				// ignoring errors on purpose
+				// Ignoring errors on purpose
 				storageInfos[index], _ = s.sets[index].StorageInfo(ctx)
 				return nil
 			}, index)
@@ -705,7 +705,7 @@ func (s *erasureSets) MakeBucketWithLocation(ctx context.Context, bucket string,
 	return nil
 }
 
-// hashes the key returning an integer based on the input algorithm.
+// Hashes the key returning an integer based on the input algorithm.
 // This function currently supports
 // - CRCMOD
 // - SIPMOD
@@ -838,7 +838,7 @@ func (s *erasureSets) ListBuckets(ctx context.Context) (buckets []BucketInfo, er
 	var listBuckets []BucketInfo
 	var healBuckets = map[string]VolInfo{}
 	for _, set := range s.sets {
-		// lists all unique buckets across drives.
+		// Lists all unique buckets across drives.
 		if err := listAllBuckets(ctx, set.getDisks(), healBuckets); err != nil {
 			return nil, err
 		}
@@ -904,7 +904,7 @@ func (s *erasureSets) DeleteObjects(ctx context.Context, bucket string, objects 
 		// Original index from the list of arguments
 		// where this object is passed
 		origIndex int
-		// object to delete
+		// Object to delete
 		object ObjectToDelete
 	}
 

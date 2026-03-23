@@ -43,7 +43,7 @@ type stringEqualsIgnoreCaseFunc struct {
 	values set.StringSet
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values, ignores case.
 func (f stringEqualsIgnoreCaseFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -62,12 +62,12 @@ func (f stringEqualsIgnoreCaseFunc) evaluate(values map[string][]string) bool {
 	return false
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f stringEqualsIgnoreCaseFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "StringEqualsIgnoreCase" condition name.
+// Name() - returns "StringEqualsIgnoreCase" condition name.
 func (f stringEqualsIgnoreCaseFunc) name() name {
 	return stringEqualsIgnoreCase
 }
@@ -101,13 +101,13 @@ type stringNotEqualsIgnoreCaseFunc struct {
 	stringEqualsIgnoreCaseFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f stringNotEqualsIgnoreCaseFunc) evaluate(values map[string][]string) bool {
 	return !f.stringEqualsIgnoreCaseFunc.evaluate(values)
 }
 
-// name() - returns "StringNotEqualsIgnoreCase" condition name.
+// Name() - returns "StringNotEqualsIgnoreCase" condition name.
 func (f stringNotEqualsIgnoreCaseFunc) name() name {
 	return stringNotEqualsIgnoreCase
 }

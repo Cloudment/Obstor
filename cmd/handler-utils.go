@@ -311,7 +311,7 @@ func extractPostPolicyFormValues(ctx context.Context, form *multipart.Form) (fil
 		return nil, "", 0, nil, err
 	}
 
-	// this means that filename="" was not specified for file key and Go has
+	// This means that filename="" was not specified for file key and Go has
 	// an ugly way of handling this situation. Refer here
 	// https://golang.org/src/mime/multipart/formdata.go#L61
 	if len(form.File) == 0 {
@@ -545,7 +545,7 @@ func errorResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// gets host name for current node
+// Gets host name for current node
 func getHostName(r *http.Request) (hostName string) {
 	if globalIsDistErasure {
 		hostName = globalLocalNodeName

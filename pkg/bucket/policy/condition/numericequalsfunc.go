@@ -38,7 +38,7 @@ type numericEqualsFunc struct {
 	value int
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f numericEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -58,12 +58,12 @@ func (f numericEqualsFunc) evaluate(values map[string][]string) bool {
 	return f.value == rvInt
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f numericEqualsFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "NumericEquals" condition name.
+// Name() - returns "NumericEquals" condition name.
 func (f numericEqualsFunc) name() name {
 	return numericEquals
 }
@@ -95,13 +95,13 @@ type numericNotEqualsFunc struct {
 	numericEqualsFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f numericNotEqualsFunc) evaluate(values map[string][]string) bool {
 	return !f.numericEqualsFunc.evaluate(values)
 }
 
-// name() - returns "NumericNotEquals" condition name.
+// Name() - returns "NumericNotEquals" condition name.
 func (f numericNotEqualsFunc) name() name {
 	return numericNotEquals
 }

@@ -57,7 +57,7 @@ func GetPoliciesFromClaims(claims map[string]interface{}, policyClaimName string
 			for _, pname := range strings.Split(pnameStr, ",") {
 				pname = strings.TrimSpace(pname)
 				if pname == "" {
-					// ignore any empty strings, considerate
+					// Ignore any empty strings, considerate
 					// towards some user errors.
 					continue
 				}
@@ -73,7 +73,7 @@ func GetPoliciesFromClaims(claims map[string]interface{}, policyClaimName string
 			for _, pnameStr := range strings.Split(pnameStr, ",") {
 				pnameStr = strings.TrimSpace(pnameStr)
 				if pnameStr == "" {
-					// ignore any empty strings, considerate
+					// Ignore any empty strings, considerate
 					// towards some user errors.
 					continue
 				}
@@ -187,7 +187,7 @@ redo:
 
 // UnmarshalJSON - decodes JSON data to Iamp.
 func (iamp *Policy) UnmarshalJSON(data []byte) error {
-	// subtype to avoid recursive call to UnmarshalJSON()
+	// Subtype to avoid recursive call to UnmarshalJSON()
 	type subPolicy Policy
 	var sp subPolicy
 	if err := json.Unmarshal(data, &sp); err != nil {

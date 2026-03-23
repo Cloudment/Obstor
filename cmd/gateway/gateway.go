@@ -34,7 +34,7 @@ import (
 
 	// GCS (use only if you must, GCS already supports S3 API)
 	_ "github.com/cloudment/obstor/cmd/gateway/gcs"
-	// gateway functionality is frozen, no new gateways are being implemented
+	// Gateway functionality is frozen, no new gateways are being implemented
 	// or considered for upstream inclusion at this point in time. if needed
 	// please keep a fork of the project.
 )

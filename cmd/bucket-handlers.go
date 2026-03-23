@@ -273,11 +273,11 @@ func (api objectAPIHandlers) ListMultipartUploadsHandler(w http.ResponseWriter, 
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 		return
 	}
-	// generate response
+	// Generate response
 	response := generateListMultipartUploadsResponse(bucket, listMultipartsInfo, encodingType)
 	encodedSuccessResponse := encodeResponse(response)
 
-	// write success response.
+	// Write success response.
 	writeSuccessResponseXML(w, encodedSuccessResponse)
 }
 
@@ -1004,7 +1004,7 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 		}
 	}
 
-	// get gateway encryption options
+	// Get gateway encryption options
 	var opts ObjectOptions
 	opts, err = putOpts(ctx, r, bucket, object, metadata)
 	if err != nil {
@@ -1032,7 +1032,7 @@ func (api objectAPIHandlers) PostPolicyBucketHandler(w http.ResponseWriter, r *h
 				return
 			}
 			info := ObjectInfo{Size: fileSize}
-			// do not try to verify encrypted content
+			// Do not try to verify encrypted content
 			hashReader, err = hash.NewReader(reader, info.EncryptedSize(), "", "", fileSize)
 			if err != nil {
 				writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -1351,7 +1351,7 @@ func (api objectAPIHandlers) GetBucketObjectLockConfigHandler(w http.ResponseWri
 		return
 	}
 
-	// check if user has permissions to perform this operation
+	// Check if user has permissions to perform this operation
 	if s3Error := checkRequestAuthType(ctx, r, policy.GetBucketObjectLockConfigurationAction, bucket, ""); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL, guessIsBrowserReq(r))
 		return
@@ -1433,7 +1433,7 @@ func (api objectAPIHandlers) GetBucketTaggingHandler(w http.ResponseWriter, r *h
 		return
 	}
 
-	// check if user has permissions to perform this operation
+	// Check if user has permissions to perform this operation
 	if s3Error := checkRequestAuthType(ctx, r, policy.GetBucketTaggingAction, bucket, ""); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL, guessIsBrowserReq(r))
 		return
@@ -1565,7 +1565,7 @@ func (api objectAPIHandlers) GetBucketReplicationConfigHandler(w http.ResponseWr
 		return
 	}
 
-	// check if user has permissions to perform this operation
+	// Check if user has permissions to perform this operation
 	if s3Error := checkRequestAuthType(ctx, r, policy.GetReplicationConfigurationAction, bucket, ""); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL, guessIsBrowserReq(r))
 		return
@@ -1640,7 +1640,7 @@ func (api objectAPIHandlers) GetBucketReplicationMetricsHandler(w http.ResponseW
 		return
 	}
 
-	// check if user has permissions to perform this operation
+	// Check if user has permissions to perform this operation
 	if s3Error := checkRequestAuthType(ctx, r, policy.GetReplicationConfigurationAction, bucket, ""); s3Error != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Error), r.URL, guessIsBrowserReq(r))
 		return
@@ -1654,7 +1654,7 @@ func (api objectAPIHandlers) GetBucketReplicationMetricsHandler(w http.ResponseW
 
 	bucketStats := globalNotificationSys.GetClusterBucketStats(r.Context(), bucket)
 	bucketReplStats := BucketReplicationStats{}
-	// sum up metrics from each node in the cluster
+	// Sum up metrics from each node in the cluster
 	for _, bucketStat := range bucketStats {
 		bucketReplStats.FailedCount += bucketStat.ReplicationStats.FailedCount
 		bucketReplStats.FailedSize += bucketStat.ReplicationStats.FailedSize
@@ -1663,7 +1663,7 @@ func (api objectAPIHandlers) GetBucketReplicationMetricsHandler(w http.ResponseW
 		bucketReplStats.ReplicaSize += bucketStat.ReplicationStats.ReplicaSize
 		bucketReplStats.ReplicatedSize += bucketStat.ReplicationStats.ReplicatedSize
 	}
-	// add initial usage from the time of cluster up
+	// Add initial usage from the time of cluster up
 	usageStat := globalReplicationStats.GetInitialUsage(bucket)
 	bucketReplStats.FailedCount += usageStat.FailedCount
 	bucketReplStats.FailedSize += usageStat.FailedSize

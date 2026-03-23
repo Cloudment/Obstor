@@ -359,7 +359,7 @@ func isMinioReservedBucket(bucketName string) bool {
 	return bucketName == minioReservedBucket
 }
 
-// returns a slice of hosts by reading a slice of DNS records
+// Returns a slice of hosts by reading a slice of DNS records
 func getHostsSlice(records []dns.SrvRecord) []string {
 	hosts := make([]string, len(records))
 	for i, r := range records {
@@ -368,7 +368,7 @@ func getHostsSlice(records []dns.SrvRecord) []string {
 	return hosts
 }
 
-// returns an online host (and corresponding port) from a slice of DNS records
+// Returns an online host (and corresponding port) from a slice of DNS records
 func getHostFromSrv(records []dns.SrvRecord) (host string) {
 	hosts := getHostsSlice(records)
 	rng := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
@@ -846,7 +846,7 @@ func (p *PutObjReader) Size() int64 {
 func (p *PutObjReader) MD5CurrentHexString() string {
 	md5sumCurr := p.rawReader.MD5Current()
 	var appendHyphen bool
-	// md5sumcurr is not empty in two scenarios
+	// Md5sumcurr is not empty in two scenarios
 	// - server is running in strict compatibility mode
 	// - client set Content-Md5 during PUT operation
 	if len(md5sumCurr) == 0 {

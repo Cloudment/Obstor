@@ -164,7 +164,7 @@ func ntpTime(server string) (time.Time, error) {
 // but only used when we do not wish to rely on system
 // time.
 func UTCNowNTP() (time.Time, error) {
-	// ntp server is disabled
+	// Ntp server is disabled
 	if ntpServer == "" {
 		return time.Now().UTC(), nil
 	}

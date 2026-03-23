@@ -572,7 +572,7 @@ func (fs *FSObjects) CompleteMultipartUpload(ctx context.Context, bucket string,
 	// Calculate s3 compatible md5sum for complete multipart.
 	s3MD5 := getCompleteMultipartMD5(parts)
 
-	// ensure that part ETag is canonicalized to strip off extraneous quotes
+	// Ensure that part ETag is canonicalized to strip off extraneous quotes
 	for i := range parts {
 		parts[i].ETag = canonicalizeETag(parts[i].ETag)
 	}

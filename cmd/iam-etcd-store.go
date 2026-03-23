@@ -165,7 +165,7 @@ func (ies *IAMEtcdStore) migrateUsersConfigToV1(ctx context.Context, isSTS bool)
 				case errConfigNotFound:
 					// No mapped policy or already migrated.
 				default:
-					// corrupt data/read error, etc
+					// Corrupt data/read error, etc
 				}
 				goto next
 			}
@@ -194,7 +194,7 @@ func (ies *IAMEtcdStore) migrateUsersConfigToV1(ctx context.Context, isSTS bool)
 			case errConfigNotFound:
 				// This case should not happen.
 			default:
-				// corrupt file or read error
+				// Corrupt file or read error
 			}
 			continue
 		}
@@ -204,7 +204,7 @@ func (ies *IAMEtcdStore) migrateUsersConfigToV1(ctx context.Context, isSTS bool)
 		// the zero value for the struct.
 		var zeroCred auth.Credentials
 		if cred.Equal(zeroCred) {
-			// nothing to do
+			// Nothing to do
 			continue
 		}
 
@@ -570,7 +570,7 @@ func (ies *IAMEtcdStore) watch(ctx context.Context, sys *IAMSys) {
 				}
 				if err := watchResp.Err(); err != nil {
 					logger.LogIf(ctx, err)
-					// log and retry.
+					// Log and retry.
 					time.Sleep(1 * time.Second)
 					// Upon an error on watch channel
 					// re-init the watch channel.

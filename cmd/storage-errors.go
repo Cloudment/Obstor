@@ -107,7 +107,7 @@ var errLessData = StorageErr("less data available than what was requested")
 // errMoreData = returned when more data was sent by the caller than what it was supposed to.
 var errMoreData = StorageErr("more data was sent than what was advertised")
 
-// indicates readDirFn to return without further applying the fn()
+// Indicates readDirFn to return without further applying the fn()
 var errDoneForNow = errors.New("done for now")
 
 // errSkipFile returned by the fn() for readDirFn() when it needs

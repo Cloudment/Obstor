@@ -150,7 +150,7 @@ func untar(r io.Reader, putObject func(reader io.Reader, info os.FileInfo, name 
 		case tar.TypeReg, tar.TypeChar, tar.TypeBlock, tar.TypeFifo, tar.TypeGNUSparse: // = regular
 			putObject(tarReader, header.FileInfo(), trimLeadingSlash(path.Clean(name)))
 		default:
-			// ignore symlink'ed
+			// Ignore symlink'ed
 			continue
 		}
 	}

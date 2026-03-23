@@ -48,7 +48,7 @@ import (
 	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
-// obstor configuration related constants.
+// Obstor configuration related constants.
 const (
 	GlobalMinioDefaultPort = "9000"
 
@@ -184,14 +184,14 @@ var (
 	globalHTTPServerErrorCh = make(chan error)
 	globalOSSignalCh        = make(chan os.Signal, 1)
 
-	// global Trace system to send HTTP request/response
+	// Global Trace system to send HTTP request/response
 	// and Storage/OS calls info to registered listeners.
 	globalTrace = pubsub.New()
 
-	// global Listen system to send S3 API events to registered listeners
+	// Global Listen system to send S3 API events to registered listeners
 	globalHTTPListen = pubsub.New()
 
-	// global console system to send console logs to
+	// Global console system to send console logs to
 	// registered listeners
 	globalConsoleSys *HTTPConsoleLoggerSys
 

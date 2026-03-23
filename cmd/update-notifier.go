@@ -60,7 +60,7 @@ func colorizeUpdateMessage(updateString string, newerThan string) string {
 	line1InColor := fmt.Sprintf(msgLine1Fmt, color.YellowBold(newerThan))
 	line2InColor := fmt.Sprintf(msgLine2Fmt, color.CyanBold(updateString))
 
-	// calculate the rectangular box size.
+	// Calculate the rectangular box size.
 	maxContentWidth := int(math.Max(float64(line1Length), float64(line2Length)))
 
 	// termWidth is set to a default one to use when we are
@@ -81,7 +81,7 @@ func colorizeUpdateMessage(updateString string, newerThan string) string {
 	bottomRightChar := "┛"
 	horizBarChar := "━"
 	vertBarChar := "┃"
-	// on windows terminal turn off unicode characters.
+	// On windows terminal turn off unicode characters.
 	if runtime.GOOS == globalWindowsOSName {
 		topLeftChar = "+"
 		topRightChar = "+"

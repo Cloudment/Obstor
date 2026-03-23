@@ -250,7 +250,7 @@ func (l *localLocker) Refresh(ctx context.Context, args dsync.LockArgs) (refresh
 		// Lock found, proceed to verify if belongs to given uid.
 		lri, ok := l.lockMap[resource]
 		if !ok {
-			// lock doesn't exist yet, return false
+			// Lock doesn't exist yet, return false
 			return false, nil
 		}
 

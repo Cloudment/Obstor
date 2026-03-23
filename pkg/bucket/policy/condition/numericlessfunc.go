@@ -37,7 +37,7 @@ type numericLessThanFunc struct {
 	value int
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f numericLessThanFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -57,12 +57,12 @@ func (f numericLessThanFunc) evaluate(values map[string][]string) bool {
 	return rvInt < f.value
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f numericLessThanFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "NumericLessThan" condition name.
+// Name() - returns "NumericLessThan" condition name.
 func (f numericLessThanFunc) name() name {
 	return numericLessThan
 }
@@ -94,7 +94,7 @@ type numericLessThanEqualsFunc struct {
 	numericLessThanFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f numericLessThanEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -114,7 +114,7 @@ func (f numericLessThanEqualsFunc) evaluate(values map[string][]string) bool {
 	return rvInt <= f.value
 }
 
-// name() - returns "NumericLessThanEquals" condition name.
+// Name() - returns "NumericLessThanEquals" condition name.
 func (f numericLessThanEqualsFunc) name() name {
 	return numericLessThanEquals
 }

@@ -44,7 +44,7 @@ type ipAddressFunc struct {
 	values []*net.IPNet
 }
 
-// evaluate() - evaluates to check whether IP address in values map for AWSSourceIP
+// Evaluate() - evaluates to check whether IP address in values map for AWSSourceIP
 // falls in one of network or not.
 func (f ipAddressFunc) evaluate(values map[string][]string) bool {
 	IPs := []net.IP{}
@@ -73,13 +73,13 @@ func (f ipAddressFunc) evaluate(values map[string][]string) bool {
 	return false
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 // Key is always AWSSourceIP.
 func (f ipAddressFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "IpAddress" condition name.
+// Name() - returns "IpAddress" condition name.
 func (f ipAddressFunc) name() name {
 	return ipAddress
 }
@@ -113,13 +113,13 @@ type notIPAddressFunc struct {
 	ipAddressFunc
 }
 
-// evaluate() - evaluates to check whether IP address in values map for AWSSourceIP
+// Evaluate() - evaluates to check whether IP address in values map for AWSSourceIP
 // does not fall in one of network.
 func (f notIPAddressFunc) evaluate(values map[string][]string) bool {
 	return !f.ipAddressFunc.evaluate(values)
 }
 
-// name() - returns "NotIpAddress" condition name.
+// Name() - returns "NotIpAddress" condition name.
 func (f notIPAddressFunc) name() name {
 	return notIPAddress
 }

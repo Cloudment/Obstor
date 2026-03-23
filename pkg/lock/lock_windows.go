@@ -40,7 +40,7 @@ const (
 	lockFileExclusiveLock   = 2
 	lockFileFailImmediately = 1
 
-	// see https://msdn.microsoft.com/en-us/library/windows/desktop/ms681382(v=vs.85).aspx
+	// See https://msdn.microsoft.com/en-us/library/windows/desktop/ms681382(v=vs.85).aspx
 	errLockViolation syscall.Errno = 0x21
 )
 
@@ -157,7 +157,7 @@ func fixLongPath(path string) string {
 	for r < n {
 		switch {
 		case os.IsPathSeparator(path[r]):
-			// empty block
+			// Empty block
 			r++
 		case path[r] == '.' && (r+1 == n || os.IsPathSeparator(path[r+1])):
 			// /./

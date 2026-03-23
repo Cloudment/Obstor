@@ -26,10 +26,10 @@ import (
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
-// list all errors that can be ignore in a bucket operation.
+// List all errors that can be ignore in a bucket operation.
 var bucketOpIgnoredErrs = append(baseIgnoredErrs, errDiskAccessDenied, errUnformattedDisk)
 
-// list all errors that can be ignored in a bucket metadata operation.
+// List all errors that can be ignored in a bucket metadata operation.
 var bucketMetadataOpIgnoredErrs = append(bucketOpIgnoredErrs, errVolumeNotFound)
 
 /// Bucket operations

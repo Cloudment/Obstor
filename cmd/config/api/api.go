@@ -124,7 +124,7 @@ func (sCfg Config) GetListQuorum() int {
 	case "reduced":
 		return 2
 	case "disk":
-		// smallest possible value, generally meant for testing.
+		// Smallest possible value, generally meant for testing.
 		return 1
 	case "strict":
 		return -1
@@ -135,7 +135,7 @@ func (sCfg Config) GetListQuorum() int {
 
 // LookupConfig - lookup api config and override with valid environment settings if any.
 func LookupConfig(kvs config.KVS) (cfg Config, err error) {
-	// remove this since we have removed this already.
+	// Remove this since we have removed this already.
 	kvs.Delete(apiReadyDeadline)
 
 	if err = config.CheckValidKeys(config.APISubSys, kvs, DefaultKVS); err != nil {

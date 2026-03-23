@@ -66,7 +66,7 @@ func getReqAccessKeyV4(r *http.Request, region string, stype serviceType) (auth.
 	return checkKeyValid(ch.accessKey)
 }
 
-// parse credentialHeader string into its structured form.
+// Parse credentialHeader string into its structured form.
 func parseCredentialHeader(credElement string, region string, stype serviceType) (ch credentialHeader, aec APIErrorCode) {
 	creds := strings.SplitN(strings.TrimSpace(credElement), "=", 2)
 	if len(creds) != 2 {
@@ -192,7 +192,7 @@ func doesV4PresignParamsExist(query url.Values) APIErrorCode {
 
 // Parses all the presigned signature values into separate elements.
 func parsePreSignV4(query url.Values, region string, stype serviceType) (psv preSignValues, aec APIErrorCode) {
-	// verify whether the required query params exist.
+	// Verify whether the required query params exist.
 	aec = doesV4PresignParamsExist(query)
 	if aec != ErrNone {
 		return psv, aec

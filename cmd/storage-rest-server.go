@@ -891,7 +891,7 @@ func waitForHTTPStream(respBody io.ReadCloser, w io.Writer) error {
 			respBody.Close()
 			return errors.New(string(errorText))
 		case 3:
-			// gob style is already deprecated, we can remove this when
+			// Gob style is already deprecated, we can remove this when
 			// storage API version will be greater or equal to 23.
 			defer respBody.Close()
 			dec := gob.NewDecoder(respBody)

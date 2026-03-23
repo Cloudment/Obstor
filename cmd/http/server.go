@@ -125,7 +125,7 @@ func (srv *Server) Shutdown() error {
 	srv.listenerMutex.Unlock()
 
 	if atomic.AddUint32(&srv.inShutdown, 1) > 1 {
-		// shutdown in progress
+		// Shutdown in progress
 		return http.ErrServerClosed
 	}
 

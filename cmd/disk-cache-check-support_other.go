@@ -41,7 +41,7 @@ func checkAtimeSupport(dir string) (err error) {
 	if err != nil {
 		return
 	}
-	// add a sleep to ensure atime change is detected
+	// Add a sleep to ensure atime change is detected
 	time.Sleep(10 * time.Millisecond)
 
 	if _, err = io.Copy(io.Discard, file); err != nil {

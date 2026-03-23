@@ -719,7 +719,7 @@ func (c Config) SetKVS(s string, defaultKVS map[string]KVS) (dynamic bool, err e
 	// Check if state is required
 	_, enableRequired := defaultKVS[subSys].Lookup(Enable)
 	if !ok && enableRequired {
-		// implicit state "on" if not specified.
+		// Implicit state "on" if not specified.
 		kvs.Set(Enable, EnableOn)
 	}
 
@@ -753,7 +753,7 @@ func (c Config) SetKVS(s string, defaultKVS map[string]KVS) (dynamic bool, err e
 		if enableRequired {
 			enabled = currKVS.Get(Enable) == EnableOn
 		} else {
-			// when enable arg is not required
+			// When enable arg is not required
 			// then it is implicit on for the sub-system.
 			enabled = true
 		}

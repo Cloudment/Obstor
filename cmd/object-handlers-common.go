@@ -65,17 +65,17 @@ func checkCopyObjectPreconditions(ctx context.Context, w http.ResponseWriter, r 
 
 	// Headers to be set of object content is not going to be written to the client.
 	writeHeaders := func() {
-		// set common headers
+		// Set common headers
 		setCommonHeaders(w)
 
-		// set object-related metadata headers
+		// Set object-related metadata headers
 		w.Header().Set(xhttp.LastModified, objInfo.ModTime.UTC().Format(http.TimeFormat))
 
 		if objInfo.ETag != "" {
 			w.Header()[xhttp.ETag] = []string{"\"" + objInfo.ETag + "\""}
 		}
 	}
-	// x-amz-copy-source-if-modified-since: Return the object only if it has been modified
+	// X-amz-copy-source-if-modified-since: Return the object only if it has been modified
 	// since the specified time otherwise return 412 (precondition failed).
 	ifModifiedSinceHeader := r.Header.Get(xhttp.AmzCopySourceIfModifiedSince)
 	if ifModifiedSinceHeader != "" {
@@ -89,7 +89,7 @@ func checkCopyObjectPreconditions(ctx context.Context, w http.ResponseWriter, r 
 		}
 	}
 
-	// x-amz-copy-source-if-unmodified-since : Return the object only if it has not been
+	// X-amz-copy-source-if-unmodified-since : Return the object only if it has not been
 	// modified since the specified time, otherwise return a 412 (precondition failed).
 	ifUnmodifiedSinceHeader := r.Header.Get(xhttp.AmzCopySourceIfUnmodifiedSince)
 	if ifUnmodifiedSinceHeader != "" {
@@ -103,7 +103,7 @@ func checkCopyObjectPreconditions(ctx context.Context, w http.ResponseWriter, r 
 		}
 	}
 
-	// x-amz-copy-source-if-match : Return the object only if its entity tag (ETag) is the
+	// X-amz-copy-source-if-match : Return the object only if its entity tag (ETag) is the
 	// same as the one specified; otherwise return a 412 (precondition failed).
 	ifMatchETagHeader := r.Header.Get(xhttp.AmzCopySourceIfMatch)
 	if ifMatchETagHeader != "" {
@@ -151,10 +151,10 @@ func checkPreconditions(ctx context.Context, w http.ResponseWriter, r *http.Requ
 
 	// Headers to be set of object content is not going to be written to the client.
 	writeHeaders := func() {
-		// set common headers
+		// Set common headers
 		setCommonHeaders(w)
 
-		// set object-related metadata headers
+		// Set object-related metadata headers
 		w.Header().Set(xhttp.LastModified, objInfo.ModTime.UTC().Format(http.TimeFormat))
 
 		if objInfo.ETag != "" {
@@ -224,7 +224,7 @@ func checkPreconditions(ctx context.Context, w http.ResponseWriter, r *http.Requ
 	return false
 }
 
-// returns true if object was modified after givenTime.
+// Returns true if object was modified after givenTime.
 func ifModifiedSince(objTime time.Time, givenTime time.Time) bool {
 	// The Date-Modified header truncates sub-second precision, so
 	// use mtime < t+1s instead of mtime <= t to check for unmodified.

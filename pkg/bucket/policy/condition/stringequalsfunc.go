@@ -43,7 +43,7 @@ type stringEqualsFunc struct {
 	values set.StringSet
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f stringEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -55,12 +55,12 @@ func (f stringEqualsFunc) evaluate(values map[string][]string) bool {
 	return !fvalues.Intersection(set.CreateStringSet(requestValue...)).IsEmpty()
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f stringEqualsFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "StringEquals" condition name.
+// Name() - returns "StringEquals" condition name.
 func (f stringEqualsFunc) name() name {
 	return stringEquals
 }
@@ -94,13 +94,13 @@ type stringNotEqualsFunc struct {
 	stringEqualsFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f stringNotEqualsFunc) evaluate(values map[string][]string) bool {
 	return !f.stringEqualsFunc.evaluate(values)
 }
 
-// name() - returns "StringNotEquals" condition name.
+// Name() - returns "StringNotEquals" condition name.
 func (f stringNotEqualsFunc) name() name {
 	return stringNotEquals
 }

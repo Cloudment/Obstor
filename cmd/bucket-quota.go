@@ -93,7 +93,7 @@ func (sys *BucketQuotaSys) check(ctx context.Context, bucket string, size int64)
 
 		bui, ok := dui.BucketsUsage[bucket]
 		if !ok {
-			// bucket not found, cannot enforce quota
+			// Bucket not found, cannot enforce quota
 			// call will fail anyways later.
 			return nil
 		}
@@ -147,7 +147,7 @@ func enforceFIFOQuotaBucket(ctx context.Context, objectAPI ObjectLayer, bucket s
 		return
 	}
 
-	// reuse the fileScorer used by disk cache to score entries by
+	// Reuse the fileScorer used by disk cache to score entries by
 	// ModTime to find the oldest objects in bucket to delete. In
 	// the context of bucket quota enforcement - number of hits are
 	// irrelevant.
@@ -164,7 +164,7 @@ func enforceFIFOQuotaBucket(ctx context.Context, objectAPI ObjectLayer, bucket s
 			scorer.addFileWithObjInfo(obj, 1)
 			continue
 		}
-		// skip objects currently under retention
+		// Skip objects currently under retention
 		if rcfg.LockEnabled && enforceRetentionForDeletion(ctx, obj) {
 			continue
 		}
@@ -194,7 +194,7 @@ func enforceFIFOQuotaBucket(ctx context.Context, objectAPI ObjectLayer, bucket s
 			VersionID:  obj.VersionID,
 		})
 		if len(objects) < maxDeleteList && (i < numKeys-1) {
-			// skip deletion until maxDeleteList or end of slice
+			// Skip deletion until maxDeleteList or end of slice
 			continue
 		}
 

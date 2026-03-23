@@ -441,7 +441,7 @@ func (sys *BucketMetadataSys) Init(ctx context.Context, buckets []BucketInfo, ob
 	return nil
 }
 
-// concurrently load bucket metadata to speed up loading bucket metadata.
+// Concurrently load bucket metadata to speed up loading bucket metadata.
 func (sys *BucketMetadataSys) concurrentLoad(ctx context.Context, buckets []BucketInfo, objAPI ObjectLayer) {
 	g := errgroup.WithNErrs(len(buckets))
 	for index := range buckets {

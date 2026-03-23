@@ -104,7 +104,7 @@ type configV3 struct {
 	// Backend configuration.
 	Backend backendV3 `json:"backend"`
 
-	// http Server configuration.
+	// Http Server configuration.
 	Addr string `json:"address"`
 
 	// S3 API configuration.
@@ -115,7 +115,7 @@ type configV3 struct {
 	Logger loggerV3 `json:"logger"`
 }
 
-// logger type representing version '4' logger config.
+// Logger type representing version '4' logger config.
 type loggerV4 struct {
 	Console struct {
 		Enable bool   `json:"enable"`
@@ -145,7 +145,7 @@ type configV4 struct {
 	Logger loggerV4 `json:"logger"`
 }
 
-// logger type representing version '5' logger config.
+// Logger type representing version '5' logger config.
 type loggerV5 struct {
 	Console struct {
 		Enable bool   `json:"enable"`

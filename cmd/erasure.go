@@ -309,7 +309,7 @@ func (er erasureObjects) getOnlineDisksWithHealing() (newDisks []StorageAPI, hea
 
 // Clean-up previously deleted objects. from .obstor.sys/tmp/.trash/
 func (er erasureObjects) cleanupDeletedObjects(ctx context.Context) {
-	// run multiple cleanup's local to this server.
+	// Run multiple cleanup's local to this server.
 	var wg sync.WaitGroup
 	for _, disk := range er.getLoadBalancedLocalDisks() {
 		if disk != nil {
@@ -348,12 +348,12 @@ func (er erasureObjects) nsScanner(ctx context.Context, buckets []BucketInfo, bf
 	allDiskIDs := make([]string, 0, len(allDisks))
 	for _, disk := range allDisks {
 		if disk == OfflineDisk {
-			// its possible that disk is OfflineDisk
+			// Its possible that disk is OfflineDisk
 			continue
 		}
 		id, _ := disk.GetDiskID()
 		if id == "" {
-			// its possible that disk is unformatted
+			// Its possible that disk is unformatted
 			// or just went offline
 			continue
 		}

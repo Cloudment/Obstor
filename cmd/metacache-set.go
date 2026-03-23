@@ -150,7 +150,7 @@ func (o *listPathOptions) gatherResults(in <-chan metaCacheEntry) func() (metaCa
 		var results metaCacheEntriesSorted
 		for entry := range in {
 			if resCh == nil {
-				// past limit
+				// Past limit
 				continue
 			}
 			if !o.IncludeDirectories && entry.isDir() {
@@ -794,15 +794,15 @@ type listPathRawOptions struct {
 	// Callbacks with results:
 	// If set to nil, it will not be called.
 
-	// agreed is called if all disks agreed.
+	// Agreed is called if all disks agreed.
 	agreed func(entry metaCacheEntry)
 
-	// partial will be returned when there is disagreement between disks.
+	// Partial will be returned when there is disagreement between disks.
 	// if disk did not return any result, but also haven't errored
 	// the entry will be empty and errs will
 	partial func(entries metaCacheEntries, nAgreed int, errs []error)
 
-	// finished will be called when all streams have finished and
+	// Finished will be called when all streams have finished and
 	// more than one disk returned an error.
 	// Will not be called if everything operates as expected.
 	finished func(errs []error)

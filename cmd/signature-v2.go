@@ -188,7 +188,7 @@ func getReqAccessKeyV2(r *http.Request) (auth.Credentials, bool, APIErrorCode) {
 		return checkKeyValid(accessKey)
 	}
 
-	// below is V2 Signed Auth header format, splitting on `space` (after the `AWS` string).
+	// Below is V2 Signed Auth header format, splitting on `space` (after the `AWS` string).
 	// Authorization = "AWS" + " " + AWSAccessKeyId + ":" + Signature
 	authFields := strings.Split(r.Header.Get(xhttp.Authorization), " ")
 	if len(authFields) != 2 {

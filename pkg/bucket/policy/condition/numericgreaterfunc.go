@@ -37,7 +37,7 @@ type numericGreaterThanFunc struct {
 	value int
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is in
+// Evaluate() - evaluates to check whether value by Key in given values is in
 // condition values.
 func (f numericGreaterThanFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -57,12 +57,12 @@ func (f numericGreaterThanFunc) evaluate(values map[string][]string) bool {
 	return rvInt > f.value
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f numericGreaterThanFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "NumericGreaterThan" condition name.
+// Name() - returns "NumericGreaterThan" condition name.
 func (f numericGreaterThanFunc) name() name {
 	return numericGreaterThan
 }
@@ -94,7 +94,7 @@ type numericGreaterThanEqualsFunc struct {
 	numericGreaterThanFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT in
+// Evaluate() - evaluates to check whether value by Key in given values is NOT in
 // condition values.
 func (f numericGreaterThanEqualsFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -114,7 +114,7 @@ func (f numericGreaterThanEqualsFunc) evaluate(values map[string][]string) bool 
 	return rvInt >= f.value
 }
 
-// name() - returns "NumericGreaterThanEquals" condition name.
+// Name() - returns "NumericGreaterThanEquals" condition name.
 func (f numericGreaterThanEqualsFunc) name() name {
 	return numericGreaterThanEquals
 }

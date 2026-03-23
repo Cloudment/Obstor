@@ -96,7 +96,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 	if err != nil {
 		return BucketRemoteTargetNotFound{Bucket: tgt.TargetBucket}
 	}
-	// validate if target credentials are ok
+	// Validate if target credentials are ok
 	if _, err = clnt.BucketExists(ctx, tgt.TargetBucket); err != nil {
 		if miniogo.ToErrorResponse(err).Code == "NoSuchBucket" {
 			return BucketRemoteTargetNotFound{Bucket: tgt.TargetBucket}
@@ -185,7 +185,7 @@ func (sys *BucketTargetSys) RemoveTarget(ctx context.Context, bucket, arnStr str
 		if !globalIsErasure {
 			return NotImplemented{Message: "Replication is not implemented in " + getMinioMode()}
 		}
-		// reject removal of remote target if replication configuration is present
+		// Reject removal of remote target if replication configuration is present
 		rcfg, err := getReplicationConfig(ctx, bucket)
 		if err == nil && rcfg.RoleArn == arnStr {
 			if _, ok := sys.arnRemotesMap[arnStr]; ok {
@@ -194,7 +194,7 @@ func (sys *BucketTargetSys) RemoveTarget(ctx context.Context, bucket, arnStr str
 		}
 	}
 	if arn.Type == madmin.ILMService {
-		// reject removal of remote target if lifecycle transition uses this arn
+		// Reject removal of remote target if lifecycle transition uses this arn
 		config, err := globalBucketMetadataSys.GetLifecycleConfig(bucket)
 		if err == nil && transitionSCInUse(ctx, config, bucket, arnStr) {
 			if _, ok := sys.arnRemotesMap[arnStr]; ok {
@@ -304,7 +304,7 @@ func (sys *BucketTargetSys) UpdateAllTargets(bucket string, tgts *madmin.BucketT
 	sys.Lock()
 	defer sys.Unlock()
 	if tgts == nil || tgts.Empty() {
-		// remove target and arn association
+		// Remove target and arn association
 		if tgts, ok := sys.targetsMap[bucket]; ok {
 			for _, t := range tgts {
 				delete(sys.arnRemotesMap, t.Arn)
@@ -327,7 +327,7 @@ func (sys *BucketTargetSys) UpdateAllTargets(bucket string, tgts *madmin.BucketT
 	sys.targetsMap[bucket] = tgts.Targets
 }
 
-// create minio-go clients for buckets having remote targets
+// Create minio-go clients for buckets having remote targets
 func (sys *BucketTargetSys) load(ctx context.Context, buckets []BucketInfo, objAPI ObjectLayer) {
 	for _, bucket := range buckets {
 		cfg, err := globalBucketMetadataSys.GetBucketTargetsConfig(bucket.Name)
@@ -405,7 +405,7 @@ func (sys *BucketTargetSys) getRemoteARN(bucket string, target *madmin.BucketTar
 	return generateARN(target)
 }
 
-// generate ARN that is unique to this target type
+// Generate ARN that is unique to this target type
 func generateARN(t *madmin.BucketTarget) string {
 	hash := sha256.New()
 	hash.Write([]byte(t.Type))

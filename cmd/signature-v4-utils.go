@@ -32,7 +32,7 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 )
 
-// http Header "x-amz-content-sha256" == "UNSIGNED-PAYLOAD" indicates that the
+// Http Header "x-amz-content-sha256" == "UNSIGNED-PAYLOAD" indicates that the
 // client did not calculate sha256 of the payload.
 const unsignedPayload = "UNSIGNED-PAYLOAD"
 
@@ -117,7 +117,7 @@ func isValidRegion(reqRegion string, confRegion string) bool {
 	return reqRegion == confRegion
 }
 
-// check if the access key is valid and recognized, additionally
+// Check if the access key is valid and recognized, additionally
 // also returns if the access key is owner/admin.
 func checkKeyValid(accessKey string) (auth.Credentials, bool, APIErrorCode) {
 	var owner = true
@@ -144,7 +144,7 @@ func sumHMAC(key []byte, data []byte) []byte {
 func extractSignedHeaders(signedHeaders []string, r *http.Request) (http.Header, APIErrorCode) {
 	reqHeaders := r.Header
 	reqQueries := r.URL.Query()
-	// find whether "host" is part of list of signed headers.
+	// Find whether "host" is part of list of signed headers.
 	// if not return ErrUnsignedHeaders. "host" is mandatory.
 	if !contains(signedHeaders, "host") {
 		return nil, ErrUnsignedHeaders
@@ -155,7 +155,7 @@ func extractSignedHeaders(signedHeaders []string, r *http.Request) (http.Header,
 		// but its alway necessary that the list of signed headers containing host in it.
 		val, ok := reqHeaders[http.CanonicalHeaderKey(header)]
 		if !ok {
-			// try to set headers from Query String
+			// Try to set headers from Query String
 			val, ok = reqQueries[header]
 		}
 		if ok {

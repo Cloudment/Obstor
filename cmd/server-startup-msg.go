@@ -42,7 +42,7 @@ const (
 	dotnetQuickStartGuide = "https://obstor.net/docs/dotnet-client-quickstart-guide"
 )
 
-// generates format string depending on the string length and padding.
+// Generates format string depending on the string length and padding.
 func getFormatStr(strLen int, padding int) string {
 	formatStr := fmt.Sprintf("%ds", strLen+padding)
 	return "%" + formatStr
@@ -106,7 +106,7 @@ func isNotIPv4(host string) bool {
 	return !ok
 }
 
-// strip api endpoints list with standard ports such as
+// Strip api endpoints list with standard ports such as
 // port "80" and "443" before displaying on the startup
 // banner.  Returns a new list of API endpoints.
 func stripStandardPorts(apiEndpoints []string) (newAPIEndpoints []string) {

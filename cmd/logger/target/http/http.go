@@ -227,7 +227,7 @@ func (h *Target) Send(entry interface{}, errKind string) error {
 	select {
 	case h.logCh <- entry:
 	default:
-		// log channel is full, do not wait and return
+		// Log channel is full, do not wait and return
 		// an error immediately to the caller
 		return errors.New("log buffer full")
 	}

@@ -142,7 +142,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "id")
 		return
 	}
-	// write "b"
+	// Write "b"
 	err = en.Append(0xa1, 0x62)
 	if err != nil {
 		return
@@ -152,7 +152,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "bucket")
 		return
 	}
-	// write "root"
+	// Write "root"
 	err = en.Append(0xa4, 0x72, 0x6f, 0x6f, 0x74)
 	if err != nil {
 		return
@@ -162,7 +162,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "root")
 		return
 	}
-	// write "rec"
+	// Write "rec"
 	err = en.Append(0xa3, 0x72, 0x65, 0x63)
 	if err != nil {
 		return
@@ -172,7 +172,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "recursive")
 		return
 	}
-	// write "flt"
+	// Write "flt"
 	err = en.Append(0xa3, 0x66, 0x6c, 0x74)
 	if err != nil {
 		return
@@ -182,7 +182,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "filter")
 		return
 	}
-	// write "stat"
+	// Write "stat"
 	err = en.Append(0xa4, 0x73, 0x74, 0x61, 0x74)
 	if err != nil {
 		return
@@ -192,7 +192,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "status")
 		return
 	}
-	// write "fnf"
+	// Write "fnf"
 	err = en.Append(0xa3, 0x66, 0x6e, 0x66)
 	if err != nil {
 		return
@@ -202,7 +202,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "fileNotFound")
 		return
 	}
-	// write "err"
+	// Write "err"
 	err = en.Append(0xa3, 0x65, 0x72, 0x72)
 	if err != nil {
 		return
@@ -212,7 +212,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "error")
 		return
 	}
-	// write "st"
+	// Write "st"
 	err = en.Append(0xa2, 0x73, 0x74)
 	if err != nil {
 		return
@@ -222,7 +222,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "started")
 		return
 	}
-	// write "end"
+	// Write "end"
 	err = en.Append(0xa3, 0x65, 0x6e, 0x64)
 	if err != nil {
 		return
@@ -232,7 +232,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ended")
 		return
 	}
-	// write "u"
+	// Write "u"
 	err = en.Append(0xa1, 0x75)
 	if err != nil {
 		return
@@ -242,7 +242,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "lastUpdate")
 		return
 	}
-	// write "lh"
+	// Write "lh"
 	err = en.Append(0xa2, 0x6c, 0x68)
 	if err != nil {
 		return
@@ -252,7 +252,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "lastHandout")
 		return
 	}
-	// write "stc"
+	// Write "stc"
 	err = en.Append(0xa3, 0x73, 0x74, 0x63)
 	if err != nil {
 		return
@@ -262,7 +262,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "startedCycle")
 		return
 	}
-	// write "endc"
+	// Write "endc"
 	err = en.Append(0xa4, 0x65, 0x6e, 0x64, 0x63)
 	if err != nil {
 		return
@@ -272,7 +272,7 @@ func (z *metacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "endedCycle")
 		return
 	}
-	// write "v"
+	// Write "v"
 	err = en.Append(0xa1, 0x76)
 	if err != nil {
 		return

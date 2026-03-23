@@ -2493,7 +2493,7 @@ type LogicalType struct {
 	DATE      *DateType      `thrift:"DATE,6" db:"DATE" json:"DATE,omitempty"`
 	TIME      *TimeType      `thrift:"TIME,7" db:"TIME" json:"TIME,omitempty"`
 	TIMESTAMP *TimestampType `thrift:"TIMESTAMP,8" db:"TIMESTAMP" json:"TIMESTAMP,omitempty"`
-	// unused field # 9
+	// Unused field # 9
 	INTEGER *IntType  `thrift:"INTEGER,10" db:"INTEGER" json:"INTEGER,omitempty"`
 	UNKNOWN *NullType `thrift:"UNKNOWN,11" db:"UNKNOWN" json:"UNKNOWN,omitempty"`
 	JSON    *JsonType `thrift:"JSON,12" db:"JSON" json:"JSON,omitempty"`
@@ -5356,7 +5356,7 @@ func (p *SortingColumn) String() string {
 	return fmt.Sprintf("SortingColumn(%+v)", *p)
 }
 
-// statistics of a given page type and encoding
+// Statistics of a given page type and encoding
 //
 // Attributes:
 //   - PageType: the page type (data/dic/...) *

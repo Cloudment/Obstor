@@ -129,7 +129,7 @@ func (statement Statement) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	// subtype to avoid recursive call to MarshalJSON()
+	// Subtype to avoid recursive call to MarshalJSON()
 	type subStatement Statement
 	ss := subStatement(statement)
 	return json.Marshal(ss)
@@ -137,7 +137,7 @@ func (statement Statement) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON - decodes JSON data to Statement.
 func (statement *Statement) UnmarshalJSON(data []byte) error {
-	// subtype to avoid recursive call to UnmarshalJSON()
+	// Subtype to avoid recursive call to UnmarshalJSON()
 	type subStatement Statement
 	var ss subStatement
 

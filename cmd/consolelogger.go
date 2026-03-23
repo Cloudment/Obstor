@@ -29,7 +29,7 @@ import (
 	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
-// number of log messages to buffer
+// Number of log messages to buffer
 const defaultLogBufferCount = 10000
 
 // HTTPConsoleLoggerSys holds global console logger state
@@ -81,7 +81,7 @@ func (sys *HTTPConsoleLoggerSys) Subscribe(subCh chan interface{}, doneCh <-chan
 	}
 
 	cnt := 0
-	// by default send all console logs in the ring buffer unless node or limit query parameters
+	// By default send all console logs in the ring buffer unless node or limit query parameters
 	// are set.
 	var lastN []log.Info
 	if last > defaultLogBufferCount || last <= 0 {
@@ -100,7 +100,7 @@ func (sys *HTTPConsoleLoggerSys) Subscribe(subCh chan interface{}, doneCh <-chan
 		}
 	})
 	sys.RUnlock()
-	// send last n console log messages in order filtered by node
+	// Send last n console log messages in order filtered by node
 	if cnt > 0 {
 		for i := 0; i < last; i++ {
 			entry := lastN[(cnt+i)%last]
@@ -163,7 +163,7 @@ func (sys *HTTPConsoleLoggerSys) Send(e interface{}, logKind string) error {
 
 	sys.pubsub.Publish(lg)
 	sys.Lock()
-	// add log to ring buffer
+	// Add log to ring buffer
 	sys.logBuf.Value = lg
 	sys.logBuf = sys.logBuf.Next()
 	sys.Unlock()

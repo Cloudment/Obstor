@@ -46,9 +46,9 @@ var (
 			Help:      "Version of current Obstor server instance",
 		},
 		[]string{
-			// current version
+			// Current version
 			"version",
-			// commit-id of the current version
+			// Commit-id of the current version
 			"commit",
 		},
 	)
@@ -127,7 +127,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 }
 
-// collects healing specific metrics for Obstor instance in Prometheus specific format
+// Collects healing specific metrics for Obstor instance in Prometheus specific format
 // and sends to given channel
 func healingMetricsPrometheus(ch chan<- prometheus.Metric) {
 	if !globalIsErasure {
@@ -186,7 +186,7 @@ func healingMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects gateway specific metrics for Obstor instance in Prometheus specific format
+// Collects gateway specific metrics for Obstor instance in Prometheus specific format
 // and sends to given channel
 func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	if !globalIsGateway || (globalGatewayName != S3BackendGateway && globalGatewayName != AzureBackendGateway && globalGatewayName != GCSBackendGateway) {
@@ -259,7 +259,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 }
 
-// collects cache metrics for Obstor server in Prometheus specific format
+// Collects cache metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	cacheObjLayer := newCachedObjectLayerFn()
@@ -335,7 +335,7 @@ func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects http metrics for Obstor server in Prometheus specific format
+// Collects http metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 	httpStats := globalHTTPStats.toServerHTTPStats()
@@ -389,7 +389,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects network metrics for Obstor server in Prometheus specific format
+// Collects network metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	connStats := globalConnStats.toServerConnStats()
@@ -433,7 +433,7 @@ func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 }
 
-// get the most current of in-memory replication stats  and data usage info from crawler.
+// Get the most current of in-memory replication stats  and data usage info from crawler.
 func getLatestReplicationStats(bucket string, u madmin.BucketUsageInfo) (s BucketReplicationStats) {
 	bucketStats := globalNotificationSys.GetClusterBucketStats(GlobalContext, bucket)
 
@@ -454,7 +454,7 @@ func getLatestReplicationStats(bucket string, u madmin.BucketUsageInfo) (s Bucke
 	replStats.ReplicaSize += usageStat.ReplicaSize
 	replStats.ReplicatedSize += usageStat.ReplicatedSize
 
-	// use in memory replication stats if it is ahead of usage info.
+	// Use in memory replication stats if it is ahead of usage info.
 	if replStats.ReplicatedSize >= u.ReplicatedSize {
 		s.ReplicatedSize = replStats.ReplicatedSize
 	} else {
@@ -511,7 +511,7 @@ func bucketUsageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	if err != nil {
 		return
 	}
-	// data usage has not captured any data yet.
+	// Data usage has not captured any data yet.
 	if dataUsageInfo.LastUpdate.IsZero() {
 		return
 	}
@@ -606,7 +606,7 @@ func bucketUsageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects storage metrics for Obstor server in Prometheus specific format
+// Collects storage metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	objLayer := newObjectLayerFn()

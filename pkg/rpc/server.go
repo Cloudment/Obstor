@@ -19,10 +19,6 @@ import (
 
 var nilErrorValue = reflect.Zero(reflect.TypeOf((*error)(nil)).Elem())
 
-// ----------------------------------------------------------------------------
-// Codec
-// ----------------------------------------------------------------------------
-
 // Codec creates a CodecRequest to process each request.
 type Codec interface {
 	NewRequest(*http.Request) CodecRequest
@@ -40,10 +36,6 @@ type CodecRequest interface {
 	// Writes an error produced by the server.
 	WriteError(w http.ResponseWriter, status int, err error)
 }
-
-// ----------------------------------------------------------------------------
-// Server
-// ----------------------------------------------------------------------------
 
 // NewServer returns a new RPC server.
 func NewServer() *Server {

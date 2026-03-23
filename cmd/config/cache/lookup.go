@@ -161,7 +161,7 @@ func LookupConfig(kvs config.KVS) (Config, error) {
 		if err != nil {
 			return cfg, config.ErrInvalidCacheQuota(err)
 		}
-		// quota should be a valid percentage.
+		// Quota should be a valid percentage.
 		if cfg.Quota < 0 || cfg.Quota > 100 {
 			err := errors.New("config quota value should not be null or negative")
 			return cfg, config.ErrInvalidCacheQuota(err)
@@ -174,7 +174,7 @@ func LookupConfig(kvs config.KVS) (Config, error) {
 		if err != nil {
 			return cfg, config.ErrInvalidCacheAfter(err)
 		}
-		// after should be a valid value >= 0.
+		// After should be a valid value >= 0.
 		if cfg.After < 0 {
 			err := errors.New("cache after value cannot be less than 0")
 			return cfg, config.ErrInvalidCacheAfter(err)

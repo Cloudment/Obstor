@@ -87,19 +87,19 @@ type CacheObjectLayer interface {
 
 // Abstracts disk caching - used by the S3 layer
 type cacheObjects struct {
-	// slice of cache drives
+	// Slice of cache drives
 	cache []*diskCache
-	// file path patterns to exclude from cache
+	// File path patterns to exclude from cache
 	exclude []string
-	// number of accesses after which to cache an object
+	// Number of accesses after which to cache an object
 	after int
-	// commit objects in async manner
+	// Commit objects in async manner
 	commitWriteback bool
 	// if true migration is in progress from v1 to v2
 	migrating bool
-	// mutex to protect migration bool
+	// Mutex to protect migration bool
 	migMutex sync.Mutex
-	// retry queue for writeback cache mode to reattempt upload to backend
+	// Retry queue for writeback cache mode to reattempt upload to backend
 	wbRetryCh chan ObjectInfo
 	// Cache stats
 	cacheStats *CacheStats
@@ -190,7 +190,7 @@ func (c *cacheObjects) DeleteObjects(ctx context.Context, bucket string, objects
 	return deletedObjects, errs
 }
 
-// construct a metadata k-v map
+// Construct a metadata k-v map
 func getMetadata(objInfo ObjectInfo) map[string]string {
 	metadata := make(map[string]string, len(objInfo.UserDefined)+4)
 	metadata["etag"] = objInfo.ETag
@@ -208,7 +208,7 @@ func getMetadata(objInfo ObjectInfo) map[string]string {
 	return metadata
 }
 
-// marks cache hit
+// Marks cache hit
 func (c *cacheObjects) incCacheStats(size int64) {
 	c.cacheStats.incHit()
 	c.cacheStats.incBytesServed(size)
@@ -220,7 +220,7 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 	}
 	var cc *cacheControl
 	var cacheObjSize int64
-	// fetch diskCache if object is currently cached or nearest available cache drive
+	// Fetch diskCache if object is currently cached or nearest available cache drive
 	dcache, err := c.getCacheToLoc(ctx, bucket, object)
 	if err != nil {
 		return c.InnerGetObjectNInfoFn(ctx, bucket, object, rs, h, lockType, opts)
@@ -285,7 +285,7 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		c.cacheStats.incMiss()
 		return c.InnerGetObjectNInfoFn(ctx, bucket, object, rs, h, lockType, opts)
 	}
-	// skip cache for objects with locks
+	// Skip cache for objects with locks
 	objRetention := objectlock.GetObjectRetentionMeta(objInfo.UserDefined)
 	legalHold := objectlock.GetObjectLegalHoldMeta(objInfo.UserDefined)
 	if objRetention.Mode.Valid() || legalHold.Status.Valid() {
@@ -337,16 +337,16 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		go func() {
 			// if range caching is disabled, download entire object.
 			rs = nil
-			// fill cache in the background for range GET requests
+			// Fill cache in the background for range GET requests
 			bReader, bErr := c.InnerGetObjectNInfoFn(GlobalContext, bucket, object, rs, h, lockType, opts)
 			if bErr != nil {
 				return
 			}
 			defer bReader.Close()
 			oi, _, _, err := dcache.statRange(GlobalContext, bucket, object, rs)
-			// avoid cache overwrite if another background routine filled cache
+			// Avoid cache overwrite if another background routine filled cache
 			if err != nil || oi.ETag != bReader.ObjInfo.ETag {
-				// use a new context to avoid locker prematurely timing out operation when the GetObjectNInfo returns.
+				// Use a new context to avoid locker prematurely timing out operation when the GetObjectNInfo returns.
 				dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, rs, ObjectOptions{
 					UserDefined: getMetadata(bReader.ObjInfo),
 				}, false)
@@ -383,7 +383,7 @@ func (c *cacheObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 		return getObjectInfoFn(ctx, bucket, object, opts)
 	}
 
-	// fetch diskCache if object is currently cached or nearest available cache drive
+	// Fetch diskCache if object is currently cached or nearest available cache drive
 	dcache, err := c.getCacheToLoc(ctx, bucket, object)
 	if err != nil {
 		return getObjectInfoFn(ctx, bucket, object, opts)
@@ -422,7 +422,7 @@ func (c *cacheObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 	}
 	// Reaching here implies cache miss
 	c.cacheStats.incMiss()
-	// when backend is up, do a sanity check on cached object
+	// When backend is up, do a sanity check on cached object
 	if cerr != nil {
 		return objInfo, nil
 	}
@@ -442,7 +442,7 @@ func (c *cacheObjects) CopyObject(ctx context.Context, srcBucket, srcObject, dst
 	if srcBucket != dstBucket || srcObject != dstObject {
 		return copyObjectFn(ctx, srcBucket, srcObject, dstBucket, dstObject, srcInfo, srcOpts, dstOpts)
 	}
-	// fetch diskCache if object is currently cached or nearest available cache drive
+	// Fetch diskCache if object is currently cached or nearest available cache drive
 	dcache, err := c.getCacheToLoc(ctx, srcBucket, srcObject)
 	if err != nil {
 		return copyObjectFn(ctx, srcBucket, srcObject, dstBucket, dstObject, srcInfo, srcOpts, dstOpts)
@@ -490,7 +490,7 @@ func (c *cacheObjects) skipCache() bool {
 
 // Returns true if object should be excluded from cache
 func (c *cacheObjects) isCacheExclude(bucket, object string) bool {
-	// exclude directories from cache
+	// Exclude directories from cache
 	if strings.HasSuffix(object, SlashSeparator) {
 		return true
 	}
@@ -503,7 +503,7 @@ func (c *cacheObjects) isCacheExclude(bucket, object string) bool {
 	return false
 }
 
-// choose a cache deterministically based on hash of bucket,object. The hash index is treated as
+// Choose a cache deterministically based on hash of bucket,object. The hash index is treated as
 // a hint. In the event that the cache drive at hash index is offline, treat the list of cache drives
 // as a circular buffer and walk through them starting at hash index until an online drive is found.
 func (c *cacheObjects) getCacheLoc(bucket, object string) (*diskCache, error) {
@@ -521,7 +521,7 @@ func (c *cacheObjects) getCacheLoc(bucket, object string) (*diskCache, error) {
 	return nil, errDiskNotFound
 }
 
-// get cache disk where object is currently cached for a GET operation. If object does not exist at that location,
+// Get cache disk where object is currently cached for a GET operation. If object does not exist at that location,
 // treat the list of cache drives as a circular buffer and walk through them starting at hash index
 // until an online drive is found.If object is not found, fall back to the first online cache drive
 // closest to the hash index, so that object can be re-cached.
@@ -529,7 +529,7 @@ func (c *cacheObjects) getCacheToLoc(ctx context.Context, bucket, object string)
 	index := c.hashIndex(bucket, object)
 
 	numDisks := len(c.cache)
-	// save first online cache disk closest to the hint index
+	// Save first online cache disk closest to the hint index
 	var firstOnlineDisk *diskCache
 	for k := 0; k < numDisks; k++ {
 		i := (index + k) % numDisks
@@ -567,7 +567,7 @@ func newCache(config cache.Config) ([]*diskCache, bool, error) {
 		return nil, false, err
 	}
 	for i, dir := range config.Drives {
-		// skip diskCache creation for cache drives missing a format.json
+		// Skip diskCache creation for cache drives missing a format.json
 		if formats[i] == nil {
 			caches = append(caches, nil)
 			continue
@@ -595,7 +595,7 @@ func (c *cacheObjects) migrateCacheFromV1toV2(ctx context.Context) {
 		}
 		index := index
 		g.Go(func() error {
-			// start migration from V1 to V2
+			// Start migration from V1 to V2
 			return migrateOldCache(ctx, c.cache[index])
 		}, index)
 	}
@@ -613,7 +613,7 @@ func (c *cacheObjects) migrateCacheFromV1toV2(ctx context.Context) {
 		return
 	}
 
-	// update migration status
+	// Update migration status
 	c.migMutex.Lock()
 	defer c.migMutex.Unlock()
 	c.migrating = false
@@ -625,7 +625,7 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 	putObjectFn := c.InnerPutObjectFn
 	dcache, err := c.getCacheToLoc(ctx, bucket, object)
 	if err != nil {
-		// disk cache could not be located,execute backend call.
+		// Disk cache could not be located,execute backend call.
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 	size := r.Size()
@@ -633,7 +633,7 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 
-	// fetch from backend if there is no space on cache drive
+	// Fetch from backend if there is no space on cache drive
 	if !dcache.diskSpaceAvailable(size) {
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
@@ -643,7 +643,7 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 
-	// skip cache for objects with locks
+	// Skip cache for objects with locks
 	objRetention := objectlock.GetObjectRetentionMeta(opts.UserDefined)
 	legalHold := objectlock.GetObjectLegalHoldMeta(opts.UserDefined)
 	if objRetention.Mode.Valid() || legalHold.Status.Valid() {
@@ -651,7 +651,7 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 
-	// fetch from backend if cache exclude pattern or cache-control
+	// Fetch from backend if cache exclude pattern or cache-control
 	// directive set to exclude
 	if c.isCacheExclude(bucket, object) {
 		dcache.Delete(ctx, bucket, object)
@@ -669,14 +669,14 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 
 	if err == nil {
 		go func() {
-			// fill cache in the background
+			// Fill cache in the background
 			bReader, bErr := c.InnerGetObjectNInfoFn(GlobalContext, bucket, object, nil, http.Header{}, readLock, ObjectOptions{})
 			if bErr != nil {
 				return
 			}
 			defer bReader.Close()
 			oi, _, err := dcache.Stat(GlobalContext, bucket, object)
-			// avoid cache overwrite if another background routine filled cache
+			// Avoid cache overwrite if another background routine filled cache
 			if err != nil || oi.ETag != bReader.ObjInfo.ETag {
 				dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, nil, ObjectOptions{UserDefined: getMetadata(bReader.ObjInfo)}, false)
 			}
@@ -685,11 +685,11 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 	return objInfo, err
 }
 
-// upload cached object to backend in async commit mode.
+// Upload cached object to backend in async commit mode.
 func (c *cacheObjects) uploadObject(ctx context.Context, oi ObjectInfo) {
 	dcache, err := c.getCacheToLoc(ctx, oi.Bucket, oi.Name)
 	if err != nil {
-		// disk cache could not be located.
+		// Disk cache could not be located.
 		logger.LogIf(ctx, fmt.Errorf("could not upload %s/%s to backend: %w", oi.Bucket, oi.Name, err))
 		return
 	}
@@ -732,7 +732,7 @@ func (c *cacheObjects) uploadObject(ctx context.Context, oi ObjectInfo) {
 	meta["etag"] = oi.ETag
 	dcache.SaveMetadata(ctx, oi.Bucket, oi.Name, meta, objInfo.Size, nil, "", false)
 	if retryCnt > 0 {
-		// slow down retries
+		// Slow down retries
 		time.Sleep(time.Second * time.Duration(retryCnt%10+1))
 		c.queueWritebackRetry(oi)
 	}
@@ -748,7 +748,7 @@ func (c *cacheObjects) queueWritebackRetry(oi ObjectInfo) {
 
 // Returns cacheObjects for use by Server.
 func newServerCacheObjects(ctx context.Context, config cache.Config) (CacheObjectLayer, error) {
-	// list of disk caches for cache "drives" specified in config.json or OBSTOR_CACHE_DRIVES env var.
+	// List of disk caches for cache "drives" specified in config.json or OBSTOR_CACHE_DRIVES env var.
 	cache, migrateSw, err := newCache(config)
 	if err != nil {
 		return nil, err
@@ -833,7 +833,7 @@ func (c *cacheObjects) gc(ctx context.Context) {
 	}
 }
 
-// queues any pending or failed async commits when server restarts
+// Queues any pending or failed async commits when server restarts
 func (c *cacheObjects) queuePendingWriteback(ctx context.Context) {
 	for _, dcache := range c.cache {
 		if dcache != nil {

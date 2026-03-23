@@ -42,7 +42,7 @@ type LicenseInfo struct {
 	ExpiresAt       time.Time // Time of license expiry
 }
 
-// license key JSON field names
+// License key JSON field names
 const (
 	accountID    = "aid"
 	sub          = "sub"

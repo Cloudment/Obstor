@@ -474,7 +474,7 @@ func (d *dataUpdateTracker) deserialize(src io.Reader, newerThan time.Time) erro
 	return nil
 }
 
-// start a collector that picks up entries from objectUpdatedCh
+// Start a collector that picks up entries from objectUpdatedCh
 // and adds them  to the current bloom filter.
 func (d *dataUpdateTracker) startCollector(ctx context.Context) {
 	for in := range d.input {

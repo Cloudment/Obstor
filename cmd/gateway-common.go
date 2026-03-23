@@ -341,7 +341,7 @@ func ComputeCompleteMultipartMD5(parts []CompletePart) string {
 	return getCompleteMultipartMD5(parts)
 }
 
-// parse gateway sse env variable
+// Parse gateway sse env variable
 func parseGatewaySSE(s string) (gatewaySSE, error) {
 	l := strings.Split(s, ";")
 	var gwSlice gatewaySSE
@@ -362,7 +362,7 @@ func parseGatewaySSE(s string) (gatewaySSE, error) {
 	return gwSlice, nil
 }
 
-// handle gateway env vars
+// Handle gateway env vars
 func gatewayHandleEnvVars() {
 	// Handle common env vars.
 	handleCommonEnvVars()

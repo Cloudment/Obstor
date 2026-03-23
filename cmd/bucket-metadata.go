@@ -157,7 +157,7 @@ func loadBucketMetadata(ctx context.Context, objectAPI ObjectLayer, bucket strin
 	if err := b.convertLegacyConfigs(ctx, objectAPI); err != nil {
 		return b, err
 	}
-	// migrate unencrypted remote targets
+	// Migrate unencrypted remote targets
 	return b, b.migrateTargetConfig(ctx, objectAPI)
 }
 
@@ -273,7 +273,7 @@ func (b *BucketMetadata) convertLegacyConfigs(ctx context.Context, objectAPI Obj
 	if b.LockEnabled {
 		configs[objectLockConfig] = enabledBucketObjectLockConfig
 		b.LockEnabled = false // legacy value unset it
-		// we are only interested in b.ObjectLockConfigXML or objectLockConfig value
+		// We are only interested in b.ObjectLockConfigXML or objectLockConfig value
 	}
 
 	for _, legacyFile := range legacyConfigs {
@@ -283,12 +283,12 @@ func (b *BucketMetadata) convertLegacyConfigs(ctx context.Context, objectAPI Obj
 		if err != nil {
 			switch err.(type) {
 			case ObjectExistsAsDirectory:
-				// in FS mode it possible that we have actual
+				// In FS mode it possible that we have actual
 				// files in this folder with `.obstor.sys/buckets/bucket/configFile`
 				continue
 			}
 			if errors.Is(err, errConfigNotFound) {
-				// legacy file config not found, proceed to look for new metadata.
+				// Legacy file config not found, proceed to look for new metadata.
 				continue
 			}
 
@@ -298,7 +298,7 @@ func (b *BucketMetadata) convertLegacyConfigs(ctx context.Context, objectAPI Obj
 	}
 
 	if len(configs) == 0 {
-		// nothing to update, return right away.
+		// Nothing to update, return right away.
 		return b.parseAllConfigs(ctx, objectAPI)
 	}
 
@@ -309,7 +309,7 @@ func (b *BucketMetadata) convertLegacyConfigs(ctx context.Context, objectAPI Obj
 				b.ObjectLockConfigXML = enabledBucketObjectLockConfig
 				b.VersioningConfigXML = enabledBucketVersioningConfig
 				b.LockEnabled = false // legacy value unset it
-				// we are only interested in b.ObjectLockConfigXML
+				// We are only interested in b.ObjectLockConfigXML
 			}
 		case bucketPolicyConfig:
 			b.PolicyConfigJSON = configData
@@ -385,10 +385,10 @@ func deleteBucketMetadata(ctx context.Context, obj objectDeleter, bucket string)
 	return nil
 }
 
-// migrate config for remote targets by encrypting data if currently unencrypted and kms is configured.
+// Migrate config for remote targets by encrypting data if currently unencrypted and kms is configured.
 func (b *BucketMetadata) migrateTargetConfig(ctx context.Context, objectAPI ObjectLayer) error {
 	var err error
-	// early return if no targets or already encrypted
+	// Early return if no targets or already encrypted
 	if len(b.BucketTargetsConfigJSON) == 0 || GlobalKMS == nil || len(b.BucketTargetsConfigMetaJSON) != 0 {
 		return nil
 	}
@@ -403,7 +403,7 @@ func (b *BucketMetadata) migrateTargetConfig(ctx context.Context, objectAPI Obje
 	return b.Save(ctx, objectAPI)
 }
 
-// encrypt bucket metadata if kms is configured.
+// Encrypt bucket metadata if kms is configured.
 func encryptBucketMetadata(bucket string, input []byte, kmsContext kms.Context) (output, metabytes []byte, err error) {
 	if GlobalKMS == nil {
 		output = input
@@ -431,7 +431,7 @@ func encryptBucketMetadata(bucket string, input []byte, kmsContext kms.Context) 
 	return outbuf.Bytes(), metabytes, nil
 }
 
-// decrypt bucket metadata if kms is configured.
+// Decrypt bucket metadata if kms is configured.
 func decryptBucketMetadata(input []byte, bucket string, meta map[string]string, kmsContext kms.Context) ([]byte, error) {
 	if GlobalKMS == nil {
 		return nil, errKMSNotConfigured

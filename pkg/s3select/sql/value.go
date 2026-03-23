@@ -252,7 +252,7 @@ func (v Value) isNumeric() bool {
 	return false
 }
 
-// setters used internally to mutate values
+// Setters used internally to mutate values
 
 func (v *Value) setInt(i int64) {
 	v.value = i
@@ -536,7 +536,7 @@ func inferTypesForCmp(a *Value, b *Value) error {
 		return nil
 
 	case !okA && okB:
-		// swap arguments to avoid repeating code
+		// Swap arguments to avoid repeating code
 		return inferTypesForCmp(b, a)
 
 	default:

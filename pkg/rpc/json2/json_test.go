@@ -68,8 +68,7 @@ func (rw *ResponseRecorder) Flush() {
 	rw.Flushed = true
 }
 
-// ----------------------------------------------------------------------------
-
+// Error response
 var ErrResponseError = errors.New("response error")
 var ErrMappedResponseError = errors.New("mapped response error")
 

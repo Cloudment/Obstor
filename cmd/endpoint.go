@@ -425,9 +425,9 @@ func (endpoints Endpoints) UpdateIsLocal(foundPrevLocal bool) error {
 				if k8sReplicaSet && hostResolveToLocalhost(endpoints[i]) {
 					err := fmt.Errorf("host %s resolves to 127.*, DNS incorrectly configured retrying",
 						endpoints[i])
-					// time elapsed
+					// Time elapsed
 					timeElapsed := time.Since(startTime)
-					// log error only if more than 1s elapsed
+					// Log error only if more than 1s elapsed
 					if timeElapsed > time.Second {
 						reqInfo.AppendTags("elapsedTime",
 							humanize.RelTime(startTime,
@@ -451,9 +451,9 @@ func (endpoints Endpoints) UpdateIsLocal(foundPrevLocal bool) error {
 					return err
 				}
 				if err != nil {
-					// time elapsed
+					// Time elapsed
 					timeElapsed := time.Since(startTime)
-					// log error only if more than 1s elapsed
+					// Log error only if more than 1s elapsed
 					if timeElapsed > time.Second {
 						reqInfo.AppendTags("elapsedTime",
 							humanize.RelTime(startTime,
@@ -481,10 +481,10 @@ func (endpoints Endpoints) UpdateIsLocal(foundPrevLocal bool) error {
 						// previous local we continue to wait to look for
 						// atleast one local.
 						resolvedList[i] = false
-						// time elapsed
+						// Time elapsed
 						err := fmt.Errorf("no endpoint is local to this host: %s", endpoints[i])
 						timeElapsed := time.Since(startTime)
-						// log error only if more than 1s elapsed
+						// Log error only if more than 1s elapsed
 						if timeElapsed > time.Second {
 							reqInfo.AppendTags("elapsedTime",
 								humanize.RelTime(startTime,

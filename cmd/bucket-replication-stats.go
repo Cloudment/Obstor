@@ -89,7 +89,7 @@ func (r *ReplicationStats) Update(bucket string, n int64, status, prevStatus rep
 			}
 		}
 	case replication.Failed:
-		// count failures only once - not on every retry
+		// Count failures only once - not on every retry
 		switch prevStatus { // adjust counters based on previous state
 		case replication.Pending:
 			atomic.AddUint64(&b.PendingCount, ^uint64(0))
@@ -170,7 +170,7 @@ func NewReplicationStats(ctx context.Context, objectAPI ObjectLayer) *Replicatio
 		return st
 	}
 
-	// data usage has not captured any data yet.
+	// Data usage has not captured any data yet.
 	if dataUsageInfo.LastUpdate.IsZero() {
 		return st
 	}

@@ -250,12 +250,12 @@ func (adm *AdminClient) ServerHealthInfo(ctx context.Context, healthDataTypes []
 		v.Set("deadline",
 			deadline.Truncate(1*time.Second).String())
 
-		// start with all set to false
+		// Start with all set to false
 		for _, d := range HealthDataTypesList {
 			v.Set(string(d), "false")
 		}
 
-		// only 'trueify' user provided values
+		// Only 'trueify' user provided values
 		for _, d := range healthDataTypes {
 			v.Set(string(d), "true")
 		}

@@ -289,7 +289,7 @@ func (s StringMap) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		}
 	}
 
-	// flush to ensure tokens are written
+	// Flush to ensure tokens are written
 	return e.Flush()
 }
 
@@ -379,7 +379,7 @@ type PostResponse struct {
 	Location string
 }
 
-// returns "https" if the tls boolean is true, "http" otherwise.
+// Returns "https" if the tls boolean is true, "http" otherwise.
 func getURLScheme(tls bool) string {
 	if tls {
 		return httpsScheme
@@ -389,7 +389,7 @@ func getURLScheme(tls bool) string {
 
 // getObjectLocation gets the fully qualified URL of an object.
 func getObjectLocation(r *http.Request, domains []string, bucket, object string) string {
-	// unit tests do not have host set.
+	// Unit tests do not have host set.
 	if r.Host == "" {
 		return path.Clean(r.URL.Path)
 	}
@@ -412,7 +412,7 @@ func getObjectLocation(r *http.Request, domains []string, bucket, object string)
 	return u.String()
 }
 
-// generates ListBucketsResponse from array of BucketInfo which can be
+// Generates ListBucketsResponse from array of BucketInfo which can be
 // serialized to match XML and JSON API spec output.
 func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 	listbuckets := make([]Bucket, 0, len(buckets))
@@ -435,7 +435,7 @@ func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 	return data
 }
 
-// generates an ListBucketVersions response for the said bucket with other enumerated options.
+// Generates an ListBucketVersions response for the said bucket with other enumerated options.
 func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delimiter, encodingType string, maxKeys int, resp ListObjectVersionsInfo) ListVersionsResponse {
 	versions := make([]ObjectVersion, 0, len(resp.Objects))
 	var owner = Owner{
@@ -493,7 +493,7 @@ func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delim
 	return data
 }
 
-// generates an ListObjectsV1 response for the said bucket with other enumerated options.
+// Generates an ListObjectsV1 response for the said bucket with other enumerated options.
 func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingType string, maxKeys int, resp ListObjectsInfo) ListObjectsResponse {
 	contents := make([]Object, 0, len(resp.Objects))
 	var owner = Owner{
@@ -542,7 +542,7 @@ func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingTy
 	return data
 }
 
-// generates an ListObjectsV2 response for the said bucket with other enumerated options.
+// Generates an ListObjectsV2 response for the said bucket with other enumerated options.
 func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter, delimiter, encodingType string, fetchOwner, isTruncated bool, maxKeys int, objects []ObjectInfo, prefixes []string, metadata bool) ListObjectsV2Response {
 	contents := make([]Object, 0, len(objects))
 	var owner = Owner{
@@ -608,7 +608,7 @@ func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter,
 	return data
 }
 
-// generates CopyObjectResponse from etag and lastModified time.
+// Generates CopyObjectResponse from etag and lastModified time.
 func generateCopyObjectResponse(etag string, lastModified time.Time) CopyObjectResponse {
 	return CopyObjectResponse{
 		ETag:         "\"" + etag + "\"",
@@ -616,7 +616,7 @@ func generateCopyObjectResponse(etag string, lastModified time.Time) CopyObjectR
 	}
 }
 
-// generates CopyObjectPartResponse from etag and lastModified time.
+// Generates CopyObjectPartResponse from etag and lastModified time.
 func generateCopyObjectPartResponse(etag string, lastModified time.Time) CopyObjectPartResponse {
 	return CopyObjectPartResponse{
 		ETag:         "\"" + etag + "\"",
@@ -624,7 +624,7 @@ func generateCopyObjectPartResponse(etag string, lastModified time.Time) CopyObj
 	}
 }
 
-// generates InitiateMultipartUploadResponse for given bucket, key and uploadID.
+// Generates InitiateMultipartUploadResponse for given bucket, key and uploadID.
 func generateInitiateMultipartUploadResponse(bucket, key, uploadID string) InitiateMultipartUploadResponse {
 	return InitiateMultipartUploadResponse{
 		Bucket:   bucket,
@@ -633,7 +633,7 @@ func generateInitiateMultipartUploadResponse(bucket, key, uploadID string) Initi
 	}
 }
 
-// generates CompleteMultipartUploadResponse for given bucket, key, location and ETag.
+// Generates CompleteMultipartUploadResponse for given bucket, key, location and ETag.
 func generateCompleteMultpartUploadResponse(bucket, key, location, etag string) CompleteMultipartUploadResponse {
 	return CompleteMultipartUploadResponse{
 		Location: location,
@@ -644,7 +644,7 @@ func generateCompleteMultpartUploadResponse(bucket, key, location, etag string) 
 	}
 }
 
-// generates ListPartsResponse from ListPartsInfo.
+// Generates ListPartsResponse from ListPartsInfo.
 func generateListPartsResponse(partsInfo ListPartsInfo, encodingType string) ListPartsResponse {
 	listPartsResponse := ListPartsResponse{}
 	listPartsResponse.Bucket = partsInfo.Bucket
@@ -679,7 +679,7 @@ func generateListPartsResponse(partsInfo ListPartsInfo, encodingType string) Lis
 	return listPartsResponse
 }
 
-// generates ListMultipartUploadsResponse for given bucket and ListMultipartsInfo.
+// Generates ListMultipartUploadsResponse for given bucket and ListMultipartsInfo.
 func generateListMultipartUploadsResponse(bucket string, multipartsInfo ListMultipartsInfo, encodingType string) ListMultipartUploadsResponse {
 	listMultipartUploadsResponse := ListMultipartUploadsResponse{}
 	listMultipartUploadsResponse.Bucket = bucket
@@ -709,7 +709,7 @@ func generateListMultipartUploadsResponse(bucket string, multipartsInfo ListMult
 	return listMultipartUploadsResponse
 }
 
-// generate multi objects delete response.
+// Generate multi objects delete response.
 func generateMultiDeleteResponse(quiet bool, deletedObjects []DeletedObject, errs []DeleteError) DeleteObjectsResponse {
 	deleteResp := DeleteObjectsResponse{}
 	if !quiet {

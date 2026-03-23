@@ -26,10 +26,7 @@ var (
 	typeOfRequest = reflect.TypeOf((*http.Request)(nil)).Elem()
 )
 
-// ----------------------------------------------------------------------------
-// service
-// ----------------------------------------------------------------------------
-
+// Service
 type service struct {
 	name     string                    // name of service
 	rcvr     reflect.Value             // receiver of methods for the service
@@ -42,10 +39,6 @@ type serviceMethod struct {
 	argsType  reflect.Type   // type of the request argument
 	replyType reflect.Type   // type of the response argument
 }
-
-// ----------------------------------------------------------------------------
-// serviceMap
-// ----------------------------------------------------------------------------
 
 // serviceMap is a registry for services.
 type serviceMap struct {

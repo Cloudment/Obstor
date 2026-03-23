@@ -95,7 +95,7 @@ func newErasureServerPools(ctx context.Context, endpointServerPools EndpointServ
 		}
 
 		if deploymentID == "" {
-			// all zones should have same deployment ID
+			// All zones should have same deployment ID
 			deploymentID = formats[i].ID
 		}
 
@@ -180,7 +180,7 @@ func (z *erasureServerPools) getAvailablePoolIdx(ctx context.Context, size int64
 	if total == 0 {
 		return -1
 	}
-	// choose when we reach this many
+	// Choose when we reach this many
 	choose := rand.Uint64() % total
 	atTotal := uint64(0)
 	for _, pool := range serverPools {
@@ -323,7 +323,7 @@ func (z *erasureServerPools) getPoolIdx(ctx context.Context, bucket, object stri
 			// exist proceed to next pool.
 			continue
 		}
-		// object exists at this pool.
+		// Object exists at this pool.
 		return i, nil
 	}
 
@@ -351,7 +351,7 @@ func (z *erasureServerPools) Shutdown(ctx context.Context) error {
 		if err != nil {
 			logger.LogIf(ctx, err)
 		}
-		// let's the rest shutdown
+		// Let's the rest shutdown
 	}
 	return nil
 }
@@ -711,7 +711,7 @@ func (z *erasureServerPools) GetObjectInfo(ctx context.Context, bucket, object s
 			break
 		}
 		if !isErrObjectNotFound(err) && !isErrVersionNotFound(err) {
-			// some errors such as MethodNotAllowed for delete marker
+			// Some errors such as MethodNotAllowed for delete marker
 			// should be returned upwards.
 			return objInfos[i], err
 		}
@@ -1114,10 +1114,10 @@ func (z *erasureServerPools) GetMultipartInfo(ctx context.Context, bucket, objec
 		}
 		switch err.(type) {
 		case InvalidUploadID:
-			// upload id not found, continue to the next pool.
+			// Upload id not found, continue to the next pool.
 			continue
 		}
-		// any other unhandled error return right here.
+		// Any other unhandled error return right here.
 		return MultipartInfo{}, err
 	}
 	return MultipartInfo{}, InvalidUploadID{
@@ -1172,7 +1172,7 @@ func (z *erasureServerPools) AbortMultipartUpload(ctx context.Context, bucket, o
 		}
 		switch err.(type) {
 		case InvalidUploadID:
-			// upload id not found move to next pool
+			// Upload id not found move to next pool
 			continue
 		}
 		return err
@@ -1735,7 +1735,7 @@ func (z *erasureServerPools) Health(ctx context.Context, opts HealthOptions) Hea
 
 	var aggHealStateResult madmin.BgHealState
 	if opts.Maintenance {
-		// check if local disks are being healed, if they are being healed
+		// Check if local disks are being healed, if they are being healed
 		// we need to tell healthy status as 'false' so that this server
 		// is not taken down for maintenance
 		var err error
@@ -1769,7 +1769,7 @@ func (z *erasureServerPools) Health(ctx context.Context, opts HealthOptions) Hea
 		}
 	}
 
-	// when maintenance is not specified we don't have
+	// When maintenance is not specified we don't have
 	// to look at the healing side of the code.
 	if !opts.Maintenance {
 		return HealthResult{

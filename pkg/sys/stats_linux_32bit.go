@@ -45,7 +45,7 @@ func getMemoryLimit() (sysLimit uint64, err error) {
 		return sysLimit, nil
 	}
 
-	// cgroup limit is lesser than system limit means
+	// Cgroup limit is lesser than system limit means
 	// user wants to limit the memory usage further
 	// treat cgroup limit as the system limit.
 	if cGroupLimit <= sysLimit {

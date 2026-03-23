@@ -157,7 +157,7 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 		}
 	}
 
-	// allow transport to be HTTP/1.1 for proxying.
+	// Allow transport to be HTTP/1.1 for proxying.
 	globalProxyTransport = newCustomHTTPProxyTransport(&tls.Config{
 		RootCAs:          globalRootCAs,
 		CipherSuites:     fips.CipherSuitesTLS(),
@@ -295,7 +295,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		default:
 		}
 
-		// let one of the server acquire the lock, if not let them timeout.
+		// Let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err = txnLk.GetLock(ctx, lockTimeout); err != nil {
 			logger.Info("Waiting for all Obstor sub-systems to be initialized.. trying to acquire lock")
@@ -539,7 +539,7 @@ func serverMain(ctx *cli.Context) {
 		initBackgroundReplication(GlobalContext, newObject)
 	}
 	if globalCacheConfig.Enabled {
-		// initialize the new disk cache objects.
+		// Initialize the new disk cache objects.
 		var cacheAPI CacheObjectLayer
 		cacheAPI, err = newServerCacheObjects(GlobalContext, globalCacheConfig)
 		logger.FatalIf(err, "Unable to initialize disk caching")

@@ -200,7 +200,7 @@ func getHelmVersion(helmInfoFilePath string) string {
 	for scanner.Scan() {
 		if strings.Contains(scanner.Text(), "chart=") {
 			helmChartVersion := strings.TrimPrefix(scanner.Text(), "chart=")
-			// remove quotes from the chart version
+			// Remove quotes from the chart version
 			return strings.Trim(helmChartVersion, `"`)
 		}
 	}

@@ -285,7 +285,7 @@ func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// ignores any errors here.
+	// Ignores any errors here.
 	storageInfo, _ := objectAPI.StorageInfo(ctx)
 
 	// Collect any disk healing.
@@ -295,7 +295,7 @@ func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Requ
 		healDisks[disk] = struct{}{}
 	}
 
-	// find all disks which belong to each respective endpoints
+	// Find all disks which belong to each respective endpoints
 	for i, disk := range storageInfo.Disks {
 		if _, ok := healDisks[disk.Endpoint]; ok {
 			storageInfo.Disks[i].Healing = true
@@ -640,7 +640,7 @@ func extractHealInitParams(vars map[string]string, qParms url.Values, r io.Reade
 		return
 	}
 
-	// empty prefix is valid.
+	// Empty prefix is valid.
 	if !IsValidObjectPrefix(hip.objPrefix) {
 		err = ErrInvalidObjectName
 		return
@@ -668,7 +668,7 @@ func extractHealInitParams(vars map[string]string, qParms url.Values, r io.Reade
 		return
 	}
 
-	// ignore body if clientToken is provided
+	// Ignore body if clientToken is provided
 	if hip.clientToken == "" {
 		jerr := json.NewDecoder(r).Decode(&hip.hs)
 		if jerr != nil {
@@ -1164,7 +1164,7 @@ func (a adminAPIHandlers) ConsoleLogHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	node := r.URL.Query().Get("node")
-	// limit buffered console entries if client requested it.
+	// Limit buffered console entries if client requested it.
 	limitStr := r.URL.Query().Get("limit")
 	limitLines, err := strconv.Atoi(limitStr)
 	if err != nil {

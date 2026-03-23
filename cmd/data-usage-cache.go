@@ -124,7 +124,7 @@ type dataUsageCacheInfo struct {
 	Name       string
 	NextCycle  uint32
 	LastUpdate time.Time
-	// indicates if the disk is being healed and scanner
+	// Indicates if the disk is being healed and scanner
 	// should skip healing the disk
 	SkipHealing bool
 	BloomFilter []byte               `msg:"BloomFilter,omitempty"`
@@ -583,7 +583,7 @@ const (
 	dataUsageCacheVerV1 = 1
 )
 
-// serialize the contents of the cache.
+// Serialize the contents of the cache.
 func (d *dataUsageCache) serializeTo(dst io.Writer) error {
 	// Add version and compress.
 	_, err := dst.Write([]byte{dataUsageCacheVerV4})

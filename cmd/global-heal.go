@@ -52,7 +52,7 @@ func newBgHealSequence() *healSequence {
 		respCh:      make(chan healResult),
 		startTime:   UTCNow(),
 		clientToken: bgHealingUUID,
-		// run-background heal with reserved bucket
+		// Run-background heal with reserved bucket
 		bucket:   minioReservedBucket,
 		settings: hs,
 		currentStatus: healSequenceStatus{
@@ -96,7 +96,7 @@ func getBackgroundHealStatus(ctx context.Context, o ObjectLayer) (madmin.BgHealS
 		return status, true
 	}
 
-	// ignores any errors here.
+	// Ignores any errors here.
 	si, _ := o.StorageInfo(ctx)
 
 	indexed := make(map[string][]madmin.Disk)

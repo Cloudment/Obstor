@@ -203,7 +203,7 @@ func newEncryptReader(content io.Reader, key []byte, bucket, object string, meta
 	return reader, objectEncryptionKey, nil
 }
 
-// set new encryption metadata from http request headers for SSE-C and generated key from KMS in the case of
+// Set new encryption metadata from http request headers for SSE-C and generated key from KMS in the case of
 // SSE-S3
 func setEncryptionMetadata(r *http.Request, bucket, object string, metadata map[string]string) (err error) {
 	var (
@@ -601,7 +601,7 @@ func getDecryptedETag(headers http.Header, objInfo ObjectInfo, copySource bool) 
 	return tryDecryptETag(objectEncryptionKey, objInfo.ETag, false)
 }
 
-// helper to decrypt Etag given object encryption key and encrypted ETag
+// Helper to decrypt Etag given object encryption key and encrypted ETag
 func tryDecryptETag(key []byte, encryptedETag string, ssec bool) string {
 	// ETag for SSE-C encrypted objects need not be content MD5Sum.While encrypted
 	// md5sum is stored internally, return just the last 32 bytes of hex-encoded and
@@ -771,7 +771,7 @@ func DecryptObjectInfo(info *ObjectInfo, r *http.Request) (encrypted bool, err e
 
 	headers := r.Header
 
-	// disallow X-Amz-Server-Side-Encryption header on HEAD and GET
+	// Disallow X-Amz-Server-Side-Encryption header on HEAD and GET
 	switch r.Method {
 	case http.MethodGet, http.MethodHead:
 		if crypto.S3.IsRequested(headers) {

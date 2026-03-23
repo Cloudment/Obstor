@@ -194,7 +194,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ID")
 		return
 	}
-	// write "PoolIndex"
+	// Write "PoolIndex"
 	err = en.Append(0xa9, 0x50, 0x6f, 0x6f, 0x6c, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
@@ -204,7 +204,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "PoolIndex")
 		return
 	}
-	// write "SetIndex"
+	// Write "SetIndex"
 	err = en.Append(0xa8, 0x53, 0x65, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
@@ -214,7 +214,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "SetIndex")
 		return
 	}
-	// write "DiskIndex"
+	// Write "DiskIndex"
 	err = en.Append(0xa9, 0x44, 0x69, 0x73, 0x6b, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
@@ -224,7 +224,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "DiskIndex")
 		return
 	}
-	// write "Path"
+	// Write "Path"
 	err = en.Append(0xa4, 0x50, 0x61, 0x74, 0x68)
 	if err != nil {
 		return
@@ -234,7 +234,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Path")
 		return
 	}
-	// write "Endpoint"
+	// Write "Endpoint"
 	err = en.Append(0xa8, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74)
 	if err != nil {
 		return
@@ -244,7 +244,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Endpoint")
 		return
 	}
-	// write "Started"
+	// Write "Started"
 	err = en.Append(0xa7, 0x53, 0x74, 0x61, 0x72, 0x74, 0x65, 0x64)
 	if err != nil {
 		return
@@ -254,7 +254,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Started")
 		return
 	}
-	// write "LastUpdate"
+	// Write "LastUpdate"
 	err = en.Append(0xaa, 0x4c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65)
 	if err != nil {
 		return
@@ -264,7 +264,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "LastUpdate")
 		return
 	}
-	// write "ObjectsHealed"
+	// Write "ObjectsHealed"
 	err = en.Append(0xad, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x48, 0x65, 0x61, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -274,7 +274,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ObjectsHealed")
 		return
 	}
-	// write "ObjectsFailed"
+	// Write "ObjectsFailed"
 	err = en.Append(0xad, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -284,7 +284,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ObjectsFailed")
 		return
 	}
-	// write "BytesDone"
+	// Write "BytesDone"
 	err = en.Append(0xa9, 0x42, 0x79, 0x74, 0x65, 0x73, 0x44, 0x6f, 0x6e, 0x65)
 	if err != nil {
 		return
@@ -294,7 +294,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "BytesDone")
 		return
 	}
-	// write "BytesFailed"
+	// Write "BytesFailed"
 	err = en.Append(0xab, 0x42, 0x79, 0x74, 0x65, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -304,7 +304,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "BytesFailed")
 		return
 	}
-	// write "Bucket"
+	// Write "Bucket"
 	err = en.Append(0xa6, 0x42, 0x75, 0x63, 0x6b, 0x65, 0x74)
 	if err != nil {
 		return
@@ -314,7 +314,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Bucket")
 		return
 	}
-	// write "Object"
+	// Write "Object"
 	err = en.Append(0xa6, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74)
 	if err != nil {
 		return
@@ -324,7 +324,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Object")
 		return
 	}
-	// write "ResumeObjectsHealed"
+	// Write "ResumeObjectsHealed"
 	err = en.Append(0xb3, 0x52, 0x65, 0x73, 0x75, 0x6d, 0x65, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x48, 0x65, 0x61, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -334,7 +334,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ResumeObjectsHealed")
 		return
 	}
-	// write "ResumeObjectsFailed"
+	// Write "ResumeObjectsFailed"
 	err = en.Append(0xb3, 0x52, 0x65, 0x73, 0x75, 0x6d, 0x65, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -344,7 +344,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ResumeObjectsFailed")
 		return
 	}
-	// write "ResumeBytesDone"
+	// Write "ResumeBytesDone"
 	err = en.Append(0xaf, 0x52, 0x65, 0x73, 0x75, 0x6d, 0x65, 0x42, 0x79, 0x74, 0x65, 0x73, 0x44, 0x6f, 0x6e, 0x65)
 	if err != nil {
 		return
@@ -354,7 +354,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ResumeBytesDone")
 		return
 	}
-	// write "ResumeBytesFailed"
+	// Write "ResumeBytesFailed"
 	err = en.Append(0xb1, 0x52, 0x65, 0x73, 0x75, 0x6d, 0x65, 0x42, 0x79, 0x74, 0x65, 0x73, 0x46, 0x61, 0x69, 0x6c, 0x65, 0x64)
 	if err != nil {
 		return
@@ -364,7 +364,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ResumeBytesFailed")
 		return
 	}
-	// write "QueuedBuckets"
+	// Write "QueuedBuckets"
 	err = en.Append(0xad, 0x51, 0x75, 0x65, 0x75, 0x65, 0x64, 0x42, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x73)
 	if err != nil {
 		return
@@ -381,7 +381,7 @@ func (z *healingTracker) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "HealedBuckets"
+	// Write "HealedBuckets"
 	err = en.Append(0xad, 0x48, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x42, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x73)
 	if err != nil {
 		return

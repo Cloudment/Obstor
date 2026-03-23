@@ -30,10 +30,10 @@ var errMethodNotAllowed = errors.New("method not allowed")
 // errSignatureMismatch means signature did not match.
 var errSignatureMismatch = errors.New("signature does not match")
 
-// used when we deal with data larger than expected
+// Used when we deal with data larger than expected
 var errSizeUnexpected = errors.New("data size larger than expected")
 
-// used when we deal with data with unknown size
+// Used when we deal with data with unknown size
 var errSizeUnspecified = errors.New("data size is unspecified")
 
 // When upload object size is greater than 5G in a single PUT/POST operation.

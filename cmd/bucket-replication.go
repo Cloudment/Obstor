@@ -39,7 +39,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
-// gets replication config associated to a given bucket name.
+// Gets replication config associated to a given bucket name.
 func getReplicationConfig(ctx context.Context, bucketName string) (rc *replication.Config, err error) {
 	if globalIsGateway {
 		objAPI := newObjectLayerFn()
@@ -78,7 +78,7 @@ func validateReplicationDestination(ctx context.Context, bucket string, rCfg *re
 			}
 		}
 	}
-	// validate replication ARN against target endpoint
+	// Validate replication ARN against target endpoint
 	c, ok := globalBucketTargetSys.arnRemotesMap[rCfg.RoleArn]
 	if ok {
 		if c.EndpointURL().String() == clnt.EndpointURL().String() {
@@ -130,7 +130,7 @@ func mustReplicater(ctx context.Context, bucket, object string, meta map[string]
 		opts.UserTags = tagStr
 	}
 	tgt := globalBucketTargetSys.GetRemoteTargetClient(ctx, cfg.RoleArn)
-	// the target online status should not be used here while deciding
+	// The target online status should not be used here while deciding
 	// whether to replicate as the target could be temporarily down
 	if tgt != nil {
 		return cfg.Replicate(opts), tgt.replicateSync
@@ -155,7 +155,7 @@ var standardHeaders = []string{
 	xhttp.AmzServerSideEncryption,
 }
 
-// returns true if any of the objects being deleted qualifies for replication.
+// Returns true if any of the objects being deleted qualifies for replication.
 func hasReplicationRules(ctx context.Context, bucket string, objects []ObjectToDelete) bool {
 	c, err := getReplicationConfig(ctx, bucket)
 	if err != nil || c == nil {
@@ -174,7 +174,7 @@ func isStandardHeader(matchHeaderKey string) bool {
 	return equals(matchHeaderKey, standardHeaders...)
 }
 
-// returns whether object version is a deletemarker and if object qualifies for replication
+// Returns whether object version is a deletemarker and if object qualifies for replication
 func checkReplicateDelete(ctx context.Context, bucket string, dobj ObjectToDelete, oi ObjectInfo, gerr error) (replicate, sync bool) {
 	rcfg, err := getReplicationConfig(ctx, bucket)
 	if err != nil || rcfg == nil {
@@ -189,7 +189,7 @@ func checkReplicateDelete(ctx context.Context, bucket string, dobj ObjectToDelet
 		OpType:       replication.DeleteReplicationType,
 	}
 	replicate = rcfg.Replicate(opts)
-	// when incoming delete is removal of a delete marker( a.k.a versioned delete),
+	// When incoming delete is removal of a delete marker( a.k.a versioned delete),
 	// GetObjectInfo returns extra information even though it returns errFileNotFound
 	if gerr != nil {
 		validReplStatus := false
@@ -200,12 +200,12 @@ func checkReplicateDelete(ctx context.Context, bucket string, dobj ObjectToDelet
 		if oi.DeleteMarker && (validReplStatus || replicate) {
 			return true, sync
 		}
-		// can be the case that other cluster is down and duplicate `mc rm --vid`
+		// Can be the case that other cluster is down and duplicate `mc rm --vid`
 		// is issued - this still needs to be replicated back to the other target
 		return oi.VersionPurgeStatus == Pending || oi.VersionPurgeStatus == Failed, sync
 	}
 	tgt := globalBucketTargetSys.GetRemoteTargetClient(ctx, rcfg.RoleArn)
-	// the target online status should not be used here while deciding
+	// The target online status should not be used here while deciding
 	// whether to replicate deletes as the target could be temporarily down
 	if tgt == nil {
 		return false, false
@@ -213,7 +213,7 @@ func checkReplicateDelete(ctx context.Context, bucket string, dobj ObjectToDelet
 	return replicate, tgt.replicateSync
 }
 
-// replicate deletes to the designated replication target if replication configuration
+// Replicate deletes to the designated replication target if replication configuration
 // has delete marker replication or delete replication (Obstor extension to allow deletes where version id
 // is specified) enabled.
 // Similar to bucket replication for PUT operation, soft delete (a.k.a setting delete marker) and
@@ -297,7 +297,7 @@ func replicateDelete(ctx context.Context, dobj DeletedObjectVersionInfo, objectA
 		prevStatus = string(dobj.VersionPurgeStatus)
 		currStatus = string(versionPurgeStatus)
 	}
-	// to decrement pending count later.
+	// To decrement pending count later.
 	globalReplicationStats.Update(dobj.Bucket, 0, replication.StatusType(currStatus), replication.StatusType(prevStatus), replication.DeleteReplicationType)
 
 	var eventName = event.ObjectReplicationComplete
@@ -475,7 +475,7 @@ const (
 	replicateAll      replicationAction = "all"
 )
 
-// matches k1 with all keys, returns 'true' if one of them matches
+// Matches k1 with all keys, returns 'true' if one of them matches
 func equals(k1 string, keys ...string) bool {
 	for _, k2 := range keys {
 		if strings.EqualFold(k1, k2) {
@@ -485,9 +485,9 @@ func equals(k1 string, keys ...string) bool {
 	return false
 }
 
-// returns replicationAction by comparing metadata between source and target
+// Returns replicationAction by comparing metadata between source and target
 func getReplicationAction(oi1 ObjectInfo, oi2 miniogo.ObjectInfo) replicationAction {
-	// needs full replication
+	// Needs full replication
 	if oi1.ETag != oi2.ETag ||
 		oi1.VersionID != oi2.VersionID ||
 		oi1.Size != oi2.Size ||
@@ -531,7 +531,7 @@ func getReplicationAction(oi1 ObjectInfo, oi2 miniogo.ObjectInfo) replicationAct
 		"X-Amz-Meta-",
 	}
 
-	// compare metadata on both maps to see if meta is identical
+	// Compare metadata on both maps to see if meta is identical
 	compareMeta1 := make(map[string]string)
 	for k, v := range oi1.UserDefined {
 		var found bool
@@ -647,16 +647,16 @@ func replicateObject(ctx context.Context, ri ReplicateObjectInfo, objectAPI Obje
 	if err == nil {
 		rtype = getReplicationAction(objInfo, oi)
 		if rtype == replicateNone {
-			// object with same VersionID already exists, replication kicked off by
+			// Object with same VersionID already exists, replication kicked off by
 			// PutObject might have completed
 			return
 		}
 	}
 	replicationStatus := replication.Completed
-	// use core client to avoid doing multipart on PUT
+	// Use core client to avoid doing multipart on PUT
 	c := &miniogo.Core{Client: tgt.Client}
 	if rtype != replicateAll {
-		// replicate metadata for object tagging/copy with metadata replacement
+		// Replicate metadata for object tagging/copy with metadata replacement
 		srcOpts := miniogo.CopySrcOptions{
 			Bucket:    dest.Bucket,
 			Object:    object,
@@ -770,7 +770,7 @@ func replicateObject(ctx context.Context, ri ReplicateObjectInfo, objectAPI Obje
 			Host:       "Internal: [Replication]",
 		})
 	}
-	// re-queue failures once more - keep a retry count to avoid flooding the queue if
+	// Re-queue failures once more - keep a retry count to avoid flooding the queue if
 	// the target site is down. Leave it to scanner to catch up instead.
 	if replicationStatus == replication.Failed && ri.RetryCount < 1 {
 		ri.OpType = replication.HealReplicationType
@@ -839,7 +839,7 @@ func NewReplicationPool(ctx context.Context, o ObjectLayer, sz int) *Replication
 		objLayer:           o,
 	}
 	pool.Resize(sz)
-	// add long running worker for handling most recent failures/pending replications
+	// Add long running worker for handling most recent failures/pending replications
 	go pool.AddMRFWorker()
 	return pool
 }
@@ -917,7 +917,7 @@ func (p *ReplicationPool) queueReplicaTask(ctx context.Context, ri ReplicateObje
 		})
 	case p.replicaCh <- ri:
 	case p.mrfReplicaCh <- ri:
-		// queue all overflows into the mrfReplicaCh to handle incoming pending/failed operations
+		// Queue all overflows into the mrfReplicaCh to handle incoming pending/failed operations
 	default:
 	}
 }
@@ -934,7 +934,7 @@ func (p *ReplicationPool) queueReplicaDeleteTask(ctx context.Context, doi Delete
 		})
 	case p.replicaDeleteCh <- doi:
 	case p.mrfReplicaDeleteCh <- doi:
-		// queue all overflows into the mrfReplicaDeleteCh to handle incoming pending/failed operations
+		// Queue all overflows into the mrfReplicaDeleteCh to handle incoming pending/failed operations
 	default:
 	}
 }
@@ -944,7 +944,7 @@ func initBackgroundReplication(ctx context.Context, objectAPI ObjectLayer) {
 	globalReplicationStats = NewReplicationStats(ctx, objectAPI)
 }
 
-// get Reader from replication target if active-active replication is in place and
+// Get Reader from replication target if active-active replication is in place and
 // this node returns a 404
 func proxyGetToReplicationTarget(ctx context.Context, bucket, object string, rs *HTTPRangeSpec, h http.Header, opts ObjectOptions) (gr *GetObjectReader, proxy bool) {
 	tgt, oi, proxy, err := proxyHeadToRepTarget(ctx, bucket, object, opts)
@@ -962,7 +962,7 @@ func proxyGetToReplicationTarget(ctx context.Context, bucket, object string, rs 
 			ReplicationProxyRequest: "true",
 		},
 	}
-	// get correct offsets for encrypted object
+	// Get correct offsets for encrypted object
 	if off >= 0 && length >= 0 {
 		if err := gopts.SetRange(off, off+length-1); err != nil {
 			return nil, false
@@ -998,7 +998,7 @@ func isProxyable(ctx context.Context, bucket string) bool {
 }
 
 func proxyHeadToRepTarget(ctx context.Context, bucket, object string, opts ObjectOptions) (tgt *TargetClient, oi ObjectInfo, proxy bool, err error) {
-	// this option is set when active-active replication is in place between site A -> B,
+	// This option is set when active-active replication is in place between site A -> B,
 	// and site B does not have the object yet.
 	if opts.ProxyRequest || (opts.ProxyHeaderSet && !opts.ProxyRequest) { // true only when site B sets ObstorSourceProxyRequest header
 		return nil, oi, false, nil
@@ -1070,7 +1070,7 @@ func proxyHeadToRepTarget(ctx context.Context, bucket, object string, opts Objec
 	return tgt, oi, true, nil
 }
 
-// get object info from replication target if active-active replication is in place and
+// Get object info from replication target if active-active replication is in place and
 // this node returns a 404
 func proxyHeadToReplicationTarget(ctx context.Context, bucket, object string, opts ObjectOptions) (oi ObjectInfo, proxy bool, err error) {
 	_, oi, proxy, err = proxyHeadToRepTarget(ctx, bucket, object, opts)

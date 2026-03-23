@@ -36,7 +36,7 @@ type apiConfig struct {
 	listQuorum       int
 	extendListLife   time.Duration
 	corsAllowOrigins []string
-	// total drives per erasure set across pools.
+	// Total drives per erasure set across pools.
 	totalDriveCount    int
 	replicationWorkers int
 }
@@ -59,7 +59,7 @@ func (t *apiConfig) init(cfg api.Config, setDriveCounts []int) {
 			// Default to 8 GiB, not critical.
 			stats.TotalRAM = 8 << 30
 		}
-		// max requests per node is calculated as
+		// Max requests per node is calculated as
 		// total_ram / ram_per_request
 		// ram_per_request is (2MiB+128KiB) * driveCount \
 		//    + 2 * 10MiB (default erasure block size v1) + 2 * 1MiB (default erasure block size v2)

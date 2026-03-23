@@ -60,7 +60,7 @@ type FSObjects struct {
 
 	// Path to be exported over S3 API.
 	fsPath string
-	// meta json filename, varies by fs / cache backend.
+	// Meta json filename, varies by fs / cache backend.
 	metaJSONFile string
 	// Unique value to be used for all
 	// temporary transactions.
@@ -185,7 +185,7 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 
 // NewNSLock - initialize a new namespace RWLocker instance.
 func (fs *FSObjects) NewNSLock(bucket string, objects ...string) RWLocker {
-	// lockers are explicitly 'nil' for FS mode since there are only local lockers
+	// Lockers are explicitly 'nil' for FS mode since there are only local lockers
 	return fs.nsMutex.NewNSLock(nil, bucket, objects...)
 }
 
@@ -1481,7 +1481,7 @@ func (fs *FSObjects) PutObjectTags(ctx context.Context, bucket, object string, t
 		fsMeta = fs.defaultFsJSON(object)
 	}
 
-	// clean fsMeta.Meta of tag key, before updating the new tags
+	// Clean fsMeta.Meta of tag key, before updating the new tags
 	delete(fsMeta.Meta, xhttp.AmzObjectTagging)
 
 	// Do not update for empty tags

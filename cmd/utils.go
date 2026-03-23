@@ -389,7 +389,7 @@ type minioProfiler interface {
 var globalProfiler map[string]minioProfiler
 var globalProfilerMu sync.Mutex
 
-// dump the request into a string in JSON format.
+// Dump the request into a string in JSON format.
 func dumpRequest(r *http.Request) string {
 	header := r.Header.Clone()
 	header.Set("Host", r.Host)
@@ -701,7 +701,7 @@ func jsonSave(f interface {
 // of crashing.
 func ceilFrac(numerator, denominator int64) (ceil int64) {
 	if denominator == 0 {
-		// do nothing on invalid input
+		// Do nothing on invalid input
 		return
 	}
 	// Make denominator positive
@@ -758,7 +758,7 @@ func unescapePath(p string) (string, error) {
 	return unescapeGeneric(p, url.PathUnescape)
 }
 
-// similar to unescapeGeneric but never returns any error if the unescaping
+// Similar to unescapeGeneric but never returns any error if the unescaping
 // fails, returns the input as is in such occasion, not meant to be
 // used where strict validation is expected.
 func likelyUnescapeGeneric(p string, escapeFn func(string) (string, error)) string {
@@ -807,31 +807,31 @@ func lcpSuffix(strs []string) string {
 }
 
 func lcp(strs []string, pre bool) string {
-	// short-circuit empty list
+	// Short-circuit empty list
 	if len(strs) == 0 {
 		return ""
 	}
 	xfix := strs[0]
-	// short-circuit single-element list
+	// Short-circuit single-element list
 	if len(strs) == 1 {
 		return xfix
 	}
-	// compare first to rest
+	// Compare first to rest
 	for _, str := range strs[1:] {
 		xfixl := len(xfix)
 		strl := len(str)
-		// short-circuit empty strings
+		// Short-circuit empty strings
 		if xfixl == 0 || strl == 0 {
 			return ""
 		}
-		// maximum possible length
+		// Maximum possible length
 		maxl := xfixl
 		if strl < maxl {
 			maxl = strl
 		}
-		// compare letters
+		// Compare letters
 		if pre {
-			// prefix, iterate left to right
+			// Prefix, iterate left to right
 			for i := 0; i < maxl; i++ {
 				if xfix[i] != str[i] {
 					xfix = xfix[:i]
@@ -839,7 +839,7 @@ func lcp(strs []string, pre bool) string {
 				}
 			}
 		} else {
-			// suffix, iterate right to left
+			// Suffix, iterate right to left
 			for i := 0; i < maxl; i++ {
 				xi := xfixl - i - 1
 				si := strl - i - 1

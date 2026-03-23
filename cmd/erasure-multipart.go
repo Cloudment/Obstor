@@ -99,7 +99,7 @@ func (er erasureObjects) removeObjectPart(bucket, object, uploadID, dataDir stri
 
 // Clean-up the old multipart uploads. Should be run in a Go routine.
 func (er erasureObjects) cleanupStaleUploads(ctx context.Context, expiry time.Duration) {
-	// run multiple cleanup's local to this server.
+	// Run multiple cleanup's local to this server.
 	var wg sync.WaitGroup
 	for _, disk := range er.getLoadBalancedLocalDisks() {
 		if disk != nil {
@@ -433,7 +433,7 @@ func (er erasureObjects) PutObjectPart(ctx context.Context, bucket, object, uplo
 	partsMetadata, errs = readAllFileInfo(ctx, storageDisks, minioMetaMultipartBucket,
 		uploadIDPath, "", false)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	_, writeQuorum, err := objectQuorumFromMeta(ctx, partsMetadata, errs, er.defaultParityCount)
 	if err != nil {
 		return pi, toObjectErr(err, bucket, object)
@@ -767,7 +767,7 @@ func (er erasureObjects) GetMultipartInfo(ctx context.Context, bucket, object, u
 	// Read metadata associated with the object from all disks.
 	partsMetadata, errs := readAllFileInfo(ctx, storageDisks, minioMetaMultipartBucket, uploadIDPath, opts.VersionID, false)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	readQuorum, _, err := objectQuorumFromMeta(ctx, partsMetadata, errs, er.defaultParityCount)
 	if err != nil {
 		return result, toObjectErr(err, minioMetaMultipartBucket, uploadIDPath)
@@ -816,7 +816,7 @@ func (er erasureObjects) ListObjectParts(ctx context.Context, bucket, object, up
 	// Read metadata associated with the object from all disks.
 	partsMetadata, errs := readAllFileInfo(ctx, storageDisks, minioMetaMultipartBucket, uploadIDPath, "", false)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	_, writeQuorum, err := objectQuorumFromMeta(ctx, partsMetadata, errs, er.defaultParityCount)
 	if err != nil {
 		return result, toObjectErr(err, minioMetaMultipartBucket, uploadIDPath)
@@ -921,7 +921,7 @@ func (er erasureObjects) CompleteMultipartUpload(ctx context.Context, bucket str
 	// Read metadata associated with the object from all disks.
 	partsMetadata, errs := readAllFileInfo(ctx, storageDisks, minioMetaMultipartBucket, uploadIDPath, "", false)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	_, writeQuorum, err := objectQuorumFromMeta(ctx, partsMetadata, errs, er.defaultParityCount)
 	if err != nil {
 		return oi, toObjectErr(err, bucket, object)
@@ -969,7 +969,7 @@ func (er erasureObjects) CompleteMultipartUpload(ctx context.Context, bucket str
 			return oi, invp
 		}
 
-		// ensure that part ETag is canonicalized to strip off extraneous quotes
+		// Ensure that part ETag is canonicalized to strip off extraneous quotes
 		part.ETag = canonicalizeETag(part.ETag)
 		if currentFI.Parts[partIdx].ETag != part.ETag {
 			invp := InvalidPart{
@@ -1112,7 +1112,7 @@ func (er erasureObjects) AbortMultipartUpload(ctx context.Context, bucket, objec
 	// Read metadata associated with the object from all disks.
 	partsMetadata, errs := readAllFileInfo(ctx, er.getDisks(), minioMetaMultipartBucket, uploadIDPath, "", false)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	_, writeQuorum, err := objectQuorumFromMeta(ctx, partsMetadata, errs, er.defaultParityCount)
 	if err != nil {
 		return toObjectErr(err, bucket, object, uploadID)

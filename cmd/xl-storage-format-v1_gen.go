@@ -122,7 +122,7 @@ func (z *ChecksumInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "PartNumber")
 		return
 	}
-	// write "Algorithm"
+	// Write "Algorithm"
 	err = en.Append(0xa9, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d)
 	if err != nil {
 		return
@@ -132,7 +132,7 @@ func (z *ChecksumInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Algorithm")
 		return
 	}
-	// write "Hash"
+	// Write "Hash"
 	err = en.Append(0xa4, 0x48, 0x61, 0x73, 0x68)
 	if err != nil {
 		return
@@ -329,7 +329,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Algorithm")
 		return
 	}
-	// write "DataBlocks"
+	// Write "DataBlocks"
 	err = en.Append(0xaa, 0x44, 0x61, 0x74, 0x61, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x73)
 	if err != nil {
 		return
@@ -339,7 +339,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "DataBlocks")
 		return
 	}
-	// write "ParityBlocks"
+	// Write "ParityBlocks"
 	err = en.Append(0xac, 0x50, 0x61, 0x72, 0x69, 0x74, 0x79, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x73)
 	if err != nil {
 		return
@@ -349,7 +349,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ParityBlocks")
 		return
 	}
-	// write "BlockSize"
+	// Write "BlockSize"
 	err = en.Append(0xa9, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -359,7 +359,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "BlockSize")
 		return
 	}
-	// write "Index"
+	// Write "Index"
 	err = en.Append(0xa5, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
@@ -369,7 +369,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Index")
 		return
 	}
-	// write "Distribution"
+	// Write "Distribution"
 	err = en.Append(0xac, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e)
 	if err != nil {
 		return
@@ -386,7 +386,7 @@ func (z *ErasureInfo) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "Checksums"
+	// Write "Checksums"
 	err = en.Append(0xa9, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x73, 0x75, 0x6d, 0x73)
 	if err != nil {
 		return
@@ -617,7 +617,7 @@ func (z *ObjectPartInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ETag")
 		return
 	}
-	// write "Number"
+	// Write "Number"
 	err = en.Append(0xa6, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72)
 	if err != nil {
 		return
@@ -627,7 +627,7 @@ func (z *ObjectPartInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Number")
 		return
 	}
-	// write "Size"
+	// Write "Size"
 	err = en.Append(0xa4, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -637,7 +637,7 @@ func (z *ObjectPartInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Size")
 		return
 	}
-	// write "ActualSize"
+	// Write "ActualSize"
 	err = en.Append(0xaa, 0x41, 0x63, 0x74, 0x75, 0x61, 0x6c, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -783,7 +783,7 @@ func (z StatInfo) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Size")
 		return
 	}
-	// write "ModTime"
+	// Write "ModTime"
 	err = en.Append(0xa7, 0x4d, 0x6f, 0x64, 0x54, 0x69, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -917,7 +917,7 @@ func (z checksumInfoJSON) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Name")
 		return
 	}
-	// write "Algorithm"
+	// Write "Algorithm"
 	err = en.Append(0xa9, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d)
 	if err != nil {
 		return
@@ -927,7 +927,7 @@ func (z checksumInfoJSON) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Algorithm")
 		return
 	}
-	// write "Hash"
+	// Write "Hash"
 	err = en.Append(0xa4, 0x48, 0x61, 0x73, 0x68)
 	if err != nil {
 		return
@@ -1195,7 +1195,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Version")
 		return
 	}
-	// write "Format"
+	// Write "Format"
 	err = en.Append(0xa6, 0x46, 0x6f, 0x72, 0x6d, 0x61, 0x74)
 	if err != nil {
 		return
@@ -1205,7 +1205,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Format")
 		return
 	}
-	// write "Stat"
+	// Write "Stat"
 	err = en.Append(0xa4, 0x53, 0x74, 0x61, 0x74)
 	if err != nil {
 		return
@@ -1221,7 +1221,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Stat", "Size")
 		return
 	}
-	// write "ModTime"
+	// Write "ModTime"
 	err = en.Append(0xa7, 0x4d, 0x6f, 0x64, 0x54, 0x69, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -1231,7 +1231,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Stat", "ModTime")
 		return
 	}
-	// write "Erasure"
+	// Write "Erasure"
 	err = en.Append(0xa7, 0x45, 0x72, 0x61, 0x73, 0x75, 0x72, 0x65)
 	if err != nil {
 		return
@@ -1241,7 +1241,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Erasure")
 		return
 	}
-	// write "Minio"
+	// Write "Minio"
 	err = en.Append(0xa5, 0x4d, 0x69, 0x6e, 0x69, 0x6f)
 	if err != nil {
 		return
@@ -1257,7 +1257,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Minio", "Release")
 		return
 	}
-	// write "Meta"
+	// Write "Meta"
 	err = en.Append(0xa4, 0x4d, 0x65, 0x74, 0x61)
 	if err != nil {
 		return
@@ -1279,7 +1279,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "Parts"
+	// Write "Parts"
 	err = en.Append(0xa5, 0x50, 0x61, 0x72, 0x74, 0x73)
 	if err != nil {
 		return
@@ -1296,7 +1296,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "VersionID"
+	// Write "VersionID"
 	err = en.Append(0xa9, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44)
 	if err != nil {
 		return
@@ -1306,7 +1306,7 @@ func (z *xlMetaV1Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "VersionID")
 		return
 	}
-	// write "DataDir"
+	// Write "DataDir"
 	err = en.Append(0xa7, 0x44, 0x61, 0x74, 0x61, 0x44, 0x69, 0x72)
 	if err != nil {
 		return

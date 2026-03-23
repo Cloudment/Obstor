@@ -34,7 +34,7 @@ import (
 	"github.com/cloudment/obstor/pkg/lsync"
 )
 
-// local lock servers
+// Local lock servers
 var globalLockServer *localLocker
 
 // RWLocker - locker interface to introduce GetRLock, RUnlock.
@@ -136,7 +136,7 @@ func (n *nsLockMap) unlock(volume string, path string, readLock bool) {
 	}
 }
 
-// dsync's distributed lock instance.
+// Dsync's distributed lock instance.
 type distLockInstance struct {
 	rwMutex *dsync.DRWMutex
 	opsID   string

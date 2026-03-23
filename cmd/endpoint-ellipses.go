@@ -66,7 +66,7 @@ var isValidSetSize = func(count uint64) bool {
 }
 
 func commonSetDriveCount(divisibleSize uint64, setCounts []uint64) (setSize uint64) {
-	// prefers setCounts to be sorted for optimal behavior.
+	// Prefers setCounts to be sorted for optimal behavior.
 	if divisibleSize < setCounts[len(setCounts)-1] {
 		return divisibleSize
 	}

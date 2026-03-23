@@ -40,7 +40,7 @@ func registerDistErasureRouters(router *mux.Router, endpointServerPools Endpoint
 
 // List of some generic handlers which are applied for all incoming requests.
 var globalHandlers = []mux.MiddlewareFunc{
-	// filters HTTP headers which are treated as metadata and are reserved
+	// Filters HTTP headers which are treated as metadata and are reserved
 	// for internal use only.
 	filterReservedMetadata,
 	// Enforce rules specific for TLS requests
@@ -69,11 +69,11 @@ var globalHandlers = []mux.MiddlewareFunc{
 	setRequestValidityHandler,
 	// Forward path style requests to actual host in a bucket federated setup.
 	setBucketForwardingHandler,
-	// set HTTP security headers such as Content-Security-Policy.
+	// Set HTTP security headers such as Content-Security-Policy.
 	addSecurityHeaders,
-	// set x-amz-request-id header.
+	// Set x-amz-request-id header.
 	addCustomHeaders,
-	// add redirect handler to redirect
+	// Add redirect handler to redirect
 	// requests when object layer is not
 	// initialized.
 	setRedirectHandler,

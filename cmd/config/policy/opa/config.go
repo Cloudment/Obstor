@@ -84,7 +84,7 @@ func (a *Args) Validate() error {
 
 // UnmarshalJSON - decodes JSON data.
 func (a *Args) UnmarshalJSON(data []byte) error {
-	// subtype to avoid recursive call to UnmarshalJSON()
+	// Subtype to avoid recursive call to UnmarshalJSON()
 	type subArgs Args
 	var so subArgs
 

@@ -619,7 +619,7 @@ func applyDynamicConfig(ctx context.Context, objAPI ObjectLayer, s config.Config
 	globalHealConfig = healCfg
 	globalHealConfigMu.Unlock()
 
-	// update dynamic scanner values.
+	// Update dynamic scanner values.
 	scannerCycle.Update(scannerCfg.Cycle)
 	logger.LogIf(ctx, scannerSleeper.Update(scannerCfg.Delay, scannerCfg.MaxWait))
 
@@ -720,7 +720,7 @@ func newSrvConfig(objAPI ObjectLayer) error {
 	// Initialize server config.
 	srvCfg := newServerConfig()
 
-	// hold the mutex lock before a new config is assigned.
+	// Hold the mutex lock before a new config is assigned.
 	globalServerConfigMu.Lock()
 	globalServerConfig = srvCfg
 	globalServerConfigMu.Unlock()
@@ -744,7 +744,7 @@ func loadConfig(objAPI ObjectLayer) error {
 	// Override any values from ENVs.
 	lookupConfigs(srvCfg, objAPI.SetDriveCounts())
 
-	// hold the mutex lock before a new config is assigned.
+	// Hold the mutex lock before a new config is assigned.
 	globalServerConfigMu.Lock()
 	globalServerConfig = srvCfg
 	globalServerConfigMu.Unlock()

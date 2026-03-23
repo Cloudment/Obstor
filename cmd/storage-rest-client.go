@@ -441,7 +441,7 @@ func (client *storageRESTClient) RenameData(ctx context.Context, srcVolume, srcP
 	return err
 }
 
-// where we keep old *Readers
+// Where we keep old *Readers
 var readMsgpReaderPool = sync.Pool{New: func() interface{} { return msgp.NewReaderSize(nil, 8<<10) }}
 
 // mspNewReader returns a *Reader that reads from the provided reader.

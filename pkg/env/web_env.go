@@ -173,7 +173,7 @@ func LookupEnv(key string) (string, string, string, bool) {
 		if err != nil {
 			env, eok := os.LookupEnv("_" + key)
 			if eok {
-				// fallback to cached value if-any.
+				// Fallback to cached value if-any.
 				return env, user, pwd, eok
 			}
 		}

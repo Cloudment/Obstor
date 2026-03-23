@@ -19,7 +19,7 @@ package etcd
 
 import "github.com/cloudment/obstor/cmd/config"
 
-// etcd config documented in default config
+// Etcd config documented in default config
 var (
 	Help = config.HelpKVS{
 		config.HelpKV{

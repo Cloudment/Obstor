@@ -73,7 +73,7 @@ const (
 	// gcs.json version number
 	gcsMinioMultipartMetaCurrentVersion = "1"
 
-	// token prefixed with GCS returned marker to differentiate
+	// Token prefixed with GCS returned marker to differentiate
 	// from user supplied marker.
 	gcsTokenPrefix = "{obstor}"
 
@@ -248,7 +248,7 @@ func gcsToObjectError(err error, params ...string) error {
 		uploadID = params[2]
 	}
 
-	// in some cases just a plain error is being returned
+	// In some cases just a plain error is being returned
 	switch err.Error() {
 	case "storage: bucket doesn't exist":
 		err = obstor.BucketNotFound{
@@ -424,7 +424,7 @@ func (l *gcsGateway) MakeBucketWithLocation(ctx context.Context, bucket string, 
 
 	bkt := l.client.Bucket(bucket)
 
-	// we'll default to the us multi-region in case of us-east-1
+	// We'll default to the us multi-region in case of us-east-1
 	location := opts.Location
 	if location == "us-east-1" {
 		location = "us"
@@ -984,10 +984,10 @@ func (l *gcsGateway) DeleteObjects(ctx context.Context, bucket string, objects [
 
 // NewMultipartUpload - upload object in multiple parts
 func (l *gcsGateway) NewMultipartUpload(ctx context.Context, bucket string, key string, o obstor.ObjectOptions) (uploadID string, err error) {
-	// generate new uploadid
+	// Generate new uploadid
 	uploadID = obstor.MustGetUUID()
 
-	// generate name for part zero
+	// Generate name for part zero
 	meta := gcsMultipartMetaName(uploadID)
 
 	w := l.client.Bucket(bucket).Object(meta).NewWriter(ctx)
@@ -1229,7 +1229,7 @@ func (l *gcsGateway) ListObjectParts(ctx context.Context, bucket string, key str
 func (l *gcsGateway) cleanupMultipartUpload(ctx context.Context, bucket, key, uploadID string) error {
 	prefix := fmt.Sprintf("%s/%s/", gcsMinioMultipartPathV1, uploadID)
 
-	// iterate through all parts and delete them
+	// Iterate through all parts and delete them
 	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{Prefix: prefix, Versions: false})
 
 	for {

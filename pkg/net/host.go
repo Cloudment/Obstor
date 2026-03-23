@@ -94,7 +94,7 @@ func ParseHost(s string) (*Host, error) {
 			return true
 		}
 
-		// host is not a valid IPv4 or IPv6 address
+		// Host is not a valid IPv4 or IPv6 address
 		// host may be a hostname
 		// refer https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
 		// why checks are done like below

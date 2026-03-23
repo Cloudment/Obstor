@@ -136,7 +136,7 @@ func parseMountFrom(file io.Reader) (mountInfos, error) {
 
 		fields := strings.Fields(line)
 		if len(fields) != expectedNumFieldsPerLine {
-			// ignore incorrect lines.
+			// Ignore incorrect lines.
 			continue
 		}
 

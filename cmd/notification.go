@@ -66,7 +66,7 @@ func (sys *NotificationSys) GetARNList(onlyActive bool) []string {
 	}
 	region := globalServerRegion
 	for targetID, target := range sys.targetList.TargetMap() {
-		// httpclient target is part of ListenNotification
+		// Httpclient target is part of ListenNotification
 		// which doesn't need to be listed as part of the ARN list
 		// This list is only meant for external targets, filter
 		// this out pro-actively.
@@ -1314,7 +1314,7 @@ func (sys *NotificationSys) GetLocalDiskIDs(ctx context.Context) (localDiskIDs [
 	return localDiskIDs
 }
 
-// returns all the peers that are currently online.
+// Returns all the peers that are currently online.
 func (sys *NotificationSys) getOnlinePeers() []*peerRESTClient {
 	var peerClients []*peerRESTClient
 	for _, peerClient := range sys.allPeerClients {
@@ -1440,11 +1440,11 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 func sendEvent(args eventArgs) {
 	args.Object.Size, _ = args.Object.GetActualSize()
 
-	// avoid generating a notification for REPLICA creation event.
+	// Avoid generating a notification for REPLICA creation event.
 	if _, ok := args.ReqParams[xhttp.ObstorSourceReplicationRequest]; ok {
 		return
 	}
-	// remove sensitive encryption entries in metadata.
+	// Remove sensitive encryption entries in metadata.
 	crypto.RemoveSensitiveEntries(args.Object.UserDefined)
 	crypto.RemoveInternalEntries(args.Object.UserDefined)
 

@@ -38,7 +38,7 @@ type nullFunc struct {
 	value bool
 }
 
-// evaluate() - evaluates to check whether Key is present in given values or not.
+// Evaluate() - evaluates to check whether Key is present in given values or not.
 // Depending on condition boolean value, this function returns true or false.
 func (f nullFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -53,12 +53,12 @@ func (f nullFunc) evaluate(values map[string][]string) bool {
 	return len(requestValue) != 0
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f nullFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "Null" condition name.
+// Name() - returns "Null" condition name.
 func (f nullFunc) name() name {
 	return null
 }

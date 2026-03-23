@@ -31,7 +31,7 @@ type booleanFunc struct {
 	value string
 }
 
-// evaluate() - evaluates to check whether Key is present in given values or not.
+// Evaluate() - evaluates to check whether Key is present in given values or not.
 // Depending on condition boolean value, this function returns true or false.
 func (f booleanFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -46,12 +46,12 @@ func (f booleanFunc) evaluate(values map[string][]string) bool {
 	return f.value == requestValue[0]
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f booleanFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "Bool" condition name.
+// Name() - returns "Bool" condition name.
 func (f booleanFunc) name() name {
 	return boolean
 }

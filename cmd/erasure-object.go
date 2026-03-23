@@ -39,7 +39,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 )
 
-// list all errors which can be ignored in object operations.
+// List all errors which can be ignored in object operations.
 var objectOpIgnoredErrs = append(baseIgnoredErrs, errDiskAccessDenied, errUnformattedDisk)
 
 /// Object Operations
@@ -75,7 +75,7 @@ func (er erasureObjects) CopyObject(ctx context.Context, srcBucket, srcObject, d
 	storageDisks := er.getDisks()
 	metaArr, errs := readAllFileInfo(ctx, storageDisks, srcBucket, srcObject, srcOpts.VersionID, true)
 
-	// get Quorum for this object
+	// Get Quorum for this object
 	readQuorum, writeQuorum, err := objectQuorumFromMeta(ctx, metaArr, errs, er.defaultParityCount)
 	if err != nil {
 		return oi, toObjectErr(err, srcBucket, srcObject)
@@ -99,7 +99,7 @@ func (er erasureObjects) CopyObject(ctx context.Context, srcBucket, srcObject, d
 	versionID := srcInfo.VersionID
 	if srcInfo.versionOnly {
 		versionID = dstOpts.VersionID
-		// preserve destination versionId if specified.
+		// Preserve destination versionId if specified.
 		if versionID == "" {
 			versionID = mustGetUUID()
 		}
@@ -512,7 +512,7 @@ func (er erasureObjects) getObjectInfo(ctx context.Context, bucket, object strin
 	}
 	objInfo = fi.ToObjectInfo(bucket, object)
 	if objInfo.TransitionStatus == lifecycle.TransitionComplete {
-		// overlay storage class for transitioned objects with transition tier SC Label
+		// Overlay storage class for transitioned objects with transition tier SC Label
 		if sc := transitionSC(ctx, bucket); sc != "" {
 			objInfo.StorageClass = sc
 		}
@@ -795,7 +795,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	}
 	dataDrives := len(storageDisks) - parityDrives
 
-	// we now know the number of blocks this object needs for data and parity.
+	// We now know the number of blocks this object needs for data and parity.
 	// writeQuorum is dataBlocks + 1
 	writeQuorum := dataDrives
 	if dataDrives == parityDrives {
@@ -1199,7 +1199,7 @@ func (er erasureObjects) DeleteObjects(ctx context.Context, bucket string, objec
 				continue
 			}
 
-			// all other direct versionId references we should
+			// All other direct versionId references we should
 			// ensure no dangling file is left over.
 			er.addPartial(bucket, version.Name, version.VersionID)
 			break
@@ -1258,7 +1258,7 @@ func (er erasureObjects) DeleteObject(ctx context.Context, bucket, object string
 		if opts.VersionPurgeStatus == Complete {
 			markDelete = false
 		}
-		// determine if the version represents an object delete
+		// Determine if the version represents an object delete
 		// deleteMarker = true
 		if versionFound && !goi.DeleteMarker { // implies a versioned delete of object
 			deleteMarker = false
@@ -1287,7 +1287,7 @@ func (er erasureObjects) DeleteObject(ctx context.Context, bucket, object string
 			}
 			fi.TransitionStatus = opts.TransitionStatus
 
-			// versioning suspended means we add `null`
+			// Versioning suspended means we add `null`
 			// version as delete marker
 			// Add delete marker, since we don't have any version specified explicitly.
 			// Or if a particular version id needs to be replicated.

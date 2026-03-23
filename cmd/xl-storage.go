@@ -513,7 +513,7 @@ func (s *xlStorage) GetDiskID() (string, error) {
 	lastCheck := s.formatLastCheck
 	s.RUnlock()
 
-	// check if we have a valid disk ID that is less than 1 second old.
+	// Check if we have a valid disk ID that is less than 1 second old.
 	if fileInfo != nil && diskID != "" && time.Since(lastCheck) <= time.Second {
 		return diskID, nil
 	}
@@ -846,10 +846,10 @@ func (s *xlStorage) DeleteVersion(ctx context.Context, volume, path string, fi F
 		return err
 	}
 
-	// transitioned objects maintains metadata on the source cluster. When transition
+	// Transitioned objects maintains metadata on the source cluster. When transition
 	// status is set, update the metadata to disk.
 	if !lastVersion || fi.TransitionStatus != "" {
-		// when data-dir is specified. Transition leverages existing DeleteObject
+		// When data-dir is specified. Transition leverages existing DeleteObject
 		// api call to mark object as deleted. When object is pending transition,
 		// just update the metadata and avoid deleting data dir.
 		if dataDir != "" && fi.TransitionStatus != lifecycle.TransitionPending {
@@ -1510,7 +1510,7 @@ func (s *xlStorage) CreateFile(ctx context.Context, volume, path string, fileSiz
 	defer func() {
 		if err != nil {
 			if volume == minioMetaTmpBucket {
-				// only cleanup parent path if the
+				// Only cleanup parent path if the
 				// parent volume name is minioMetaTmpBucket
 				removeAll(parentFilePath)
 			}
@@ -1731,7 +1731,7 @@ func (s *xlStorage) CheckFile(ctx context.Context, volume string, path string) e
 
 		if st != nil {
 			if !st.Mode().IsRegular() {
-				// not a regular file return error.
+				// Not a regular file return error.
 				return errFileNotFound
 			}
 			// Success fully found
@@ -1999,7 +1999,7 @@ func (s *xlStorage) RenameData(ctx context.Context, srcVolume, srcPath string, f
 		}
 
 		legacyDataPath := pathJoin(dstVolumeDir, dstPath, legacyDataDir)
-		// legacy data dir means its old content, honor system umask.
+		// Legacy data dir means its old content, honor system umask.
 		if err = reliableMkdirAll(legacyDataPath, 0777); err != nil {
 			return osErrToFileErr(err)
 		}

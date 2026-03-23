@@ -41,17 +41,17 @@ func main() {
 	}
 	var kiB int64 = 1 << 10
 	ctx := context.Background()
-	// set bucket quota config
+	// Set bucket quota config
 	if err := madmClnt.SetBucketQuota(ctx, "bucket-name", 64*kiB, HardQuota); err != nil {
 		log.Fatalln(err)
 	}
-	// gets bucket quota config
+	// Gets bucket quota config
 	quotaCfg, err := madmClnt.GetBucketQuota(ctx, "bucket-name")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	fmt.Println(quotaCfg)
-	// remove bucket quota config
+	// Remove bucket quota config
 	if err := madmClnt.RemoveBucketQuota(ctx, "bucket-name"); err != nil {
 		log.Fatalln(err)
 	}

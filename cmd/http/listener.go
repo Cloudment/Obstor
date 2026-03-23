@@ -55,7 +55,7 @@ func isRoutineNetErr(err error) bool {
 		// Check if the error is a timeout
 		return nErr.Timeout()
 	}
-	// check for io.EOF and also some times io.EOF is wrapped is another error type.
+	// Check for io.EOF and also some times io.EOF is wrapped is another error type.
 	return err == io.EOF || err.Error() == "EOF"
 }
 

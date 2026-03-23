@@ -904,7 +904,7 @@ next:
 					}
 				}
 				replicateDel, _ := checkReplicateDelete(ctx, args.BucketName, ObjectToDelete{ObjectName: obj.Name, VersionID: obj.VersionID}, obj, nil)
-				// since versioned delete is not available on web browser, yet - this is a simple DeleteMarker replication
+				// Since versioned delete is not available on web browser, yet - this is a simple DeleteMarker replication
 				objToDel := ObjectToDelete{ObjectName: obj.Name}
 				if replicateDel {
 					objToDel.DeleteMarkerReplicationStatus = string(replication.Pending)
@@ -1108,7 +1108,7 @@ func (web *webAPIHandlers) CreateURLToken(r *http.Request, args *WebGenericArgs,
 func (web *webAPIHandlers) Upload(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "WebUpload")
 
-	// obtain the claims here if possible, for audit logging.
+	// Obtain the claims here if possible, for audit logging.
 	claims, owner, authErr := webRequestAuthenticate(r)
 
 	defer logger.AuditLog(ctx, w, r, claims.Map())
@@ -1267,7 +1267,7 @@ func (web *webAPIHandlers) Upload(w http.ResponseWriter, r *http.Request) {
 		metadata[xhttp.AmzBucketReplicationStatus] = string(replication.Pending)
 	}
 	pReader = NewPutObjReader(hashReader)
-	// get gateway encryption options
+	// Get gateway encryption options
 	opts, err := putOpts(ctx, r, bucket, object, metadata)
 	if err != nil {
 		writeErrorResponseHeadersOnly(w, toAPIError(ctx, err))
@@ -1286,7 +1286,7 @@ func (web *webAPIHandlers) Upload(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			info := ObjectInfo{Size: size}
-			// do not try to verify encrypted content
+			// Do not try to verify encrypted content
 			hashReader, err = hash.NewReader(etag.Wrap(encReader, hashReader), info.EncryptedSize(), "", "", size)
 			if err != nil {
 				writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -1310,7 +1310,7 @@ func (web *webAPIHandlers) Upload(w http.ResponseWriter, r *http.Request) {
 		getObjectInfo = web.CacheAPI().GetObjectInfo
 	}
 
-	// enforce object retention rules
+	// Enforce object retention rules
 	retentionMode, retentionDate, _, s3Err := checkPutObjectLockAllowed(ctx, r, bucket, object, getObjectInfo, retPerms, holdPerms)
 	if s3Err != ErrNone {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Err), r.URL, guessIsBrowserReq(r))
@@ -1475,7 +1475,7 @@ func (web *webAPIHandlers) Download(w http.ResponseWriter, r *http.Request) {
 
 	objInfo := gr.ObjInfo
 
-	// filter object lock metadata if permission does not permit
+	// Filter object lock metadata if permission does not permit
 	objInfo.UserDefined = objectlock.FilterObjectLockMetadata(objInfo.UserDefined, getRetPerms != ErrNone, legalHoldPerms != ErrNone)
 
 	if objectAPI.IsEncryptionSupported() {
@@ -1701,7 +1701,7 @@ func (web *webAPIHandlers) DownloadZip(w http.ResponseWriter, r *http.Request) {
 			defer gr.Close()
 
 			info := gr.ObjInfo
-			// filter object lock metadata if permission does not permit
+			// Filter object lock metadata if permission does not permit
 			info.UserDefined = objectlock.FilterObjectLockMetadata(info.UserDefined, getRetPerms[i] != ErrNone, legalHoldPerms[i] != ErrNone)
 			// For reporting, set the file size to the uncompressed size.
 			info.Size, err = info.GetActualSize()

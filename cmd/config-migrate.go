@@ -633,7 +633,7 @@ func migrateV8ToV9() error {
 	srvConfig.Logger.File = cv8.Logger.File
 	srvConfig.Logger.Syslog = cv8.Logger.Syslog
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv8.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -701,7 +701,7 @@ func migrateV9ToV10() error {
 	srvConfig.Logger.Console = cv9.Logger.Console
 	srvConfig.Logger.File = cv9.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv9.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -769,7 +769,7 @@ func migrateV10ToV11() error {
 	srvConfig.Logger.Console = cv10.Logger.Console
 	srvConfig.Logger.File = cv10.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv10.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -840,7 +840,7 @@ func migrateV11ToV12() error {
 	srvConfig.Logger.Console = cv11.Logger.Console
 	srvConfig.Logger.File = cv11.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv11.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -940,7 +940,7 @@ func migrateV12ToV13() error {
 	srvConfig.Logger.Console = cv12.Logger.Console
 	srvConfig.Logger.File = cv12.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv12.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1020,7 +1020,7 @@ func migrateV13ToV14() error {
 	srvConfig.Logger.Console = cv13.Logger.Console
 	srvConfig.Logger.File = cv13.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv13.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1105,7 +1105,7 @@ func migrateV14ToV15() error {
 	srvConfig.Logger.Console = cv14.Logger.Console
 	srvConfig.Logger.File = cv14.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv14.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1193,7 +1193,7 @@ func migrateV15ToV16() error {
 		srvConfig.Region = globalMinioDefaultRegion
 	}
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv15.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1286,7 +1286,7 @@ func migrateV16ToV17() error {
 	srvConfig.Logger.Console = cv16.Logger.Console
 	srvConfig.Logger.File = cv16.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv16.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1407,7 +1407,7 @@ func migrateV17ToV18() error {
 	srvConfig.Logger.Console = cv17.Logger.Console
 	srvConfig.Logger.File = cv17.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv17.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -1509,7 +1509,7 @@ func migrateV18ToV19() error {
 	srvConfig.Logger.Console = cv18.Logger.Console
 	srvConfig.Logger.File = cv18.Logger.File
 
-	// check and set notifiers config
+	// Check and set notifiers config
 	if len(cv18.Notify.AMQP) == 0 {
 		srvConfig.Notify.AMQP = make(map[string]target.AMQPArgs)
 		srvConfig.Notify.AMQP["1"] = target.AMQPArgs{}
@@ -2364,7 +2364,7 @@ func migrateV25ToV26() error {
 func migrateV26ToV27() error {
 	configFile := getConfigFile()
 
-	// config V27 is backward compatible with V26, load the old
+	// Config V27 is backward compatible with V26, load the old
 	// config file in serverConfigV27 struct and put some examples
 	// in the new `logger` field
 	srvConfig := &serverConfigV27{}
@@ -2397,7 +2397,7 @@ func migrateV26ToV27() error {
 func migrateV27ToV28() error {
 	configFile := getConfigFile()
 
-	// config V28 is backward compatible with V27, load the old
+	// Config V28 is backward compatible with V27, load the old
 	// config file in serverConfigV28 struct and initialize KMSConfig
 
 	srvConfig := &serverConfigV28{}

@@ -21,10 +21,6 @@ import (
 var null = json.RawMessage([]byte("null"))
 var Version = "2.0"
 
-// ----------------------------------------------------------------------------
-// Request and Response
-// ----------------------------------------------------------------------------
-
 // serverRequest represents a JSON-RPC request received by the server.
 type serverRequest struct {
 	// JSON-RPC protocol.
@@ -61,10 +57,6 @@ type serverResponse struct {
 	ID *json.RawMessage `json:"id"`
 }
 
-// ----------------------------------------------------------------------------
-// Codec
-// ----------------------------------------------------------------------------
-
 // NewCustomCodec returns a new JSON Codec based on passed encoder selector.
 func NewCustomCodec(encSel rpc.EncoderSelector) *Codec {
 	return &Codec{encSel: encSel}
@@ -98,10 +90,6 @@ type Codec struct {
 func (c *Codec) NewRequest(r *http.Request) rpc.CodecRequest {
 	return newCodecRequest(r, c.encSel.Select(r), c.errorMapper)
 }
-
-// ----------------------------------------------------------------------------
-// CodecRequest
-// ----------------------------------------------------------------------------
 
 // newCodecRequest returns a new CodecRequest.
 func newCodecRequest(r *http.Request, encoder rpc.Encoder, errorMapper func(error) error) rpc.CodecRequest {

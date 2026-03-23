@@ -1252,7 +1252,7 @@ func getBucketUsageMetrics() MetricsGroup {
 				return
 			}
 
-			// data usage has not captured any data yet.
+			// Data usage has not captured any data yet.
 			if dataUsageInfo.LastUpdate.IsZero() {
 				return
 			}

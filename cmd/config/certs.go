@@ -108,7 +108,7 @@ func LoadX509KeyPair(certFile, keyFile string) (tls.Certificate, error) {
 			case "P-384":
 				fallthrough
 			case "P-521":
-				// unfortunately there is no cleaner way to check
+				// Unfortunately there is no cleaner way to check
 				return tls.Certificate{}, ErrSSLUnexpectedData(nil).Msg("tls: the ECDSA curve '%s' is not supported", pub.Params().Name)
 			}
 		}

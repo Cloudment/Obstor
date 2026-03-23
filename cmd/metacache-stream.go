@@ -32,7 +32,7 @@ import (
 	"github.com/tinylib/msgp/msgp"
 )
 
-// metadata stream format:
+// Metadata stream format:
 //
 // The stream is s2 compressed.
 // https://github.com/klauspost/compress/tree/master/s2#s2-compression
@@ -363,7 +363,7 @@ func (r *metacacheReader) next() (metaCacheEntry, error) {
 	return m, err
 }
 
-// next will read one entry from the stream.
+// Next will read one entry from the stream.
 // Generally not recommended for fast operation.
 func (r *metacacheReader) nextEOF() bool {
 	r.checkInit()
@@ -399,7 +399,7 @@ func (r *metacacheReader) forwardTo(s string) error {
 		r.current.name = ""
 		r.current.metadata = nil
 	}
-	// temporary name buffer.
+	// Temporary name buffer.
 	var tmp = make([]byte, 0, 256)
 	for {
 		if more, err := r.mr.ReadBool(); !more {

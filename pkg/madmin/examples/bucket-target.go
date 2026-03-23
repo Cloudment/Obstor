@@ -62,13 +62,13 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// update credentials for target
+	// Update credentials for target
 	creds, err := auth.CreateCredentials("access-key2", "secret-key2")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	target := madmin.BucketTarget{Endpoint: "site2:9000", Credentials: creds, SourceBucket: "srcbucket", TargetBucket: "destbucket", IsSSL: false, Arn: "arn:obstor:ilm:us-east-1:3cbe15b8-82b9-44bc-a737-db9051ab359a:srcbucket"}
-	// update credentials on bucket target
+	// Update credentials on bucket target
 	if _, err := madmClnt.UpdateBucketTarget(ctx, &target); err != nil {
 		log.Fatalln(err)
 	}

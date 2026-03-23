@@ -66,7 +66,7 @@ type cacheMeta struct {
 	Version string   `json:"version"`
 	Stat    StatInfo `json:"stat"` // Stat of the current object `cache.json`.
 
-	// checksums of blocks on disk.
+	// Checksums of blocks on disk.
 	Checksum CacheChecksumInfoV1 `json:"checksum,omitempty"`
 	// Metadata map for current object.
 	Meta map[string]string `json:"meta,omitempty"`
@@ -134,9 +134,9 @@ func (m *cacheMeta) ToObjectInfo(bucket, object string) (o ObjectInfo) {
 	return o
 }
 
-// represents disk cache struct
+// Represents disk cache struct
 type diskCache struct {
-	// is set to 0 if drive is offline
+	// Is set to 0 if drive is offline
 	online       uint32 // ref: https://golang.org/pkg/sync/atomic/#pkg-note-BUG
 	purgeRunning int32
 
@@ -294,14 +294,14 @@ func (c *diskCache) purge(ctx context.Context) {
 	atomic.StoreInt32(&c.purgeRunning, 1) // do not run concurrent purge()
 	defer atomic.StoreInt32(&c.purgeRunning, 0)
 
-	// expiry for cleaning up old cache.json files that
+	// Expiry for cleaning up old cache.json files that
 	// need to be cleaned up.
 	expiry := UTCNow().Add(-cacheExpiryDays)
-	// defaulting max hits count to 100
+	// Defaulting max hits count to 100
 	// ignore error we know what value we are passing.
 	scorer, _ := newFileScorer(toFree, time.Now().Unix(), 100)
 
-	// this function returns FileInfo for cached range files and cache data file.
+	// This function returns FileInfo for cached range files and cache data file.
 	fiStatFn := func(ranges map[string]string, dataFile, pathPrefix string) map[string]os.FileInfo {
 		fm := make(map[string]os.FileInfo)
 		fname := pathJoin(pathPrefix, dataFile)
@@ -333,10 +333,10 @@ func (c *diskCache) purge(ctx context.Context) {
 			return nil
 		}
 
-		// stat all cached file ranges and cacheDataFile.
+		// Stat all cached file ranges and cacheDataFile.
 		cachedFiles := fiStatFn(meta.Ranges, cacheDataFile, pathJoin(c.dir, name))
 		objInfo := meta.ToObjectInfo("", "")
-		// prevent gc from clearing un-synced commits. This metadata is present when
+		// Prevent gc from clearing un-synced commits. This metadata is present when
 		// cache writeback commit setting is enabled.
 		status, ok := objInfo.UserDefined[writeBackStatusHeader]
 		if ok && status != CommitComplete.String() {
@@ -361,7 +361,7 @@ func (c *diskCache) purge(ctx context.Context) {
 			}
 			scorer.addFile(fname, atime.Get(fi), fi.Size(), numHits)
 		}
-		// clean up stale cache.json files for objects that never got cached but access count was maintained in cache.json
+		// Clean up stale cache.json files for objects that never got cached but access count was maintained in cache.json
 		fi, err := os.Stat(pathJoin(cacheDir, cacheMetaJSONFile))
 		if err != nil || (fi.ModTime().Before(expiry) && len(cachedFiles) == 0) {
 			removeAll(cacheDir)
@@ -400,12 +400,12 @@ func (c *diskCache) purge(ctx context.Context) {
 	scorer.reset()
 }
 
-// sets cache drive status
+// Sets cache drive status
 func (c *diskCache) setOffline() {
 	atomic.StoreUint32(&c.online, 0)
 }
 
-// returns true if cache drive is online
+// Returns true if cache drive is online
 func (c *diskCache) IsOnline() bool {
 	return atomic.LoadUint32(&c.online) != 0
 }
@@ -506,7 +506,7 @@ func (c *diskCache) statCache(ctx context.Context, cacheObjPath string) (meta *c
 	if err := jsonLoad(f, meta); err != nil {
 		return meta, partial, 0, err
 	}
-	// get metadata of part.1 if full file has been cached.
+	// Get metadata of part.1 if full file has been cached.
 	partial = true
 	if _, err := os.Stat(pathJoin(cacheObjPath, cacheDataFile)); err == nil {
 		partial = false
@@ -514,7 +514,7 @@ func (c *diskCache) statCache(ctx context.Context, cacheObjPath string) (meta *c
 	return meta, partial, meta.Hits, nil
 }
 
-// saves object metadata to disk cache
+// Saves object metadata to disk cache
 // incHitsOnly is true if metadata update is incrementing only the hit counter
 func (c *diskCache) SaveMetadata(ctx context.Context, bucket, object string, meta map[string]string, actualSize int64, rs *HTTPRangeSpec, rsFileName string, incHitsOnly bool) error {
 	var err error
@@ -528,7 +528,7 @@ func (c *diskCache) SaveMetadata(ctx context.Context, bucket, object string, met
 	return c.saveMetadata(ctx, bucket, object, meta, actualSize, rs, rsFileName, incHitsOnly)
 }
 
-// saves object metadata to disk cache
+// Saves object metadata to disk cache
 // incHitsOnly is true if metadata update is incrementing only the hit counter
 func (c *diskCache) saveMetadata(ctx context.Context, bucket, object string, meta map[string]string, actualSize int64, rs *HTTPRangeSpec, rsFileName string, incHitsOnly bool) error {
 	cachedPath := getCacheSHADir(c.dir, bucket, object)
@@ -551,7 +551,7 @@ func (c *diskCache) saveMetadata(ctx context.Context, bucket, object string, met
 	if err := jsonLoad(f, m); err != nil && err != io.EOF {
 		return err
 	}
-	// increment hits
+	// Increment hits
 	if rs != nil {
 		// rsFileName gets set by putRange. Check for blank values here
 		// coming from other code paths that set rs only (eg initial creation or hit increment).
@@ -563,7 +563,7 @@ func (c *diskCache) saveMetadata(ctx context.Context, bucket, object string, met
 		}
 	}
 	if rs == nil && !incHitsOnly {
-		// this is necessary cleanup of range files if entire object is cached.
+		// This is necessary cleanup of range files if entire object is cached.
 		if _, err := os.Stat(pathJoin(cachedPath, cacheDataFile)); err == nil {
 			for _, f := range m.Ranges {
 				removeAll(pathJoin(cachedPath, f))
@@ -573,7 +573,7 @@ func (c *diskCache) saveMetadata(ctx context.Context, bucket, object string, met
 	}
 	m.Stat.Size = actualSize
 	if !incHitsOnly {
-		// reset meta
+		// Reset meta
 		m.Meta = meta
 	} else {
 		if m.Meta == nil {
@@ -636,7 +636,7 @@ func (c *diskCache) bitrotWriteToCache(cachePath, fileName string, reader io.Rea
 			return 0, "", err
 		}
 		hashBytes := h.Sum(nil)
-		// compute md5Hash of original data stream if writeback commit to cache
+		// Compute md5Hash of original data stream if writeback commit to cache
 		if c.commitWriteback {
 			if _, err = md5Hash.Write((*bufp)[:n]); err != nil {
 				return 0, "", err
@@ -740,7 +740,7 @@ func (c *diskCache) Put(ctx context.Context, bucket, object string, data io.Read
 	}
 	n, md5sum, err := c.bitrotWriteToCache(cachePath, cacheDataFile, reader, actualSize)
 	if IsErr(err, baseErrs...) {
-		// take the cache drive offline
+		// Take the cache drive offline
 		c.setOffline()
 	}
 	if err != nil {
@@ -799,7 +799,7 @@ func (c *diskCache) putRange(ctx context.Context, bucket, object string, data io
 	cacheFile := MustGetUUID()
 	n, _, err := c.bitrotWriteToCache(cachePath, cacheFile, reader, actualSize)
 	if IsErr(err, baseErrs...) {
-		// take the cache drive offline
+		// Take the cache drive offline
 		c.setOffline()
 	}
 	if err != nil {
@@ -813,7 +813,7 @@ func (c *diskCache) putRange(ctx context.Context, bucket, object string, data io
 	return c.saveMetadata(ctx, bucket, object, metadata, int64(objSize), rs, cacheFile, false)
 }
 
-// checks streaming bitrot checksum of cached object before returning data
+// Checks streaming bitrot checksum of cached object before returning data
 func (c *diskCache) bitrotReadFromCache(ctx context.Context, filePath string, offset, length int64, writer io.Writer) error {
 	h := HighwayHash256S.New()
 
@@ -822,7 +822,7 @@ func (c *diskCache) bitrotReadFromCache(ctx context.Context, filePath string, of
 	startBlock := offset / cacheBlkSize
 	endBlock := (offset + length) / cacheBlkSize
 
-	// get block start offset
+	// Get block start offset
 	var blockStartOffset int64
 	if startBlock > 0 {
 		blockStartOffset = (cacheBlkSize + int64(h.Size())) * startBlock
@@ -964,11 +964,11 @@ func (c *diskCache) Get(ctx context.Context, bucket, object string, rs *HTTPRang
 		return gr, numHits, gerr
 	}
 	if globalCacheKMS != nil {
-		// clean up internal SSE cache metadata
+		// Clean up internal SSE cache metadata
 		delete(gr.ObjInfo.UserDefined, xhttp.AmzServerSideEncryption)
 	}
 	if !rngInfo.Empty() {
-		// overlay Size with actual object size and not the range size
+		// Overlay Size with actual object size and not the range size
 		gr.ObjInfo.Size = objSize
 	}
 	return gr, numHits, nil
@@ -992,7 +992,7 @@ func (c *diskCache) Delete(ctx context.Context, bucket, object string) (err erro
 	return c.delete(ctx, cacheObjPath)
 }
 
-// convenience function to check if object is cached on this diskCache
+// Convenience function to check if object is cached on this diskCache
 func (c *diskCache) Exists(ctx context.Context, bucket, object string) bool {
 	if _, err := os.Stat(getCacheSHADir(c.dir, bucket, object)); err != nil {
 		return false
@@ -1000,7 +1000,7 @@ func (c *diskCache) Exists(ctx context.Context, bucket, object string) bool {
 	return true
 }
 
-// queues writeback upload failures on server startup
+// Queues writeback upload failures on server startup
 func (c *diskCache) scanCacheWritebackFailures(ctx context.Context) {
 	defer close(c.retryWritebackCh)
 	filterFn := func(name string, typ os.FileMode) error {

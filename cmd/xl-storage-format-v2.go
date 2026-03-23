@@ -235,7 +235,7 @@ func (j xlMetaV2Version) Valid() bool {
 type xlMetaV2 struct {
 	Versions []xlMetaV2Version `json:"Versions" msg:"Versions"`
 
-	// data will contain raw data if any.
+	// Data will contain raw data if any.
 	// data will be one or more versions indexed by versionID.
 	// To remove all data set to nil.
 	data xlMetaInlineData `msg:"-"`
@@ -369,7 +369,7 @@ func (x *xlMetaInlineData) repair() {
 	x.serialize(-1, keys, vals)
 }
 
-// validate checks if the data is valid.
+// Validate checks if the data is valid.
 // It does not check integrity of the stored data.
 func (x xlMetaInlineData) list() ([]string, error) {
 	if len(x) == 0 {
@@ -717,7 +717,7 @@ func (z *xlMetaV2) AppendTo(dst []byte) ([]byte, error) {
 // in-case you wish to clear existing metadata.
 func (z *xlMetaV2) UpdateObjectVersion(fi FileInfo) error {
 	if fi.VersionID == "" {
-		// this means versioning is not yet
+		// This means versioning is not yet
 		// enabled or suspend i.e all versions
 		// are basically default value i.e "null"
 		fi.VersionID = nullVersionID
@@ -766,7 +766,7 @@ func (z *xlMetaV2) UpdateObjectVersion(fi FileInfo) error {
 // AddVersion adds a new version
 func (z *xlMetaV2) AddVersion(fi FileInfo) error {
 	if fi.VersionID == "" {
-		// this means versioning is not yet
+		// This means versioning is not yet
 		// enabled or suspend i.e all versions
 		// are basically default value i.e "null"
 		fi.VersionID = nullVersionID
@@ -902,7 +902,7 @@ func newXLMetaV2(fi FileInfo) (xlMetaV2, error) {
 func (j xlMetaV2DeleteMarker) ToFileInfo(volume, path string) (FileInfo, error) {
 	versionID := ""
 	var uv uuid.UUID
-	// check if the version is not "null"
+	// Check if the version is not "null"
 	if j.VersionID != uv {
 		versionID = uuid.UUID(j.VersionID).String()
 	}
@@ -927,7 +927,7 @@ func (j xlMetaV2DeleteMarker) ToFileInfo(volume, path string) (FileInfo, error) 
 func (j xlMetaV2Object) ToFileInfo(volume, path string) (FileInfo, error) {
 	versionID := ""
 	var uv uuid.UUID
-	// check if the version is not "null"
+	// Check if the version is not "null"
 	if !bytes.Equal(j.VersionID[:], uv[:]) {
 		versionID = uuid.UUID(j.VersionID).String()
 	}
@@ -1020,7 +1020,7 @@ func (z *xlMetaV2) SharedDataDirCountStr(versionID, dataDir string) int {
 }
 
 func (z *xlMetaV2) SharedDataDirCount(versionID [16]byte, dataDir [16]byte) int {
-	// v2 object is inlined, if it is skip dataDir share check.
+	// V2 object is inlined, if it is skip dataDir share check.
 	if z.data.find(uuid.UUID(versionID).String()) != nil {
 		return 0
 	}
@@ -1084,7 +1084,7 @@ func (z *xlMetaV2) DeleteVersion(fi FileInfo) (string, bool, error) {
 				updateVersion = true
 			}
 		}
-		// object or delete-marker versioned delete is not complete
+		// Object or delete-marker versioned delete is not complete
 		if !fi.VersionPurgeStatus.Empty() && fi.VersionPurgeStatus != Complete {
 			updateVersion = true
 		}

@@ -131,7 +131,7 @@ type HealResultItem struct {
 	DataBlocks   int          `json:"dataBlocks,omitempty"`
 	DiskCount    int          `json:"diskCount"`
 	SetCount     int          `json:"setCount"`
-	// below slices are from drive info.
+	// Below slices are from drive info.
 	Before struct {
 		Drives []HealDriveInfo `json:"drives"`
 	} `json:"before"`
@@ -239,7 +239,7 @@ func (adm *AdminClient) Heal(ctx context.Context, bucket, prefix string,
 		path += "/" + prefix
 	}
 
-	// execute POST request to heal api
+	// Execute POST request to heal api
 	queryVals := make(url.Values)
 	if clientToken != "" {
 		queryVals.Set("clientToken", clientToken)
@@ -344,7 +344,7 @@ type HealingDisk struct {
 
 	// Filled during heal.
 	HealedBuckets []string `json:"healed_buckets"`
-	// future add more tracking capabilities
+	// Future add more tracking capabilities
 }
 
 // Merge others into b.

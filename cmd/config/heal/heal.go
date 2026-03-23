@@ -41,7 +41,7 @@ const (
 type Config struct {
 	// Bitrot will perform bitrot scan on local disk when checking objects.
 	Bitrot bool `json:"bitrotscan"`
-	// maximum sleep duration between objects to slow down heal operation.
+	// Maximum sleep duration between objects to slow down heal operation.
 	Sleep   time.Duration `json:"sleep"`
 	IOCount int           `json:"iocount"`
 }

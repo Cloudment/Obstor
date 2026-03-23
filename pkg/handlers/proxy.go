@@ -58,7 +58,7 @@ func GetSourceScheme(r *http.Request) string {
 	} else if proto = r.Header.Get(xForwardedScheme); proto != "" {
 		scheme = strings.ToLower(proto)
 	} else if proto := r.Header.Get(forwarded); proto != "" {
-		// match should contain at least two elements if the protocol was
+		// Match should contain at least two elements if the protocol was
 		// specified in the Forwarded header. The first element will always be
 		// the 'for=', which we ignore, subsequently we proceed to look for
 		// 'proto=' which should precede right after `for=` if not
@@ -94,7 +94,7 @@ func GetSourceIPFromHeaders(r *http.Request) string {
 		// request).
 		addr = fwd
 	} else if fwd := r.Header.Get(forwarded); fwd != "" {
-		// match should contain at least two elements if the protocol was
+		// Match should contain at least two elements if the protocol was
 		// specified in the Forwarded header. The first element will always be
 		// the 'for=' capture, which we ignore. In the case of multiple IP
 		// addresses (for=8.8.8.8, 8.8.4.4, 172.16.1.20 is valid) we only

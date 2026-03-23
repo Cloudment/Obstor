@@ -25,13 +25,13 @@ import (
 
 // Function - condition function interface.
 type Function interface {
-	// evaluate() - evaluates this condition function with given values.
+	// Evaluate() - evaluates this condition function with given values.
 	evaluate(values map[string][]string) bool
 
-	// key() - returns condition key used in this function.
+	// Key() - returns condition key used in this function.
 	key() Key
 
-	// name() - returns condition name of this function.
+	// Name() - returns condition name of this function.
 	name() name
 
 	// String() - returns string representation of function.

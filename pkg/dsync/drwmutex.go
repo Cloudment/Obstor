@@ -192,7 +192,7 @@ func (dm *DRWMutex) lockBlocking(ctx context.Context, lockLossCallback func(), i
 				if isReadLock {
 					// Append new array of strings at the end
 					dm.readersLocks = append(dm.readersLocks, make([]string, len(restClnts)))
-					// and copy stack array into last spot
+					// And copy stack array into last spot
 					copy(dm.readersLocks[len(dm.readersLocks)-1], locks[:])
 				} else {
 					copy(dm.writeLocks, locks[:])
@@ -361,7 +361,7 @@ func lock(ctx context.Context, ds *Dsync, locks *[]string, id, source string, is
 	defer cancel()
 	for index, c := range restClnts {
 		wg.Add(1)
-		// broadcast lock request to all nodes
+		// Broadcast lock request to all nodes
 		go func(index int, isReadLock bool, c NetLocker) {
 			defer wg.Done()
 
@@ -451,7 +451,7 @@ func lock(ctx context.Context, ds *Dsync, locks *[]string, id, source string, is
 		close(ch)
 		for grantToBeReleased := range ch {
 			if grantToBeReleased.isLocked() {
-				// release abandoned lock
+				// Release abandoned lock
 				log("Releasing abandoned lock\n")
 				sendRelease(ds, restClnts[grantToBeReleased.index],
 					owner, grantToBeReleased.lockUID, isReadLock, lockNames...)
@@ -533,7 +533,7 @@ func (dm *DRWMutex) Unlock() {
 	dm.m.Unlock()
 
 	restClnts, owner := dm.clnt.GetLockers()
-	// create temp array on stack
+	// Create temp array on stack
 	locks := make([]string, len(restClnts))
 
 	{
@@ -574,7 +574,7 @@ func (dm *DRWMutex) RUnlock() {
 	dm.cancelRefresh()
 	dm.m.Unlock()
 
-	// create temp array on stack
+	// Create temp array on stack
 	restClnts, owner := dm.clnt.GetLockers()
 
 	locks := make([]string, len(restClnts))

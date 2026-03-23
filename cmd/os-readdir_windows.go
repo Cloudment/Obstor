@@ -111,7 +111,7 @@ func readDirFn(dirPath string, filter func(name string, typ os.FileMode) error) 
 		}
 
 		if e = filter(name, typ); e == errDoneForNow {
-			// filtering requested to return by caller.
+			// Filtering requested to return by caller.
 			return nil
 		}
 	}
@@ -174,7 +174,7 @@ func readDirN(dirPath string, count int) (entries []string, err error) {
 			}
 
 			if fi.IsDir() {
-				// directory symlinks are ignored.
+				// Directory symlinks are ignored.
 				continue
 			}
 		case data.FileAttributes&syscall.FILE_ATTRIBUTE_DIRECTORY != 0:
@@ -190,5 +190,5 @@ func readDirN(dirPath string, count int) (entries []string, err error) {
 }
 
 func globalSync() {
-	// no-op on windows
+	// No-op on windows
 }

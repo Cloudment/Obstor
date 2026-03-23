@@ -117,7 +117,7 @@ var (
 
 // validateID - checks if ID is valid or not.
 func (r Rule) validateID() error {
-	// cannot be longer than 255 characters
+	// Cannot be longer than 255 characters
 	if len(r.ID) > 255 {
 		return errInvalidRuleID
 	}

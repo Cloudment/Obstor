@@ -308,7 +308,7 @@ func (target *NATSTarget) Send(eventKey string) error {
 // Close - closes underneath connections to NATS server.
 func (target *NATSTarget) Close() (err error) {
 	if target.stanConn != nil {
-		// closing the streaming connection does not close the provided NATS connection.
+		// Closing the streaming connection does not close the provided NATS connection.
 		if target.stanConn.NatsConn() != nil {
 			target.stanConn.NatsConn().Close()
 		}

@@ -84,7 +84,7 @@ var matchingFuncNames = [...]string{
 	"cmd.(*webAPIHandlers).PresignedGet",
 	"cmd.(*webAPIHandlers).ServerInfo",
 	"cmd.(*webAPIHandlers).StorageInfo",
-	// add more here ..
+	// Add more here ..
 }
 
 func (level Level) String() string {

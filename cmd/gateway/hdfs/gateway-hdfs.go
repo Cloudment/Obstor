@@ -630,7 +630,7 @@ func (n *hdfsObjects) getObject(ctx context.Context, bucket, key string, startOf
 	defer rd.Close()
 	_, err = io.Copy(writer, io.NewSectionReader(rd, startOffset, length))
 	if err == io.ErrClosedPipe {
-		// hdfs library doesn't send EOF correctly, so io.Copy attempts
+		// Hdfs library doesn't send EOF correctly, so io.Copy attempts
 		// to write which returns io.ErrClosedPipe - just ignore
 		// this for now.
 		err = nil

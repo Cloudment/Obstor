@@ -301,7 +301,7 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 
 		switch scanMode {
 		case madmin.HealDeepScan:
-			// disk has a valid xl.meta but may not have all the
+			// Disk has a valid xl.meta but may not have all the
 			// parts. This is considered an outdated disk, since
 			// it needs healing too.
 			dataErrs[i] = onlineDisk.VerifyFile(ctx, bucket, object, partsMetadata[i])

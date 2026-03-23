@@ -116,7 +116,7 @@ func registerBootstrapRESTHandlers(router *mux.Router) {
 		httpTraceHdrs(server.VerifyHandler))
 }
 
-// client to talk to bootstrap NEndpoints.
+// Client to talk to bootstrap NEndpoints.
 type bootstrapRESTClient struct {
 	endpoint   Endpoint
 	restClient *rest.Client
@@ -185,7 +185,7 @@ func verifyServerSystemConfig(ctx context.Context, endpointServerPools EndpointS
 			// 100% CPU when half the endpoints are offline.
 			time.Sleep(100 * time.Millisecond)
 			retries++
-			// after 5 retries start logging that servers are not reachable yet
+			// After 5 retries start logging that servers are not reachable yet
 			if retries >= 5 {
 				logger.Info(fmt.Sprintf("Waiting for atleast %d remote servers to be online for bootstrap check", len(clnts)/2))
 				logger.Info(fmt.Sprintf("Following servers are currently offline or unreachable %s", offlineEndpoints))

@@ -1860,7 +1860,7 @@ func toAPIErrorCode(ctx context.Context, err error) (apiErr APIErrorCode) {
 		return apiErr
 	}
 
-	// etcd specific errors, a key is always a bucket for us return
+	// Etcd specific errors, a key is always a bucket for us return
 	// ErrNoSuchBucket in such a case.
 	if err == dns.ErrNoEntriesFound {
 		return ErrNoSuchBucket

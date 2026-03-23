@@ -213,7 +213,7 @@ func (z *erasureServerPools) listPath(ctx context.Context, o listPathOptions) (e
 			cache.fileNotFound = true
 			o.updateMetacacheListing(cache, globalNotificationSys.restClientFromHash(o.Bucket))
 		}()
-		// cache returned not found, entries truncated.
+		// Cache returned not found, entries truncated.
 		return entries, io.EOF
 	}
 

@@ -40,7 +40,7 @@ type AssumedRoleUser struct {
 	//
 	// AssumedRoleId is a required field
 	AssumedRoleID string `xml:"AssumeRoleId"`
-	// contains filtered or unexported fields
+	// Contains filtered or unexported fields
 }
 
 // AssumeRoleResponse contains the result of successful AssumeRole request.

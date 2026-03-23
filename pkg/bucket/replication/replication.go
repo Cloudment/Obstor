@@ -83,11 +83,11 @@ func ParseConfig(reader io.Reader) (*Config, error) {
 
 // Validate - validates the replication configuration
 func (c Config) Validate(bucket string, sameTarget bool) error {
-	// replication config can't have more than 1000 rules
+	// Replication config can't have more than 1000 rules
 	if len(c.Rules) > 1000 {
 		return errReplicationTooManyRules
 	}
-	// replication config should have at least one rule
+	// Replication config should have at least one rule
 	if len(c.Rules) == 0 {
 		return errReplicationNoRule
 	}
@@ -207,7 +207,7 @@ func (c Config) HasActiveRules(prefix string, recursive bool) bool {
 			continue
 		}
 		if len(prefix) > 0 && len(rule.Filter.Prefix) > 0 {
-			// incoming prefix must be in rule prefix
+			// Incoming prefix must be in rule prefix
 			if !recursive && !strings.HasPrefix(prefix, rule.Filter.Prefix) {
 				continue
 			}

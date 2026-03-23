@@ -381,14 +381,14 @@ func (z *xlMetaV2DeleteMarker) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *xlMetaV2DeleteMarker) EncodeMsg(en *msgp.Writer) (err error) {
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(3)
 	var zb0001Mask uint8 /* 3 bits */
 	if z.MetaSys == nil {
 		zb0001Len--
 		zb0001Mask |= 0x4
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	err = en.Append(0x80 | uint8(zb0001Len))
 	if err != nil {
 		return
@@ -396,7 +396,7 @@ func (z *xlMetaV2DeleteMarker) EncodeMsg(en *msgp.Writer) (err error) {
 	if zb0001Len == 0 {
 		return
 	}
-	// write "ID"
+	// Write "ID"
 	err = en.Append(0xa2, 0x49, 0x44)
 	if err != nil {
 		return
@@ -406,7 +406,7 @@ func (z *xlMetaV2DeleteMarker) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "VersionID")
 		return
 	}
-	// write "MTime"
+	// Write "MTime"
 	err = en.Append(0xa5, 0x4d, 0x54, 0x69, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -417,7 +417,7 @@ func (z *xlMetaV2DeleteMarker) EncodeMsg(en *msgp.Writer) (err error) {
 		return
 	}
 	if (zb0001Mask & 0x4) == 0 { // if not empty
-		// write "MetaSys"
+		// Write "MetaSys"
 		err = en.Append(0xa7, 0x4d, 0x65, 0x74, 0x61, 0x53, 0x79, 0x73)
 		if err != nil {
 			return
@@ -446,14 +446,14 @@ func (z *xlMetaV2DeleteMarker) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *xlMetaV2DeleteMarker) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(3)
 	var zb0001Mask uint8 /* 3 bits */
 	if z.MetaSys == nil {
 		zb0001Len--
 		zb0001Mask |= 0x4
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	o = append(o, 0x80|uint8(zb0001Len))
 	if zb0001Len == 0 {
 		return
@@ -814,7 +814,7 @@ func (z *xlMetaV2Object) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(17)
 	var zb0001Mask uint32 /* 17 bits */
 	if z.PartActualSizes == nil {
@@ -829,7 +829,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		zb0001Len--
 		zb0001Mask |= 0x10000
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	err = en.WriteMapHeader(zb0001Len)
 	if err != nil {
 		return
@@ -837,7 +837,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 	if zb0001Len == 0 {
 		return
 	}
-	// write "ID"
+	// Write "ID"
 	err = en.Append(0xa2, 0x49, 0x44)
 	if err != nil {
 		return
@@ -847,7 +847,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "VersionID")
 		return
 	}
-	// write "DDir"
+	// Write "DDir"
 	err = en.Append(0xa4, 0x44, 0x44, 0x69, 0x72)
 	if err != nil {
 		return
@@ -857,7 +857,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "DataDir")
 		return
 	}
-	// write "EcAlgo"
+	// Write "EcAlgo"
 	err = en.Append(0xa6, 0x45, 0x63, 0x41, 0x6c, 0x67, 0x6f)
 	if err != nil {
 		return
@@ -867,7 +867,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ErasureAlgorithm")
 		return
 	}
-	// write "EcM"
+	// Write "EcM"
 	err = en.Append(0xa3, 0x45, 0x63, 0x4d)
 	if err != nil {
 		return
@@ -877,7 +877,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ErasureM")
 		return
 	}
-	// write "EcN"
+	// Write "EcN"
 	err = en.Append(0xa3, 0x45, 0x63, 0x4e)
 	if err != nil {
 		return
@@ -887,7 +887,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ErasureN")
 		return
 	}
-	// write "EcBSize"
+	// Write "EcBSize"
 	err = en.Append(0xa7, 0x45, 0x63, 0x42, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -897,7 +897,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ErasureBlockSize")
 		return
 	}
-	// write "EcIndex"
+	// Write "EcIndex"
 	err = en.Append(0xa7, 0x45, 0x63, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
@@ -907,7 +907,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ErasureIndex")
 		return
 	}
-	// write "EcDist"
+	// Write "EcDist"
 	err = en.Append(0xa6, 0x45, 0x63, 0x44, 0x69, 0x73, 0x74)
 	if err != nil {
 		return
@@ -924,7 +924,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "CSumAlgo"
+	// Write "CSumAlgo"
 	err = en.Append(0xa8, 0x43, 0x53, 0x75, 0x6d, 0x41, 0x6c, 0x67, 0x6f)
 	if err != nil {
 		return
@@ -934,7 +934,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "BitrotChecksumAlgo")
 		return
 	}
-	// write "PartNums"
+	// Write "PartNums"
 	err = en.Append(0xa8, 0x50, 0x61, 0x72, 0x74, 0x4e, 0x75, 0x6d, 0x73)
 	if err != nil {
 		return
@@ -951,7 +951,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "PartETags"
+	// Write "PartETags"
 	err = en.Append(0xa9, 0x50, 0x61, 0x72, 0x74, 0x45, 0x54, 0x61, 0x67, 0x73)
 	if err != nil {
 		return
@@ -968,7 +968,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
-	// write "PartSizes"
+	// Write "PartSizes"
 	err = en.Append(0xa9, 0x50, 0x61, 0x72, 0x74, 0x53, 0x69, 0x7a, 0x65, 0x73)
 	if err != nil {
 		return
@@ -986,7 +986,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 	if (zb0001Mask & 0x1000) == 0 { // if not empty
-		// write "PartASizes"
+		// Write "PartASizes"
 		err = en.Append(0xaa, 0x50, 0x61, 0x72, 0x74, 0x41, 0x53, 0x69, 0x7a, 0x65, 0x73)
 		if err != nil {
 			return
@@ -1004,7 +1004,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 			}
 		}
 	}
-	// write "Size"
+	// Write "Size"
 	err = en.Append(0xa4, 0x53, 0x69, 0x7a, 0x65)
 	if err != nil {
 		return
@@ -1014,7 +1014,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Size")
 		return
 	}
-	// write "MTime"
+	// Write "MTime"
 	err = en.Append(0xa5, 0x4d, 0x54, 0x69, 0x6d, 0x65)
 	if err != nil {
 		return
@@ -1025,7 +1025,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		return
 	}
 	if (zb0001Mask & 0x8000) == 0 { // if not empty
-		// write "MetaSys"
+		// Write "MetaSys"
 		err = en.Append(0xa7, 0x4d, 0x65, 0x74, 0x61, 0x53, 0x79, 0x73)
 		if err != nil {
 			return
@@ -1049,7 +1049,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 	if (zb0001Mask & 0x10000) == 0 { // if not empty
-		// write "MetaUsr"
+		// Write "MetaUsr"
 		err = en.Append(0xa7, 0x4d, 0x65, 0x74, 0x61, 0x55, 0x73, 0x72)
 		if err != nil {
 			return
@@ -1078,7 +1078,7 @@ func (z *xlMetaV2Object) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *xlMetaV2Object) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(17)
 	var zb0001Mask uint32 /* 17 bits */
 	if z.PartActualSizes == nil {
@@ -1093,7 +1093,7 @@ func (z *xlMetaV2Object) MarshalMsg(b []byte) (o []byte, err error) {
 		zb0001Len--
 		zb0001Mask |= 0x10000
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	o = msgp.AppendMapHeader(o, zb0001Len)
 	if zb0001Len == 0 {
 		return
@@ -1552,7 +1552,7 @@ func (z *xlMetaV2Version) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(4)
 	var zb0001Mask uint8 /* 4 bits */
 	if z.ObjectV1 == nil {
@@ -1567,7 +1567,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 		zb0001Len--
 		zb0001Mask |= 0x8
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	err = en.Append(0x80 | uint8(zb0001Len))
 	if err != nil {
 		return
@@ -1575,7 +1575,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 	if zb0001Len == 0 {
 		return
 	}
-	// write "Type"
+	// Write "Type"
 	err = en.Append(0xa4, 0x54, 0x79, 0x70, 0x65)
 	if err != nil {
 		return
@@ -1586,7 +1586,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 		return
 	}
 	if (zb0001Mask & 0x2) == 0 { // if not empty
-		// write "V1Obj"
+		// Write "V1Obj"
 		err = en.Append(0xa5, 0x56, 0x31, 0x4f, 0x62, 0x6a)
 		if err != nil {
 			return
@@ -1605,7 +1605,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 	if (zb0001Mask & 0x4) == 0 { // if not empty
-		// write "V2Obj"
+		// Write "V2Obj"
 		err = en.Append(0xa5, 0x56, 0x32, 0x4f, 0x62, 0x6a)
 		if err != nil {
 			return
@@ -1624,7 +1624,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 	if (zb0001Mask & 0x8) == 0 { // if not empty
-		// write "DelObj"
+		// Write "DelObj"
 		err = en.Append(0xa6, 0x44, 0x65, 0x6c, 0x4f, 0x62, 0x6a)
 		if err != nil {
 			return
@@ -1648,7 +1648,7 @@ func (z *xlMetaV2Version) EncodeMsg(en *msgp.Writer) (err error) {
 // MarshalMsg implements msgp.Marshaler
 func (z *xlMetaV2Version) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// omitempty: check for empty values
+	// Omitempty: check for empty values
 	zb0001Len := uint32(4)
 	var zb0001Mask uint8 /* 4 bits */
 	if z.ObjectV1 == nil {
@@ -1663,7 +1663,7 @@ func (z *xlMetaV2Version) MarshalMsg(b []byte) (o []byte, err error) {
 		zb0001Len--
 		zb0001Mask |= 0x8
 	}
-	// variable map header, size zb0001Len
+	// Variable map header, size zb0001Len
 	o = append(o, 0x80|uint8(zb0001Len))
 	if zb0001Len == 0 {
 		return

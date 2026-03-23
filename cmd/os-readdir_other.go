@@ -83,7 +83,7 @@ func readDirFn(dirPath string, filter func(name string, typ os.FileMode) error) 
 				}
 			}
 			if err = filter(fi.Name(), fi.Mode()); err == errDoneForNow {
-				// filtering requested to return by caller.
+				// Filtering requested to return by caller.
 				return nil
 			}
 		}
@@ -157,6 +157,6 @@ func readDirN(dirPath string, count int) (entries []string, err error) {
 }
 
 func globalSync() {
-	// no-op not sure about plan9/solaris support for syscall support
+	// No-op not sure about plan9/solaris support for syscall support
 	syscall.Sync()
 }

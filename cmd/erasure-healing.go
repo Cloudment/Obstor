@@ -44,7 +44,7 @@ func (er erasureObjects) HealBucket(ctx context.Context, bucket string, opts mad
 	storageDisks := er.getDisks()
 	storageEndpoints := er.getEndpoints()
 
-	// get write quorum for an object
+	// Get write quorum for an object
 	writeQuorum := len(storageDisks) - er.defaultParityCount
 	if writeQuorum == er.defaultParityCount {
 		writeQuorum++
@@ -89,7 +89,7 @@ func healBucket(ctx context.Context, storageDisks []StorageAPI, storageEndpoints
 				beforeState[index] = madmin.DriveStateMissing
 				afterState[index] = madmin.DriveStateMissing
 
-				// mutate only if not a dry-run
+				// Mutate only if not a dry-run
 				if opts.DryRun {
 					return nil
 				}
@@ -177,7 +177,7 @@ func listAllBuckets(ctx context.Context, storageDisks []StorageAPI, healBuckets 
 		index := index
 		g.Go(func() error {
 			if storageDisks[index] == nil {
-				// we ignore disk not found errors
+				// We ignore disk not found errors
 				return nil
 			}
 			volsInfo, err := storageDisks[index].ListVols(ctx)
@@ -292,7 +292,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		case dataErrs[i] == errFileNotFound, dataErrs[i] == errFileVersionNotFound, dataErrs[i] == errVolumeNotFound:
 			driveState = madmin.DriveStateMissing
 		default:
-			// all remaining cases imply corrupt data/metadata
+			// All remaining cases imply corrupt data/metadata
 			driveState = madmin.DriveStateCorrupt
 		}
 
@@ -385,7 +385,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		partsMetadata[i] = cleanFileInfo(latestMeta)
 	}
 
-	// source data dir shall be empty in case of XLV1
+	// Source data dir shall be empty in case of XLV1
 	// differentiate it with dstDataDir for readability
 	// srcDataDir is the one used with newBitrotReader()
 	// to read existing content.
@@ -500,7 +500,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 			continue
 		}
 
-		// record the index of the updated disks
+		// Record the index of the updated disks
 		partsMetadata[i].Erasure.Index = i + 1
 
 		// Attempt a rename now from healed data to final location.

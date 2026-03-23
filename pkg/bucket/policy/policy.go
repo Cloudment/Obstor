@@ -97,7 +97,7 @@ func (policy Policy) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	// subtype to avoid recursive call to MarshalJSON()
+	// Subtype to avoid recursive call to MarshalJSON()
 	type subPolicy Policy
 	return json.Marshal(subPolicy(policy))
 }
@@ -136,7 +136,7 @@ redo:
 
 // UnmarshalJSON - decodes JSON data to Policy.
 func (policy *Policy) UnmarshalJSON(data []byte) error {
-	// subtype to avoid recursive call to UnmarshalJSON()
+	// Subtype to avoid recursive call to UnmarshalJSON()
 	type subPolicy Policy
 	var sp subPolicy
 	if err := json.Unmarshal(data, &sp); err != nil {

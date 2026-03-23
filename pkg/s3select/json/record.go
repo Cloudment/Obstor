@@ -199,7 +199,7 @@ func jsonFloat(f float64) string {
 	}
 	dst = strconv.AppendFloat(dst, f, fmt, -1, 64)
 	if fmt == 'e' {
-		// clean up e-09 to e-9
+		// Clean up e-09 to e-9
 		n := len(dst)
 		if n >= 4 && dst[n-4] == 'e' && dst[n-3] == '-' && dst[n-2] == '0' {
 			dst[n-2] = dst[n-1]

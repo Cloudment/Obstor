@@ -181,7 +181,7 @@ func (target *NSQTarget) Send(eventKey string) error {
 // Close - closes underneath connections to NSQD server.
 func (target *NSQTarget) Close() (err error) {
 	if target.producer != nil {
-		// this blocks until complete:
+		// This blocks until complete:
 		target.producer.Stop()
 	}
 	return nil

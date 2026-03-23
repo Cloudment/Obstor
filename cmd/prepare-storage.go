@@ -59,7 +59,7 @@ var printEndpointError = func() func(Endpoint, error, bool) {
 		if once {
 			return
 		}
-		// once not set, check if same error occurred 3 times in
+		// Once not set, check if same error occurred 3 times in
 		// a row, then make sure we print it to call attention.
 		if m[err.Error()] > 2 {
 			logger.LogAlwaysIf(ctx, fmt.Errorf("following error has been printed %d times.. %w", m[err.Error()], err))
@@ -209,7 +209,7 @@ func isServerResolvable(endpoint Endpoint, timeout time.Duration) error {
 	return nil
 }
 
-// connect to list of endpoints and load all Erasure disk formats, validate the formats are correct
+// Connect to list of endpoints and load all Erasure disk formats, validate the formats are correct
 // and are in quorum, if no formats are found attempt to initialize all of them for the first
 // time. additionally make sure to close all the disks used in this attempt.
 func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints, poolCount, setCount, setDriveCount int, deploymentID, distributionAlgo string) (storageDisks []StorageAPI, format *formatErasureV3, err error) {
@@ -342,7 +342,7 @@ func waitForFormatErasure(firstDisk bool, endpoints Endpoints, poolCount, setCou
 		return nil, nil, err
 	}
 
-	// prepare getElapsedTime() to calculate elapsed time since we started trying formatting disks.
+	// Prepare getElapsedTime() to calculate elapsed time since we started trying formatting disks.
 	// All times are rounded to avoid showing milli, micro and nano seconds
 	formatStartTime := time.Now().Round(time.Second)
 	getElapsedTime := func() string {
@@ -369,11 +369,11 @@ func waitForFormatErasure(firstDisk bool, endpoints Endpoints, poolCount, setCou
 					logger.Info("Waiting for all other servers to be online to format the disks.")
 					continue
 				case errErasureReadQuorum:
-					// no quorum available continue to wait for minimum number of servers.
+					// No quorum available continue to wait for minimum number of servers.
 					logger.Info("Waiting for a minimum of %d disks to come online (elapsed %s)\n", len(endpoints)/2, getElapsedTime())
 					continue
 				case errErasureV3ThisEmpty:
-					// need to wait for this error to be healed, so continue.
+					// Need to wait for this error to be healed, so continue.
 					continue
 				default:
 					// For all other unhandled errors we exit and fail.

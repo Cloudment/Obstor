@@ -37,7 +37,7 @@ const (
 	defaultDialKeepAlive = 30 * time.Second
 )
 
-// etcd environment values
+// Etcd environment values
 const (
 	Endpoints     = "endpoints"
 	PathPrefix    = "path_prefix"

@@ -163,7 +163,7 @@ func readDirFn(dirPath string, fn func(name string, typ os.FileMode) error) erro
 			typ = fi.Mode() & os.ModeType
 		}
 		if err = fn(string(name), typ); err == errDoneForNow {
-			// fn() requested to return by caller.
+			// Fn() requested to return by caller.
 			return nil
 		}
 	}

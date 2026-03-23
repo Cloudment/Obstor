@@ -49,7 +49,7 @@ func GetRootCAs(certsCAsDir string) (*x509.CertPool, error) {
 		if err == nil {
 			rootCAs.AppendCertsFromPEM(caCert)
 		}
-		// ignore files which are not readable.
+		// Ignore files which are not readable.
 	}
 
 	return rootCAs, nil

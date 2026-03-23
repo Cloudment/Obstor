@@ -156,7 +156,7 @@ func (store *QueueStore) Del(key string) error {
 	return store.del(key)
 }
 
-// lockless call
+// Lockless call
 func (store *QueueStore) del(key string) error {
 	if err := os.Remove(filepath.Join(store.directory, key+eventExt)); err != nil {
 		return err

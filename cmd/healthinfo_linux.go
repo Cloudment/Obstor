@@ -57,7 +57,7 @@ func getLocalOsInfo(ctx context.Context, r *http.Request) madmin.ServerOsInfo {
 		}
 	}
 
-	// ignore user err, as it cannot be obtained reliably inside containers
+	// Ignore user err, as it cannot be obtained reliably inside containers
 	srvrOsInfo.Users, _ = host.UsersWithContext(ctx)
 
 	return srvrOsInfo

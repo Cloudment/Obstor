@@ -45,9 +45,9 @@ func NewBytePoolCap(maxSize int, width int, capwidth int) (bp *BytePoolCap) {
 func (bp *BytePoolCap) Get() (b []byte) {
 	select {
 	case b = <-bp.c:
-	// reuse existing buffer
+	// Reuse existing buffer
 	default:
-		// create new buffer
+		// Create new buffer
 		if bp.wcap > 0 {
 			b = make([]byte, bp.w, bp.wcap)
 		} else {
@@ -61,9 +61,9 @@ func (bp *BytePoolCap) Get() (b []byte) {
 func (bp *BytePoolCap) Put(b []byte) {
 	select {
 	case bp.c <- b:
-		// buffer went back into pool
+		// Buffer went back into pool
 	default:
-		// buffer didn't go back into pool, just discard
+		// Buffer didn't go back into pool, just discard
 	}
 }
 

@@ -109,7 +109,7 @@ func initBackgroundExpiry(ctx context.Context, objectAPI ObjectLayer) {
 
 type transitionState struct {
 	once sync.Once
-	// add future metrics here
+	// Add future metrics here
 	transitionCh chan ObjectInfo
 }
 
@@ -130,7 +130,7 @@ var (
 )
 
 func newTransitionState() *transitionState {
-	// fix minimum concurrent transition to 1 for single CPU setup
+	// Fix minimum concurrent transition to 1 for single CPU setup
 	if globalTransitionConcurrent == 0 {
 		globalTransitionConcurrent = 1
 	}
@@ -245,7 +245,7 @@ func transitionSCInUse(ctx context.Context, lfc *lifecycle.Lifecycle, bucket, ar
 	return false
 }
 
-// set PutObjectOptions for PUT operation to transition data to target cluster
+// Set PutObjectOptions for PUT operation to transition data to target cluster
 func putTransitionOpts(objInfo ObjectInfo) (putOpts miniogo.PutObjectOptions, err error) {
 	meta := make(map[string]string)
 
@@ -296,7 +296,7 @@ func putTransitionOpts(objInfo ObjectInfo) (putOpts miniogo.PutObjectOptions, er
 	return putOpts, nil
 }
 
-// handle deletes of transitioned objects or object versions when one of the following is true:
+// Handle deletes of transitioned objects or object versions when one of the following is true:
 // 1. temporarily restored copies of objects (restored with the PostRestoreObject API) expired.
 // 2. life cycle expiry date is met on the object.
 // 3. Object is removed through DELETE api call
@@ -359,11 +359,11 @@ func deleteTransitionedObject(ctx context.Context, objectAPI ObjectLayer, bucket
 		Host:       "Internal: [ILM-EXPIRY]",
 	})
 
-	// should never reach here
+	// Should never reach here
 	return nil
 }
 
-// transition object to target specified by the transition ARN. When an object is transitioned to another
+// Transition object to target specified by the transition ARN. When an object is transitioned to another
 // storage specified by the transition ARN, the metadata is left behind on source cluster and original content
 // is moved to the transition tier. Note that in the case of encrypted objects, entire encrypted stream is moved
 // to the transition tier without decrypting or re-encrypting.
@@ -471,7 +471,7 @@ func getTransitionedObjectReader(ctx context.Context, bucket, object string, rs 
 	}
 	gopts := miniogo.GetObjectOptions{VersionID: opts.VersionID}
 
-	// get correct offsets for encrypted object
+	// Get correct offsets for encrypted object
 	if off >= 0 && length >= 0 {
 		if err := gopts.SetRange(off, off+length-1); err != nil {
 			return nil, ErrorRespToObjectError(err, bucket, object)
@@ -611,7 +611,7 @@ func (r *RestoreObjectRequest) validate(ctx context.Context, objAPI ObjectLayer)
 	return nil
 }
 
-// set ObjectOptions for PUT call to restore temporary copy of transitioned data
+// Set ObjectOptions for PUT call to restore temporary copy of transitioned data
 func putRestoreOpts(bucket, object string, rreq *RestoreObjectRequest, objInfo ObjectInfo) (putOpts ObjectOptions) {
 	meta := make(map[string]string)
 	sc := rreq.OutputLocation.S3.StorageClass
@@ -662,7 +662,7 @@ var (
 	errRestoreHDRMalformed = fmt.Errorf("x-amz-restore header malformed")
 )
 
-// parse x-amz-restore header from user metadata to get the status of ongoing request and expiry of restoration
+// Parse x-amz-restore header from user metadata to get the status of ongoing request and expiry of restoration
 // if any. This header value is of format: ongoing-request=true|false, expires=time
 func parseRestoreHeaderFromMeta(meta map[string]string) (ongoing bool, expiry time.Time, err error) {
 	restoreHdr, ok := meta[xhttp.AmzRestore]

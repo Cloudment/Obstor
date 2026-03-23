@@ -44,7 +44,7 @@ type stringLikeFunc struct {
 	values set.StringSet
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is wildcard
+// Evaluate() - evaluates to check whether value by Key in given values is wildcard
 // matching in condition values.
 func (f stringLikeFunc) evaluate(values map[string][]string) bool {
 	requestValue, ok := values[http.CanonicalHeaderKey(f.k.Name())]
@@ -63,12 +63,12 @@ func (f stringLikeFunc) evaluate(values map[string][]string) bool {
 	return false
 }
 
-// key() - returns condition key which is used by this condition function.
+// Key() - returns condition key which is used by this condition function.
 func (f stringLikeFunc) key() Key {
 	return f.k
 }
 
-// name() - returns "StringLike" function name.
+// Name() - returns "StringLike" function name.
 func (f stringLikeFunc) name() name {
 	return stringLike
 }
@@ -102,13 +102,13 @@ type stringNotLikeFunc struct {
 	stringLikeFunc
 }
 
-// evaluate() - evaluates to check whether value by Key in given values is NOT wildcard
+// Evaluate() - evaluates to check whether value by Key in given values is NOT wildcard
 // matching in condition values.
 func (f stringNotLikeFunc) evaluate(values map[string][]string) bool {
 	return !f.stringLikeFunc.evaluate(values)
 }
 
-// name() - returns "StringNotLike" function name.
+// Name() - returns "StringNotLike" function name.
 func (f stringNotLikeFunc) name() name {
 	return stringNotLike
 }

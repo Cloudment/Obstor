@@ -52,7 +52,7 @@ func getLocalServerProperty(endpointServerPools EndpointServerPools, r *http.Req
 					network[nodeName] = string(madmin.ItemOnline)
 				} else {
 					network[nodeName] = string(madmin.ItemOffline)
-					// log once the error
+					// Log once the error
 					logger.LogOnceIf(context.Background(), err, nodeName)
 				}
 			}
@@ -71,7 +71,7 @@ func getLocalServerProperty(endpointServerPools EndpointServerPools, r *http.Req
 
 	objLayer := newObjectLayerFn()
 	if objLayer != nil && !globalIsGateway {
-		// only need Disks information in server mode.
+		// Only need Disks information in server mode.
 		storageInfo, _ := objLayer.LocalStorageInfo(GlobalContext)
 		props.State = string(madmin.ItemOnline)
 		props.Disks = storageInfo.Disks

@@ -214,7 +214,7 @@ func (g *S3) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error)
 		Metrics:   metrics,
 	}
 
-	// creds are ignored here, since S3 gateway implements chaining
+	// Creds are ignored here, since S3 gateway implements chaining
 	// all credentials.
 	clnt, err := newS3(g.host, t)
 	if err != nil {

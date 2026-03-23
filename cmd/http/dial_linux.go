@@ -31,7 +31,7 @@ import (
 
 func setInternalTCPParameters(c syscall.RawConn) error {
 	return c.Control(func(fdPtr uintptr) {
-		// got socket file descriptor to set parameters.
+		// Got socket file descriptor to set parameters.
 		fd := int(fdPtr)
 
 		// Enable TCP fast connect
@@ -85,7 +85,7 @@ func NewCustomDialContext(dialTimeout time.Duration) DialContext {
 			Timeout: dialTimeout,
 			Control: func(network, address string, c syscall.RawConn) error {
 				return c.Control(func(fdPtr uintptr) {
-					// got socket file descriptor to set parameters.
+					// Got socket file descriptor to set parameters.
 					fd := int(fdPtr)
 
 					// Enable TCP fast connect

@@ -84,7 +84,7 @@ func (z *bucketMetacache) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "bucket")
 		return
 	}
-	// write "caches"
+	// Write "caches"
 	err = en.Append(0xa6, 0x63, 0x61, 0x63, 0x68, 0x65, 0x73)
 	if err != nil {
 		return

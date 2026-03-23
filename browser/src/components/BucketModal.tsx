@@ -8,10 +8,7 @@ import {
   updateBucketSettingsAction,
 } from "@/lib/actions";
 
-// ---------------------------------------------------------------------------
 // Types
-// ---------------------------------------------------------------------------
-
 export interface BucketSettings {
   name: string;
   versioning: boolean;
@@ -101,10 +98,7 @@ const EMPTY_SETTINGS: BucketSettings = {
   regions: [],
 };
 
-// ---------------------------------------------------------------------------
 // Sub-components
-// ---------------------------------------------------------------------------
-
 function Toggle({
   checked,
   onChange,
@@ -166,10 +160,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Tab content components
-// ---------------------------------------------------------------------------
-
 function GeneralTab({
   settings,
   onChange,
@@ -707,10 +698,7 @@ function RegionTab({
   );
 }
 
-// ---------------------------------------------------------------------------
 // Reducer for main modal state
-// ---------------------------------------------------------------------------
-
 interface ModalState {
   tab: TabId;
   settings: BucketSettings;
@@ -763,10 +751,7 @@ const INITIAL_STATE: ModalState = {
   error: "",
 };
 
-// ---------------------------------------------------------------------------
-// Main Modal
-// ---------------------------------------------------------------------------
-
+// Bucket Modal
 export function BucketModal({ open, onClose, onSuccess, editBucket }: Props) {
   const isEdit = !!editBucket;
   const [state, dispatch] = useReducer(modalReducer, INITIAL_STATE);

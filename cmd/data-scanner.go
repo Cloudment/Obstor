@@ -499,7 +499,7 @@ func (f *folderScanner) scanQueuedLevels(ctx context.Context, folders []cachedFo
 				return nil
 			}
 
-			// successfully read means we have a valid object.
+			// Successfully read means we have a valid object.
 
 			// Remove filename i.e is the meta file to construct object name
 			item.transformMetaDir()
@@ -589,7 +589,7 @@ func (f *folderScanner) scanQueuedLevels(ctx context.Context, folders []cachedFo
 						console.Debugf(healObjectsPrefix+" got partial, %d agreed, errs: %v\n", nAgreed, errs)
 					}
 
-					// agreed value less than expected quorum
+					// Agreed value less than expected quorum
 					dangling = nAgreed < resolver.objQuorum || nAgreed < resolver.dirQuorum
 
 					// Sleep and reset.
@@ -905,7 +905,7 @@ func (i *scannerItem) applyLifecycle(ctx context.Context, o ObjectLayer, meta ac
 				return false, size
 			}
 		case ObjectNotFound, VersionNotFound:
-			// object not found or version not found return 0
+			// Object not found or version not found return 0
 			return false, 0
 		default:
 			// All other errors proceed.
@@ -1108,7 +1108,7 @@ func (i *scannerItem) objectPath() string {
 // healReplication will heal a scanned item that has failed replication.
 func (i *scannerItem) healReplication(ctx context.Context, o ObjectLayer, oi ObjectInfo, sizeS *sizeSummary) {
 	if oi.DeleteMarker || !oi.VersionPurgeStatus.Empty() {
-		// heal delete marker replication failure or versioned delete replication failure
+		// Heal delete marker replication failure or versioned delete replication failure
 		if oi.ReplicationStatus == replication.Pending ||
 			oi.ReplicationStatus == replication.Failed ||
 			oi.VersionPurgeStatus == Failed || oi.VersionPurgeStatus == Pending {
@@ -1134,7 +1134,7 @@ func (i *scannerItem) healReplication(ctx context.Context, o ObjectLayer, oi Obj
 
 // healReplicationDeletes will heal a scanned deleted item that failed to replicate deletes.
 func (i *scannerItem) healReplicationDeletes(ctx context.Context, o ObjectLayer, oi ObjectInfo) {
-	// handle soft delete and permanent delete failures here.
+	// Handle soft delete and permanent delete failures here.
 	if oi.DeleteMarker || !oi.VersionPurgeStatus.Empty() {
 		versionID := ""
 		dmVersionID := ""
@@ -1164,7 +1164,7 @@ type dynamicSleeper struct {
 	// Sleep factor
 	factor float64
 
-	// maximum sleep cap,
+	// Maximum sleep cap,
 	// set to <= 0 to disable.
 	maxSleep time.Duration
 
@@ -1172,7 +1172,7 @@ type dynamicSleeper struct {
 	// This is to avoid too small costly sleeps.
 	minSleep time.Duration
 
-	// cycle will be closed
+	// Cycle will be closed
 	cycle chan struct{}
 }
 

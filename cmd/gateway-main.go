@@ -66,7 +66,7 @@ func (l *GatewayLocker) Walk(ctx context.Context, bucket, prefix string, results
 			var marker string
 
 			for {
-				// set maxKeys to '0' to list maximum possible objects in single call.
+				// Set maxKeys to '0' to list maximum possible objects in single call.
 				loi, err := l.ListObjects(ctx, bucket, prefix, marker, "", 0)
 				if err != nil {
 					logger.LogIf(ctx, err)
@@ -236,7 +236,7 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	// Override any values from ENVs.
 	lookupConfigs(srvCfg, nil)
 
-	// hold the mutex lock before a new config is assigned.
+	// Hold the mutex lock before a new config is assigned.
 	globalServerConfigMu.Lock()
 	globalServerConfig = srvCfg
 	globalServerConfigMu.Unlock()
@@ -333,7 +333,7 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	}
 
 	if globalCacheConfig.Enabled {
-		// initialize the new disk cache objects.
+		// Initialize the new disk cache objects.
 		var cacheAPI CacheObjectLayer
 		cacheAPI, err = newServerCacheObjects(GlobalContext, globalCacheConfig)
 		logger.FatalIf(err, "Unable to initialize disk caching")

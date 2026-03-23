@@ -36,7 +36,7 @@ type Forwarder struct {
 	Logger       func(error)
 	ErrorHandler func(http.ResponseWriter, *http.Request, error)
 
-	// internal variables
+	// Internal variables
 	rewriter *headerRewriter
 }
 
