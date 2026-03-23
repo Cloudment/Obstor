@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,13 +82,16 @@ func (e ErasureInfo) ShardSize() int64 {
 	return ceilFrac(e.BlockSize, int64(e.DataBlocks))
 }
 
-// IsValid - tells if erasure info fields are valid.
+// IsValid - tells if file info fields are valid.
 func (fi FileInfo) IsValid() bool {
 	if fi.Deleted {
-		// Delete marker has no data, no need to check
-		// for erasure coding information
 		return true
 	}
+	// Block-replicated objects are valid if they have blocks.
+	if len(fi.Blocks) > 0 {
+		return true
+	}
+	// Legacy erasure-coded validation.
 	dataBlocks := fi.Erasure.DataBlocks
 	parityBlocks := fi.Erasure.ParityBlocks
 	correctIndexes := (fi.Erasure.Index > 0 &&
@@ -153,7 +157,7 @@ func (fi FileInfo) ToObjectInfo(bucket, object string) ObjectInfo {
 
 	// etag/md5Sum has already been extracted. We need to
 	// remove to avoid it from appearing as part of
-	// response headers. e.g, X-Minio-* or X-Amz-*.
+	// response headers. e.g, X-Obstor-* or X-Amz-*.
 	// Tags have also been extracted, we remove that as well.
 	objInfo.UserDefined = cleanMetadata(fi.Metadata)
 
@@ -238,11 +242,17 @@ func findFileInfoInQuorum(ctx context.Context, metaArr []FileInfo, modTime time.
 	for i, meta := range metaArr {
 		if meta.IsValid() && meta.ModTime.Equal(modTime) && meta.DataDir == dataDir {
 			for _, part := range meta.Parts {
-				h.Write([]byte(fmt.Sprintf("part.%d", part.Number)))
+				fmt.Fprintf(h, "part.%d", part.Number)
 			}
-			h.Write([]byte(fmt.Sprintf("%v", meta.Erasure.Distribution)))
+			if len(meta.Blocks) > 0 {
+				for _, blk := range meta.Blocks {
+					fmt.Fprintf(h, "block.%s", blk.Hash)
+				}
+			} else {
+				fmt.Fprintf(h, "%v", meta.Erasure.Distribution)
+			}
 			// make sure that length of Data is same
-			h.Write([]byte(fmt.Sprintf("%v", len(meta.Data))))
+			fmt.Fprintf(h, "%v", len(meta.Data))
 			metaHashes[i] = hex.EncodeToString(h.Sum(nil))
 			h.Reset()
 		}
@@ -297,7 +307,9 @@ func writeUniqueFileInfo(ctx context.Context, disks []StorageAPI, bucket, prefix
 			}
 			// Pick one FileInfo for a disk at index.
 			fi := files[index]
-			fi.Erasure.Index = index + 1
+			if len(fi.Blocks) == 0 {
+				fi.Erasure.Index = index + 1
+			}
 			if fi.IsValid() {
 				return disks[index].WriteMetadata(ctx, bucket, prefix, fi)
 			}
@@ -320,6 +332,11 @@ func objectQuorumFromMeta(ctx context.Context, partsMetaData []FileInfo, errs []
 	latestFileInfo, err := getLatestFileInfo(ctx, partsMetaData, errs)
 	if err != nil {
 		return 0, 0, err
+	}
+
+	// Block-replicated objects use replication config for quorums.
+	if len(latestFileInfo.Blocks) > 0 || globalIsReplicated {
+		return globalReplicationConfig.ReadQuorum(), globalReplicationConfig.WriteQuorum(), nil
 	}
 
 	dataBlocks := latestFileInfo.Erasure.DataBlocks

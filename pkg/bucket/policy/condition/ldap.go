@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +18,6 @@
 package condition
 
 const (
-	// LDAPUser - LDAP username, in ObStor this value is equal to your authenticating LDAP user.
+	// LDAPUser - LDAP username, in Obstor this value is equal to your authenticating LDAP user.
 	LDAPUser Key = "ldap:user"
 )

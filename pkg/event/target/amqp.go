@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@ import (
 
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // AMQPArgs - AMQP target arguments.
@@ -295,7 +296,7 @@ func NewAMQPTarget(id string, args AMQPArgs, doneCh <-chan struct{}, loggerOnce 
 
 	conn, err = amqp.Dial(args.URL.String())
 	if err != nil {
-		if store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

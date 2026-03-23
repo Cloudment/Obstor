@@ -1,7 +1,9 @@
+//go:build linux
 // +build linux
 
 /*
  * MinIO Cloud Storage, (C) 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +87,7 @@ func checkCrossDevice(absPaths []string, mountsPath string) error {
 // CheckCrossDevice - check if given path has any sub-mounts in the input mounts list.
 func (mts mountInfos) checkCrossMounts(path string) error {
 	if !filepath.IsAbs(path) {
-		return fmt.Errorf("Invalid argument, path (%s) is expected to be absolute", path)
+		return fmt.Errorf("invalid argument, path (%s) is expected to be absolute", path)
 	}
 	var crossMounts mountInfos
 	for _, mount := range mts {

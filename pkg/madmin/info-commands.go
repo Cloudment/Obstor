@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +109,7 @@ func (d1 BackendDisks) Merge(d2 BackendDisks) BackendDisks {
 	return merged
 }
 
-// StorageInfo - Connect to a minio server and call Storage Info Management API
+// StorageInfo - Connect to a obstor server and call Storage Info Management API
 // to fetch server's information represented by StorageInfo structure
 func (adm *AdminClient) StorageInfo(ctx context.Context) (StorageInfo, error) {
 	resp, err := adm.executeMethod(ctx, http.MethodGet, requestData{relPath: adminAPIPrefix + "/storageinfo"})
@@ -354,7 +355,7 @@ type Disk struct {
 	DiskIndex int `json:"disk_index"`
 }
 
-// ServerInfo - Connect to a minio server and call Server Admin Info Management API
+// ServerInfo - Connect to a obstor server and call Server Admin Info Management API
 // to fetch server's information represented by infoMessage structure
 func (adm *AdminClient) ServerInfo(ctx context.Context) (InfoMessage, error) {
 	resp, err := adm.executeMethod(ctx,

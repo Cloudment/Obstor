@@ -1,17 +1,24 @@
-FROM golang:1.16-alpine as builder
+FROM golang:1.26-alpine AS builder
+
+ENV GOPATH=/go
+ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+
+# Cache dependencies
+WORKDIR /go/obstor
+COPY go.mod go.sum ./
+RUN go mod download
+
+ARG VERSION=dev
+ARG COMMIT=unknown
+
+# Build source
+COPY . .
+RUN go build -trimpath -ldflags "-s -w -X github.com/cloudment/obstor/cmd.Version=${VERSION} -X github.com/cloudment/obstor/cmd.ShortCommitID=${COMMIT}" -o /go/bin/obstor .
+
+FROM alpine:3.23
 
 LABEL maintainer="PGG Inc <oss@pgg.net>"
-
-ENV GOPATH /go
-ENV CGO_ENABLED 0
-ENV GO111MODULE on
-
-RUN  \
-     apk add --no-cache git && \
-     git clone https://github.com/cloudment/obstor && cd minio && \
-     git checkout master && go install -v -ldflags "$(go run buildscripts/gen-ldflags.go)"
-
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
 ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_SECRET_KEY_FILE=secret_key \
@@ -20,18 +27,15 @@ ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_KMS_SECRET_KEY_FILE=kms_master_key \
     OBSTOR_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
 
+RUN apk add --no-cache curl ca-certificates su-exec
+
+COPY --from=builder /go/bin/obstor /usr/bin/obstor
+COPY --from=builder /go/obstor/CREDITS /licenses/CREDITS
+COPY --from=builder /go/obstor/LICENSE /licenses/LICENSE
+COPY --from=builder /go/obstor/dockerscripts/docker-entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+
 EXPOSE 9000
-
-COPY --from=builder /go/bin/obstor /usr/bin/minio
-COPY --from=builder /go/minio/CREDITS /licenses/CREDITS
-COPY --from=builder /go/minio/LICENSE /licenses/LICENSE
-COPY --from=builder /go/minio/dockerscripts/docker-entrypoint.sh /usr/bin/
-
-RUN  \
-     microdnf update --nodocs && \
-     microdnf install curl ca-certificates shadow-utils util-linux --nodocs && \
-     microdnf clean all && \
-     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 

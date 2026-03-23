@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +21,14 @@ import (
 	"errors"
 
 	"github.com/cloudment/obstor/pkg/s3select/jstream"
-	"github.com/minio/simdjson-go"
 )
 
 var (
-	errKeyLookup                 = errors.New("Cannot look up key in non-object value")
-	errIndexLookup               = errors.New("Cannot look up array index in non-array value")
-	errWildcardObjectLookup      = errors.New("Object wildcard used on non-object value")
-	errWildcardArrayLookup       = errors.New("Array wildcard used on non-array value")
-	errWilcardObjectUsageInvalid = errors.New("Invalid usage of object wildcard")
+	errKeyLookup                 = errors.New("cannot look up key in non-object value")
+	errIndexLookup               = errors.New("cannot look up array index in non-array value")
+	errWildcardObjectLookup      = errors.New("object wildcard used on non-object value")
+	errWildcardArrayLookup       = errors.New("array wildcard used on non-array value")
+	errWilcardObjectUsageInvalid = errors.New("invalid usage of object wildcard")
 )
 
 // jsonpathEval evaluates a JSON path and returns the value at the path.
@@ -52,17 +52,6 @@ func jsonpathEval(p []*JSONPathElement, v interface{}) (r interface{}, flat bool
 			}
 			// Key not found - return nil result
 			return nil, false, nil
-		case simdjson.Object:
-			elem := kvs.FindKey(key, nil)
-			if elem == nil {
-				// Key not found - return nil result
-				return nil, false, nil
-			}
-			val, err := IterToValue(elem.Iter)
-			if err != nil {
-				return nil, false, err
-			}
-			return jsonpathEval(p[1:], val)
 		default:
 			return nil, false, errKeyLookup
 		}
@@ -83,12 +72,6 @@ func jsonpathEval(p []*JSONPathElement, v interface{}) (r interface{}, flat bool
 	case p[0].ObjectWildcard:
 		switch kvs := v.(type) {
 		case jstream.KVS:
-			if len(p[1:]) > 0 {
-				return nil, false, errWilcardObjectUsageInvalid
-			}
-
-			return kvs, false, nil
-		case simdjson.Object:
 			if len(p[1:]) > 0 {
 				return nil, false, errWilcardObjectUsageInvalid
 			}

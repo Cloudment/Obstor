@@ -1,6 +1,6 @@
-# Bucket Quota Configuration Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Quota Configuration Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
-![quota](https://raw.githubusercontent.com/cloudment/obstor/master/docs/bucket/quota/bucketquota.png)
+![quota](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bucket/quota/bucketquota.png)
 
 Buckets can be configured to have one of two types of quota configuration - FIFO and Hard quota.
 
@@ -10,31 +10,31 @@ Buckets can be configured to have one of two types of quota configuration - FIFO
 > NOTE: Bucket quotas are not supported under gateway or standalone single disk deployments.
 
 ## Prerequisites
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
+- Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).
+- [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
 
 ## Set bucket quota configuration
 
-### Set a hard quota of 1GB for a bucket `mybucket` on ObStor object storage:
+### Set a hard quota of 1GB for a bucket `mybucket` on Obstor object storage:
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --hard 1gb
+$ mc admin bucket quota myobstor/mybucket --hard 1gb
 ```
 
-### Set FIFO quota of 5GB for a bucket "mybucket" on ObStor to allow automatic deletion of older content to ensure bucket usage remains within 5GB
+### Set FIFO quota of 5GB for a bucket "mybucket" on Obstor to allow automatic deletion of older content to ensure bucket usage remains within 5GB
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --fifo 5gb
+$ mc admin bucket quota myobstor/mybucket --fifo 5gb
 ```
 
-### Verify the quota configured on `mybucket` on ObStor
+### Verify the quota configured on `mybucket` on Obstor
 
 ```sh
-$ mc admin bucket quota myminio/mybucket
+$ mc admin bucket quota myobstor/mybucket
 ```
 
-### Clear bucket quota configuration for `mybucket` on ObStor
+### Clear bucket quota configuration for `mybucket` on Obstor
 
 ```sh
-$ mc admin bucket quota myminio/mybucket --clear
+$ mc admin bucket quota myobstor/mybucket --clear
 ```

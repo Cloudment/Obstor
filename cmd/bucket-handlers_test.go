@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -193,7 +194,7 @@ func testGetBucketLocationHandler(obj ObjectLayer, instanceType, bucketName stri
 	// ListBucketsHandler doesn't support bucket policies, setting the policies shouldn't make any difference.
 	anonReq, err := newTestRequest(http.MethodGet, getBucketLocationURL("", bucketName), 0, nil)
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request.", instanceType)
+		t.Fatalf("Obstor %s: Failed to create an anonymous request.", instanceType)
 	}
 
 	// ExecObjectLayerAPIAnonTest - Calls the HTTP API handler using the anonymous request, validates the ErrAccessDeniedResponse,
@@ -210,7 +211,7 @@ func testGetBucketLocationHandler(obj ObjectLayer, instanceType, bucketName stri
 	nilReq, err := newTestRequest(http.MethodGet, getBucketLocationURL("", nilBucket), 0, nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// Executes the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -297,7 +298,7 @@ func testHeadBucketHandler(obj ObjectLayer, instanceType, bucketName string, api
 	anonReq, err := newTestRequest(http.MethodHead, getHEADBucketURL("", bucketName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
 			instanceType, bucketName, err)
 	}
 
@@ -315,7 +316,7 @@ func testHeadBucketHandler(obj ObjectLayer, instanceType, bucketName string, api
 	nilReq, err := newTestRequest(http.MethodHead, getHEADBucketURL("", nilBucket), 0, nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -531,7 +532,7 @@ func testListMultipartUploadsHandler(obj ObjectLayer, instanceType, bucketName s
 	// Test for Anonymous/unsigned http request.
 	anonReq, err := newTestRequest(http.MethodGet, url, 0, nil)
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for bucket \"%s\": <ERROR> %v",
 			instanceType, bucketName, err)
 	}
 
@@ -552,7 +553,7 @@ func testListMultipartUploadsHandler(obj ObjectLayer, instanceType, bucketName s
 	nilReq, err := newTestRequest(http.MethodGet, url, 0, nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -630,7 +631,7 @@ func testListBucketsHandler(obj ObjectLayer, instanceType, bucketName string, ap
 	anonReq, err := newTestRequest(http.MethodGet, getListBucketURL(""), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request.", instanceType)
+		t.Fatalf("Obstor %s: Failed to create an anonymous request.", instanceType)
 	}
 
 	// ExecObjectLayerAPIAnonTest - Calls the HTTP API handler using the anonymous request, validates the ErrAccessDeniedResponse,
@@ -646,7 +647,7 @@ func testListBucketsHandler(obj ObjectLayer, instanceType, bucketName string, ap
 	nilReq, err := newTestRequest(http.MethodGet, getListBucketURL(""), 0, nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -790,7 +791,7 @@ func testAPIDeleteMultipleObjectsHandler(obj ObjectLayer, instanceType, bucketNa
 		},
 		// Test case - 5.
 		// Anonymous user access denied response
-		// Currently anonymous users cannot delete multiple objects in ObStor server
+		// Currently anonymous users cannot delete multiple objects in Obstor server
 		{
 			bucket:             bucketName,
 			objects:            anonRequest,
@@ -825,19 +826,19 @@ func testAPIDeleteMultipleObjectsHandler(obj ObjectLayer, instanceType, bucketNa
 		apiRouter.ServeHTTP(rec, req)
 		// Assert the response code with the expected status.
 		if rec.Code != testCase.expectedRespStatus {
-			t.Errorf("Test %d: ObStor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
+			t.Errorf("Test %d: Obstor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
 		}
 
 		// read the response body.
-		actualContent, err = ioutil.ReadAll(rec.Body)
+		actualContent, err = io.ReadAll(rec.Body)
 		if err != nil {
-			t.Fatalf("Test %d : ObStor %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
+			t.Fatalf("Test %d : Obstor %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
 		}
 
 		// Verify whether the bucket obtained object is same as the one created.
 		if testCase.expectedContent != nil && !bytes.Equal(testCase.expectedContent, actualContent) {
 			t.Log(string(testCase.expectedContent), string(actualContent))
-			t.Errorf("Test %d : ObStor %s: Object content differs from expected value.", i+1, instanceType)
+			t.Errorf("Test %d : Obstor %s: Object content differs from expected value.", i+1, instanceType)
 		}
 	}
 
@@ -851,7 +852,7 @@ func testAPIDeleteMultipleObjectsHandler(obj ObjectLayer, instanceType, bucketNa
 
 	nilReq, err := newTestSignedRequestV4(http.MethodPost, getDeleteMultipleObjectsURL("", nilBucket), 0, nil, "", "", nil)
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.

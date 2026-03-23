@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +20,12 @@ package cmd
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func testBitrotReaderWriterAlgo(t *testing.T, bitrotAlgo BitrotAlgorithm) {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}

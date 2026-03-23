@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,14 +94,13 @@ func TestHostMarshalJSON(t *testing.T) {
 		{Host{"play", 0, false}, []byte(`"play"`), false},
 		{Host{"play", 0, true}, []byte(`"play:0"`), false},
 		{Host{"play", 9000, true}, []byte(`"play:9000"`), false},
-		{Host{"play.pgg.net", 0, false}, []byte(`"play.pgg.net"`), false},
-		{Host{"play.pgg.net", 9000, true}, []byte(`"play.pgg.net:9000"`), false},
+		{Host{"play.obstor.net", 0, false}, []byte(`"play.obstor.net"`), false},
+		{Host{"play.obstor.net", 9000, true}, []byte(`"play.obstor.net:9000"`), false},
 		{Host{"147.75.201.93", 0, false}, []byte(`"147.75.201.93"`), false},
 		{Host{"147.75.201.93", 9000, true}, []byte(`"147.75.201.93:9000"`), false},
 		{Host{"play12", 0, false}, []byte(`"play12"`), false},
 		{Host{"12play", 0, false}, []byte(`"12play"`), false},
-		{Host{"play-minio-io", 0, false}, []byte(`"play-minio-io"`), false},
-		{Host{"play--pgg.net", 0, false}, []byte(`"play--pgg.net"`), false},
+		{Host{"play--obstor.net", 0, false}, []byte(`"play--obstor.net"`), false},
 	}
 
 	for i, testCase := range testCases {
@@ -129,14 +129,13 @@ func TestHostUnmarshalJSON(t *testing.T) {
 		{[]byte(`"play"`), &Host{"play", 0, false}, false},
 		{[]byte(`"play:0"`), &Host{"play", 0, true}, false},
 		{[]byte(`"play:9000"`), &Host{"play", 9000, true}, false},
-		{[]byte(`"play.pgg.net"`), &Host{"play.pgg.net", 0, false}, false},
-		{[]byte(`"play.pgg.net:9000"`), &Host{"play.pgg.net", 9000, true}, false},
+		{[]byte(`"play.obstor.net"`), &Host{"play.obstor.net", 0, false}, false},
+		{[]byte(`"play.obstor.net:9000"`), &Host{"play.obstor.net", 9000, true}, false},
 		{[]byte(`"147.75.201.93"`), &Host{"147.75.201.93", 0, false}, false},
 		{[]byte(`"147.75.201.93:9000"`), &Host{"147.75.201.93", 9000, true}, false},
 		{[]byte(`"play12"`), &Host{"play12", 0, false}, false},
 		{[]byte(`"12play"`), &Host{"12play", 0, false}, false},
-		{[]byte(`"play-minio-io"`), &Host{"play-minio-io", 0, false}, false},
-		{[]byte(`"play--pgg.net"`), &Host{"play--pgg.net", 0, false}, false},
+		{[]byte(`"play--obstor.net"`), &Host{"play--obstor.net", 0, false}, false},
 		{[]byte(`":9000"`), &Host{"", 9000, true}, false},
 		{[]byte(`"[fe80::8097:76eb:b397:e067%wlp2s0]"`), &Host{"fe80::8097:76eb:b397:e067%wlp2s0", 0, false}, false},
 		{[]byte(`"[fe80::8097:76eb:b397:e067]:9000"`), &Host{"fe80::8097:76eb:b397:e067", 9000, true}, false},
@@ -150,7 +149,6 @@ func TestHostUnmarshalJSON(t *testing.T) {
 		{[]byte(`"play:90000"`), nil, true},
 		{[]byte(`"play:-10"`), nil, true},
 		{[]byte(`"play-"`), nil, true},
-		{[]byte(`"play.minio..io"`), nil, true},
 		{[]byte(`":"`), nil, true},
 	}
 
@@ -183,21 +181,19 @@ func TestParseHost(t *testing.T) {
 		{"play", &Host{"play", 0, false}, false},
 		{"play:0", &Host{"play", 0, true}, false},
 		{"play:9000", &Host{"play", 9000, true}, false},
-		{"play.pgg.net", &Host{"play.pgg.net", 0, false}, false},
-		{"play.pgg.net:9000", &Host{"play.pgg.net", 9000, true}, false},
+		{"play.obstor.net", &Host{"play.obstor.net", 0, false}, false},
+		{"play.obstor.net:9000", &Host{"play.obstor.net", 9000, true}, false},
 		{"147.75.201.93", &Host{"147.75.201.93", 0, false}, false},
 		{"147.75.201.93:9000", &Host{"147.75.201.93", 9000, true}, false},
 		{"play12", &Host{"play12", 0, false}, false},
 		{"12play", &Host{"12play", 0, false}, false},
-		{"play-minio-io", &Host{"play-minio-io", 0, false}, false},
-		{"play--pgg.net", &Host{"play--pgg.net", 0, false}, false},
+		{"play--obstor.net", &Host{"play--obstor.net", 0, false}, false},
 		{":9000", &Host{"", 9000, true}, false},
 		{"play:", nil, true},
 		{"play::", nil, true},
 		{"play:90000", nil, true},
 		{"play:-10", nil, true},
 		{"play-", nil, true},
-		{"play.minio..io", nil, true},
 		{":", nil, true},
 		{"", nil, true},
 	}

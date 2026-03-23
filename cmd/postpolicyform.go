@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +86,7 @@ func toInteger(val interface{}) (int64, error) {
 		i, err := strconv.Atoi(v)
 		return int64(i), err
 	default:
-		return 0, errors.New("Invalid number format")
+		return 0, errors.New("invalid number format")
 	}
 }
 
@@ -181,7 +182,7 @@ func parsePostPolicyForm(r io.Reader) (PostPolicyForm, error) {
 			for k, v := range condt {
 				if !isString(v) { // Pre-check value type.
 					// All values must be of type string.
-					return parsedPolicy, fmt.Errorf("Unknown type %s of conditional field value %s found in POST policy form", reflect.TypeOf(condt).String(), condt)
+					return parsedPolicy, fmt.Errorf("unknown type %s of conditional field value %s found in POST policy form", reflect.TypeOf(condt).String(), condt)
 				}
 				// {"acl": "public-read" } is an alternate way to indicate - [ "eq", "$acl", "public-read" ]
 				// In this case we will just collapse this into "eq" for all use cases.
@@ -195,19 +196,19 @@ func parsePostPolicyForm(r io.Reader) (PostPolicyForm, error) {
 			}
 		case []interface{}: // Handle array types.
 			if len(condt) != 3 { // Return error if we have insufficient elements.
-				return parsedPolicy, fmt.Errorf("Malformed conditional fields %s of type %s found in POST policy form", condt, reflect.TypeOf(condt).String())
+				return parsedPolicy, fmt.Errorf("malformed conditional fields %s of type %s found in POST policy form", condt, reflect.TypeOf(condt).String())
 			}
 			switch toLowerString(condt[0]) {
 			case policyCondEqual, policyCondStartsWith:
 				for _, v := range condt { // Pre-check all values for type.
 					if !isString(v) {
 						// All values must be of type string.
-						return parsedPolicy, fmt.Errorf("Unknown type %s of conditional field value %s found in POST policy form", reflect.TypeOf(condt).String(), condt)
+						return parsedPolicy, fmt.Errorf("unknown type %s of conditional field value %s found in POST policy form", reflect.TypeOf(condt).String(), condt)
 					}
 				}
 				operator, matchType, value := toLowerString(condt[0]), toLowerString(condt[1]), toString(condt[2])
 				if !strings.HasPrefix(matchType, "$") {
-					return parsedPolicy, fmt.Errorf("Invalid according to Policy: Policy Condition failed: [%s, %s, %s]", operator, matchType, value)
+					return parsedPolicy, fmt.Errorf("invalid according to Policy: Policy Condition failed: [%s, %s, %s]", operator, matchType, value)
 				}
 				parsedPolicy.Conditions.Policies = append(parsedPolicy.Conditions.Policies, struct {
 					Operator string
@@ -234,11 +235,11 @@ func parsePostPolicyForm(r io.Reader) (PostPolicyForm, error) {
 				}
 			default:
 				// Condition should be valid.
-				return parsedPolicy, fmt.Errorf("Unknown type %s of conditional field value %s found in POST policy form",
+				return parsedPolicy, fmt.Errorf("unknown type %s of conditional field value %s found in POST policy form",
 					reflect.TypeOf(condt).String(), condt)
 			}
 		default:
-			return parsedPolicy, fmt.Errorf("Unknown field %s of type %s found in POST policy form",
+			return parsedPolicy, fmt.Errorf("unknown field %s of type %s found in POST policy form",
 				condt, reflect.TypeOf(condt).String())
 		}
 	}
@@ -262,7 +263,7 @@ func checkPolicyCond(op string, input1, input2 string) bool {
 func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) error {
 	// Check if policy document expiry date is still not reached
 	if !postPolicyForm.Expiration.After(UTCNow()) {
-		return fmt.Errorf("Invalid according to Policy: Policy expired")
+		return fmt.Errorf("invalid according to Policy: Policy expired")
 	}
 	// map to store the metadata
 	metaMap := make(map[string]string)
@@ -276,7 +277,7 @@ func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) erro
 	for key := range formValues {
 		if strings.HasPrefix(key, "X-Amz-Meta-") {
 			if _, ok := metaMap[key]; !ok {
-				return fmt.Errorf("Invalid according to Policy: Extra input fields: %s", key)
+				return fmt.Errorf("invalid according to Policy: Extra input fields: %s", key)
 			}
 		}
 	}
@@ -295,12 +296,12 @@ func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) erro
 		if startsWithSupported, condFound := startsWithConds[policy.Key]; condFound {
 			// Check if the current condition supports starts-with operator
 			if op == policyCondStartsWith && !startsWithSupported {
-				return fmt.Errorf("Invalid according to Policy: Policy Condition failed")
+				return fmt.Errorf("invalid according to Policy: Policy Condition failed")
 			}
 			// Check if current policy condition is satisfied
 			condPassed = checkPolicyCond(op, formValues.Get(formCanonicalName), policy.Value)
 			if !condPassed {
-				return fmt.Errorf("Invalid according to Policy: Policy Condition failed")
+				return fmt.Errorf("invalid according to Policy: Policy Condition failed")
 			}
 		} else {
 			// This covers all conditions X-Amz-Meta-* and X-Amz-*
@@ -308,7 +309,7 @@ func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) erro
 				// Check if policy condition is satisfied
 				condPassed = checkPolicyCond(op, formValues.Get(formCanonicalName), policy.Value)
 				if !condPassed {
-					return fmt.Errorf("Invalid according to Policy: Policy Condition failed: [%s, %s, %s]", op, policy.Key, policy.Value)
+					return fmt.Errorf("invalid according to Policy: Policy Condition failed: [%s, %s, %s]", op, policy.Key, policy.Value)
 				}
 			}
 		}

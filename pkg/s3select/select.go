@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019-2021 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -33,9 +33,7 @@ import (
 	"github.com/cloudment/obstor/pkg/s3select/csv"
 	"github.com/cloudment/obstor/pkg/s3select/json"
 	"github.com/cloudment/obstor/pkg/s3select/parquet"
-	"github.com/cloudment/obstor/pkg/s3select/simdj"
 	"github.com/cloudment/obstor/pkg/s3select/sql"
-	"github.com/minio/simdjson-go"
 )
 
 type recordReader interface {
@@ -73,9 +71,9 @@ var bufPool = sync.Pool{
 
 var bufioWriterPool = sync.Pool{
 	New: func() interface{} {
-		// ioutil.Discard is just used to create the writer. Actual destination
+		// io.Discard is just used to create the writer. Actual destination
 		// writer is set later by Reset() before using it.
-		return bufio.NewWriter(ioutil.Discard)
+		return bufio.NewWriter(io.Discard)
 	},
 }
 
@@ -141,7 +139,7 @@ func (input *InputSerialization) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 	}
 	if !parsedInput.ParquetArgs.IsEmpty() {
 		if parsedInput.CompressionType != "" && parsedInput.CompressionType != noneType {
-			return errInvalidRequestParameter(fmt.Errorf("CompressionType must be NONE for Parquet format"))
+			return errInvalidRequestParameter(fmt.Errorf("compressionType must be NONE for Parquet format"))
 		}
 
 		parsedInput.format = parquetFormat
@@ -250,11 +248,11 @@ func (s3Select *S3Select) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 	}
 
 	if parsedS3Select.Input.IsEmpty() {
-		return errMissingRequiredParameter(fmt.Errorf("InputSerialization must be provided"))
+		return errMissingRequiredParameter(fmt.Errorf("inputSerialization must be provided"))
 	}
 
 	if parsedS3Select.Output.IsEmpty() {
-		return errMissingRequiredParameter(fmt.Errorf("OutputSerialization must be provided"))
+		return errMissingRequiredParameter(fmt.Errorf("outputSerialization must be provided"))
 	}
 
 	statement, err := sql.ParseSelectStatement(parsedS3Select.Expression)
@@ -327,11 +325,7 @@ func (s3Select *S3Select) Open(getReader func(offset, length int64) (io.ReadClos
 		}
 
 		if strings.EqualFold(s3Select.Input.JSONArgs.ContentType, "lines") {
-			if simdjson.SupportedCPU() {
-				s3Select.recordReader = simdj.NewReader(s3Select.progressReader, &s3Select.Input.JSONArgs)
-			} else {
-				s3Select.recordReader = json.NewPReader(s3Select.progressReader, &s3Select.Input.JSONArgs)
-			}
+			s3Select.recordReader = json.NewPReader(s3Select.progressReader, &s3Select.Input.JSONArgs)
 		} else {
 			s3Select.recordReader = json.NewReader(s3Select.progressReader, &s3Select.Input.JSONArgs)
 		}
@@ -356,7 +350,7 @@ func (s3Select *S3Select) marshal(buf *bytes.Buffer, record sql.Record) error {
 		// Use bufio Writer to prevent csv.Writer from allocating a new buffer.
 		bufioWriter := bufioWriterPool.Get().(*bufio.Writer)
 		defer func() {
-			bufioWriter.Reset(ioutil.Discard)
+			bufioWriter.Reset(io.Discard)
 			bufioWriterPool.Put(bufioWriter)
 		}()
 

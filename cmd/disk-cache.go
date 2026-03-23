@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019,2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -572,7 +573,7 @@ func newCache(config cache.Config) ([]*diskCache, bool, error) {
 			continue
 		}
 		if err := checkAtimeSupport(dir); err != nil {
-			return nil, false, errors.New("Atime support required for disk caching")
+			return nil, false, errors.New("atime support required for disk caching")
 		}
 
 		cache, err := newDiskCache(ctx, dir, config)
@@ -689,7 +690,7 @@ func (c *cacheObjects) uploadObject(ctx context.Context, oi ObjectInfo) {
 	dcache, err := c.getCacheToLoc(ctx, oi.Bucket, oi.Name)
 	if err != nil {
 		// disk cache could not be located.
-		logger.LogIf(ctx, fmt.Errorf("Could not upload %s/%s to backend: %w", oi.Bucket, oi.Name, err))
+		logger.LogIf(ctx, fmt.Errorf("could not upload %s/%s to backend: %w", oi.Bucket, oi.Name, err))
 		return
 	}
 	cReader, _, bErr := dcache.Get(ctx, oi.Bucket, oi.Name, nil, http.Header{}, ObjectOptions{})

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/cloudment/obstor/cmd/http"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/rest"
 	"github.com/cloudment/obstor/pkg/dsync"
@@ -99,7 +99,7 @@ func (client *lockRESTClient) restCall(ctx context.Context, call string, args ds
 		buffer.WriteString("\n")
 	}
 	respBody, err := client.callWithContext(ctx, call, values, &buffer, -1)
-	defer http.DrainBody(respBody)
+	defer xhttp.DrainBody(respBody)
 	switch err {
 	case nil:
 		return true, nil

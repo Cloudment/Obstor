@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ import (
 	"bytes"
 	"encoding/csv"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -113,7 +113,7 @@ func benchmarkSelect(b *testing.B, count int, query string) {
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewReader(csvData)), nil
+				return io.NopCloser(bytes.NewReader(csvData)), nil
 			}); err != nil {
 				b.Fatal(err)
 			}

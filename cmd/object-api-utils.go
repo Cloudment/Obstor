@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,15 +54,15 @@ import (
 )
 
 const (
-	// ObStor meta bucket.
-	minioMetaBucket = ".minio.sys"
+	// Obstor meta bucket.
+	minioMetaBucket = ".obstor.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
-	// ObStor Multipart meta prefix.
+	// Obstor Multipart meta prefix.
 	minioMetaMultipartBucket = minioMetaBucket + SlashSeparator + mpartMetaPrefix
-	// ObStor tmp meta prefix.
+	// Obstor tmp meta prefix.
 	minioMetaTmpBucket = minioMetaBucket + "/tmp"
-	// ObStor tmp meta prefix for deleted objects.
+	// Obstor tmp meta prefix for deleted objects.
 	minioMetaTmpDeletedBucket = minioMetaTmpBucket + "/.trash"
 
 	// DNS separator (period), used for bucket name validation.
@@ -74,7 +75,7 @@ const (
 	compReadAheadBufSize = 1 << 20
 )
 
-// isMinioBucket returns true if given bucket is a ObStor internal
+// isMinioBucket returns true if given bucket is a Obstor internal
 // bucket and false otherwise.
 func isMinioMetaBucketName(bucket string) bool {
 	return bucket == minioMetaBucket ||
@@ -130,7 +131,7 @@ func IsValidBucketName(bucket string) bool {
 		allNumbers = allNumbers && !isNotNumber
 	}
 	// Does the bucket name look like an IP address?
-	return !(len(pieces) == 4 && allNumbers)
+	return len(pieces) != 4 || !allNumbers
 }
 
 // IsValidObjectName verifies an object name in accordance with Amazon's
@@ -148,7 +149,7 @@ func IsValidBucketName(bucket string) bool {
 //
 // - Backslash ("\")
 //
-// additionally minio does not support object names with trailing SlashSeparator.
+// additionally obstor does not support object names with trailing SlashSeparator.
 func IsValidObjectName(object string) bool {
 	if len(object) == 0 {
 		return false
@@ -191,9 +192,9 @@ func checkObjectNameForLengthAndSlash(bucket, object string) error {
 		}
 	}
 	if runtime.GOOS == globalWindowsOSName {
-		// Explicitly disallowed characters on windows.
-		// Avoids most problematic names.
-		if strings.ContainsAny(object, `:*?"|<>`) {
+		// CVE-2023-28433: Explicitly disallowed characters on windows.
+		// Backslash must be rejected to prevent path traversal across buckets.
+		if strings.ContainsAny(object, `\:*?"|<>`) {
 			return ObjectNameInvalid{
 				Bucket: bucket,
 				Object: object,
@@ -348,12 +349,12 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
 }
 
-// Returns true if input bucket is a reserved minio meta bucket '.minio.sys'.
+// Returns true if input bucket is a reserved obstor meta bucket '.obstor.sys'.
 func isMinioMetaBucket(bucketName string) bool {
 	return bucketName == minioMetaBucket
 }
 
-// Returns true if input bucket is a reserved minio bucket 'minio'.
+// Returns true if input bucket is a reserved obstor bucket 'obstor'.
 func isMinioReservedBucket(bucketName string) bool {
 	return bucketName == minioReservedBucket
 }
@@ -821,7 +822,7 @@ func (g *GetObjectReader) Read(p []byte) (n int, err error) {
 	return g.pReader.Read(p)
 }
 
-//SealMD5CurrFn seals md5sum with object encryption key and returns sealed
+// SealMD5CurrFn seals md5sum with object encryption key and returns sealed
 // md5sum
 type SealMD5CurrFn func([]byte) []byte
 
@@ -901,12 +902,12 @@ func sealETagFn(key crypto.ObjectKey) SealMD5CurrFn {
 	return fn
 }
 
-// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from minio internal
-// encryption metadata that was sent by minio gateway
+// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from obstor internal
+// encryption metadata that was sent by obstor gateway
 func CleanMinioInternalMetadataKeys(metadata map[string]string) map[string]string {
 	var newMeta = make(map[string]string, len(metadata))
 	for k, v := range metadata {
-		if strings.HasPrefix(k, "X-Amz-Meta-X-Minio-Internal-") {
+		if strings.HasPrefix(k, "X-Amz-Meta-X-Obstor-Internal-") {
 			newMeta[strings.TrimPrefix(k, "X-Amz-Meta-")] = v
 		} else {
 			newMeta[k] = v

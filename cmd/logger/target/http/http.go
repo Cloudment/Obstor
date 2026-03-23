@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018, 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +72,7 @@ func (h *Target) Validate() error {
 
 	req.Header.Set(xhttp.ContentType, "application/json")
 
-	// Set user-agent to indicate ObStor release
+	// Set user-agent to indicate Obstor release
 	// version to the configured log endpoint
 	req.Header.Set("User-Agent", h.userAgent)
 
@@ -119,7 +120,7 @@ func (h *Target) startHTTPLogger() {
 			}
 			req.Header.Set(xhttp.ContentType, "application/json")
 
-			// Set user-agent to indicate ObStor release
+			// Set user-agent to indicate Obstor release
 			// version to the configured log endpoint
 			req.Header.Set("User-Agent", h.userAgent)
 

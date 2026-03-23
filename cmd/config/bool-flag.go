@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +81,7 @@ func ParseBool(str string) (bool, error) {
 	if strings.EqualFold(str, "disabled") {
 		return false, nil
 	}
-	return false, fmt.Errorf("ParseBool: parsing '%s': %s", str, strconv.ErrSyntax)
+	return false, fmt.Errorf("parseBool: parsing '%s': %s", str, strconv.ErrSyntax)
 }
 
 // ParseBoolFlag - parses string into BoolFlag.

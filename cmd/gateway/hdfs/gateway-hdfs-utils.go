@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2019 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +20,24 @@ package hdfs
 import (
 	"strings"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
 const (
 	// Minio meta bucket.
-	minioMetaBucket = ".minio.sys"
+	minioMetaBucket = ".obstor.sys"
 
 	// Minio Tmp meta prefix.
 	minioMetaTmpBucket = minioMetaBucket + "/tmp"
 
 	// Minio reserved bucket name.
-	minioReservedBucket = "minio"
+	minioReservedBucket = "obstor"
 )
 
 // Ignores all reserved bucket names or invalid bucket names.
 func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
-	bucketEntry = strings.TrimSuffix(bucketEntry, minio.SlashSeparator)
+	bucketEntry = strings.TrimSuffix(bucketEntry, obstor.SlashSeparator)
 	if strict {
 		if err := s3utils.CheckValidBucketNameStrict(bucketEntry); err != nil {
 			return true
@@ -49,18 +50,18 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
 }
 
-// Returns true if input bucket is a reserved minio meta bucket '.minio.sys'.
+// Returns true if input bucket is a reserved obstor meta bucket '.obstor.sys'.
 func isMinioMetaBucket(bucketName string) bool {
 	return bucketName == minioMetaBucket
 }
 
-// Returns true if input bucket is a reserved minio bucket 'minio'.
+// Returns true if input bucket is a reserved obstor bucket 'obstor'.
 func isMinioReservedBucket(bucketName string) bool {
 	return bucketName == minioReservedBucket
 }
 
 // byBucketName is a collection satisfying sort.Interface.
-type byBucketName []minio.BucketInfo
+type byBucketName []obstor.BucketInfo
 
 func (d byBucketName) Len() int           { return len(d) }
 func (d byBucketName) Swap(i, j int)      { d[i], d[j] = d[j], d[i] }

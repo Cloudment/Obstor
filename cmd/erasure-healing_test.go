@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/dustin/go-humanize"
 )
 
 // Tests both object and bucket healing.

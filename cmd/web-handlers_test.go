@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -33,10 +33,10 @@ import (
 	"strings"
 	"testing"
 
-	jwtgo "github.com/golang-jwt/jwt/v4"
-	humanize "github.com/dustin/go-humanize"
 	xjwt "github.com/cloudment/obstor/cmd/jwt"
 	"github.com/cloudment/obstor/pkg/hash"
+	humanize "github.com/dustin/go-humanize"
+	jwtgo "github.com/golang-jwt/jwt/v4"
 )
 
 // Implement a dummy flush writer.
@@ -234,13 +234,13 @@ func testServerInfoWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 	if err != nil {
 		t.Fatalf("Failed, %v", err)
 	}
-	if serverInfoReply.MinioVersion != Version {
-		t.Fatalf("Cannot get minio version from server info handler")
+	if serverInfoReply.ObstorVersion != Version {
+		t.Fatalf("Cannot get obstor version from server info handler")
 	}
-	serverInfoReply.MinioGlobalInfo["domains"] = []string(nil)
+	serverInfoReply.ObstorGlobalInfo["domains"] = []string(nil)
 	globalInfo := getGlobalInfo()
-	if !reflect.DeepEqual(serverInfoReply.MinioGlobalInfo, globalInfo) {
-		t.Fatalf("Global info did not match got %#v, expected %#v", serverInfoReply.MinioGlobalInfo, globalInfo)
+	if !reflect.DeepEqual(serverInfoReply.ObstorGlobalInfo, globalInfo) {
+		t.Fatalf("Global info did not match got %#v, expected %#v", serverInfoReply.ObstorGlobalInfo, globalInfo)
 	}
 }
 
@@ -271,7 +271,7 @@ func testMakeBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 		{"", false},
 		{".", false},
 		{"ab", false},
-		{"minio", false},
+		{"obstor", false},
 		{minioMetaBucket, false},
 		{bucketName, true},
 	}
@@ -342,8 +342,8 @@ func testDeleteBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 		{"ab", false, token, "Bucket Name ab is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
-		{"minio", false, "false token", "Authentication failed"},
-		{"minio", false, token, "Bucket Name minio is invalid. Lowercase letters, period, " +
+		{"obstor", false, "false token", "Authentication failed"},
+		{"obstor", false, token, "Bucket Name obstor is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
 		{bucketName, false, token, ""},
@@ -506,7 +506,7 @@ func testListObjectsWebHandler(obj ObjectLayer, instanceType string, t TestErrHa
 		}
 		apiRouter.ServeHTTP(rec, req)
 		if rec.Code != http.StatusOK {
-			return listObjectsReply, fmt.Errorf("Expected the response status to be 200, but instead found `%d`", rec.Code)
+			return listObjectsReply, fmt.Errorf("expected the response status to be 200, but instead found `%d`", rec.Code)
 		}
 		err = getTestWebRPCResponse(rec, &listObjectsReply)
 		if err != nil {
@@ -622,7 +622,7 @@ func testRemoveObjectWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 	if rec.Code != http.StatusOK {
 		t.Fatalf("Expected the response status to be 200, but instead found `%d`", rec.Code)
 	}
-	b, err := ioutil.ReadAll(rec.Body)
+	b, err := io.ReadAll(rec.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -715,7 +715,7 @@ func testUploadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandler
 
 	test := func(token string, sendContentLength bool) int {
 		rec := httptest.NewRecorder()
-		req, rErr := http.NewRequest(http.MethodPut, "/minio/upload/"+bucketName+SlashSeparator+objectName, nil)
+		req, rErr := http.NewRequest(http.MethodPut, "/obstor/upload/"+bucketName+SlashSeparator+objectName, nil)
 		if rErr != nil {
 			t.Fatalf("Cannot create upload request, %v", rErr)
 		}
@@ -724,7 +724,7 @@ func testUploadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandler
 		req.Header.Set("Accept", "*/*")
 		req.Header.Set("User-Agent", "Mozilla")
 
-		req.Body = ioutil.NopCloser(bytes.NewReader(content))
+		req.Body = io.NopCloser(bytes.NewReader(content))
 
 		if !sendContentLength {
 			req.ContentLength = -1
@@ -796,7 +796,7 @@ func testDownloadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandl
 
 	test := func(token string) (int, []byte) {
 		rec := httptest.NewRecorder()
-		path := "/minio/download/" + bucketName + SlashSeparator + objectName + "?token="
+		path := "/obstor/download/" + bucketName + SlashSeparator + objectName + "?token="
 		if token != "" {
 			path = path + token
 		}
@@ -911,7 +911,7 @@ func testWebHandlerDownloadZip(obj ObjectLayer, instanceType string, t TestErrHa
 
 	test := func(token string) (int, []byte) {
 		rec := httptest.NewRecorder()
-		path := "/minio/zip" + "?token="
+		path := "/obstor/zip" + "?token="
 		if token != "" {
 			path = path + token
 		}
@@ -1034,7 +1034,7 @@ func testWebPresignedGetHandler(obj ObjectLayer, instanceType string, t TestErrH
 	if arec.Code != http.StatusOK {
 		t.Fatalf("Expected the response status to be 200, but instead found `%d`", arec.Code)
 	}
-	savedData, err := ioutil.ReadAll(arec.Body)
+	savedData, err := io.ReadAll(arec.Body)
 	if err != nil {
 		t.Fatal("Reading body failed", err)
 	}
@@ -1122,7 +1122,7 @@ func TestWebCheckAuthorization(t *testing.T) {
 
 	rec = httptest.NewRecorder()
 	// Test authorization of web.Download
-	req, err := http.NewRequest(http.MethodGet, "/minio/download/bucket/object?token=wrongauth", nil)
+	req, err := http.NewRequest(http.MethodGet, "/obstor/download/bucket/object?token=wrongauth", nil)
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1139,13 +1139,13 @@ func TestWebCheckAuthorization(t *testing.T) {
 	rec = httptest.NewRecorder()
 	// Test authorization of web.Upload
 	content := []byte("temporary file's content")
-	req, err = http.NewRequest(http.MethodPut, "/minio/upload/bucket/object", nil)
+	req, err = http.NewRequest(http.MethodPut, "/obstor/upload/bucket/object", nil)
 	req.Header.Set("Authorization", "Bearer foo-authorization")
 	req.Header.Set("User-Agent", "Mozilla")
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
 	req.Header.Set("x-amz-date", "20160814T114029Z")
 	req.Header.Set("Accept", "*/*")
-	req.Body = ioutil.NopCloser(bytes.NewReader(content))
+	req.Body = io.NopCloser(bytes.NewReader(content))
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1257,7 +1257,7 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 	}
 
 	// Test authorization of web.Download
-	req, err = http.NewRequest(http.MethodGet, "/minio/download/bucket/object?token="+authorization, nil)
+	req, err = http.NewRequest(http.MethodGet, "/obstor/download/bucket/object?token="+authorization, nil)
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}
@@ -1268,12 +1268,12 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 
 	// Test authorization of web.Upload
 	content := []byte("temporary file's content")
-	req, err = http.NewRequest(http.MethodPut, "/minio/upload/bucket/object", nil)
+	req, err = http.NewRequest(http.MethodPut, "/obstor/upload/bucket/object", nil)
 	req.Header.Set("Authorization", "Bearer "+authorization)
 	req.Header.Set("Content-Length", strconv.Itoa(len(content)))
 	req.Header.Set("x-amz-date", "20160814T114029Z")
 	req.Header.Set("Accept", "*/*")
-	req.Body = ioutil.NopCloser(bytes.NewReader(content))
+	req.Body = io.NopCloser(bytes.NewReader(content))
 	if err != nil {
 		t.Fatalf("Cannot create upload request, %v", err)
 	}

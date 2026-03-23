@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +37,7 @@ const (
 	// DeleteBucketAction - DeleteBucket Rest API action.
 	DeleteBucketAction = "s3:DeleteBucket"
 
-	// ForceDeleteBucketAction - DeleteBucket Rest API action when x-minio-force-delete flag
+	// ForceDeleteBucketAction - DeleteBucket Rest API action when x-obstor-force-delete flag
 	// is specified.
 	ForceDeleteBucketAction = "s3:ForceDeleteBucket"
 
@@ -58,7 +59,7 @@ const (
 	// GetObjectAction - GetObject Rest API action.
 	GetObjectAction = "s3:GetObject"
 
-	// HeadBucketAction - HeadBucket Rest API action. This action is unused in minio.
+	// HeadBucketAction - HeadBucket Rest API action. This action is unused in obstor.
 	HeadBucketAction = "s3:HeadBucket"
 
 	// ListAllMyBucketsAction - ListAllMyBuckets (List buckets) Rest API action.
@@ -77,11 +78,11 @@ const (
 	ListBucketMultipartUploadsAction = "s3:ListBucketMultipartUploads"
 
 	// ListenNotificationAction - ListenNotification Rest API action.
-	// This is ObStor extension.
+	// This is Obstor extension.
 	ListenNotificationAction = "s3:ListenNotification"
 
 	// ListenBucketNotificationAction - ListenBucketNotification Rest API action.
-	// This is ObStor extension.
+	// This is Obstor extension.
 	ListenBucketNotificationAction = "s3:ListenBucketNotification"
 
 	// ListMultipartUploadPartsAction - ListParts Rest API action.

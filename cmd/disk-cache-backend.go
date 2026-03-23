@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -33,11 +33,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cloudment/obstor/pkg/atime"
 	"github.com/cloudment/obstor/cmd/config/cache"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/cloudment/obstor/pkg/atime"
 	"github.com/cloudment/obstor/pkg/disk"
 	"github.com/cloudment/obstor/pkg/fips"
 	"github.com/cloudment/obstor/pkg/kms"
@@ -52,7 +52,7 @@ const (
 	cacheExpiryDays   = 90 * time.Hour * 24 // defaults to 90 days
 	// SSECacheEncrypted is the metadata key indicating that the object
 	// is a cache entry encrypted with cache KMS master key in globalCacheKMS.
-	SSECacheEncrypted = "X-Minio-Internal-Encrypted-Cache"
+	SSECacheEncrypted = "X-Obstor-Internal-Encrypted-Cache"
 )
 
 // CacheChecksumInfoV1 - carries checksums of individual blocks on disk.
@@ -165,7 +165,7 @@ func newDiskCache(ctx context.Context, dir string, config cache.Config) (*diskCa
 	}
 
 	if err := os.MkdirAll(dir, 0777); err != nil {
-		return nil, fmt.Errorf("Unable to initialize '%s' dir, %w", dir, err)
+		return nil, fmt.Errorf("unable to initialize '%s' dir, %w", dir, err)
 	}
 	cache := diskCache{
 		dir:              dir,
@@ -693,7 +693,7 @@ func newCacheEncryptMetadata(bucket, object string, metadata map[string]string) 
 // Caches the object to disk
 func (c *diskCache) Put(ctx context.Context, bucket, object string, data io.Reader, size int64, rs *HTTPRangeSpec, opts ObjectOptions, incHitsOnly bool) (oi ObjectInfo, err error) {
 	if !c.diskSpaceAvailable(size) {
-		io.Copy(ioutil.Discard, data)
+		io.Copy(io.Discard, data)
 		return oi, errDiskFull
 	}
 	cachePath := getCacheSHADir(c.dir, bucket, object)

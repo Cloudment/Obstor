@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -356,6 +357,12 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 	}
 	defer ObjectPathUpdated(pathJoin(bucket, object))
 
+	// Block-replicated objects: heal by copying missing blocks.
+	if len(latestMeta.Blocks) > 0 {
+		return er.healBlockReplicatedObject(ctx, bucket, object, latestMeta,
+			storageDisks, storageEndpoints, outDatedDisks, availableDisks, result)
+	}
+
 	cleanFileInfo := func(fi FileInfo) FileInfo {
 		// Returns a copy of the 'fi' with checksums and parts nil'ed.
 		nfi := fi
@@ -404,7 +411,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		copyPartsMetadata = shufflePartsMetadata(copyPartsMetadata, latestMeta.Erasure.Distribution)
 
 		// Heal each part. erasureHealFile() will write the healed
-		// part to .minio/tmp/uuid/ which needs to be renamed later to
+		// part to .obstor/tmp/uuid/ which needs to be renamed later to
 		// the final location.
 		erasure, err := NewErasure(ctx, latestMeta.Erasure.DataBlocks,
 			latestMeta.Erasure.ParityBlocks, latestMeta.Erasure.BlockSize)
@@ -512,6 +519,49 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 	// Set the size of the object in the heal result
 	result.ObjectSize = latestMeta.Size
 
+	return result, nil
+}
+
+// healBlockReplicatedObject heals a block-replicated object by copying
+// missing blocks from available disks to outdated disks, then writing
+// the correct metadata to outdated disks.
+func (er erasureObjects) healBlockReplicatedObject(ctx context.Context, bucket, object string,
+	latestMeta FileInfo, storageDisks []StorageAPI, storageEndpoints []string,
+	outDatedDisks []StorageAPI, availableDisks []StorageAPI,
+	result madmin.HealResultItem) (madmin.HealResultItem, error) {
+
+	blockSize := globalReplicationConfig.BlockSize
+	if blockSize <= 0 {
+		blockSize = 1 << 20
+	}
+	replicator := NewBlockReplicator(blockSize, globalReplicationConfig.ReplicationFactor)
+
+	// Heal each block: copy from any source that has it to targets missing it.
+	for _, blk := range latestMeta.Blocks {
+		if _, err := replicator.HealBlock(ctx, blk.Hash, availableDisks, outDatedDisks); err != nil {
+			logger.LogIf(ctx, err)
+			return result, toObjectErr(err, bucket, object)
+		}
+	}
+
+	// Write correct metadata to outdated disks.
+	for _, disk := range outDatedDisks {
+		if disk == nil || disk == OfflineDisk {
+			continue
+		}
+		if err := disk.WriteMetadata(ctx, bucket, object, latestMeta); err != nil {
+			logger.LogIf(ctx, err)
+			continue
+		}
+		// Update heal result: mark drive as OK after heal.
+		for j, v := range result.Before.Drives {
+			if v.Endpoint == disk.String() {
+				result.After.Drives[j].State = madmin.DriveStateOk
+			}
+		}
+	}
+
+	result.ObjectSize = latestMeta.Size
 	return result, nil
 }
 
@@ -701,13 +751,14 @@ func isObjectDirDangling(errs []error) (ok bool) {
 	var foundNotEmpty int
 	var otherFound int
 	for _, readErr := range errs {
-		if readErr == nil {
+		switch readErr {
+		case nil:
 			found++
-		} else if readErr == errFileNotFound || readErr == errVolumeNotFound {
+		case errFileNotFound, errVolumeNotFound:
 			notFound++
-		} else if readErr == errVolumeNotEmpty {
+		case errVolumeNotEmpty:
 			foundNotEmpty++
-		} else {
+		default:
 			otherFound++
 		}
 	}

@@ -4,14 +4,14 @@
 # git rev-list -n 1 FETCH_HEAD
 %define         commitid        91130e884b5df59d66a45a0aad4f48db88f5ca63
 Summary:        High Performance, Kubernetes Native Object Storage.
-Name:           minio
+Name:           obstor
 Version:        0.0.%{subver}
 Release:        1
-Vendor:         MinIO, Inc.
+Vendor:         PGG, Inc.
 License:        Apache v2.0
 Group:          Applications/File
-Source0:        https://dl.pgg.net/server/minio/release/linux-amd64/archive/minio.%{tag}
-Source1:        https://raw.githubusercontent.com/cloudment/obstor-service/master/linux-systemd/distributed/minio.service
+Source0:        https://dl.pgg.net/packages/obstor/release/linux-amd64/archive/obstor.%{tag}
+Source1:        https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/distributed/minio.service
 URL:            https://pgg.net/
 Requires(pre):  /usr/sbin/useradd, /usr/bin/getent
 Requires(postun): /usr/sbin/userdel
@@ -21,24 +21,24 @@ BuildRoot:      %{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define         debug_package %{nil}
 
 %description
-ObStor is a High Performance Object Storage released under Apache License v2.0.
-It is API compatible with Amazon S3 cloud storage service. Use ObStor to build
+Obstor is a High Performance Object Storage released under Apache License v2.0.
+It is API compatible with Amazon S3 cloud storage service. Use Obstor to build
 high performance infrastructure for machine learning, analytics and application
 data workloads.
 
 %pre
-/usr/bin/getent group minio-user || /usr/sbin/groupadd -r minio-user
-/usr/bin/getent passwd minio-user || /usr/sbin/useradd -r -d /etc/minio -s /sbin/nologin minio-user
+/usr/bin/getent group obstor-user || /usr/sbin/groupadd -r obstor-user
+/usr/bin/getent passwd obstor-user || /usr/sbin/useradd -r -d /etc/obstor -s /sbin/nologin obstor-user
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/etc/minio/certs
+install -d $RPM_BUILD_ROOT/etc/obstor/certs
 install -d $RPM_BUILD_ROOT/etc/systemd/system
 install -d $RPM_BUILD_ROOT/etc/default
 install -d $RPM_BUILD_ROOT/usr/local/bin
 
-cat <<EOF >> $RPM_BUILD_ROOT/etc/default/minio
-# Remote volumes to be used for ObStor server.
+cat <<EOF >> $RPM_BUILD_ROOT/etc/default/obstor
+# Remote volumes to be used for Obstor server.
 # Uncomment line before starting the server.
 # OBSTOR_VOLUMES=http://node{1...6}/export{1...32}
 
@@ -47,18 +47,18 @@ cat <<EOF >> $RPM_BUILD_ROOT/etc/default/minio
 # OBSTOR_ROOT_USER=Server-Root-User
 # OBSTOR_ROOT_PASSWORD=Server-Root-Password
 
-OBSTOR_OPTS="--certs-dir /etc/minio/certs"
+OBSTOR_OPTS="--certs-dir /etc/obstor/certs"
 EOF
 
-install %{_sourcedir}/minio.service $RPM_BUILD_ROOT/etc/systemd/system/minio.service
-install -p %{_sourcedir}/%{name}.%{tag} $RPM_BUILD_ROOT/usr/local/bin/minio
+install %{_sourcedir}/obstor.service $RPM_BUILD_ROOT/etc/systemd/system/obstor.service
+install -p %{_sourcedir}/%{name}.%{tag} $RPM_BUILD_ROOT/usr/local/bin/obstor
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%attr(644,root,root) /etc/default/minio
-%attr(644,root,root) /etc/systemd/system/minio.service
-%attr(644,minio-user,minio-user) /etc/minio
-%attr(755,minio-user,minio-user) /usr/local/bin/minio
+%attr(644,root,root) /etc/default/obstor
+%attr(644,root,root) /etc/systemd/system/obstor.service
+%attr(644,obstor-user,obstor-user) /etc/obstor
+%attr(755,obstor-user,obstor-user) /usr/local/bin/obstor

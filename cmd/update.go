@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2021 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -44,7 +44,7 @@ import (
 const (
 	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
 	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.pgg.net/server/minio/release/" + minioOSARCH + SlashSeparator
+	minioReleaseURL           = "https://dl.pgg.net/packages/obstor/release/" + minioOSARCH + SlashSeparator
 
 	envMinisignPubKey = "OBSTOR_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
@@ -52,11 +52,11 @@ const (
 
 var (
 	// For windows our files have .exe additionally.
-	minioReleaseWindowsInfoURL = minioReleaseURL + "minio.exe.sha256sum"
+	minioReleaseWindowsInfoURL = minioReleaseURL + "obstor.exe.sha256sum"
 )
 
 // minioVersionToReleaseTime - parses a standard official release
-// ObStor version string.
+// Obstor version string.
 //
 // An official binary's version string is the release time formatted
 // with RFC3339 (in UTC) - e.g. `2017-09-29T19:16:56Z`
@@ -65,9 +65,9 @@ func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error
 }
 
 // releaseTimeToReleaseTag - converts a time to a string formatted as
-// an official ObStor release tag.
+// an official Obstor release tag.
 //
-// An official minio release tag looks like:
+// An official obstor release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
 func releaseTimeToReleaseTag(releaseTime time.Time) string {
 	return "RELEASE." + releaseTime.Format(minioReleaseTagTimeLayout)
@@ -90,14 +90,14 @@ func getModTime(path string) (t time.Time, err error) {
 	// Convert to absolute path
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		return t, fmt.Errorf("Unable to get absolute path of %s. %w", path, err)
+		return t, fmt.Errorf("unable to get absolute path of %s. %w", path, err)
 	}
 
-	// Version is minio non-standard, we will use minio binary's
+	// Version is obstor non-standard, we will use obstor binary's
 	// ModTime as release time.
 	fi, err := os.Stat(absPath)
 	if err != nil {
-		return t, fmt.Errorf("Unable to get ModTime of %s. %w", absPath, err)
+		return t, fmt.Errorf("unable to get ModTime of %s. %w", absPath, err)
 	}
 
 	// Return the ModTime
@@ -105,25 +105,24 @@ func getModTime(path string) (t time.Time, err error) {
 }
 
 // GetCurrentReleaseTime - returns this process's release time.  If it
-// is official minio version, parsed version is returned else minio
+// is official obstor version, parsed version is returned else obstor
 // binary's mod time is returned.
 func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
 	if releaseTime, err = minioVersionToReleaseTime(Version); err == nil {
 		return releaseTime, err
 	}
 
-	// Looks like version is minio non-standard, we use minio
+	// Looks like version is obstor non-standard, we use obstor
 	// binary's ModTime as release time:
 	return getModTime(os.Args[0])
 }
 
-// IsDocker - returns if the environment minio is running in docker or
+// IsDocker - returns if the environment obstor is running in docker or
 // not. The check is a simple file existence check.
 //
 // https://github.com/moby/moby/blob/master/daemon/initlayer/setup_unix.go#L25
 //
-//     "/.dockerenv":      "file",
-//
+//	"/.dockerenv":      "file",
 func IsDocker() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		_, err := os.Stat("/.dockerenv")
@@ -139,7 +138,7 @@ func IsDocker() bool {
 	return false
 }
 
-// IsDCOS returns true if minio is running in DCOS.
+// IsDCOS returns true if obstor is running in DCOS.
 func IsDCOS() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// http://mesos.apache.org/documentation/latest/docker-containerizer/
@@ -149,12 +148,12 @@ func IsDCOS() bool {
 	return false
 }
 
-// IsKubernetesReplicaSet returns true if minio is running in kubernetes replica set.
+// IsKubernetesReplicaSet returns true if obstor is running in kubernetes replica set.
 func IsKubernetesReplicaSet() bool {
 	return IsKubernetes() && (env.Get("KUBERNETES_REPLICA_SET", "") != "")
 }
 
-// IsKubernetes returns true if minio is running in kubernetes.
+// IsKubernetes returns true if obstor is running in kubernetes.
 func IsKubernetes() bool {
 	if env.Get("OBSTOR_CI_CD", "") == "" {
 		// Kubernetes env used to validate if we are
@@ -166,7 +165,7 @@ func IsKubernetes() bool {
 	return false
 }
 
-// IsBOSH returns true if minio is deployed from a bosh package
+// IsBOSH returns true if obstor is deployed from a bosh package
 func IsBOSH() bool {
 	// "/var/vcap/bosh" exists in BOSH deployed instance.
 	_, err := os.Stat("/var/vcap/bosh")
@@ -180,14 +179,14 @@ func IsBOSH() bool {
 	return err == nil
 }
 
-// ObStor Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
+// Obstor Helm chart uses DownwardAPIFile to write pod label info to /podinfo/labels
 // More info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#store-pod-fields
 // Check if this is Helm package installation and report helm chart version
 func getHelmVersion(helmInfoFilePath string) string {
 	// Read the file exists.
 	helmInfoFile, err := os.Open(helmInfoFilePath)
 	if err != nil {
-		// Log errors and return "" as ObStor can be deployed
+		// Log errors and return "" as Obstor can be deployed
 		// without Helm charts as well.
 		if !osIsNotExist(err) {
 			reqInfo := (&logger.ReqInfo{}).AppendTags("helmInfoFilePath", helmInfoFilePath)
@@ -224,7 +223,7 @@ func IsPCFTile() bool {
 // DO NOT CHANGE USER AGENT STYLE.
 // The style should be
 //
-//   ObStor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) ObStor/<VERSION> ObStor/<RELEASE-TAG> ObStor/<COMMIT-ID> [ObStor/universe-<PACKAGE-NAME>] [ObStor/helm-<HELM-VERSION>]
+//	Obstor (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) Obstor/<VERSION> Obstor/<RELEASE-TAG> Obstor/<COMMIT-ID> [Obstor/universe-<PACKAGE-NAME>] [Obstor/helm-<HELM-VERSION>]
 //
 // Any change here should be discussed by opening an issue at
 // https://github.com/cloudment/obstor/issues.
@@ -237,7 +236,7 @@ func getUserAgent(mode string) string {
 		userAgentParts = append(userAgentParts, p, q)
 	}
 
-	uaAppend("ObStor (", runtime.GOOS)
+	uaAppend("Obstor (", runtime.GOOS)
 	uaAppend("; ", runtime.GOARCH)
 	if mode != "" {
 		uaAppend("; ", mode)
@@ -258,14 +257,14 @@ func getUserAgent(mode string) string {
 		uaAppend("; ", "source")
 	}
 
-	uaAppend(") ObStor/", Version)
-	uaAppend(" ObStor/", ReleaseTag)
-	uaAppend(" ObStor/", CommitID)
+	uaAppend(") Obstor/", Version)
+	uaAppend(" Obstor/", ReleaseTag)
+	uaAppend(" Obstor/", CommitID)
 	if IsDCOS() {
 		universePkgVersion := env.Get("MARATHON_APP_LABEL_DCOS_PACKAGE_VERSION", "")
 		// On DC/OS environment try to the get universe package version.
 		if universePkgVersion != "" {
-			uaAppend(" ObStor/universe-", universePkgVersion)
+			uaAppend(" Obstor/universe-", universePkgVersion)
 		}
 	}
 
@@ -273,23 +272,23 @@ func getUserAgent(mode string) string {
 		// In Kubernetes environment, try to fetch the helm package version
 		helmChartVersion := getHelmVersion("/podinfo/labels")
 		if helmChartVersion != "" {
-			uaAppend(" ObStor/helm-", helmChartVersion)
+			uaAppend(" Obstor/helm-", helmChartVersion)
 		}
 		// In Kubernetes environment, try to fetch the Operator, VSPHERE plugin version
 		opVersion := env.Get("OBSTOR_OPERATOR_VERSION", "")
 		if opVersion != "" {
-			uaAppend(" ObStor/operator-", opVersion)
+			uaAppend(" Obstor/operator-", opVersion)
 		}
 		vsphereVersion := env.Get("OBSTOR_VSPHERE_PLUGIN_VERSION", "")
 		if vsphereVersion != "" {
-			uaAppend(" ObStor/vsphere-plugin-", vsphereVersion)
+			uaAppend(" Obstor/vsphere-plugin-", vsphereVersion)
 		}
 	}
 
 	if IsPCFTile() {
 		pcfTileVersion := env.Get("OBSTOR_PCF_TILE_VERSION", "")
 		if pcfTileVersion != "" {
-			uaAppend(" ObStor/pcf-tile-", pcfTileVersion)
+			uaAppend(" Obstor/pcf-tile-", pcfTileVersion)
 		}
 	}
 
@@ -343,17 +342,14 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 			}
 		}
 	} else {
-		reader, err = os.Open(u.Path)
-		if err != nil {
-			return content, AdminError{
-				Code:       AdminUpdateURLNotReachable,
-				Message:    err.Error(),
-				StatusCode: http.StatusServiceUnavailable,
-			}
+		return content, AdminError{
+			Code:       AdminUpdateUnexpectedFailure,
+			Message:    fmt.Sprintf("unsupported update URL scheme: %s", u.Scheme),
+			StatusCode: http.StatusBadRequest,
 		}
 	}
 
-	contentBytes, err := ioutil.ReadAll(reader)
+	contentBytes, err := io.ReadAll(reader)
 	if err != nil {
 		return content, AdminError{
 			Code:       AdminUpdateUnexpectedFailure,
@@ -366,13 +362,13 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 }
 
 // parseReleaseData - parses release info file content fetched from
-// official minio download server.
+// official obstor download server.
 //
 // The expected format is a single line with two words like:
 //
-// fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
+// fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
 //
-// The second word must be `minio.` appended to a standard release tag.
+// The second word must be `obstor.` appended to a standard release tag.
 func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, releaseInfo string, err error) {
 	defer func() {
 		if err != nil {
@@ -386,7 +382,7 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 
 	fields := strings.Fields(data)
 	if len(fields) != 2 {
-		err = fmt.Errorf("Unknown release data `%s`", data)
+		err = fmt.Errorf("unknown release data `%s`", data)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
 
@@ -397,20 +393,20 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 
 	releaseInfo = fields[1]
 
-	// Split release of style minio.RELEASE.2019-08-21T19-40-07Z.<hotfix>
+	// Split release of style obstor.RELEASE.2019-08-21T19-40-07Z.<hotfix>
 	nfields := strings.SplitN(releaseInfo, ".", 2)
 	if len(nfields) != 2 {
-		err = fmt.Errorf("Unknown release information `%s`", releaseInfo)
+		err = fmt.Errorf("unknown release information `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
-	if nfields[0] != "minio" {
-		err = fmt.Errorf("Unknown release `%s`", releaseInfo)
+	if nfields[0] != "obstor" {
+		err = fmt.Errorf("unknown release `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
 
 	releaseTime, err = releaseTagToReleaseTime(nfields[1])
 	if err != nil {
-		err = fmt.Errorf("Unknown release tag format. %w", err)
+		err = fmt.Errorf("unknown release tag format. %w", err)
 	}
 
 	return sha256Sum, releaseTime, releaseInfo, err
@@ -443,10 +439,10 @@ func getLatestReleaseTime(u *url.URL, timeout time.Duration, mode string) (sha25
 
 const (
 	// Kubernetes deployment doc link.
-	kubernetesDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-kubernetes"
+	kubernetesDeploymentDoc = "https://obstor.net/docs/deploy-obstor-on-kubernetes"
 
 	// Mesos deployment doc link.
-	mesosDeploymentDoc = "https://pgg.net/docs/obstor/deploy-minio-on-dc-os"
+	mesosDeploymentDoc = "https://obstor.net/docs/deploy-obstor-on-dc-os"
 )
 
 func getDownloadURL(releaseTag string) (downloadURL string) {
@@ -470,22 +466,10 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 
 	// For binary only installations, we return link to the latest binary.
 	if runtime.GOOS == "windows" {
-		return minioReleaseURL + "minio.exe"
+		return minioReleaseURL + "obstor.exe"
 	}
 
-	return minioReleaseURL + "minio"
-}
-
-func getUpdateReaderFromFile(u *url.URL) (io.ReadCloser, error) {
-	r, err := os.Open(u.Path)
-	if err != nil {
-		return nil, AdminError{
-			Code:       AdminUpdateUnexpectedFailure,
-			Message:    err.Error(),
-			StatusCode: http.StatusInternalServerError,
-		}
-	}
-	return r, nil
+	return minioReleaseURL + "obstor"
 }
 
 func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string) (io.ReadCloser, error) {
@@ -524,15 +508,17 @@ func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string
 func doUpdate(u *url.URL, lrTime time.Time, sha256Sum []byte, releaseInfo string, mode string) (err error) {
 	transport := getUpdateTransport(30 * time.Second)
 	var reader io.ReadCloser
+	// CVE-2022-35919: Only allow HTTP(S) update URLs to prevent arbitrary file reads.
 	if u.Scheme == "https" || u.Scheme == "http" {
 		reader, err = getUpdateReaderFromURL(u, transport, mode)
 		if err != nil {
 			return err
 		}
 	} else {
-		reader, err = getUpdateReaderFromFile(u)
-		if err != nil {
-			return err
+		return AdminError{
+			Code:       AdminUpdateUnexpectedFailure,
+			Message:    fmt.Sprintf("unsupported update URL scheme: %s", u.Scheme),
+			StatusCode: http.StatusBadRequest,
 		}
 	}
 

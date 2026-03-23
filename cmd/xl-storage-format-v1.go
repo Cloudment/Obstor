@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +50,7 @@ func isXLMetaFormatValid(version, format string) bool {
 // Verifies if the backend format metadata is sane by validating
 // the ErasureInfo, i.e. data and parity blocks.
 func isXLMetaErasureInfoValid(data, parity int) bool {
-	return ((data >= parity) && (data != 0) && (parity != 0))
+	return ((data >= parity) && (data != 0))
 }
 
 //go:generate msgp -file=$GOFILE -unexported
@@ -61,10 +62,10 @@ type xlMetaV1Object struct {
 	Stat    StatInfo `json:"stat"`    // Stat of the current object `xl.meta`.
 	// Erasure coded info for the current object `xl.meta`.
 	Erasure ErasureInfo `json:"erasure"`
-	// ObStor release tag for current object `xl.meta`.
+	// Obstor release tag for current object `xl.meta`.
 	Minio struct {
 		Release string `json:"release"`
-	} `json:"minio"`
+	} `json:"obstor"`
 	// Metadata map for current object `xl.meta`.
 	Meta map[string]string `json:"meta,omitempty"`
 	// Captures all the individual object `xl.meta`.

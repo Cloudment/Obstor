@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +120,7 @@ func (f dateGreaterThanEqualsFunc) name() name {
 }
 
 func (f dateGreaterThanEqualsFunc) String() string {
-	return toDateGreaterThanFuncString(dateNotEquals, f.dateGreaterThanFunc.k, f.dateGreaterThanFunc.value)
+	return toDateGreaterThanFuncString(dateNotEquals, f.k, f.value)
 }
 
 // newDateGreaterThanFunc - returns new DateGreaterThan function.

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,10 +188,7 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 	}
 
 	getObject := func(offset, length int64) (rc io.ReadCloser, err error) {
-		isSuffixLength := false
-		if offset < 0 {
-			isSuffixLength = true
-		}
+		isSuffixLength := offset < 0
 
 		if length > 0 {
 			length--
@@ -437,10 +435,10 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			if globalBucketVersioningSys.Enabled(bucket) && gr != nil {
 				if !gr.ObjInfo.VersionPurgeStatus.Empty() {
 					// Shows the replication status of a permanent delete of a version
-					w.Header()[xhttp.ObStorDeleteReplicationStatus] = []string{string(gr.ObjInfo.VersionPurgeStatus)}
+					w.Header()[xhttp.ObstorDeleteReplicationStatus] = []string{string(gr.ObjInfo.VersionPurgeStatus)}
 				}
 				if !gr.ObjInfo.ReplicationStatus.Empty() && gr.ObjInfo.DeleteMarker {
-					w.Header()[xhttp.ObStorDeleteMarkerReplicationStatus] = []string{string(gr.ObjInfo.ReplicationStatus)}
+					w.Header()[xhttp.ObstorDeleteMarkerReplicationStatus] = []string{string(gr.ObjInfo.ReplicationStatus)}
 				}
 
 				// Versioning enabled quite possibly object is deleted might be delete-marker
@@ -513,7 +511,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			return
 		}
 		if !xnet.IsNetworkOrHostDown(err, true) { // do not need to log disconnected clients
-			logger.LogIf(ctx, fmt.Errorf("Unable to write all the data to client %w", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to write all the data to client %w", err))
 		}
 		return
 	}
@@ -524,7 +522,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			return
 		}
 		if !xnet.IsNetworkOrHostDown(err, true) { // do not need to log disconnected clients
-			logger.LogIf(ctx, fmt.Errorf("Unable to write all the data to client %w", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to write all the data to client %w", err))
 		}
 		return
 	}
@@ -630,10 +628,10 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 			if globalBucketVersioningSys.Enabled(bucket) {
 				if !objInfo.VersionPurgeStatus.Empty() {
 					// Shows the replication status of a permanent delete of a version
-					w.Header()[xhttp.ObStorDeleteReplicationStatus] = []string{string(objInfo.VersionPurgeStatus)}
+					w.Header()[xhttp.ObstorDeleteReplicationStatus] = []string{string(objInfo.VersionPurgeStatus)}
 				}
 				if !objInfo.ReplicationStatus.Empty() && objInfo.DeleteMarker {
-					w.Header()[xhttp.ObStorDeleteMarkerReplicationStatus] = []string{string(objInfo.ReplicationStatus)}
+					w.Header()[xhttp.ObstorDeleteMarkerReplicationStatus] = []string{string(objInfo.ReplicationStatus)}
 				}
 				// Versioning enabled quite possibly object is deleted might be delete-marker
 				// if present set the headers, no idea why AWS S3 sets these headers.
@@ -3923,7 +3921,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 		}, ObjectOptions{
 			VersionID: objInfo.VersionID,
 		}); err != nil {
-			logger.LogIf(ctx, fmt.Errorf("Unable to update replication metadata for %s: %s", objInfo.VersionID, err))
+			logger.LogIf(ctx, fmt.Errorf("unable to update replication metadata for %s: %s", objInfo.VersionID, err))
 			writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidObjectState), r.URL, guessIsBrowserReq(r))
 			return
 		}
@@ -3952,10 +3950,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 		rctx := GlobalContext
 		if !rreq.SelectParameters.IsEmpty() {
 			getObject := func(offset, length int64) (rc io.ReadCloser, err error) {
-				isSuffixLength := false
-				if offset < 0 {
-					isSuffixLength = true
-				}
+				isSuffixLength := offset < 0
 
 				rs := &HTTPRangeSpec{
 					IsSuffixLength: isSuffixLength,

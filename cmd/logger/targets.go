@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,8 @@ package logger
 
 // Target is the entity that we will receive
 // a single log entry and Send it to the log target
-//   e.g. Send the log to a http server
+//
+//	e.g. Send the log to a http server
 type Target interface {
 	String() string
 	Endpoint() string

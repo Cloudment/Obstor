@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
@@ -33,7 +35,7 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/bucket/lifecycle"
 	"github.com/cloudment/obstor/pkg/bucket/replication"
-	minio "github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/tags"
 
 	objectlock "github.com/cloudment/obstor/pkg/bucket/object/lock"
@@ -225,7 +227,7 @@ const (
 
 	// Add new extended error codes here.
 
-	// ObStor extended errors.
+	// Obstor extended errors.
 	ErrReadQuorum
 	ErrWriteQuorum
 	ErrParentIsObject
@@ -240,7 +242,7 @@ const (
 	ErrClientDisconnected
 	ErrOperationMaxedOut
 	ErrInvalidRequest
-	// ObStor storage class error codes
+	// Obstor storage class error codes
 	ErrInvalidStorageClass
 	ErrBackendDown
 	// Add new extended error codes here.
@@ -990,7 +992,7 @@ var errorCodes = errorCodeMap{
 	},
 	ErrUnsupportedNotification: {
 		Code:           "UnsupportedNotification",
-		Description:    "ObStor server does not support Topic or Cloud Function based notifications.",
+		Description:    "Obstor server does not support Topic or Cloud Function based notifications.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrInvalidCopyPartRange: {
@@ -1096,7 +1098,7 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 
-	/// ObStor extensions.
+	/// Obstor extensions.
 	ErrStorageFull: {
 		Code:           "XMinioStorageFull",
 		Description:    "Storage backend has reached its minimum free disk threshold. Please delete a few objects to proceed.",
@@ -2121,11 +2123,11 @@ func toAPIError(ctx context.Context, err error) APIError {
 			}
 		case crypto.Error:
 			apiErr = APIError{
-				Code:           "XObStorEncryptionError",
+				Code:           "XObstorEncryptionError",
 				Description:    e.Error(),
 				HTTPStatusCode: http.StatusBadRequest,
 			}
-		case minio.ErrorResponse:
+		case obstor.ErrorResponse:
 			apiErr = APIError{
 				Code:           e.Code,
 				Description:    e.Message,
@@ -2186,7 +2188,7 @@ func getAPIErrorResponse(ctx context.Context, err APIError, resource, requestID,
 		Message:    err.Description,
 		BucketName: reqInfo.BucketName,
 		Key:        reqInfo.ObjectName,
-		Resource:   resource,
+		Resource:   path.Clean(resource),
 		Region:     globalServerRegion,
 		RequestID:  requestID,
 		HostID:     hostID,

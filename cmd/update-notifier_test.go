@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +67,7 @@ func TestPrepareUpdateMessage(t *testing.T) {
 		{2 * 365 * 24 * time.Hour, "my_download_url", "2 years ago"},
 	}
 
-	plainMsg := "You are running an older version of ObStor released"
+	plainMsg := "You are running an older version of Obstor released"
 
 	for i, testCase := range testCases {
 		output := prepareUpdateMessage(testCase.dlURL, testCase.older)

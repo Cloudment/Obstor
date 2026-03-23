@@ -1,7 +1,9 @@
+//go:build (linux && !appengine) || darwin || freebsd || netbsd || openbsd
 // +build linux,!appengine darwin freebsd netbsd openbsd
 
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +76,7 @@ func parseDirEnt(buf []byte) (consumed int, name []byte, typ os.FileMode, err er
 		typ = os.ModeSymlink
 	default:
 		// Skip all other file types. Revisit if/when this code needs
-		// to handle such files, ObStor is only interested in
+		// to handle such files, Obstor is only interested in
 		// files and directories.
 		typ = unexpectedFileMode
 	}

@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2016 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +33,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudment/obstor/pkg/dsync"
 	. "github.com/cloudment/obstor/pkg/dsync"
 	"github.com/google/uuid"
 )
@@ -71,8 +71,6 @@ func startRPCServers() {
 // TestMain initializes the testing framework
 func TestMain(m *testing.M) {
 	const rpcPath = "/dsync"
-
-	rand.Seed(time.Now().UTC().UnixNano())
 
 	for i := range nodes {
 		nodes[i] = fmt.Sprintf("127.0.0.1:%d", i+12345)
@@ -257,7 +255,7 @@ func TestFailedRefreshLock(t *testing.T) {
 		wg.Done()
 	}
 
-	if !dm.GetLock(ctx, cancel, id, source, dsync.Options{Timeout: 5 * time.Minute}) {
+	if !dm.GetLock(ctx, cancel, id, source, Options{Timeout: 5 * time.Minute}) {
 		t.Fatal("GetLock() should be successful")
 	}
 

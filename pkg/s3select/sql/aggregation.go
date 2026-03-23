@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ var (
 	errNonNumericArg = func(fnStr FuncName) error {
 		return fmt.Errorf("%s() requires a numeric argument", fnStr)
 	}
-	errInvalidAggregation = errors.New("Invalid aggregation seen")
+	errInvalidAggregation = errors.New("invalid aggregation seen")
 )
 
 type aggVal struct {
@@ -131,7 +132,7 @@ func (e *FuncExpr) evalAggregationNode(r Record, tableAlias string) error {
 		// Convert to float.
 		f, ok := argVal.ToFloat()
 		if !ok {
-			return fmt.Errorf("Could not convert value %v (%s) to a number", argVal.value, argVal.GetTypeString())
+			return fmt.Errorf("could not convert value %v (%s) to a number", argVal.value, argVal.GetTypeString())
 		}
 		argVal.setFloat(f)
 		err = e.aggregate.runningSum.arithOp(opPlus, argVal)

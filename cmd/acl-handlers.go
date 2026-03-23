@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +22,10 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/bucket/policy"
+	"github.com/gorilla/mux"
 )
 
 // Data types used for returning dummy access control

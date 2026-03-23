@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +23,12 @@ import (
 	crand "crypto/rand"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
+	humanize "github.com/dustin/go-humanize"
 )
 
 func TestRepeatPutObjectPart(t *testing.T) {
@@ -322,7 +322,7 @@ func TestGetObjectNoQuorum(t *testing.T) {
 		}
 	}
 
-	err = xl.GetObject(ctx, bucket, object, 0, int64(len(buf)), ioutil.Discard, "", opts)
+	err = xl.GetObject(ctx, bucket, object, 0, int64(len(buf)), io.Discard, "", opts)
 	if err != toObjectErr(errFileNotFound, bucket, object) {
 		t.Errorf("Expected GetObject to fail with %v, but failed with %v", toObjectErr(errErasureWriteQuorum, bucket, object), err)
 	}
@@ -358,7 +358,7 @@ func TestGetObjectNoQuorum(t *testing.T) {
 		}
 		z.serverPools[0].erasureDisksMu.Unlock()
 		// Fetch object from store.
-		err = xl.GetObject(ctx, bucket, object, 0, int64(len("abcd")), ioutil.Discard, "", opts)
+		err = xl.GetObject(ctx, bucket, object, 0, int64(len("abcd")), io.Discard, "", opts)
 		if err != toObjectErr(errErasureReadQuorum, bucket, object) {
 			t.Errorf("Expected GetObject to fail with %v, but failed with %v", toObjectErr(errErasureWriteQuorum, bucket, object), err)
 		}

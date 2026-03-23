@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,6 @@ import (
 	"github.com/cloudment/obstor/pkg/disk"
 	"github.com/cloudment/obstor/pkg/net"
 
-	smart "github.com/cloudment/obstor/pkg/smart"
 	"github.com/shirou/gopsutil/v3/cpu"
 	diskhw "github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
@@ -36,16 +36,16 @@ import (
 	"github.com/shirou/gopsutil/v3/process"
 )
 
-// HealthInfo - ObStor cluster's health Info
+// HealthInfo - Obstor cluster's health Info
 type HealthInfo struct {
 	TimeStamp time.Time       `json:"timestamp,omitempty"`
 	Error     string          `json:"error,omitempty"`
 	Perf      PerfInfo        `json:"perf,omitempty"`
-	Minio     MinioHealthInfo `json:"minio,omitempty"`
+	Minio     MinioHealthInfo `json:"obstor,omitempty"`
 	Sys       SysHealthInfo   `json:"sys,omitempty"`
 }
 
-// SysHealthInfo - Includes hardware and system information of the ObStor cluster
+// SysHealthInfo - Includes hardware and system information of the Obstor cluster
 type SysHealthInfo struct {
 	CPUInfo    []ServerCPUInfo    `json:"cpus,omitempty"`
 	DiskHwInfo []ServerDiskHwInfo `json:"drives,omitempty"`
@@ -111,7 +111,7 @@ type ServerOsInfo struct {
 	Error   string                 `json:"error,omitempty"`
 }
 
-// ServerCPUInfo - Includes cpu and timer stats of each node of the ObStor cluster
+// ServerCPUInfo - Includes cpu and timer stats of each node of the Obstor cluster
 type ServerCPUInfo struct {
 	Addr     string          `json:"addr"`
 	CPUStat  []cpu.InfoStat  `json:"cpu,omitempty"`
@@ -119,7 +119,7 @@ type ServerCPUInfo struct {
 	Error    string          `json:"error,omitempty"`
 }
 
-// MinioHealthInfo - Includes ObStor confifuration information
+// MinioHealthInfo - Includes Obstor confifuration information
 type MinioHealthInfo struct {
 	Info   InfoMessage `json:"info,omitempty"`
 	Config interface{} `json:"config,omitempty"`
@@ -135,16 +135,22 @@ type ServerDiskHwInfo struct {
 	Error      string                           `json:"error,omitempty"`
 }
 
-// PartitionStat - includes data from both shirou/psutil.diskHw.PartitionStat as well as SMART data
-type PartitionStat struct {
-	Device     string     `json:"device"`
-	Mountpoint string     `json:"mountpoint,omitempty"`
-	Fstype     string     `json:"fstype,omitempty"`
-	Opts       string     `json:"opts,omitempty"`
-	SmartInfo  smart.Info `json:"smartInfo,omitempty"`
+// SmartInfo contains S.M.A.R.T data about a drive
+type SmartInfo struct {
+	Device string `json:"device"`
+	Error  string `json:"error,omitempty"`
 }
 
-// PerfInfo - Includes Drive and Net perf info for the entire ObStor cluster
+// PartitionStat - includes data from both shirou/psutil.diskHw.PartitionStat as well as SMART data
+type PartitionStat struct {
+	Device     string    `json:"device"`
+	Mountpoint string    `json:"mountpoint,omitempty"`
+	Fstype     string    `json:"fstype,omitempty"`
+	Opts       string    `json:"opts,omitempty"`
+	SmartInfo  SmartInfo `json:"smartInfo,omitempty"`
+}
+
+// PerfInfo - Includes Drive and Net perf info for the entire Obstor cluster
 type PerfInfo struct {
 	DriveInfo   []ServerDrivesInfo    `json:"drives,omitempty"`
 	Net         []ServerNetHealthInfo `json:"net,omitempty"`
@@ -152,7 +158,7 @@ type PerfInfo struct {
 	Error       string                `json:"error,omitempty"`
 }
 
-// ServerDrivesInfo - Drive info about all drives in a single ObStor node
+// ServerDrivesInfo - Drive info about all drives in a single Obstor node
 type ServerDrivesInfo struct {
 	Addr     string          `json:"addr"`
 	Serial   []DrivePerfInfo `json:"serial,omitempty"`   // Drive perf info collected one drive at a time
@@ -160,7 +166,7 @@ type ServerDrivesInfo struct {
 	Error    string          `json:"error,omitempty"`
 }
 
-// DrivePerfInfo - Stats about a single drive in a ObStor node
+// DrivePerfInfo - Stats about a single drive in a Obstor node
 type DrivePerfInfo struct {
 	Path       string          `json:"endpoint"`
 	Latency    disk.Latency    `json:"latency,omitempty"`
@@ -168,14 +174,14 @@ type DrivePerfInfo struct {
 	Error      string          `json:"error,omitempty"`
 }
 
-// ServerNetHealthInfo - Network health info about a single ObStor node
+// ServerNetHealthInfo - Network health info about a single Obstor node
 type ServerNetHealthInfo struct {
 	Addr  string        `json:"addr"`
 	Net   []NetPerfInfo `json:"net,omitempty"`
 	Error string        `json:"error,omitempty"`
 }
 
-// NetPerfInfo - one-to-one network connectivity Stats between 2 ObStor nodes
+// NetPerfInfo - one-to-one network connectivity Stats between 2 Obstor nodes
 type NetPerfInfo struct {
 	Addr       string         `json:"remote"`
 	Latency    net.Latency    `json:"latency,omitempty"`
@@ -234,7 +240,7 @@ var HealthDataTypesList = []HealthDataType{
 	HealthDataTypeSysProcess,
 }
 
-// ServerHealthInfo - Connect to a minio server and call Health Info Management API
+// ServerHealthInfo - Connect to a obstor server and call Health Info Management API
 // to fetch server's information represented by HealthInfo structure
 func (adm *AdminClient) ServerHealthInfo(ctx context.Context, healthDataTypes []HealthDataType, deadline time.Duration) <-chan HealthInfo {
 	respChan := make(chan HealthInfo)

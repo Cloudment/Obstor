@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +34,12 @@ import (
 
 // Documentation links, these are part of message printing code.
 const (
-	mcQuickStartGuide     = "https://pgg.net/docs/obstor/minio-client-quickstart-guide"
-	goQuickStartGuide     = "https://pgg.net/docs/obstor/golang-client-quickstart-guide"
-	jsQuickStartGuide     = "https://pgg.net/docs/obstor/javascript-client-quickstart-guide"
-	javaQuickStartGuide   = "https://pgg.net/docs/obstor/java-client-quickstart-guide"
-	pyQuickStartGuide     = "https://pgg.net/docs/obstor/python-client-quickstart-guide"
-	dotnetQuickStartGuide = "https://pgg.net/docs/obstor/dotnet-client-quickstart-guide"
+	mcQuickStartGuide     = "https://obstor.net/docs/obstor-client-quickstart-guide"
+	goQuickStartGuide     = "https://obstor.net/docs/golang-client-quickstart-guide"
+	jsQuickStartGuide     = "https://obstor.net/docs/javascript-client-quickstart-guide"
+	javaQuickStartGuide   = "https://obstor.net/docs/java-client-quickstart-guide"
+	pyQuickStartGuide     = "https://obstor.net/docs/python-client-quickstart-guide"
+	dotnetQuickStartGuide = "https://obstor.net/docs/dotnet-client-quickstart-guide"
 )
 
 // generates format string depending on the string length and padding.
@@ -78,7 +79,7 @@ func printStartupMessage(apiEndpoints []string, err error) {
 
 	// Prints `mc` cli configuration message chooses
 	// first endpoint as default.
-	printCLIAccessMsg(strippedAPIEndpoints[0], "myminio")
+	printCLIAccessMsg(strippedAPIEndpoints[0], "myobstor")
 
 	// Prints documentation message.
 	printObjectAPIMsg()
@@ -177,7 +178,7 @@ func printCLIAccessMsg(endPoint string, alias string) {
 	// Get saved credentials.
 	cred := globalActiveCred
 
-	// Configure 'mc', following block prints platform specific information for minio client.
+	// Configure 'mc', following block prints platform specific information for obstor client.
 	if color.IsTerminal() && !globalCLIContext.Anonymous {
 		logStartupMessage(color.Blue("\nCommand-line Access: ") + mcQuickStartGuide)
 		if runtime.GOOS == globalWindowsOSName {

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@
 package s3
 
 import (
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 )
 
 // List of header keys to be filtered, usually
@@ -39,10 +40,10 @@ var defaultFilterKeys = []string{
 }
 
 // FromGatewayObjectPart converts ObjectInfo for custom part stored as object to PartInfo
-func FromGatewayObjectPart(partID int, oi minio.ObjectInfo) (pi minio.PartInfo) {
-	return minio.PartInfo{
+func FromGatewayObjectPart(partID int, oi obstor.ObjectInfo) (pi obstor.PartInfo) {
+	return obstor.PartInfo{
 		Size:         oi.Size,
-		ETag:         minio.CanonicalizeETag(oi.ETag),
+		ETag:         obstor.CanonicalizeETag(oi.ETag),
 		LastModified: oi.ModTime,
 		PartNumber:   partID,
 	}

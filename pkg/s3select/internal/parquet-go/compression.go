@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2018 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +20,13 @@ package parquet
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"sync"
 
+	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/snappy"
 	"github.com/klauspost/compress/zstd"
-	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/pierrec/lz4"
 )
 
@@ -113,10 +114,10 @@ func (c compressionCodec) uncompress(buf []byte) ([]byte, error) {
 			return nil, err
 		}
 		defer reader.Close()
-		return ioutil.ReadAll(reader)
+		return io.ReadAll(reader)
 
 	case parquet.CompressionCodec_LZ4:
-		return ioutil.ReadAll(lz4.NewReader(bytes.NewReader(buf)))
+		return io.ReadAll(lz4.NewReader(bytes.NewReader(buf)))
 
 	case parquet.CompressionCodec_ZSTD:
 		initZstd()

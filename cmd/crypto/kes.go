@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2019-2020 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"encoding/json"
+
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/kms"
 	xnet "github.com/cloudment/obstor/pkg/net"
@@ -49,12 +50,12 @@ type KesConfig struct {
 	Endpoint []string
 
 	// The path to the TLS private key used
-	// by ObStor to authenticate to the kes
+	// by Obstor to authenticate to the kes
 	// server during the TLS handshake (mTLS).
 	KeyFile string
 
 	// The path to the TLS certificate used
-	// by ObStor to authenticate to the kes
+	// by Obstor to authenticate to the kes
 	// server during the TLS handshake (mTLS).
 	//
 	// The kes server will also allow or deny
@@ -71,7 +72,7 @@ type KesConfig struct {
 	// This is required if the TLS certificate
 	// of the kes server has not been issued
 	// (e.g. b/c it's self-signed) by a CA that
-	// ObStor trusts.
+	// Obstor trusts.
 	CAPath string
 
 	// The default key ID returned by KMS.KeyID().
@@ -205,10 +206,10 @@ func (kes *kesService) DecryptKey(keyID string, ciphertext []byte, ctx Context) 
 }
 
 // kesClient implements the bare minimum functionality needed for
-// ObStor to talk to a KES server. In particular, it implements
-//   • CreateKey       (API: /v1/key/create/)
-//   • GenerateDataKey (API: /v1/key/generate/)
-//   • DecryptDataKey  (API: /v1/key/decrypt/)
+// Obstor to talk to a KES server. In particular, it implements
+//   - CreateKey       (API: /v1/key/create/)
+//   - GenerateDataKey (API: /v1/key/generate/)
+//   - DecryptDataKey  (API: /v1/key/decrypt/)
 type kesClient struct {
 	endpoints  []string
 	httpClient http.Client
@@ -309,7 +310,8 @@ func (c *kesClient) DecryptDataKey(name string, ciphertext, context []byte) ([]b
 //
 // Two errors with the same status code and
 // error message are equal:
-//   e1 == e2 // true.
+//
+//	e1 == e2 // true.
 func NewKESError(code int, text string) error {
 	return kesError{
 		code:    code,
@@ -453,7 +455,7 @@ func loadCACertificates(path string, rootCAs *x509.CertPool) error {
 	// and try to add it to the CertPool. If this fails
 	// return an error.
 	if !stat.IsDir() {
-		cert, err := ioutil.ReadFile(path)
+		cert, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -468,12 +470,12 @@ func loadCACertificates(path string, rootCAs *x509.CertPool) error {
 	// certificate and add it to the CertPool.
 	// If a file is not a PEM-encoded certificate
 	// we ignore it.
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return err
 	}
 	for _, file := range files {
-		cert, err := ioutil.ReadFile(filepath.Join(path, file.Name()))
+		cert, err := os.ReadFile(filepath.Join(path, filepath.Base(file.Name())))
 		if err != nil {
 			continue // ignore files which are not readable
 		}

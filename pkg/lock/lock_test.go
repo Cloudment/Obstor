@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 package lock
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -25,7 +25,7 @@ import (
 
 // Test lock fails.
 func TestLockFail(t *testing.T) {
-	f, err := ioutil.TempFile("", "lock")
+	f, err := os.CreateTemp("", "lock")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestLockFail(t *testing.T) {
 
 // Tests lock directory fail.
 func TestLockDirFail(t *testing.T) {
-	d, err := ioutil.TempDir("", "lockDir")
+	d, err := os.MkdirTemp("", "lockDir")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func TestLockDirFail(t *testing.T) {
 
 // Tests rwlock methods.
 func TestRWLockedFile(t *testing.T) {
-	f, err := ioutil.TempFile("", "lock")
+	f, err := os.CreateTemp("", "lock")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func TestRWLockedFile(t *testing.T) {
 
 // Tests lock and unlock semantics.
 func TestLockAndUnlock(t *testing.T) {
-	f, err := ioutil.TempFile("", "lock")
+	f, err := os.CreateTemp("", "lock")
 	if err != nil {
 		t.Fatal(err)
 	}

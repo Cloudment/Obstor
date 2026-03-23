@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +22,11 @@ import (
 	"net/http"
 	"time"
 
-	jwtgo "github.com/golang-jwt/jwt/v4"
-	jwtreq "github.com/golang-jwt/jwt/v4/request"
 	xjwt "github.com/cloudment/obstor/cmd/jwt"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
+	jwtgo "github.com/golang-jwt/jwt/v4"
+	jwtreq "github.com/golang-jwt/jwt/v4/request"
 )
 
 const (
@@ -42,12 +43,12 @@ const (
 )
 
 var (
-	errInvalidAccessKeyID   = errors.New("The access key ID you provided does not exist in our records")
-	errChangeCredNotAllowed = errors.New("Changing access key and secret key not allowed")
-	errAuthentication       = errors.New("Authentication failed, check your access credentials")
-	errNoAuthToken          = errors.New("JWT token missing")
-	errIncorrectCreds       = errors.New("Current access key or secret key is incorrect")
-	errPresignedNotAllowed  = errors.New("Unable to generate shareable URL due to lack of read permissions")
+	errInvalidAccessKeyID   = errors.New("the access key ID you provided does not exist in our records")
+	errChangeCredNotAllowed = errors.New("changing access key and secret key not allowed")
+	errAuthentication       = errors.New("authentication failed, check your access credentials")
+	errNoAuthToken          = errors.New("jwt token missing")
+	errIncorrectCreds       = errors.New("current access key or secret key is incorrect")
+	errPresignedNotAllowed  = errors.New("unable to generate shareable URL due to lack of read permissions")
 )
 
 func authenticateJWTUsers(accessKey, secretKey string, expiry time.Duration) (string, error) {

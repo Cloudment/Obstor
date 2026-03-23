@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path"
@@ -91,7 +91,7 @@ func TestDataUpdateTracker(t *testing.T) {
 
 	dut.Current.bf = dut.newBloomFilter()
 
-	tmpDir, err := ioutil.TempDir("", "TestDataUpdateTracker")
+	tmpDir, err := os.MkdirTemp("", "TestDataUpdateTracker")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +116,7 @@ func TestDataUpdateTracker(t *testing.T) {
 		},
 		{
 			// System bucket
-			in:    ".minio.sys/ignoreme/pls",
+			in:    ".obstor.sys/ignoreme/pls",
 			exist: false,
 		},
 		{

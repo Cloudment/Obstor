@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +226,7 @@ func TestErasureDecodeRandomOffsetLength(t *testing.T) {
 	// Prepare a slice of 5MiB with random data.
 	data := make([]byte, 5*humanize.MiByte)
 	length := int64(len(data))
-	_, err = rand.Read(data)
+	_, err = crand.Read(data)
 	if err != nil {
 		t.Fatal(err)
 	}

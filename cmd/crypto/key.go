@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,7 +95,7 @@ func (key ObjectKey) Seal(extKey []byte, iv [32]byte, domain, bucket, object str
 	mac.Write([]byte(path.Join(bucket, object))) // use path.Join for canonical 'bucket/object'
 	mac.Sum(sealingKey[:0])
 	if n, err := sio.Encrypt(&encryptedKey, bytes.NewReader(key[:]), sio.Config{Key: sealingKey[:], CipherSuites: fips.CipherSuitesDARE()}); n != 64 || err != nil {
-		logger.CriticalIf(context.Background(), errors.New("Unable to generate sealed key"))
+		logger.CriticalIf(context.Background(), errors.New("unable to generate sealed key"))
 	}
 	sealedKey := SealedKey{
 		IV:        iv,
@@ -157,7 +158,7 @@ func (key ObjectKey) SealETag(etag []byte) []byte {
 	mac := hmac.New(sha256.New, key[:])
 	mac.Write([]byte("SSE-etag"))
 	if _, err := sio.Encrypt(&buffer, bytes.NewReader(etag), sio.Config{Key: mac.Sum(nil), CipherSuites: fips.CipherSuitesDARE()}); err != nil {
-		logger.CriticalIf(context.Background(), errors.New("Unable to encrypt ETag using object key"))
+		logger.CriticalIf(context.Background(), errors.New("unable to encrypt ETag using object key"))
 	}
 	return buffer.Bytes()
 }

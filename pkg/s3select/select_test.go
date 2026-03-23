@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"reflect"
@@ -30,7 +30,6 @@ import (
 
 	"github.com/klauspost/cpuid/v2"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/simdjson-go"
 )
 
 type testResponseWriter struct {
@@ -432,7 +431,7 @@ func TestJSONQueries(t *testing.T) {
 				cpuid.CPU.Disable(cpuid.AVX2)
 				defer cpuid.CPU.Enable(cpuid.AVX2)
 			}
-			if simdjson.SupportedCPU() {
+			if true {
 				t.Fatal("setup error: expected cpu to be unsupported")
 			}
 			testReq := testCase.requestXML
@@ -451,7 +450,7 @@ func TestJSONQueries(t *testing.T) {
 				if len(testCase.withJSON) > 0 {
 					in = testCase.withJSON
 				}
-				return ioutil.NopCloser(bytes.NewBufferString(in)), nil
+				return io.NopCloser(bytes.NewBufferString(in)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -461,7 +460,7 @@ func TestJSONQueries(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -469,7 +468,7 @@ func TestJSONQueries(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -480,7 +479,7 @@ func TestJSONQueries(t *testing.T) {
 			}
 		})
 		t.Run("simd-"+testCase.name, func(t *testing.T) {
-			if !simdjson.SupportedCPU() {
+			if false {
 				t.Skip("No CPU support")
 			}
 			testReq := testCase.requestXML
@@ -499,7 +498,7 @@ func TestJSONQueries(t *testing.T) {
 				if len(testCase.withJSON) > 0 {
 					in = testCase.withJSON
 				}
-				return ioutil.NopCloser(bytes.NewBufferString(in)), nil
+				return io.NopCloser(bytes.NewBufferString(in)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -509,7 +508,7 @@ func TestJSONQueries(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -517,7 +516,7 @@ func TestJSONQueries(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -582,7 +581,7 @@ func TestCSVQueries(t *testing.T) {
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewBufferString(input)), nil
+				return io.NopCloser(bytes.NewBufferString(input)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -592,7 +591,7 @@ func TestCSVQueries(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -600,7 +599,7 @@ func TestCSVQueries(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -708,7 +707,7 @@ func TestCSVQueries2(t *testing.T) {
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewBufferString(input)), nil
+				return io.NopCloser(bytes.NewBufferString(input)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -718,7 +717,7 @@ func TestCSVQueries2(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -726,7 +725,7 @@ func TestCSVQueries2(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -854,7 +853,7 @@ true`,
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewBufferString(input)), nil
+				return io.NopCloser(bytes.NewBufferString(input)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -864,7 +863,7 @@ true`,
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -872,7 +871,7 @@ true`,
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -1000,7 +999,7 @@ func TestCSVInput(t *testing.T) {
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewReader(csvData)), nil
+				return io.NopCloser(bytes.NewReader(csvData)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -1012,7 +1011,7 @@ func TestCSVInput(t *testing.T) {
 			if !reflect.DeepEqual(w.response, testCase.expectedResult) {
 				resp := http.Response{
 					StatusCode:    http.StatusOK,
-					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+					Body:          io.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
 				res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -1020,7 +1019,7 @@ func TestCSVInput(t *testing.T) {
 					t.Error(err)
 					return
 				}
-				got, err := ioutil.ReadAll(res)
+				got, err := io.ReadAll(res)
 				if err != nil {
 					t.Error(err)
 					return
@@ -1124,7 +1123,7 @@ func TestJSONInput(t *testing.T) {
 			}
 
 			if err = s3Select.Open(func(offset, length int64) (io.ReadCloser, error) {
-				return ioutil.NopCloser(bytes.NewReader(jsonData)), nil
+				return io.NopCloser(bytes.NewReader(jsonData)), nil
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -1136,7 +1135,7 @@ func TestJSONInput(t *testing.T) {
 			if !reflect.DeepEqual(w.response, testCase.expectedResult) {
 				resp := http.Response{
 					StatusCode:    http.StatusOK,
-					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+					Body:          io.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
 				res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -1144,7 +1143,7 @@ func TestJSONInput(t *testing.T) {
 					t.Error(err)
 					return
 				}
-				got, err := ioutil.ReadAll(res)
+				got, err := io.ReadAll(res)
 				if err != nil {
 					t.Error(err)
 					return
@@ -1253,7 +1252,7 @@ func TestParquetInput(t *testing.T) {
 			if !reflect.DeepEqual(w.response, testCase.expectedResult) {
 				resp := http.Response{
 					StatusCode:    http.StatusOK,
-					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+					Body:          io.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
 				res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -1261,7 +1260,7 @@ func TestParquetInput(t *testing.T) {
 					t.Error(err)
 					return
 				}
-				got, err := ioutil.ReadAll(res)
+				got, err := io.ReadAll(res)
 				if err != nil {
 					t.Error(err)
 					return
@@ -1372,7 +1371,7 @@ func TestParquetInputSchema(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -1380,7 +1379,7 @@ func TestParquetInputSchema(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return
@@ -1491,7 +1490,7 @@ func TestParquetInputSchemaCSV(t *testing.T) {
 			s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
+				Body:          io.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
 			res, err := minio.NewSelectResults(&resp, "testbucket")
@@ -1499,7 +1498,7 @@ func TestParquetInputSchemaCSV(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, err := ioutil.ReadAll(res)
+			got, err := io.ReadAll(res)
 			if err != nil {
 				t.Error(err)
 				return

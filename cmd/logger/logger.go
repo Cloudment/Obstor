@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,7 +206,7 @@ func Init(goPath string, goRoot string) {
 	// Add "github.com/cloudment/obstor" as the last to cover
 	// paths like "{GOROOT}/src/github.com/cloudment/obstor"
 	// and "{GOPATH}/src/github.com/cloudment/obstor"
-	trimStrings = append(trimStrings, filepath.Join("github.com", "minio", "minio")+string(filepath.Separator))
+	trimStrings = append(trimStrings, filepath.Join("github.com", "cloudment", "obstor")+string(filepath.Separator))
 
 	loggerHighwayHasher, _ = highwayhash.New(magicHighwayHash256Key) // New will never return error since key is 256 bit
 }

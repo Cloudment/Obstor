@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +125,7 @@ func (f notIPAddressFunc) name() name {
 }
 
 func (f notIPAddressFunc) String() string {
-	return toIPAddressFuncString(notIPAddress, f.ipAddressFunc.k, f.ipAddressFunc.values)
+	return toIPAddressFuncString(notIPAddress, f.k, f.values)
 }
 
 func valuesToIPNets(n name, values ValueSet) ([]*net.IPNet, error) {

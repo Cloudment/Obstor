@@ -1,11 +1,13 @@
 package browser
 
-import "embed"
+import (
+	"embed"
+	"io/fs"
+)
 
 //go:embed production/*
-var fs embed.FS
+var assets embed.FS
 
-// GetStaticAssets returns assets
-func GetStaticAssets() embed.FS {
-	return fs
+func GetStaticAssets() fs.FS {
+	return assets
 }

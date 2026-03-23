@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +76,7 @@ type ErrFn func(err error) Err
 
 // Create a UI error generator, this is needed to simplify
 // the update of the detailed error message in several places
-// in ObStor code
+// in Obstor code
 func newErrFn(msg, action, hint string) ErrFn {
 	return func(err error) Err {
 		u := Err{

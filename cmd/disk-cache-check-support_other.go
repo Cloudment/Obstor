@@ -1,7 +1,9 @@
+//go:build !windows
 // +build !windows
 
 /*
  * MinIO Cloud Storage, (C) 2019-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +23,6 @@ package cmd
 import (
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -30,7 +31,7 @@ import (
 
 // Return error if Atime is disabled on the O/S
 func checkAtimeSupport(dir string) (err error) {
-	file, err := ioutil.TempFile(dir, "prefix")
+	file, err := os.CreateTemp(dir, "prefix")
 	if err != nil {
 		return
 	}
@@ -43,14 +44,14 @@ func checkAtimeSupport(dir string) (err error) {
 	// add a sleep to ensure atime change is detected
 	time.Sleep(10 * time.Millisecond)
 
-	if _, err = io.Copy(ioutil.Discard, file); err != nil {
+	if _, err = io.Copy(io.Discard, file); err != nil {
 		return
 	}
 
 	finfo2, err := os.Stat(file.Name())
 
 	if atime.Get(finfo2).Equal(atime.Get(finfo1)) {
-		return errors.New("Atime not supported")
+		return errors.New("atime not supported")
 	}
 	return
 }

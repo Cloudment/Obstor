@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -126,7 +126,7 @@ func (c *Client) Call(ctx context.Context, method string, values url.Values, bod
 		return nil, &NetworkError{err}
 	}
 	req.Header.Set("Authorization", "Bearer "+c.newAuthToken(req.URL.RawQuery))
-	req.Header.Set("X-Minio-Time", time.Now().UTC().Format(time.RFC3339))
+	req.Header.Set("X-Obstor-Time", time.Now().UTC().Format(time.RFC3339))
 	req.Header.Set("Expect", "100-continue")
 	if length > 0 {
 		req.ContentLength = length
@@ -136,7 +136,7 @@ func (c *Client) Call(ctx context.Context, method string, values url.Values, bod
 		if c.HealthCheckFn != nil && xnet.IsNetworkOrHostDown(err, c.ExpectTimeouts) {
 			atomic.AddUint64(&networkErrsCounter, 1)
 			if c.MarkOffline() {
-				logger.LogIf(ctx, fmt.Errorf("Marking %s temporary offline; caused by %w", c.url.String(), err))
+				logger.LogIf(ctx, fmt.Errorf("marking %s temporary offline; caused by %w", c.url.String(), err))
 			}
 		}
 		return nil, &NetworkError{err}
@@ -159,16 +159,16 @@ func (c *Client) Call(ctx context.Context, method string, values url.Values, bod
 		// fully it should make sure to respond with '412'
 		// instead, see cmd/storage-rest-server.go for ideas.
 		if c.HealthCheckFn != nil && resp.StatusCode == http.StatusPreconditionFailed {
-			logger.LogIf(ctx, fmt.Errorf("Marking %s temporary offline; caused by PreconditionFailed with disk ID mismatch", c.url.String()))
+			logger.LogIf(ctx, fmt.Errorf("marking %s temporary offline; caused by PreconditionFailed with disk ID mismatch", c.url.String()))
 			c.MarkOffline()
 		}
 		defer xhttp.DrainBody(resp.Body)
 		// Limit the ReadAll(), just in case, because of a bug, the server responds with large data.
-		b, err := ioutil.ReadAll(io.LimitReader(resp.Body, c.MaxErrResponseSize))
+		b, err := io.ReadAll(io.LimitReader(resp.Body, c.MaxErrResponseSize))
 		if err != nil {
 			if c.HealthCheckFn != nil && xnet.IsNetworkOrHostDown(err, c.ExpectTimeouts) {
 				if c.MarkOffline() {
-					logger.LogIf(ctx, fmt.Errorf("Marking %s temporary offline; caused by %w", c.url.String(), err))
+					logger.LogIf(ctx, fmt.Errorf("marking %s temporary offline; caused by %w", c.url.String(), err))
 				}
 			}
 			return nil, err

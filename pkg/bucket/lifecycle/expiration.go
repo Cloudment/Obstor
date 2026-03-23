@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +81,7 @@ func (eDate *ExpirationDate) UnmarshalXML(d *xml.Decoder, startElement xml.Start
 	hr, min, sec := expDate.Clock()
 	nsec := expDate.Nanosecond()
 	loc := expDate.Location()
-	if !(hr == 0 && min == 0 && sec == 0 && nsec == 0 && loc.String() == time.UTC.String()) {
+	if hr != 0 || min != 0 || sec != 0 || nsec != 0 || loc.String() != time.UTC.String() {
 		return errLifecycleDateNotMidnight
 	}
 
@@ -91,7 +92,7 @@ func (eDate *ExpirationDate) UnmarshalXML(d *xml.Decoder, startElement xml.Start
 // MarshalXML encodes expiration date if it is non-zero and encodes
 // empty string otherwise
 func (eDate ExpirationDate) MarshalXML(e *xml.Encoder, startElement xml.StartElement) error {
-	if eDate.Time.IsZero() {
+	if eDate.IsZero() {
 		return nil
 	}
 	return e.EncodeElement(eDate.Format(time.RFC3339), startElement)
@@ -185,7 +186,7 @@ func (e Expiration) IsDaysNull() bool {
 
 // IsDateNull returns true if date field is null
 func (e Expiration) IsDateNull() bool {
-	return e.Date.Time.IsZero()
+	return e.Date.IsZero()
 }
 
 // IsNull returns true if both date and days fields are null

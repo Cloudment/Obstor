@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +30,7 @@ import (
 )
 
 // This file implements and supports ellipses pattern for
-// `minio server` command line arguments.
+// `obstor server` command line arguments.
 
 // Endpoint set represents parsed ellipses values, also provides
 // methods to get the sets of endpoints.
@@ -215,7 +216,6 @@ func (s endpointSet) getEndpoints() (endpoints []string) {
 			endpoints = append(endpoints, strings.Join(lbls, ""))
 		}
 	}
-	s.endpoints = endpoints
 	return endpoints
 }
 

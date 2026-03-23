@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +32,10 @@ func (p Port) String() string {
 
 // ParsePort - parses string into Port
 func ParsePort(s string) (p Port, err error) {
-	if s == "https" {
+	switch s {
+	case "https":
 		return Port(443), nil
-	} else if s == "http" {
+	case "http":
 		return Port(80), nil
 	}
 

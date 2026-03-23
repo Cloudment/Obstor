@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +94,7 @@ func (key *JWKS) DecodePublicKey() (crypto.PublicKey, error) {
 		case "P-521":
 			curve = elliptic.P521()
 		default:
-			return nil, fmt.Errorf("Unknown curve type: %s", key.Crv)
+			return nil, fmt.Errorf("unknown curve type: %s", key.Crv)
 		}
 
 		xbuf, err := base64.RawURLEncoding.DecodeString(key.X)
@@ -116,6 +117,6 @@ func (key *JWKS) DecodePublicKey() (crypto.PublicKey, error) {
 			Y:     &y,
 		}, nil
 	default:
-		return nil, fmt.Errorf("Unknown JWK key type %s", key.Kty)
+		return nil, fmt.Errorf("unknown JWK key type %s", key.Kty)
 	}
 }

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +26,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/klauspost/compress/s2"
 	"github.com/cloudment/obstor/cmd/config/compress"
 	"github.com/cloudment/obstor/cmd/crypto"
 	"github.com/cloudment/obstor/pkg/trie"
+	"github.com/klauspost/compress/s2"
 )
 
 // Tests validate bucket name.
@@ -182,17 +183,17 @@ func TestIsMinioMetaBucketName(t *testing.T) {
 		bucket string
 		result bool
 	}{
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaBucket,
 			result: true,
 		},
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaMultipartBucket,
 			result: true,
 		},
-		// ObStor meta bucket.
+		// Obstor meta bucket.
 		{
 			bucket: minioMetaTmpBucket,
 			result: true,
@@ -319,7 +320,7 @@ func TestIsCompressed(t *testing.T) {
 	}{
 		0: {
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": compressionAlgorithmV1,
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": compressionAlgorithmV1,
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 			},
@@ -327,7 +328,7 @@ func TestIsCompressed(t *testing.T) {
 		},
 		1: {
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": compressionAlgorithmV2,
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": compressionAlgorithmV2,
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 			},
@@ -335,7 +336,7 @@ func TestIsCompressed(t *testing.T) {
 		},
 		2: {
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": "unknown/compression/type",
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": "unknown/compression/type",
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 			},
@@ -344,7 +345,7 @@ func TestIsCompressed(t *testing.T) {
 		},
 		3: {
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": compressionAlgorithmV2,
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": compressionAlgorithmV2,
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2",
 					crypto.MetaIV:  "yes",
@@ -355,7 +356,7 @@ func TestIsCompressed(t *testing.T) {
 		},
 		4: {
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-XYZ": "klauspost/compress/s2",
+				UserDefined: map[string]string{"X-Obstor-Internal-XYZ": "klauspost/compress/s2",
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 			},
@@ -467,10 +468,10 @@ func TestGetActualSize(t *testing.T) {
 	}{
 		{
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": "klauspost/compress/s2",
-					"X-Minio-Internal-actual-size": "100000001",
-					"content-type":                 "application/octet-stream",
-					"etag":                         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": "klauspost/compress/s2",
+					"X-Obstor-Internal-actual-size": "100000001",
+					"content-type":                  "application/octet-stream",
+					"etag":                          "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 				Parts: []ObjectPartInfo{
 					{
 						Size:       39235668,
@@ -486,17 +487,17 @@ func TestGetActualSize(t *testing.T) {
 		},
 		{
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": "klauspost/compress/s2",
-					"X-Minio-Internal-actual-size": "841",
-					"content-type":                 "application/octet-stream",
-					"etag":                         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": "klauspost/compress/s2",
+					"X-Obstor-Internal-actual-size": "841",
+					"content-type":                  "application/octet-stream",
+					"etag":                          "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 				Parts: []ObjectPartInfo{},
 			},
 			result: 841,
 		},
 		{
 			objInfo: ObjectInfo{
-				UserDefined: map[string]string{"X-Minio-Internal-compression": "klauspost/compress/s2",
+				UserDefined: map[string]string{"X-Obstor-Internal-compression": "klauspost/compress/s2",
 					"content-type": "application/octet-stream",
 					"etag":         "b3ff3ef3789147152fbfbc50efba4bfd-2"},
 				Parts: []ObjectPartInfo{},

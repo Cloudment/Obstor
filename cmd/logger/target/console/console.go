@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +51,7 @@ func (c *Target) String() string {
 func (c *Target) Send(e interface{}, logKind string) error {
 	entry, ok := e.(log.Entry)
 	if !ok {
-		return fmt.Errorf("Uexpected log entry structure %#v", e)
+		return fmt.Errorf("unexpected log entry structure %#v", e)
 	}
 	if logger.IsJSON() {
 		logJSON, err := json.Marshal(&entry)

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +178,7 @@ func validateLifecycleTransition(ctx context.Context, bucket string, lfc *lifecy
 				return err
 			}
 			if sameTarget && destbucket == bucket {
-				return fmt.Errorf("Transition destination cannot be the same as the source bucket")
+				return fmt.Errorf("transition destination cannot be the same as the source bucket")
 			}
 		}
 	}
@@ -576,21 +577,21 @@ func parseRestoreRequest(reader io.Reader) (*RestoreObjectRequest, error) {
 // validate a RestoreObjectRequest as per AWS S3 spec https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html
 func (r *RestoreObjectRequest) validate(ctx context.Context, objAPI ObjectLayer) error {
 	if r.Type != SelectRestoreRequest && !r.SelectParameters.IsEmpty() {
-		return fmt.Errorf("Select parameters can only be specified with SELECT request type")
+		return fmt.Errorf("select parameters can only be specified with SELECT request type")
 	}
 	if r.Type == SelectRestoreRequest && r.SelectParameters.IsEmpty() {
-		return fmt.Errorf("SELECT restore request requires select parameters to be specified")
+		return fmt.Errorf("select restore request requires select parameters to be specified")
 	}
 
 	if r.Type != SelectRestoreRequest && !r.OutputLocation.IsEmpty() {
-		return fmt.Errorf("OutputLocation required only for SELECT request type")
+		return fmt.Errorf("outputLocation required only for SELECT request type")
 	}
 	if r.Type == SelectRestoreRequest && r.OutputLocation.IsEmpty() {
-		return fmt.Errorf("OutputLocation required for SELECT requests")
+		return fmt.Errorf("outputLocation required for SELECT requests")
 	}
 
 	if r.Days != 0 && r.Type == SelectRestoreRequest {
-		return fmt.Errorf("Days cannot be specified with SELECT restore request")
+		return fmt.Errorf("days cannot be specified with SELECT restore request")
 	}
 	if r.Days == 0 && r.Type != SelectRestoreRequest {
 		return fmt.Errorf("restoration days should be at least 1")
@@ -601,7 +602,7 @@ func (r *RestoreObjectRequest) validate(ctx context.Context, objAPI ObjectLayer)
 			return err
 		}
 		if r.OutputLocation.S3.Prefix == "" {
-			return fmt.Errorf("Prefix is a required parameter in OutputLocation")
+			return fmt.Errorf("prefix is a required parameter in OutputLocation")
 		}
 		if r.OutputLocation.S3.Encryption.EncryptionType != xhttp.AmzEncryptionAES {
 			return NotImplemented{}

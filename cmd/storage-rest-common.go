@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +52,10 @@ const (
 	storageRESTMethodRenameFile     = "/renamefile"
 	storageRESTMethodVerifyFile     = "/verifyfile"
 	storageRESTMethodWalkDir        = "/walkdir"
+	storageRESTMethodWriteBlock     = "/writeblock"
+	storageRESTMethodReadBlock      = "/readblock"
+	storageRESTMethodHasBlock       = "/hasblock"
+	storageRESTMethodDeleteBlock    = "/deleteblock"
 )
 
 const (
@@ -77,4 +82,5 @@ const (
 	storageRESTBitrotHash     = "bitrot-hash"
 	storageRESTDiskID         = "disk-id"
 	storageRESTForceDelete    = "force-delete"
+	storageRESTBlockHash      = "block-hash"
 )

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +120,7 @@ func (f numericGreaterThanEqualsFunc) name() name {
 }
 
 func (f numericGreaterThanEqualsFunc) String() string {
-	return toNumericGreaterThanFuncString(numericGreaterThanEquals, f.numericGreaterThanFunc.k, f.numericGreaterThanFunc.value)
+	return toNumericGreaterThanFuncString(numericGreaterThanEquals, f.k, f.value)
 }
 
 // newNumericGreaterThanFunc - returns new NumericGreaterThan function.

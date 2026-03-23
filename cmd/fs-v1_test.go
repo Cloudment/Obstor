@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -279,7 +280,7 @@ func TestFSDeleteObject(t *testing.T) {
 		t.Fatal("Unexpected error: ", err)
 	}
 	// Test with invalid object name
-	if _, err := fs.DeleteObject(GlobalContext, bucketName, "\\", ObjectOptions{}); !(isSameType(err, ObjectNotFound{}) || isSameType(err, ObjectNameInvalid{})) {
+	if _, err := fs.DeleteObject(GlobalContext, bucketName, "\\", ObjectOptions{}); !isSameType(err, ObjectNotFound{}) && !isSameType(err, ObjectNameInvalid{}) {
 		t.Fatal("Unexpected error: ", err)
 	}
 	// Test with object does not exist.

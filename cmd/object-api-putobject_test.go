@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +23,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/hash"
+	humanize "github.com/dustin/go-humanize"
 )
 
 func md5Header(data []byte) map[string]string {
@@ -43,8 +43,8 @@ func TestObjectAPIPutObjectSingle(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObject(obj ObjectLayer, instanceType string, t TestErrHandler) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -208,8 +208,8 @@ func TestObjectAPIPutObjectDiskNotFound(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectDiskNotFound(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -320,8 +320,8 @@ func TestObjectAPIPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -340,7 +340,7 @@ func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disk
 
 	for _, disk := range disks {
 		tmpMetaDir := path.Join(disk, minioMetaTmpBucket)
-		files, err := ioutil.ReadDir(tmpMetaDir)
+		files, err := os.ReadDir(tmpMetaDir)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -365,8 +365,8 @@ func TestObjectAPIMultipartPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIMultipartPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "obstor-bucket"
+	object := "obstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -418,7 +418,7 @@ func testObjectAPIMultipartPutObjectStaleFiles(obj ObjectLayer, instanceType str
 
 	for _, disk := range disks {
 		tmpMetaDir := path.Join(disk, minioMetaTmpBucket)
-		files, err := ioutil.ReadDir(tmpMetaDir)
+		files, err := os.ReadDir(tmpMetaDir)
 		if err != nil {
 			// Its OK to have non-existen tmpMetaDir.
 			if osIsNotExist(err) {

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +35,7 @@ import (
 	"time"
 
 	"github.com/cloudment/obstor/cmd/config"
+	sftpCfg "github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -245,7 +247,7 @@ func handleCommonEnvVars() {
 		logger.Fatal(config.ErrInvalidWormValue(err), "Invalid worm configuration")
 	}
 	if wormEnabled {
-		logger.Fatal(errors.New("WORM is deprecated"), "global OBSTOR_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
+		logger.Fatal(errors.New("worm is deprecated"), "global OBSTOR_WORM support is removed, please downgrade your server or migrate to https://github.com/cloudment/obstor/tree/master/docs/retention")
 	}
 
 	globalBrowserEnabled, err = config.ParseBool(env.Get(config.EnvBrowser, config.EnableOn))
@@ -286,7 +288,7 @@ func handleCommonEnvVars() {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
-					logger.FatalIf(err, "Unable to initialize ObStor server with [%s] invalid entry found in OBSTOR_PUBLIC_IPS", endpoint)
+					logger.FatalIf(err, "Unable to initialize Obstor server with [%s] invalid entry found in OBSTOR_PUBLIC_IPS", endpoint)
 				}
 				for _, addr := range addrs {
 					domainIPs.Add(addr)
@@ -326,6 +328,21 @@ func handleCommonEnvVars() {
 				"Unable to validate credentials inherited from the shell environment")
 		}
 		globalActiveCred = cred
+	}
+
+	// Check SFTP env vars early so the flag is set before config system init.
+	if env.IsSet(sftpCfg.EnvSFTPEnable) || env.IsSet(sftpCfg.EnvSFTPAddress) {
+		sftpEnabled := env.Get(sftpCfg.EnvSFTPEnable, "")
+		if sftpEnabled == config.EnableOn {
+			globalSFTPConfig.Enabled = true
+			globalSFTPConfig.Address = env.Get(sftpCfg.EnvSFTPAddress, sftpCfg.DefaultAddress)
+			globalSFTPConfig.HostKeyPath = env.Get(sftpCfg.EnvSFTPHostKey, "")
+		}
+	}
+
+	// Detect block replication mode early from env vars.
+	if env.IsSet("OBSTOR_ZONE") || env.IsSet("OBSTOR_REPLICATION_FACTOR") {
+		globalIsReplicated = true
 	}
 
 	if env.IsSet(config.EnvKMSSecretKey) && env.IsSet(config.EnvKESEndpoint) {
@@ -389,7 +406,7 @@ func logStartupMessage(msg string) {
 }
 
 func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secureConn bool, err error) {
-	if !(isFile(getPublicCertFile()) && isFile(getPrivateKeyFile())) {
+	if !isFile(getPublicCertFile()) || !isFile(getPrivateKeyFile()) {
 		return nil, nil, false, nil
 	}
 
@@ -402,7 +419,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 		return nil, nil, false, err
 	}
 
-	// ObStor has support for multiple certificates. It expects the following structure:
+	// Obstor has support for multiple certificates. It expects the following structure:
 	//  certs/
 	//   │
 	//   ├─ public.crt
@@ -458,7 +475,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 			continue
 		}
 		if err = manager.AddCertificate(certFile, keyFile); err != nil {
-			err = fmt.Errorf("Unable to load TLS certificate '%s,%s': %w", certFile, keyFile, err)
+			err = fmt.Errorf("unable to load TLS certificate '%s,%s': %w", certFile, keyFile, err)
 			logger.LogIf(GlobalContext, err, logger.Minio)
 		}
 	}

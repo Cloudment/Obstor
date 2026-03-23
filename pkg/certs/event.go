@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,9 @@
 
 package certs
 
-import (
-	"github.com/rjeczalik/notify"
-)
+import "github.com/fsnotify/fsnotify"
 
 // isWriteEvent checks if the event returned is a write event
-func isWriteEvent(event notify.Event) bool {
-	for _, ev := range eventWrite {
-		if event&ev != 0 {
-			return true
-		}
-	}
-	return false
+func isWriteEvent(op fsnotify.Op) bool {
+	return op&fsnotify.Write != 0 || op&fsnotify.Create != 0
 }

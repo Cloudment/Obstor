@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"sort"
@@ -31,10 +31,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/color"
 	"github.com/cloudment/obstor/pkg/console"
-	"github.com/bits-and-blooms/bloom/v3"
 )
 
 const (
@@ -298,7 +298,7 @@ func (d *dataUpdateTracker) startSaver(ctx context.Context, interval time.Durati
 		}
 		for _, drive := range drives {
 			cacheFormatPath := pathJoin(drive, dataUpdateTrackerFilename)
-			err := ioutil.WriteFile(cacheFormatPath, buf.Bytes(), os.ModePerm)
+			err := os.WriteFile(cacheFormatPath, buf.Bytes(), os.ModePerm)
 			if err != nil {
 				if osIsNotExist(err) {
 					continue

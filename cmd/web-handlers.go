@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
-	"github.com/minio/minio-go/v7"
 	miniogo "github.com/minio/minio-go/v7"
 	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
@@ -89,13 +89,13 @@ type WebGenericRep struct {
 
 // ServerInfoRep - server info reply.
 type ServerInfoRep struct {
-	MinioVersion    string
-	MinioMemory     string
-	MinioPlatform   string
-	MinioRuntime    string
-	MinioGlobalInfo map[string]interface{}
-	MinioUserInfo   map[string]interface{}
-	UIVersion       string `json:"uiVersion"`
+	ObstorVersion    string
+	ObstorMemory     string
+	ObstorPlatform   string
+	ObstorRuntime    string
+	ObstorGlobalInfo map[string]interface{}
+	ObstorUserInfo   map[string]interface{}
+	UIVersion        string `json:"uiVersion"`
 }
 
 // ServerInfo - get server info.
@@ -115,23 +115,23 @@ func (web *webAPIHandlers) ServerInfo(r *http.Request, args *WebGenericArgs, rep
 		runtime.GOARCH)
 	goruntime := fmt.Sprintf("Version: %s | CPUs: %d", runtime.Version(), runtime.NumCPU())
 
-	reply.MinioVersion = Version
-	reply.MinioGlobalInfo = getGlobalInfo()
+	reply.ObstorVersion = Version
+	reply.ObstorGlobalInfo = getGlobalInfo()
 
 	// Check if the user is IAM user.
-	reply.MinioUserInfo = map[string]interface{}{
+	reply.ObstorUserInfo = map[string]interface{}{
 		"isIAMUser": !owner,
 	}
 
 	if !owner {
 		creds, ok := globalIAMSys.GetUser(claims.AccessKey)
 		if ok && creds.SessionToken != "" {
-			reply.MinioUserInfo["isTempUser"] = true
+			reply.ObstorUserInfo["isTempUser"] = true
 		}
 	}
 
-	reply.MinioPlatform = platform
-	reply.MinioRuntime = goruntime
+	reply.ObstorPlatform = platform
+	reply.ObstorRuntime = goruntime
 	reply.UIVersion = Version
 	return nil
 }
@@ -305,7 +305,7 @@ func (web *webAPIHandlers) DeleteBucket(r *http.Request, args *RemoveBucketArgs,
 
 	if globalDNSConfig != nil {
 		if err := globalDNSConfig.Delete(args.BucketName); err != nil {
-			logger.LogIf(ctx, fmt.Errorf("Unable to delete bucket DNS entry %w, please delete it manually", err))
+			logger.LogIf(ctx, fmt.Errorf("unable to delete bucket DNS entry %w, please delete it manually", err))
 			return toJSONError(ctx, err)
 		}
 	}
@@ -618,14 +618,14 @@ func (web *webAPIHandlers) ListObjects(r *http.Request, args *ListObjectsArgs, r
 
 // RemoveObjectArgs - args to remove an object, JSON will look like.
 //
-// {
-//     "bucketname": "testbucket",
-//     "objects": [
-//         "photos/hawaii/",
-//         "photos/maldives/",
-//         "photos/sanjose.jpg"
-//     ]
-// }
+//	{
+//	    "bucketname": "testbucket",
+//	    "objects": [
+//	        "photos/hawaii/",
+//	        "photos/maldives/",
+//	        "photos/sanjose.jpg"
+//	    ]
+//	}
 type RemoveObjectArgs struct {
 	Objects    []string `json:"objects"`    // Contains objects, prefixes.
 	BucketName string   `json:"bucketname"` // Contains bucket name.
@@ -705,7 +705,7 @@ func (web *webAPIHandlers) RemoveObject(r *http.Request, args *RemoveObjectArgs,
 			}
 		}()
 
-		for resp := range core.RemoveObjects(ctx, args.BucketName, objectsCh, minio.RemoveObjectsOptions{}) {
+		for resp := range core.RemoveObjects(ctx, args.BucketName, objectsCh, miniogo.RemoveObjectsOptions{}) {
 			if resp.Err != nil {
 				return toJSONError(ctx, resp.Err, args.BucketName, resp.ObjectName)
 			}
@@ -2235,7 +2235,7 @@ type LoginSTSArgs struct {
 	Token string `json:"token" form:"token"`
 }
 
-var errSTSNotInitialized = errors.New("STS API not initialized, please configure STS support")
+var errSTSNotInitialized = errors.New("sts API not initialized, please configure STS support")
 
 // LoginSTS - STS user login handler.
 func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *LoginRep) error {
@@ -2257,7 +2257,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 	}
 
 	// JWT has requested a custom claim with policy value set.
-	// This is a ObStor STS API specific value, this value should
+	// This is a Obstor STS API specific value, this value should
 	// be set and configured on your identity provider as part of
 	// JWT custom claims.
 	var policyName string
@@ -2281,7 +2281,7 @@ func (web *webAPIHandlers) LoginSTS(r *http.Request, args *LoginSTSArgs, reply *
 		return toJSONError(ctx, err)
 	}
 
-	// Notify all other ObStor peers to reload temp users
+	// Notify all other Obstor peers to reload temp users
 	for _, nerr := range globalNotificationSys.LoadUser(cred.AccessKey, true) {
 		if nerr.Err != nil {
 			logger.GetReqInfo(ctx).SetTags("peerAddress", nerr.Host.String())
@@ -2443,4 +2443,92 @@ func writeWebErrorResponse(w http.ResponseWriter, err error) {
 	apiErr := toWebAPIError(ctx, err)
 	w.WriteHeader(apiErr.HTTPStatusCode)
 	w.Write([]byte(apiErr.Description))
+}
+
+// GetObjectLocationsArgs - get object locations args.
+type GetObjectLocationsArgs struct {
+	BucketName string `json:"bucketName"`
+	Prefix     string `json:"prefix"`
+}
+
+// ObjectLocation - a single object's placement info.
+type ObjectLocation struct {
+	Name      string   `json:"name"`
+	Endpoints []string `json:"endpoints"`
+}
+
+// GetObjectLocationsRep - reply with per-object endpoint placements.
+type GetObjectLocationsRep struct {
+	Objects   []ObjectLocation `json:"objects"`
+	UIVersion string           `json:"uiVersion"`
+}
+
+// GetObjectLocations returns which endpoints (nodes) hold each object in a prefix.
+func (web *webAPIHandlers) GetObjectLocations(r *http.Request, args *GetObjectLocationsArgs, reply *GetObjectLocationsRep) error {
+	ctx := newWebContext(r, args, "WebGetObjectLocations")
+	objectAPI := web.ObjectAPI()
+	reply.UIVersion = Version
+
+	if objectAPI == nil {
+		return toJSONError(ctx, errServerNotInitialized)
+	}
+
+	_, _, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+
+	// Try to get erasure placement; fall back to single-node endpoint.
+	type erasureGetter interface {
+		GetDisks() []StorageAPI
+	}
+
+	reply.Objects = []ObjectLocation{}
+
+	// List objects in the prefix
+	lo, err := objectAPI.ListObjects(ctx, args.BucketName, args.Prefix, "", "/", 1000)
+	if err != nil {
+		return toJSONError(ctx, err, args.BucketName)
+	}
+
+	for _, obj := range lo.Objects {
+		loc := ObjectLocation{Name: obj.Name}
+
+		// For erasure-coded deployments, read which disks have the object
+		if z, ok := objectAPI.(*erasureServerPools); ok {
+			for _, pool := range z.serverPools {
+				for _, set := range pool.sets {
+					fi, metaArr, onlineDisks, err := set.getObjectFileInfo(ctx, args.BucketName, obj.Name, ObjectOptions{}, false)
+					if err != nil || fi.Name == "" {
+						continue
+					}
+					for i, disk := range onlineDisks {
+						if disk == nil {
+							continue
+						}
+						if metaArr[i].IsValid() {
+							ep := disk.Endpoint().String()
+							if ep == "" {
+								ep = disk.String()
+							}
+							loc.Endpoints = append(loc.Endpoints, ep)
+						}
+					}
+				}
+			}
+		}
+
+		// Single-node fallback
+		if len(loc.Endpoints) == 0 {
+			for _, z := range globalEndpoints {
+				for _, ep := range z.Endpoints {
+					loc.Endpoints = append(loc.Endpoints, ep.String())
+				}
+			}
+		}
+
+		reply.Objects = append(reply.Objects, loc)
+	}
+
+	return nil
 }

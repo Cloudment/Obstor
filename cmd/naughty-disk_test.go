@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -284,4 +285,32 @@ func (d *naughtyDisk) VerifyFile(ctx context.Context, volume, path string, fi Fi
 		return err
 	}
 	return d.disk.VerifyFile(ctx, volume, path, fi)
+}
+
+func (d *naughtyDisk) WriteBlock(ctx context.Context, hash string, data []byte) error {
+	if err := d.calcError(); err != nil {
+		return err
+	}
+	return d.disk.WriteBlock(ctx, hash, data)
+}
+
+func (d *naughtyDisk) ReadBlock(ctx context.Context, hash string) ([]byte, error) {
+	if err := d.calcError(); err != nil {
+		return nil, err
+	}
+	return d.disk.ReadBlock(ctx, hash)
+}
+
+func (d *naughtyDisk) HasBlock(ctx context.Context, hash string) (bool, error) {
+	if err := d.calcError(); err != nil {
+		return false, err
+	}
+	return d.disk.HasBlock(ctx, hash)
+}
+
+func (d *naughtyDisk) DeleteBlock(ctx context.Context, hash string) error {
+	if err := d.calcError(); err != nil {
+		return err
+	}
+	return d.disk.DeleteBlock(ctx, hash)
 }

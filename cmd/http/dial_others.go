@@ -1,7 +1,9 @@
+//go:build !linux
 // +build !linux
 
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +28,7 @@ import (
 )
 
 // TODO: if possible implement for non-linux platforms, not a priority at the moment
+//
 //nolint:deadcode
 func setInternalTCPParameters(c syscall.RawConn) error {
 	return nil

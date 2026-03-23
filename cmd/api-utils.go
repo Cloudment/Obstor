@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2019 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +35,8 @@ func shouldEscape(c byte) bool {
 
 // s3URLEncode is based on Golang's url.QueryEscape() code,
 // while considering some S3 exceptions:
-//	- Avoid encoding '/' and '*'
-//	- Force encoding of '~'
+//   - Avoid encoding '/' and '*'
+//   - Force encoding of '~'
 func s3URLEncode(s string) string {
 	spaceCount, hexCount := 0, 0
 	for i := 0; i < len(s); i++ {

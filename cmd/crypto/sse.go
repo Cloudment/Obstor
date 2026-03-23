@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,9 +41,9 @@ const (
 )
 
 // Type represents an AWS SSE type:
-//  • SSE-C
-//  • SSE-S3
-//  • SSE-KMS
+//   - SSE-C
+//   - SSE-S3
+//   - SSE-KMS
 type Type interface {
 	fmt.Stringer
 
@@ -96,7 +97,7 @@ func unsealObjectKey(clientKey []byte, metadata map[string]string, bucket, objec
 func EncryptSinglePart(r io.Reader, key ObjectKey) io.Reader {
 	r, err := sio.EncryptReader(r, sio.Config{MinVersion: sio.Version20, Key: key[:], CipherSuites: fips.CipherSuitesDARE()})
 	if err != nil {
-		logger.CriticalIf(context.Background(), errors.New("Unable to encrypt io.Reader using object key"))
+		logger.CriticalIf(context.Background(), errors.New("unable to encrypt io.Reader using object key"))
 	}
 	return r
 }
@@ -118,7 +119,7 @@ func DecryptSinglePart(w io.Writer, offset, length int64, key ObjectKey) io.Writ
 
 	decWriter, err := sio.DecryptWriter(w, sio.Config{Key: key[:], CipherSuites: fips.CipherSuitesDARE()})
 	if err != nil {
-		logger.CriticalIf(context.Background(), errors.New("Unable to decrypt io.Writer using object key"))
+		logger.CriticalIf(context.Background(), errors.New("unable to decrypt io.Writer using object key"))
 	}
 	return decWriter
 }

@@ -1,7 +1,9 @@
+//go:build linux
 // +build linux
 
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +21,14 @@
 package sys
 
 import (
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
 
 // GetMaxThreads returns the maximum number of threads that the system can create.
 func GetMaxThreads() (int, error) {
-	sysMaxThreadsStr, err := ioutil.ReadFile("/proc/sys/kernel/threads-max")
+	sysMaxThreadsStr, err := os.ReadFile("/proc/sys/kernel/threads-max")
 	if err != nil {
 		return 0, err
 	}

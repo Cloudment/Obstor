@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -224,7 +225,7 @@ func NewNSQTarget(id string, args NSQArgs, doneCh <-chan struct{}, loggerOnce fu
 
 	if err := target.producer.Ping(); err != nil {
 		// To treat "connection refused" errors as errNotConnected.
-		if target.store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if target.store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

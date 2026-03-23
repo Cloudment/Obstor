@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +66,7 @@ var (
 
 	errFnHealFromAPIErr = func(ctx context.Context, err error) error {
 		apiErr := toAdminAPIErr(ctx, err)
-		return fmt.Errorf("Heal internal error: %s: %s",
+		return fmt.Errorf("heal internal error: %s: %s",
 			apiErr.Code, apiErr.Description)
 	}
 )
@@ -819,7 +820,7 @@ func (h *healSequence) healItemsFromSourceCh() error {
 				case ObjectNotFound:
 				case VersionNotFound:
 				default:
-					logger.LogIf(h.ctx, fmt.Errorf("Heal attempt failed for %s: %w",
+					logger.LogIf(h.ctx, fmt.Errorf("heal attempt failed for %s: %w",
 						pathJoin(source.bucket, source.object), err))
 				}
 			}

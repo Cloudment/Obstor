@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@ package gcs
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
@@ -28,7 +28,7 @@ import (
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/googleapi"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 	miniogo "github.com/minio/minio-go/v7"
 )
 
@@ -116,7 +116,7 @@ func TestIsGCSMarker(t *testing.T) {
 		expected bool
 	}{
 		{
-			marker:   "{minio}gcs123",
+			marker:   "{obstor}gcs123",
 			expected: true,
 		},
 		{
@@ -175,22 +175,22 @@ func TestFromMinioClientListBucketResultToV2Info(t *testing.T) {
 		Contents:       []miniogo.ObjectInfo{{Key: "testobj", ContentType: ""}},
 	}
 
-	listBucketV2Info := minio.ListObjectsV2Info{
+	listBucketV2Info := obstor.ListObjectsV2Info{
 		Prefixes:              []string{"one", "two"},
-		Objects:               []minio.ObjectInfo{{Name: "testobj", Bucket: "testbucket", UserDefined: map[string]string{"Content-Type": ""}}},
+		Objects:               []obstor.ObjectInfo{{Name: "testobj", Bucket: "testbucket", UserDefined: map[string]string{"Content-Type": ""}}},
 		IsTruncated:           false,
 		ContinuationToken:     "testMarker",
 		NextContinuationToken: "testMarker2",
 	}
 
-	if got := minio.FromMinioClientListBucketResultToV2Info("testbucket", listBucketResult); !reflect.DeepEqual(got, listBucketV2Info) {
+	if got := obstor.FromMinioClientListBucketResultToV2Info("testbucket", listBucketResult); !reflect.DeepEqual(got, listBucketV2Info) {
 		t.Errorf("fromMinioClientListBucketResultToV2Info() = %v, want %v", got, listBucketV2Info)
 	}
 }
 
 // Test for gcsParseProjectID
 func TestGCSParseProjectID(t *testing.T) {
-	f, err := ioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -234,19 +234,19 @@ func TestGCSToObjectError(t *testing.T) {
 			[]string{}, nil, nil,
 		},
 		{
-			[]string{}, fmt.Errorf("Not *Error"), fmt.Errorf("Not *Error"),
+			[]string{}, fmt.Errorf("not *Error"), fmt.Errorf("not *Error"),
 		},
 		{
 			[]string{"bucket"},
 			fmt.Errorf("storage: bucket doesn't exist"),
-			minio.BucketNotFound{
+			obstor.BucketNotFound{
 				Bucket: "bucket",
 			},
 		},
 		{
 			[]string{"bucket", "object"},
 			fmt.Errorf("storage: object doesn't exist"),
-			minio.ObjectNotFound{
+			obstor.ObjectNotFound{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -254,14 +254,14 @@ func TestGCSToObjectError(t *testing.T) {
 		{
 			[]string{"bucket", "object", "uploadID"},
 			fmt.Errorf("storage: object doesn't exist"),
-			minio.InvalidUploadID{
+			obstor.InvalidUploadID{
 				UploadID: "uploadID",
 			},
 		},
 		{
 			[]string{},
-			fmt.Errorf("Unknown error"),
-			fmt.Errorf("Unknown error"),
+			fmt.Errorf("unknown error"),
+			fmt.Errorf("unknown error"),
 		},
 		{
 			[]string{"bucket", "object"},
@@ -280,7 +280,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Message: "You already own this bucket. Please select another name.",
 				}},
 			},
-			minio.BucketAlreadyOwnedByYou{
+			obstor.BucketAlreadyOwnedByYou{
 				Bucket: "bucket",
 			},
 		},
@@ -292,7 +292,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Message: "Sorry, that name is not available. Please try a different one.",
 				}},
 			},
-			minio.BucketAlreadyExists{
+			obstor.BucketAlreadyExists{
 				Bucket: "bucket",
 			},
 		},
@@ -303,7 +303,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "conflict",
 				}},
 			},
-			minio.BucketNotEmpty{Bucket: "bucket"},
+			obstor.BucketNotEmpty{Bucket: "bucket"},
 		},
 		{
 			[]string{"bucket"},
@@ -312,7 +312,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "notFound",
 				}},
 			},
-			minio.BucketNotFound{
+			obstor.BucketNotFound{
 				Bucket: "bucket",
 			},
 		},
@@ -323,7 +323,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "notFound",
 				}},
 			},
-			minio.ObjectNotFound{
+			obstor.ObjectNotFound{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -335,7 +335,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "invalid",
 				}},
 			},
-			minio.BucketNameInvalid{
+			obstor.BucketNameInvalid{
 				Bucket: "bucket",
 			},
 		},
@@ -346,7 +346,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "forbidden",
 				}},
 			},
-			minio.PrefixAccessDenied{
+			obstor.PrefixAccessDenied{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -358,7 +358,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "keyInvalid",
 				}},
 			},
-			minio.PrefixAccessDenied{
+			obstor.PrefixAccessDenied{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -370,7 +370,7 @@ func TestGCSToObjectError(t *testing.T) {
 					Reason: "required",
 				}},
 			},
-			minio.PrefixAccessDenied{
+			obstor.PrefixAccessDenied{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -465,7 +465,7 @@ func TestGCSAttrsToObjectInfo(t *testing.T) {
 		ContentType:        "application/javascript",
 		Metadata:           metadata,
 	}
-	expectedETag := minio.ToS3ETag(fmt.Sprintf("%d", attrs.CRC32C))
+	expectedETag := obstor.ToS3ETag(fmt.Sprintf("%d", attrs.CRC32C))
 
 	objInfo := fromGCSAttrsToObjectInfo(&attrs)
 	if !reflect.DeepEqual(objInfo.UserDefined, expectedMeta) {

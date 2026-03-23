@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ package cmd
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"reflect"
@@ -29,11 +29,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/handlers"
 	jsonrpc "github.com/cloudment/obstor/pkg/rpc"
 	trace "github.com/cloudment/obstor/pkg/trace"
+	"github.com/gorilla/mux"
 )
 
 // recordRequest - records the first recLen bytes
@@ -192,7 +192,7 @@ func Trace(f http.HandlerFunc, logBody bool, w http.ResponseWriter, r *http.Requ
 	}
 
 	reqBodyRecorder := &recordRequest{Reader: r.Body, logBody: logBody, headers: reqHeaders}
-	r.Body = ioutil.NopCloser(reqBodyRecorder)
+	r.Body = io.NopCloser(reqBodyRecorder)
 
 	now := time.Now().UTC()
 	t := trace.Info{TraceType: trace.HTTP, FuncName: name, Time: now}

@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2019 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ import (
 	"fmt"
 	"io"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/data"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/schema"
@@ -131,7 +132,7 @@ func (writer *Writer) finalize() (err error) {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	footerBuf, err := ts.Write(context.TODO(), writer.footer)
 	if err != nil {
 		return err

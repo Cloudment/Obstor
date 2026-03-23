@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +40,10 @@ import (
 
 var (
 	// Fatal error for query processing.
-	errNestedAggregation      = errors.New("Cannot nest aggregations")
-	errFunctionNotImplemented = errors.New("Function is not yet implemented")
-	errUnexpectedInvalidNode  = errors.New("Unexpected node value")
-	errInvalidKeypath         = errors.New("A provided keypath is invalid")
+	errNestedAggregation      = errors.New("cannot nest aggregations")
+	errFunctionNotImplemented = errors.New("function is not yet implemented")
+	errUnexpectedInvalidNode  = errors.New("unexpected node value")
+	errInvalidKeypath         = errors.New("a provided keypath is invalid")
 )
 
 // qProp contains analysis info about an SQL term.
@@ -293,7 +294,7 @@ func (e *FuncExpr) analyze(s *Select) (result qProp) {
 		return result
 
 	case sqlFnSubstring:
-		errVal := fmt.Errorf("Invalid argument(s) to %s", string(funcName))
+		errVal := fmt.Errorf("invalid argument(s) to %s", string(funcName))
 		result.combine(e.Substring.Expr.analyze(s))
 		switch {
 		case e.Substring.From != nil:

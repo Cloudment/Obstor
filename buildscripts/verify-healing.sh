@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+# PGG Obstor, (C) 2021-2026 PGG, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,20 +20,20 @@ set -e
 set -E
 set -o pipefail
 
-if [ ! -x "$PWD/minio" ]; then
-    echo "minio executable binary not found in current directory"
+if [ ! -x "$PWD/obstor" ]; then
+    echo "obstor executable binary not found in current directory"
     exit 1
 fi
 
 WORK_DIR="$PWD/.verify-$RANDOM"
-OBSTOR_CONFIG_DIR="$WORK_DIR/.minio"
-OBSTOR=( "$PWD/minio" --config-dir "$OBSTOR_CONFIG_DIR" server )
+OBSTOR_CONFIG_DIR="$WORK_DIR/.obstor"
+OBSTOR=( "$PWD/obstor" --config-dir "$OBSTOR_CONFIG_DIR" server )
 
 export GOGC=25
 
 function start_minio_3_node() {
-    export OBSTOR_ROOT_USER=minio
-    export OBSTOR_ROOT_PASSWORD=minio123
+    export OBSTOR_ROOT_USER=obstor
+    export OBSTOR_ROOT_PASSWORD=obstor123
     export OBSTOR_ERASURE_SET_DRIVE_COUNT=6
 
     start_port=$(shuf -i 10000-65000 -n 1)
@@ -41,29 +42,29 @@ function start_minio_3_node() {
         args="$args http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/1/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/2/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/3/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/4/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/5/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/6/"
     done
 
-    "${OBSTOR[@]}" --address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-minio-server1.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-obstor-server1.log" 2>&1 &
     disown $!
 
-    "${OBSTOR[@]}" --address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-minio-server2.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-obstor-server2.log" 2>&1 &
     disown $!
 
-    "${OBSTOR[@]}" --address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-minio-server3.log" 2>&1 &
+    "${OBSTOR[@]}" --address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-obstor-server3.log" 2>&1 &
     disown $!
 
     sleep "$1"
-    if [ "$(pgrep -c minio)" -ne 3 ]; then
+    if [ "$(pgrep -c obstor)" -ne 3 ]; then
         for i in $(seq 1 3); do
             echo "server$i log:"
-            cat "${WORK_DIR}/dist-minio-server$i.log"
+            cat "${WORK_DIR}/dist-obstor-server$i.log"
         done
         echo "FAILED"
         purge "$WORK_DIR"
         exit 1
     fi
-    if ! pkill minio; then
+    if ! pkill obstor; then
         for i in $(seq 1 3); do
             echo "server$i log:"
-            cat "${WORK_DIR}/dist-minio-server$i.log"
+            cat "${WORK_DIR}/dist-obstor-server$i.log"
         done
         echo "FAILED"
         purge "$WORK_DIR"
@@ -71,17 +72,17 @@ function start_minio_3_node() {
     fi
 
     sleep 1;
-    if pgrep minio; then
+    if pgrep obstor; then
         # forcibly killing, to proceed further properly.
-        if ! pkill -9 minio; then
-            echo "no minio process running anymore, proceed."
+        if ! pkill -9 obstor; then
+            echo "no obstor process running anymore, proceed."
         fi
     fi
 }
 
 
 function check_online() {
-    if grep -q 'Server switching to safe mode' ${WORK_DIR}/dist-minio-*.log; then
+    if grep -q 'Server switching to safe mode' ${WORK_DIR}/dist-obstor-*.log; then
         echo "1"
     fi
 }
@@ -97,8 +98,8 @@ function __init__()
     mkdir -p "$WORK_DIR"
     mkdir -p "$OBSTOR_CONFIG_DIR"
 
-    ## version is purposefully set to '3' for minio to migrate configuration file
-    echo '{"version": "3", "credential": {"accessKey": "minio", "secretKey": "minio123"}, "region": "us-east-1"}' > "$OBSTOR_CONFIG_DIR/config.json"
+    ## version is purposefully set to '3' for obstor to migrate configuration file
+    echo '{"version": "3", "credential": {"accessKey": "obstor", "secretKey": "obstor123"}, "region": "us-east-1"}' > "$OBSTOR_CONFIG_DIR/config.json"
 }
 
 function perform_test() {
@@ -113,10 +114,10 @@ function perform_test() {
 
     rv=$(check_online)
     if [ "$rv" == "1" ]; then
-        pkill -9 minio
+        pkill -9 obstor
         for i in $(seq 1 3); do
             echo "server$i log:"
-            cat "${WORK_DIR}/dist-minio-server$i.log"
+            cat "${WORK_DIR}/dist-obstor-server$i.log"
         done
         echo "FAILED"
         purge "$WORK_DIR"

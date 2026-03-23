@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +80,8 @@ const (
 	HealSubSys           = "heal"
 	ScannerSubSys        = "scanner"
 	CrawlerSubSys        = "crawler"
+	SftpSubSys           = "sftp"
+	ReplicationSubSys    = "replication"
 
 	// Add new constants here if you add new fields to config.
 )
@@ -117,6 +120,8 @@ var SubSystems = set.CreateStringSet(
 	IdentityOpenIDSubSys,
 	ScannerSubSys,
 	HealSubSys,
+	SftpSubSys,
+	ReplicationSubSys,
 	NotifyAMQPSubSys,
 	NotifyESSubSys,
 	NotifyKafkaSubSys,
@@ -153,6 +158,7 @@ var SubSystemsSingleTargets = set.CreateStringSet([]string{
 	IdentityOpenIDSubSys,
 	HealSubSys,
 	ScannerSubSys,
+	ReplicationSubSys,
 }...)
 
 // Constant separators
@@ -165,7 +171,7 @@ const (
 	KvDoubleQuote      = madmin.KvDoubleQuote
 	KvSingleQuote      = madmin.KvSingleQuote
 
-	// Env prefix used for all envs in ObStor
+	// Env prefix used for all envs in Obstor
 	EnvPrefix        = "OBSTOR_"
 	EnvWordDelimiter = `_`
 )
@@ -299,7 +305,7 @@ func (kvs KVS) Lookup(key string) (string, bool) {
 	return "", false
 }
 
-// Config - ObStor server config structure.
+// Config - Obstor server config structure.
 type Config map[string]map[string]KVS
 
 // DelFrom - deletes all keys in the input reader.
@@ -453,7 +459,7 @@ func CheckValidKeys(subSys string, kv KVS, validKVS KVS) error {
 	}
 	if len(nkv) > 0 {
 		return Errorf(
-			"found invalid keys (%s) for '%s' sub-system, use 'mc admin config reset myminio %s' to fix invalid keys", nkv.String(), subSys, subSys)
+			"found invalid keys (%s) for '%s' sub-system, use 'mc admin config reset myobstor %s' to fix invalid keys", nkv.String(), subSys, subSys)
 	}
 	return nil
 }

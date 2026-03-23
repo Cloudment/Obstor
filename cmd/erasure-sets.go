@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,10 +140,10 @@ func connectEndpoint(endpoint Endpoint) (StorageAPI, *formatErasureV3, error) {
 		if errors.Is(err, errUnformattedDisk) {
 			info, derr := disk.DiskInfo(context.TODO())
 			if derr != nil && info.RootDisk {
-				return nil, nil, fmt.Errorf("Disk: %s returned %w", disk, derr) // make sure to '%w' to wrap the error
+				return nil, nil, fmt.Errorf("disk: %s returned %w", disk, derr) // make sure to '%w' to wrap the error
 			}
 		}
-		return nil, nil, fmt.Errorf("Disk: %s returned %w", disk, err) // make sure to '%w' to wrap the error
+		return nil, nil, fmt.Errorf("disk: %s returned %w", disk, err) // make sure to '%w' to wrap the error
 	}
 
 	return disk, format, nil
@@ -1173,7 +1174,7 @@ func markRootDisksAsDown(storageDisks []StorageAPI, errs []error) {
 	if !isTestSetup(infos, errs) {
 		for i := range storageDisks {
 			if storageDisks[i] != nil && infos[i].RootDisk {
-				// We should not heal on root disk. i.e in a situation where the minio-administrator has unmounted a
+				// We should not heal on root disk. i.e in a situation where the obstor-administrator has unmounted a
 				// defective drive we should not heal a path on the root disk.
 				logger.Info("Disk `%s` the same as the system root disk.\n"+
 					"Disk will not be used. Please supply a separate disk and restart the server.",
@@ -1189,7 +1190,7 @@ func (s *erasureSets) HealFormat(ctx context.Context, dryRun bool) (res madmin.H
 	storageDisks, errs := initStorageDisksWithErrorsWithoutHealthCheck(s.endpoints)
 	for i, derr := range errs {
 		if derr != nil && derr != errDiskNotFound {
-			return madmin.HealResultItem{}, fmt.Errorf("Disk %s: %w", s.endpoints[i], derr)
+			return madmin.HealResultItem{}, fmt.Errorf("disk %s: %w", s.endpoints[i], derr)
 		}
 	}
 

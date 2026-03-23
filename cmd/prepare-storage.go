@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +28,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	"github.com/dustin/go-humanize"
 )
 
 var printEndpointError = func() func(Endpoint, error, bool) {
@@ -61,7 +62,7 @@ var printEndpointError = func() func(Endpoint, error, bool) {
 		// once not set, check if same error occurred 3 times in
 		// a row, then make sure we print it to call attention.
 		if m[err.Error()] > 2 {
-			logger.LogAlwaysIf(ctx, fmt.Errorf("Following error has been printed %d times.. %w", m[err.Error()], err))
+			logger.LogAlwaysIf(ctx, fmt.Errorf("following error has been printed %d times.. %w", m[err.Error()], err))
 			// Reduce the count to introduce further delay in printing
 			// but let it again print after the 2th attempt
 			m[err.Error()]--
@@ -106,16 +107,16 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 		index := index
 		g.Go(func() error {
 			epPath := endpoints[index].Path
-			// Need to move temporary objects left behind from previous run of minio
+			// Need to move temporary objects left behind from previous run of obstor
 			// server to a unique directory under `minioMetaTmpBucket-old` to clean
 			// up `minioMetaTmpBucket` for the current run.
 			//
-			// /disk1/.minio.sys/tmp-old/
+			// /disk1/.obstor.sys/tmp-old/
 			//  |__ 33a58b40-aecc-4c9f-a22f-ff17bfa33b62
 			//  |__ e870a2c1-d09c-450c-a69c-6eaa54a89b3e
 			//
 			// In this example, `33a58b40-aecc-4c9f-a22f-ff17bfa33b62` directory contains
-			// temporary objects from one of the previous runs of minio server.
+			// temporary objects from one of the previous runs of obstor server.
 			tmpOld := pathJoin(epPath, minioMetaTmpBucket+"-old", mustGetUUID())
 			if err := renameAll(pathJoin(epPath, minioMetaTmpBucket),
 				tmpOld); err != nil && err != errFileNotFound {
@@ -153,7 +154,7 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 // the disk UUID association. Below error message is returned when
 // we see this situation in format.json, for more info refer
 // https://github.com/cloudment/obstor/issues/5667
-var errErasureV3ThisEmpty = fmt.Errorf("Erasure format version 3 has This field empty")
+var errErasureV3ThisEmpty = fmt.Errorf("erasure format version 3 has This field empty")
 
 // isServerResolvable - checks if the endpoint is resolvable
 // by sending a naked HTTP request with liveness checks.
@@ -224,7 +225,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 	for i, err := range errs {
 		if err != nil {
 			if err != errDiskNotFound {
-				return nil, nil, fmt.Errorf("Disk %s: %w", endpoints[i], err)
+				return nil, nil, fmt.Errorf("disk %s: %w", endpoints[i], err)
 			}
 			if retryCount >= 5 {
 				logger.Info("Unable to connect to %s: %v\n", endpoints[i], isServerResolvable(endpoints[i], time.Second))
@@ -265,7 +266,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 		}
 
 		// Assign globalDeploymentID on first run for the
-		// minio server managing the first disk
+		// obstor server managing the first disk
 		globalDeploymentID = format.ID
 		return storageDisks, format, nil
 	}
@@ -320,7 +321,7 @@ func connectLoadInitFormats(retryCount int, firstDisk bool, endpoints Endpoints,
 		return nil, nil, err
 	}
 
-	// The will always recreate some directories inside .minio.sys of
+	// The will always recreate some directories inside .obstor.sys of
 	// the local disk such as tmp, multipart and background-ops
 	initErasureMetaVolumesInLocalDisks(storageDisks, formatConfigs)
 
@@ -381,7 +382,7 @@ func waitForFormatErasure(firstDisk bool, endpoints Endpoints, poolCount, setCou
 			}
 			return storageDisks, format, nil
 		case <-globalOSSignalCh:
-			return nil, nil, fmt.Errorf("Initializing data volumes gracefully stopped")
+			return nil, nil, fmt.Errorf("initializing data volumes gracefully stopped")
 		}
 	}
 }

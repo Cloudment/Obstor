@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +29,12 @@ import (
 	trace "github.com/cloudment/obstor/pkg/trace"
 )
 
-// ServiceRestart - restarts the ObStor cluster
+// ServiceRestart - restarts the Obstor cluster
 func (adm *AdminClient) ServiceRestart(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionRestart)
 }
 
-// ServiceStop - stops the ObStor cluster
+// ServiceStop - stops the Obstor cluster
 func (adm *AdminClient) ServiceStop(ctx context.Context) error {
 	return adm.serviceCallAction(ctx, ServiceActionStop)
 }

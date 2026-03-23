@@ -66,7 +66,7 @@
       }
     ]
   },
-  "description": "ObStor dashboard - https://pgg.net/",
+  "description": "Obstor dashboard - https://obstor.net/",
   "editable": true,
   "gnetId": 13502,
   "graphTooltip": 0,
@@ -78,7 +78,7 @@
       "includeVars": true,
       "keepTime": true,
       "tags": [
-        "minio"
+        "obstor"
       ],
       "type": "dashboards"
     }
@@ -242,7 +242,7 @@
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Total online disks in ObStor Cluster",
+          "legendFormat": "Total online disks in Obstor Cluster",
           "metric": "process_start_time_seconds",
           "refId": "A",
           "step": 60
@@ -557,7 +557,7 @@
           "instant": true,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "Total offline disks in ObStor Cluster",
+          "legendFormat": "Total offline disks in Obstor Cluster",
           "metric": "process_start_time_seconds",
           "refId": "A",
           "step": 60
@@ -1360,7 +1360,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Total number of s3 bytes received and sent per ObStor server instance",
+      "description": "Total number of s3 bytes received and sent per Obstor server instance",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1474,7 +1474,7 @@
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
       "decimals": null,
-      "description": "Total number of active s3 requests in current ObStor instance",
+      "description": "Total number of active s3 requests in current Obstor instance",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1601,7 +1601,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Total number of bytes received and sent among all ObStor server instances",
+      "description": "Total number of bytes received and sent among all Obstor server instances",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1730,7 +1730,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Number of online disks per ObStor Server",
+      "description": "Number of online disks per Obstor Server",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1840,7 +1840,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Disk capacity used per ObStor Server",
+      "description": "Disk capacity used per Obstor Server",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1941,7 +1941,7 @@
   "schemaVersion": 26,
   "style": "dark",
   "tags": [
-    "minio"
+    "obstor"
   ],
   "templating": {
     "list": [
@@ -1952,7 +1952,7 @@
         "definition": "label_values(minio_version_info,instance)",
         "hide": 0,
         "includeAll": true,
-        "label": "ObStor Host",
+        "label": "Obstor Host",
         "multi": true,
         "name": "instance",
         "options": [],
@@ -2020,7 +2020,7 @@
     ]
   },
   "timezone": "",
-  "title": "ObStor Overview",
+  "title": "Obstor Overview",
   "uid": "pJnnS4hZz",
   "version": 190
 }

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +35,9 @@ const (
 
 	// GatewaySetupType - gateway setup type enum.
 	GatewaySetupType
+
+	// ReplicatedSetupType - block replication setup type enum.
+	ReplicatedSetupType
 )
 
 func (setupType SetupType) String() string {
@@ -46,6 +50,8 @@ func (setupType SetupType) String() string {
 		return globalMinioModeDistErasure
 	case GatewaySetupType:
 		return globalMinioModeGatewayPrefix
+	case ReplicatedSetupType:
+		return "mode-server-replicated"
 	}
 
 	return "unknown"

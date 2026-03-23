@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@ package nas
 import (
 	"context"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/madmin"
 	"github.com/urfave/cli"
@@ -39,12 +40,12 @@ PATH:
   path to NAS mount point
 
 EXAMPLES:
-  1. Start minio gateway server for NAS backend
+  1. Start obstor gateway server for NAS backend
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 
-  2. Start minio gateway server for NAS with edge caching enabled
+  2. Start obstor gateway server for NAS with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -56,8 +57,8 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 `
 
-	minio.RegisterGatewayCommand(cli.Command{
-		Name:               minio.NASBackendGateway,
+	obstor.RegisterGatewayCommand(cli.Command{
+		Name:               obstor.NASBackendGateway,
 		Usage:              "Network-attached storage (NAS)",
 		Action:             nasGatewayMain,
 		CustomHelpTemplate: nasGatewayTemplate,
@@ -65,14 +66,14 @@ EXAMPLES:
 	})
 }
 
-// Handler for 'minio gateway nas' command line.
+// Handler for 'obstor gateway nas' command line.
 func nasGatewayMain(ctx *cli.Context) {
 	// Validate gateway arguments.
 	if !ctx.Args().Present() || ctx.Args().First() == "help" {
-		cli.ShowCommandHelpAndExit(ctx, minio.NASBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, obstor.NASBackendGateway, 1)
 	}
 
-	minio.StartGateway(ctx, &NAS{ctx.Args().First()})
+	obstor.StartGateway(ctx, &NAS{ctx.Args().First()})
 }
 
 // NAS implements Gateway.
@@ -82,13 +83,13 @@ type NAS struct {
 
 // Name implements Gateway interface.
 func (g *NAS) Name() string {
-	return minio.NASBackendGateway
+	return obstor.NASBackendGateway
 }
 
 // NewGatewayLayer returns nas gatewaylayer.
-func (g *NAS) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, error) {
+func (g *NAS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	var err error
-	newObject, err := minio.NewFSObjectLayer(g.path)
+	newObject, err := obstor.NewFSObjectLayer(g.path)
 	if err != nil {
 		return nil, err
 	}
@@ -105,16 +106,16 @@ func (n *nasObjects) IsListenSupported() bool {
 	return false
 }
 
-func (n *nasObjects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ []error) {
+func (n *nasObjects) StorageInfo(ctx context.Context) (si obstor.StorageInfo, _ []error) {
 	si, errs := n.ObjectLayer.StorageInfo(ctx)
 	si.Backend.GatewayOnline = si.Backend.Type == madmin.FS
 	si.Backend.Type = madmin.Gateway
 	return si, errs
 }
 
-// nasObjects implements gateway for ObStor and S3 compatible object storage servers.
+// nasObjects implements gateway for Obstor and S3 compatible object storage servers.
 type nasObjects struct {
-	minio.ObjectLayer
+	obstor.ObjectLayer
 }
 
 func (n *nasObjects) IsTaggingSupported() bool {

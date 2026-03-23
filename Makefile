@@ -6,7 +6,7 @@ GOARCH := $(shell go env GOARCH)
 GOOS := $(shell go env GOOS)
 
 VERSION ?= $(shell git describe --tags)
-TAG ?= "cloudment/obstor:$(VERSION)"
+TAG ?= "ghcr.io/cloudment/obstor:$(VERSION)"
 
 all: build
 
@@ -34,7 +34,7 @@ lint:
 	@GO111MODULE=on ${GOPATH}/bin/golangci-lint cache clean
 	@GO111MODULE=on ${GOPATH}/bin/golangci-lint run --build-tags kqueue --timeout=10m --config ./.golangci.yml
 
-# Builds minio, runs the verifiers then runs the tests.
+# Builds obstor, runs the verifiers then runs the tests.
 check: test
 test: verifiers build
 	@echo "Running unit tests"
@@ -44,48 +44,48 @@ test-race: verifiers build
 	@echo "Running unit tests under -race"
 	@(env bash $(PWD)/buildscripts/race.sh)
 
-# Verify minio binary
+# Verify obstor binary
 verify:
 	@echo "Verifying build with race"
-	@GO111MODULE=on CGO_ENABLED=1 go build -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/minio 1>/dev/null
+	@GO111MODULE=on CGO_ENABLED=1 go build -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/obstor 1>/dev/null
 	@(env bash $(PWD)/buildscripts/verify-build.sh)
 
-# Verify healing of disks with minio binary
+# Verify healing of disks with obstor binary
 verify-healing:
 	@echo "Verify healing build with race"
-	@GO111MODULE=on CGO_ENABLED=1 go build -race -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/minio 1>/dev/null
+	@GO111MODULE=on CGO_ENABLED=1 go build -race -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/obstor 1>/dev/null
 	@(env bash $(PWD)/buildscripts/verify-healing.sh)
 
-# Builds minio locally.
+# Builds obstor locally.
 build: checks
-	@echo "Building minio binary to './minio'"
-	@GO111MODULE=on CGO_ENABLED=0 go build -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/minio 1>/dev/null
+	@echo "Building obstor binary to './obstor'"
+	@GO111MODULE=on CGO_ENABLED=0 go build -tags kqueue -trimpath --ldflags "$(LDFLAGS)" -o $(PWD)/obstor 1>/dev/null
 
 hotfix-vars:
 	$(eval LDFLAGS := $(shell OBSTOR_RELEASE="RELEASE" OBSTOR_HOTFIX="hotfix.$(shell git rev-parse --short HEAD)" go run buildscripts/gen-ldflags.go $(shell git describe --tags --abbrev=0 | \
     sed 's#RELEASE\.\([0-9]\+\)-\([0-9]\+\)-\([0-9]\+\)T\([0-9]\+\)-\([0-9]\+\)-\([0-9]\+\)Z#\1-\2-\3T\4:\5:\6Z#')))
-	$(eval TAG := "cloudment/obstor:$(shell git describe --tags --abbrev=0).hotfix.$(shell git rev-parse --short HEAD)")
+	$(eval TAG := "ghcr.io/cloudment/obstor:$(shell git describe --tags --abbrev=0).hotfix.$(shell git rev-parse --short HEAD)")
 hotfix: hotfix-vars install
 
 docker-hotfix: hotfix checks
-	@echo "Building minio docker image '$(TAG)'"
+	@echo "Building obstor docker image '$(TAG)'"
 	@docker build -t $(TAG) . -f Dockerfile.dev
 
 docker: build checks
-	@echo "Building minio docker image '$(TAG)'"
+	@echo "Building obstor docker image '$(TAG)'"
 	@docker build -t $(TAG) . -f Dockerfile.dev
 
-# Builds minio and installs it to $GOPATH/bin.
+# Builds obstor and installs it to $GOPATH/bin.
 install: build
-	@echo "Installing minio binary to '$(GOPATH)/bin/minio'"
-	@mkdir -p $(GOPATH)/bin && cp -f $(PWD)/minio $(GOPATH)/bin/minio
-	@echo "Installation successful. To learn more, try \"minio --help\"."
+	@echo "Installing obstor binary to '$(GOPATH)/bin/obstor'"
+	@mkdir -p $(GOPATH)/bin && cp -f $(PWD)/obstor $(GOPATH)/bin/obstor
+	@echo "Installation successful. To learn more, try \"obstor --help\"."
 
 clean:
 	@echo "Cleaning up all the generated files"
 	@find . -name '*.test' | xargs rm -fv
 	@find . -name '*~' | xargs rm -fv
-	@rm -rvf minio
+	@rm -rvf obstor
 	@rm -rvf build
 	@rm -rvf release
 	@rm -rvf .verify*

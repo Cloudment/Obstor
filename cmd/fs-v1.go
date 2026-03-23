@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/user"
@@ -95,7 +95,7 @@ type fsAppendFile struct {
 func initMetaVolumeFS(fsPath, fsUUID string) error {
 	// This happens for the first time, but keep this here since this
 	// is the only place where it can be made less expensive
-	// optimizing all other calls. Create minio meta volume,
+	// optimizing all other calls. Create obstor meta volume,
 	// if it doesn't exist yet.
 	metaBucketPath := pathJoin(fsPath, minioMetaBucket)
 
@@ -141,7 +141,7 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 		return nil, config.ErrUnableToWriteInBackend(err).Hint("%s", hint)
 	}
 
-	// Assign a new UUID for FS minio mode. Each server instance
+	// Assign a new UUID for FS obstor mode. Each server instance
 	// gets its own UUID for temporary file transaction.
 	fsUUID := mustGetUUID()
 
@@ -450,7 +450,6 @@ func (fs *FSObjects) SetBucketPolicy(ctx context.Context, bucket string, p *poli
 	if err != nil {
 		return err
 	}
-
 
 	configData, err := json.Marshal(p)
 	if err != nil {
@@ -895,7 +894,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 
 	rc, _, err := fsOpenFile(ctx, fsMetaPath, 0)
 	if err == nil {
-		fsMetaBuf, rerr := ioutil.ReadAll(rc)
+		fsMetaBuf, rerr := io.ReadAll(rc)
 		rc.Close()
 		if rerr == nil {
 
@@ -1375,7 +1374,7 @@ func (fs *FSObjects) getObjectETag(ctx context.Context, bucket, entry string, lo
 		defer fs.rwPool.Close(fsMetaPath)
 
 		// Fetch the size of the underlying file.
-		fi, err = rlk.LockedFile.Stat()
+		fi, err = rlk.Stat()
 		if err != nil {
 			logger.LogIf(ctx, err)
 			return "", toObjectErr(err, bucket, entry)
@@ -1398,7 +1397,7 @@ func (fs *FSObjects) getObjectETag(ctx context.Context, bucket, entry string, lo
 		return "", nil
 	}
 
-	fsMetaBuf, err := ioutil.ReadAll(reader)
+	fsMetaBuf, err := io.ReadAll(reader)
 	if err != nil {
 		logger.LogIf(ctx, err)
 		return "", toObjectErr(err, bucket, entry)

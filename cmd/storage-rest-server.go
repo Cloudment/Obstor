@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os/user"
 	"path"
@@ -34,13 +34,13 @@ import (
 
 	"github.com/tinylib/msgp/msgp"
 
-	jwtreq "github.com/golang-jwt/jwt/v4/request"
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/config"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	xjwt "github.com/cloudment/obstor/cmd/jwt"
 	"github.com/cloudment/obstor/cmd/logger"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	jwtreq "github.com/golang-jwt/jwt/v4/request"
+	"github.com/gorilla/mux"
 )
 
 var errDiskStale = errors.New("disk stale")
@@ -60,7 +60,7 @@ func (s *storageRESTServer) writeErrorResponse(w http.ResponseWriter, err error)
 	w.(http.Flusher).Flush()
 }
 
-// DefaultSkewTime - skew time is 15 minutes between minio peers.
+// DefaultSkewTime - skew time is 15 minutes between obstor peers.
 const DefaultSkewTime = 15 * time.Minute
 
 // Authenticates storage client's requests and validates for skewed time.
@@ -87,7 +87,7 @@ func storageServerRequestValidate(r *http.Request) error {
 		return errAuthentication
 	}
 
-	requestTimeStr := r.Header.Get("X-Minio-Time")
+	requestTimeStr := r.Header.Get("X-Obstor-Time")
 	requestTime, err := time.Parse(time.RFC3339, requestTimeStr)
 	if err != nil {
 		return err
@@ -757,7 +757,7 @@ func waitForHTTPResponse(respBody io.Reader) (io.Reader, error) {
 		case 0:
 			return reader, nil
 		case 1:
-			errorText, err := ioutil.ReadAll(reader)
+			errorText, err := io.ReadAll(reader)
 			if err != nil {
 				return nil, err
 			}
@@ -884,7 +884,7 @@ func waitForHTTPStream(respBody io.ReadCloser, w io.Writer) error {
 			}
 			return err
 		case 1:
-			errorText, err := ioutil.ReadAll(respBody)
+			errorText, err := io.ReadAll(respBody)
 			if err != nil {
 				return err
 			}
@@ -973,17 +973,17 @@ func logFatalErrs(err error, endpoint Endpoint, exit bool) {
 	} else if errors.Is(err, errUnsupportedDisk) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' does not support O_DIRECT flags, Obstor erasure coding requires filesystems with O_DIRECT support", endpoint.Path)
 		} else {
-			hint = "Disks do not support O_DIRECT flags, ObStor erasure coding requires filesystems with O_DIRECT support"
+			hint = "Disks do not support O_DIRECT flags, Obstor erasure coding requires filesystems with O_DIRECT support"
 		}
 		logger.Fatal(config.ErrUnsupportedBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errDiskNotDir) {
 		var hint string
 		if endpoint.URL != nil {
-			hint = fmt.Sprintf("Disk '%s' is not a directory, ObStor erasure coding needs a directory", endpoint.Path)
+			hint = fmt.Sprintf("Disk '%s' is not a directory, Obstor erasure coding needs a directory", endpoint.Path)
 		} else {
-			hint = "Disks are not directories, ObStor erasure coding needs directories"
+			hint = "Disks are not directories, Obstor erasure coding needs directories"
 		}
 		logger.Fatal(config.ErrUnableToWriteInBackend(err).Hint("%s", hint), "Unable to initialize backend")
 	} else if errors.Is(err, errFileAccessDenied) {
@@ -1020,6 +1020,69 @@ func logFatalErrs(err error, endpoint Endpoint, exit bool) {
 		} else {
 			logger.Fatal(err, "Unable to initialize backend")
 		}
+	}
+}
+
+// WriteBlockHandler handles writing a content-addressed block.
+func (s *storageRESTServer) WriteBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	err = s.storage.WriteBlock(r.Context(), hash, data)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+}
+
+// ReadBlockHandler handles reading a content-addressed block.
+func (s *storageRESTServer) ReadBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	data, err := s.storage.ReadBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	w.Header().Set(xhttp.ContentLength, strconv.Itoa(len(data)))
+	w.Write(data)
+}
+
+// HasBlockHandler checks if a content-addressed block exists.
+func (s *storageRESTServer) HasBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	has, err := s.storage.HasBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
+	}
+	if !has {
+		s.writeErrorResponse(w, errFileNotFound)
+		return
+	}
+}
+
+// DeleteBlockHandler handles deleting a content-addressed block.
+func (s *storageRESTServer) DeleteBlockHandler(w http.ResponseWriter, r *http.Request) {
+	if !s.IsValid(w, r) {
+		return
+	}
+	hash := r.Form.Get(storageRESTBlockHash)
+	err := s.storage.DeleteBlock(r.Context(), hash)
+	if err != nil {
+		s.writeErrorResponse(w, err)
+		return
 	}
 }
 
@@ -1093,6 +1156,15 @@ func registerStorageRESTHandlers(router *mux.Router, endpointServerPools Endpoin
 				Queries(restQueries(storageRESTVolume, storageRESTFilePath)...)
 			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodWalkDir).HandlerFunc(httpTraceHdrs(server.WalkDirHandler)).
 				Queries(restQueries(storageRESTVolume, storageRESTDirPath, storageRESTRecursive)...)
+
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodWriteBlock).HandlerFunc(httpTraceHdrs(server.WriteBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodReadBlock).HandlerFunc(httpTraceHdrs(server.ReadBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodHasBlock).HandlerFunc(httpTraceHdrs(server.HasBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
+			subrouter.Methods(http.MethodPost).Path(storageRESTVersionPrefix + storageRESTMethodDeleteBlock).HandlerFunc(httpTraceHdrs(server.DeleteBlockHandler)).
+				Queries(restQueries(storageRESTBlockHash)...)
 		}
 	}
 }

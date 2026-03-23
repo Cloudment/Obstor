@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +22,15 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"sync"
 	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 // adminErasureTestBed - encapsulates subsystems that need to be setup for
@@ -58,7 +58,7 @@ func prepareAdminErasureTestBed(ctx context.Context) (*adminErasureTestBed, erro
 		return nil, xlErr
 	}
 
-	// Initialize minio server config.
+	// Initialize obstor server config.
 	if err := newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func testServicesCmdHandler(cmd cmdType, t *testing.T) {
 	adminTestBed.router.ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusOK {
-		resp, _ := ioutil.ReadAll(rec.Body)
+		resp, _ := io.ReadAll(rec.Body)
 		t.Errorf("Expected to receive %d status code but received %d. Body (%s)",
 			http.StatusOK, rec.Code, string(resp))
 	}

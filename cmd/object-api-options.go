@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +67,7 @@ func getDefaultOpts(header http.Header, copySource bool, metadata map[string]str
 	if crypto.S3.IsRequested(header) || (metadata != nil && crypto.S3.IsEncrypted(metadata)) {
 		opts.ServerSideEncryption = encrypt.NewSSE()
 	}
-	if v, ok := header[xhttp.ObStorSourceProxyRequest]; ok {
+	if v, ok := header[xhttp.ObstorSourceProxyRequest]; ok {
 		opts.ProxyHeaderSet = true
 		opts.ProxyRequest = strings.Join(v, "") == "true"
 	}
@@ -127,14 +128,14 @@ func getOpts(ctx context.Context, r *http.Request, bucket, object string) (Objec
 	}
 	opts.PartNumber = partNumber
 	opts.VersionID = vid
-	delMarker := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceDeleteMarker))
+	delMarker := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceDeleteMarker))
 	if delMarker != "" {
 		switch delMarker {
 		case "true":
 			opts.DeleteMarker = true
 		case "false":
 		default:
-			err = fmt.Errorf("Unable to parse %s, failed with %w", xhttp.ObStorSourceDeleteMarker, fmt.Errorf("DeleteMarker should be true or false"))
+			err = fmt.Errorf("unable to parse %s, failed with %w", xhttp.ObstorSourceDeleteMarker, fmt.Errorf("deleteMarker should be true or false"))
 			logger.LogIf(ctx, err)
 			return opts, InvalidArgument{
 				Bucket: bucket,
@@ -155,14 +156,14 @@ func delOpts(ctx context.Context, r *http.Request, bucket, object string) (opts 
 	}
 	opts.Versioned = versioned
 	opts.VersionSuspended = globalBucketVersioningSys.Suspended(bucket)
-	delMarker := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceDeleteMarker))
+	delMarker := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceDeleteMarker))
 	if delMarker != "" {
 		switch delMarker {
 		case "true":
 			opts.DeleteMarker = true
 		case "false":
 		default:
-			err = fmt.Errorf("Unable to parse %s, failed with %w", xhttp.ObStorSourceDeleteMarker, fmt.Errorf("DeleteMarker should be true or false"))
+			err = fmt.Errorf("unable to parse %s, failed with %w", xhttp.ObstorSourceDeleteMarker, fmt.Errorf("deleteMarker should be true or false"))
 			logger.LogIf(ctx, err)
 			return opts, InvalidArgument{
 				Bucket: bucket,
@@ -172,14 +173,14 @@ func delOpts(ctx context.Context, r *http.Request, bucket, object string) (opts 
 		}
 	}
 
-	purgeVersion := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceDeleteMarkerDelete))
+	purgeVersion := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceDeleteMarkerDelete))
 	if purgeVersion != "" {
 		switch purgeVersion {
 		case "true":
 			opts.VersionPurgeStatus = Complete
 		case "false":
 		default:
-			err = fmt.Errorf("Unable to parse %s, failed with %w", xhttp.ObStorSourceDeleteMarkerDelete, fmt.Errorf("DeleteMarkerPurge should be true or false"))
+			err = fmt.Errorf("unable to parse %s, failed with %w", xhttp.ObstorSourceDeleteMarkerDelete, fmt.Errorf("deleteMarkerPurge should be true or false"))
 			logger.LogIf(ctx, err)
 			return opts, InvalidArgument{
 				Bucket: bucket,
@@ -189,14 +190,14 @@ func delOpts(ctx context.Context, r *http.Request, bucket, object string) (opts 
 		}
 	}
 
-	mtime := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceMTime))
+	mtime := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceMTime))
 	if mtime != "" {
 		opts.MTime, err = time.Parse(time.RFC3339Nano, mtime)
 		if err != nil {
 			return opts, InvalidArgument{
 				Bucket: bucket,
 				Object: object,
-				Err:    fmt.Errorf("Unable to parse %s, failed with %w", xhttp.ObStorSourceMTime, err),
+				Err:    fmt.Errorf("unable to parse %s, failed with %w", xhttp.ObstorSourceMTime, err),
 			}
 		}
 	} else {
@@ -223,11 +224,11 @@ func putOpts(ctx context.Context, r *http.Request, bucket, object string, metada
 			return opts, InvalidArgument{
 				Bucket: bucket,
 				Object: object,
-				Err:    fmt.Errorf("VersionID specified %s, but versioning not enabled on  %s", opts.VersionID, bucket),
+				Err:    fmt.Errorf("versionID specified %s, but versioning not enabled on  %s", opts.VersionID, bucket),
 			}
 		}
 	}
-	mtimeStr := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceMTime))
+	mtimeStr := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceMTime))
 	mtime := UTCNow()
 	if mtimeStr != "" {
 		mtime, err = time.Parse(time.RFC3339, mtimeStr)
@@ -235,11 +236,11 @@ func putOpts(ctx context.Context, r *http.Request, bucket, object string, metada
 			return opts, InvalidArgument{
 				Bucket: bucket,
 				Object: object,
-				Err:    fmt.Errorf("Unable to parse %s, failed with %w", xhttp.ObStorSourceMTime, err),
+				Err:    fmt.Errorf("unable to parse %s, failed with %w", xhttp.ObstorSourceMTime, err),
 			}
 		}
 	}
-	etag := strings.TrimSpace(r.Header.Get(xhttp.ObStorSourceETag))
+	etag := strings.TrimSpace(r.Header.Get(xhttp.ObstorSourceETag))
 	if etag != "" {
 		if metadata == nil {
 			metadata = make(map[string]string, 1)

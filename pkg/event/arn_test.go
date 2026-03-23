@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +29,8 @@ func TestARNString(t *testing.T) {
 		expectedResult string
 	}{
 		{ARN{}, ""},
-		{ARN{TargetID{"1", "webhook"}, ""}, "arn:minio:sqs::1:webhook"},
-		{ARN{TargetID{"1", "webhook"}, "us-east-1"}, "arn:minio:sqs:us-east-1:1:webhook"},
+		{ARN{TargetID{"1", "webhook"}, ""}, "arn:obstor:sqs::1:webhook"},
+		{ARN{TargetID{"1", "webhook"}, "us-east-1"}, "arn:obstor:sqs:us-east-1:1:webhook"},
 	}
 
 	for i, testCase := range testCases {
@@ -48,8 +49,8 @@ func TestARNMarshalXML(t *testing.T) {
 		expectErr    bool
 	}{
 		{ARN{}, []byte("<ARN></ARN>"), false},
-		{ARN{TargetID{"1", "webhook"}, ""}, []byte("<ARN>arn:minio:sqs::1:webhook</ARN>"), false},
-		{ARN{TargetID{"1", "webhook"}, "us-east-1"}, []byte("<ARN>arn:minio:sqs:us-east-1:1:webhook</ARN>"), false},
+		{ARN{TargetID{"1", "webhook"}, ""}, []byte("<ARN>arn:obstor:sqs::1:webhook</ARN>"), false},
+		{ARN{TargetID{"1", "webhook"}, "us-east-1"}, []byte("<ARN>arn:obstor:sqs:us-east-1:1:webhook</ARN>"), false},
 	}
 
 	for i, testCase := range testCases {
@@ -75,9 +76,9 @@ func TestARNUnmarshalXML(t *testing.T) {
 		expectErr   bool
 	}{
 		{[]byte("<ARN></ARN>"), nil, true},
-		{[]byte("<ARN>arn:minio:sqs:::</ARN>"), nil, true},
-		{[]byte("<ARN>arn:minio:sqs::1:webhook</ARN>"), &ARN{TargetID{"1", "webhook"}, ""}, false},
-		{[]byte("<ARN>arn:minio:sqs:us-east-1:1:webhook</ARN>"), &ARN{TargetID{"1", "webhook"}, "us-east-1"}, false},
+		{[]byte("<ARN>arn:obstor:sqs:::</ARN>"), nil, true},
+		{[]byte("<ARN>arn:obstor:sqs::1:webhook</ARN>"), &ARN{TargetID{"1", "webhook"}, ""}, false},
+		{[]byte("<ARN>arn:obstor:sqs:us-east-1:1:webhook</ARN>"), &ARN{TargetID{"1", "webhook"}, "us-east-1"}, false},
 	}
 
 	for i, testCase := range testCases {
@@ -104,12 +105,12 @@ func TestParseARN(t *testing.T) {
 		expectErr   bool
 	}{
 		{"", nil, true},
-		{"arn:minio:sqs:::", nil, true},
-		{"arn:minio:sqs::1:webhook:remote", nil, true},
+		{"arn:obstor:sqs:::", nil, true},
+		{"arn:obstor:sqs::1:webhook:remote", nil, true},
 		{"arn:aws:sqs::1:webhook", nil, true},
-		{"arn:minio:sns::1:webhook", nil, true},
-		{"arn:minio:sqs::1:webhook", &ARN{TargetID{"1", "webhook"}, ""}, false},
-		{"arn:minio:sqs:us-east-1:1:webhook", &ARN{TargetID{"1", "webhook"}, "us-east-1"}, false},
+		{"arn:obstor:sns::1:webhook", nil, true},
+		{"arn:obstor:sqs::1:webhook", &ARN{TargetID{"1", "webhook"}, ""}, false},
+		{"arn:obstor:sqs:us-east-1:1:webhook", &ARN{TargetID{"1", "webhook"}, "us-east-1"}, false},
 	}
 
 	for i, testCase := range testCases {

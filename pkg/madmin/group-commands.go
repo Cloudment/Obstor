@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +47,7 @@ func (adm *AdminClient) UpdateGroupMembers(ctx context.Context, g GroupAddRemove
 		content: data,
 	}
 
-	// Execute PUT on /minio/admin/v3/update-group-members
+	// Execute PUT on /obstor/admin/v3/update-group-members
 	resp, err := adm.executeMethod(ctx, http.MethodPut, reqData)
 
 	defer closeResponse(resp)

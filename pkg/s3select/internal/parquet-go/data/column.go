@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2019 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ import (
 	"fmt"
 	"strings"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/common"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/encoding"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
@@ -493,7 +494,7 @@ func (column *Column) toDataPageV2(element *schema.Element, parquetEncoding parq
 	pageHeader.DataPageHeaderV2.Statistics.Max = column.encodeValue(column.maxValue, element)
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	rawData, err := ts.Write(context.TODO(), pageHeader)
 	if err != nil {
 		panic(err)
@@ -519,7 +520,7 @@ func (column *Column) toDataPageV2(element *schema.Element, parquetEncoding parq
 	metadata.Statistics.Max = pageHeader.DataPageHeaderV2.Statistics.Max
 
 	chunk := new(ColumnChunk)
-	chunk.ColumnChunk.MetaData = metadata
+	chunk.MetaData = metadata
 	chunk.dataPageLen = int64(len(rawData))
 	chunk.dataLen = int64(len(rawData))
 	chunk.data = rawData
@@ -549,7 +550,7 @@ func (column *Column) toRLEDictPage(element *schema.Element) *ColumnChunk {
 	dictPageHeader.DictionaryPageHeader.Encoding = parquet.Encoding_PLAIN
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	dictPageRawData, err := ts.Write(context.TODO(), dictPageHeader)
 	if err != nil {
 		panic(err)
@@ -589,7 +590,7 @@ func (column *Column) toRLEDictPage(element *schema.Element) *ColumnChunk {
 	dataPageHeader.DataPageHeader.Encoding = parquet.Encoding_RLE_DICTIONARY
 
 	ts = thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	dataPageRawData, err := ts.Write(context.TODO(), dataPageHeader)
 	if err != nil {
 		panic(err)
@@ -616,7 +617,7 @@ func (column *Column) toRLEDictPage(element *schema.Element) *ColumnChunk {
 	metadata.Statistics.Max = column.encodeValue(column.maxValue, element)
 
 	chunk := new(ColumnChunk)
-	chunk.ColumnChunk.MetaData = metadata
+	chunk.MetaData = metadata
 	chunk.isDictPage = true
 	chunk.dictPageLen = int64(len(dictPageRawData))
 	chunk.dataPageLen = int64(len(dataPageRawData))

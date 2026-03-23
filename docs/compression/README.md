@@ -1,8 +1,8 @@
 # Compression Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor server allows streaming compression to ensure efficient disk space usage.
+Obstor server allows streaming compression to ensure efficient disk space usage.
 Compression happens inflight, i.e objects are compressed before being written to disk(s).
-ObStor uses [`klauspost/compress/s2`](https://github.com/klauspost/compress/tree/master/s2)
+Obstor uses [`klauspost/compress/s2`](https://github.com/klauspost/compress/tree/master/s2)
 streaming compression due to its stability and performance.
 
 This algorithm is specifically optimized for machine generated content.
@@ -19,34 +19,34 @@ will increase speed when the content can be compressed.
 
 ### 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).
 
-### 2. Run ObStor with compression
+### 2. Run Obstor with compression
 
-Compression can be enabled by updating the `compress` config settings for ObStor server config.
+Compression can be enabled by updating the `compress` config settings for Obstor server config.
 Config `compress` settings take extensions and mime-types to be compressed.
 
 ```bash
-~ mc admin config get myminio compression
+~ mc admin config get myobstor compression
 compression extensions=".txt,.log,.csv,.json,.tar,.xml,.bin" mime_types="text/*,application/json,application/xml"
 ```
 
 Default config includes most common highly compressible content extensions and mime-types.
 
 ```bash
-~ mc admin config set myminio compression extensions=".pdf" mime_types="application/pdf"
+~ mc admin config set myobstor compression extensions=".pdf" mime_types="application/pdf"
 ```
 
 To show help on setting compression config values.
 ```bash
-~ mc admin config set myminio compression
+~ mc admin config set myobstor compression
 ```
 
 To enable compression for all content, no matter the extension and content type
 (except for the default excluded types) set BOTH extensions and mime types to empty.
 
 ```bash
-~ mc admin config set myminio compression enable="on" extensions="" mime_types=""
+~ mc admin config set myobstor compression enable="on" extensions="" mime_types=""
 ```
 
 The compression settings may also be set through environment variables.
@@ -72,7 +72,7 @@ your setup can use this feature combination safely.
 To enable compression+encryption use:
 
 ```bash
-~ mc admin config set myminio compression allow_encryption=on
+~ mc admin config set myobstor compression allow_encryption=on
 ```
 
 Or alternatively through the environment variable `OBSTOR_COMPRESS_ALLOW_ENCRYPTION=on`.
@@ -117,7 +117,7 @@ even if compression is enabled for all types.
 
 ### 5. Notes
 
-- ObStor does not support compression for Gateway (Azure/GCS/NAS) implementations.
+- Obstor does not support compression for Gateway (Azure/GCS/NAS) implementations.
 
 ## To test the setup
 
@@ -126,8 +126,8 @@ the data directory to view the size of the object.
 
 ## Explore Further
 
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)
+- [Use `minio-go` SDK with Obstor Server](https://obstor.net/docs/golang-client-quickstart-guide)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

@@ -1,6 +1,6 @@
 # Keycloak Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-Keycloak is an open source Identity and Access Management solution aimed at modern applications and services, this document covers configuring Keycloak identity provider support with ObStor.
+Keycloak is an open source Identity and Access Management solution aimed at modern applications and services, this document covers configuring Keycloak identity provider support with Obstor.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Configure and install keycloak server by following [Keycloak Installation Guide]
 
 - Go to Users
   - Click on the user
-  - Attribute, add a new attribute `Key` is `policy`, `Value` is name of the `policy` on ObStor (ex: `readwrite`)
+  - Attribute, add a new attribute `Key` is `policy`, `Value` is name of the `policy` on Obstor (ex: `readwrite`)
   - Add and Save
 
 - Go to Clients
@@ -36,16 +36,16 @@ Configure and install keycloak server by following [Keycloak Installation Guide]
 
 - Open http://localhost:8080/auth/realms/minio/.well-known/openid-configuration to verify OpenID discovery document, verify it has `authorization_endpoint` and `jwks_uri`
 
-### Configure ObStor
+### Configure Obstor
 ```
-$ export OBSTOR_ROOT_USER=minio
-$ export OBSTOR_ROOT_PASSWORD=minio123
-$ minio server /mnt/export
+$ export OBSTOR_ROOT_USER=obstor
+$ export OBSTOR_ROOT_PASSWORD=obstor123
+$ obstor server /mnt/export
 ```
 
 Here are all the available options to configure OpenID connect
 ```
-mc admin config set myminio/ identity_openid
+mc admin config set myobstor/ identity_openid
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -61,7 +61,7 @@ comment       (sentence)  optionally add a comment to this setting
 
 and ENV based options
 ```
-mc admin config set myminio/ identity_openid --env
+mc admin config set myobstor/ identity_openid --env
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -75,15 +75,15 @@ OBSTOR_IDENTITY_OPENID_SCOPES        (csv)       Comma separated list of OpenID 
 OBSTOR_IDENTITY_OPENID_COMMENT       (sentence)  optionally add a comment to this setting
 ```
 
-Set `identity_openid` config with `config_url`, `client_id` and restart ObStor
+Set `identity_openid` config with `config_url`, `client_id` and restart Obstor
 ```
-~ mc admin config set myminio identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
+~ mc admin config set myobstor identity_openid config_url="http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" client_id="account"
 ```
-> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by minio to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
+> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by obstor to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
 
-Once successfully set restart the ObStor instance.
+Once successfully set restart the Obstor instance.
 ```
-mc admin service restart myminio
+mc admin service restart myobstor
 ```
 
 ### Using WebIdentiy API
@@ -112,17 +112,17 @@ This will open the login page of keycloak, upon successful login, STS credential
 
 > NOTE: You can use the `-cscopes` parameter to restrict the requested scopes, for example to `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak.
 
-These credentials can now be used to perform ObStor API operations.
+These credentials can now be used to perform Obstor API operations.
 
-### Using ObStor Browser
+### Using Obstor Browser
 
-- Open ObStor URL on the browser, lets say http://localhost:9000
+- Open Obstor URL on the browser, lets say http://localhost:9000
 - Click on `Log in with OpenID`
-- Provide `Client ID` and press ENTER, if `client_id` is already configured for ObStor this page will automatically redirect to Keycloak user login page.
-- User will be redirected to the Keycloak user login page, upon successful login the user will be redirected to ObStor page and logged in automatically,
+- Provide `Client ID` and press ENTER, if `client_id` is already configured for Obstor this page will automatically redirect to Keycloak user login page.
+- User will be redirected to the Keycloak user login page, upon successful login the user will be redirected to Obstor page and logged in automatically,
   the user should see now the buckets and objects they have access to.
 
 ## Explore Further
 
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

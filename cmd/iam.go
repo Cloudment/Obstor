@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +43,8 @@ type UsersSysType string
 
 // Types of users configured in the server.
 const (
-	// This mode uses the internal users system in ObStor.
-	ObStorUsersSysType UsersSysType = "ObStorUsersSys"
+	// This mode uses the internal users system in Obstor.
+	ObstorUsersSysType UsersSysType = "ObstorUsersSys"
 
 	// This mode uses users and groups from a configured LDAP
 	// server.
@@ -225,7 +226,7 @@ type IAMSys struct {
 	configLoaded chan struct{}
 }
 
-// IAMUserType represents a user type inside ObStor server
+// IAMUserType represents a user type inside Obstor server
 type IAMUserType int
 
 const (
@@ -452,7 +453,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 	iamPolicyDocsMap := make(map[string]iampolicy.Policy)
 
 	store.rlock()
-	isObStorUsersSys := sys.usersSysType == ObStorUsersSysType
+	isObstorUsersSys := sys.usersSysType == ObstorUsersSysType
 	store.runlock()
 
 	if err := store.loadPolicyDocs(ctx, iamPolicyDocsMap); err != nil {
@@ -462,7 +463,7 @@ func (sys *IAMSys) Load(ctx context.Context, store IAMStorageAPI) error {
 	// Sets default canned policies, if none are set.
 	setDefaultCannedPolicies(iamPolicyDocsMap)
 
-	if isObStorUsersSys {
+	if isObstorUsersSys {
 		if err := store.loadUsers(ctx, regularUser, iamUsersMap); err != nil {
 			return err
 		}
@@ -585,7 +586,7 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err := txnLk.GetLock(retryCtx, iamLockTimeout); err != nil {
-			logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. trying to acquire lock")
+			logger.Info("Waiting for all Obstor IAM sub-system to be initialized.. trying to acquire lock")
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
 		}
@@ -596,26 +597,26 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 			// IAM sub-system, make sure that we do not move the above codeblock elsewhere.
 			if err := migrateIAMConfigsEtcdToEncrypted(ctx, globalEtcdClient); err != nil {
 				txnLk.Unlock()
-				logger.LogIf(ctx, fmt.Errorf("Unable to decrypt an encrypted ETCD backend for IAM users and policies: %w", err))
-				logger.LogIf(ctx, errors.New("IAM sub-system is partially initialized, some users may not be available"))
+				logger.LogIf(ctx, fmt.Errorf("unable to decrypt an encrypted ETCD backend for IAM users and policies: %w", err))
+				logger.LogIf(ctx, errors.New("iam sub-system is partially initialized, some users may not be available"))
 				return
 			}
 		}
 
 		// These messages only meant primarily for distributed setup, so only log during distributed setup.
 		if globalIsDistErasure {
-			logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. lock acquired")
+			logger.Info("Waiting for all Obstor IAM sub-system to be initialized.. lock acquired")
 		}
 
 		// Migrate IAM configuration, if necessary.
 		if err := sys.doIAMConfigMigration(ctx); err != nil {
 			txnLk.Unlock()
 			if configRetriableErrors(err) {
-				logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. possible cause (%v)", err)
+				logger.Info("Waiting for all Obstor IAM sub-system to be initialized.. possible cause (%v)", err)
 				continue
 			}
-			logger.LogIf(ctx, fmt.Errorf("Unable to migrate IAM users and policies to new format: %w", err))
-			logger.LogIf(ctx, errors.New("IAM sub-system is partially initialized, some users may not be available"))
+			logger.LogIf(ctx, fmt.Errorf("unable to migrate IAM users and policies to new format: %w", err))
+			logger.LogIf(ctx, errors.New("iam sub-system is partially initialized, some users may not be available"))
 			return
 		}
 
@@ -627,12 +628,12 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 	for {
 		if err := sys.store.loadAll(ctx, sys); err != nil {
 			if configRetriableErrors(err) {
-				logger.Info("Waiting for all ObStor IAM sub-system to be initialized.. possible cause (%v)", err)
+				logger.Info("Waiting for all Obstor IAM sub-system to be initialized.. possible cause (%v)", err)
 				time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 				continue
 			}
 			if err != nil {
-				logger.LogIf(ctx, fmt.Errorf("Unable to initialize IAM sub-system, some users may not be available %w", err))
+				logger.LogIf(ctx, fmt.Errorf("unable to initialize IAM sub-system, some users may not be available %w", err))
 			}
 		}
 		break
@@ -762,7 +763,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -816,7 +817,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 
 // CurrentPolicies - returns comma separated policy string, from
 // an input policy after validating if there are any current
-// policies which exist on ObStor corresponding to the input.
+// policies which exist on Obstor corresponding to the input.
 func (sys *IAMSys) CurrentPolicies(policyName string) string {
 	if !sys.Initialized() {
 		return ""
@@ -884,7 +885,7 @@ func (sys *IAMSys) ListUsers() (map[string]madmin.UserInfo, error) {
 		return nil, errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return nil, errIAMActionNotAllowed
 	}
 
@@ -966,7 +967,7 @@ func (sys *IAMSys) GetUserInfo(name string) (u madmin.UserInfo, err error) {
 		sys.loadUserFromStore(name)
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		sys.store.rlock()
 		// If the user has a mapped policy or is a member of a group, we
 		// return that info. Otherwise we return error.
@@ -1013,7 +1014,7 @@ func (sys *IAMSys) SetUserStatus(accessKey string, status madmin.AccountStatus) 
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1075,7 +1076,7 @@ func (sys *IAMSys) NewServiceAccount(ctx context.Context, parentUser string, gro
 			return auth.Credentials{}, err
 		}
 		if len(policyBuf) > 16*humanize.KiByte {
-			return auth.Credentials{}, fmt.Errorf("Session policy should not exceed 16 KiB characters")
+			return auth.Credentials{}, fmt.Errorf("session policy should not exceed 16 KiB characters")
 		}
 	}
 
@@ -1089,7 +1090,7 @@ func (sys *IAMSys) NewServiceAccount(ctx context.Context, parentUser string, gro
 	cr, ok := sys.iamUsersMap[parentUser]
 	if !ok {
 		// For LDAP users we would need this fallback
-		if sys.usersSysType != ObStorUsersSysType {
+		if sys.usersSysType != ObstorUsersSysType {
 			_, ok = sys.iamUserPolicyMap[parentUser]
 			if !ok {
 				var found bool
@@ -1190,7 +1191,7 @@ func (sys *IAMSys) UpdateServiceAccount(ctx context.Context, accessKey string, o
 			return err
 		}
 		if len(policyBuf) > 16*humanize.KiByte {
-			return fmt.Errorf("Session policy should not exceed 16 KiB characters")
+			return fmt.Errorf("session policy should not exceed 16 KiB characters")
 		}
 
 		m[iampolicy.SessionPolicyName] = base64.StdEncoding.EncodeToString(policyBuf)
@@ -1310,7 +1311,7 @@ func (sys *IAMSys) CreateUser(accessKey string, uinfo madmin.UserInfo) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1339,10 +1340,6 @@ func (sys *IAMSys) CreateUser(accessKey string, uinfo madmin.UserInfo) error {
 
 	sys.iamUsersMap[accessKey] = u.Credentials
 
-	// Set policy if specified.
-	if uinfo.PolicyName != "" {
-		return sys.policyDBSet(accessKey, uinfo.PolicyName, regularUser, false)
-	}
 	return nil
 }
 
@@ -1352,7 +1349,7 @@ func (sys *IAMSys) SetUserSecretKey(accessKey string, secretKey string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1386,7 +1383,7 @@ func (sys *IAMSys) loadUserFromStore(accessKey string) {
 			sys.store.loadUser(context.Background(), accessKey, srvAccUser, sys.iamUsersMap)
 			if svc, found := sys.iamUsersMap[accessKey]; found {
 				// Found service account, load its parent user and its mapped policies.
-				if sys.usersSysType == ObStorUsersSysType {
+				if sys.usersSysType == ObstorUsersSysType {
 					sys.store.loadUser(context.Background(), svc.ParentUser, regularUser, sys.iamUsersMap)
 				}
 				sys.store.loadMappedPolicy(context.Background(), svc.ParentUser, regularUser, false, sys.iamUserPolicyMap)
@@ -1444,7 +1441,7 @@ func (sys *IAMSys) GetUser(accessKey string) (cred auth.Credentials, ok bool) {
 	defer sys.store.runlock()
 
 	if ok && cred.IsValid() {
-		if cred.ParentUser != "" && sys.usersSysType == ObStorUsersSysType {
+		if cred.ParentUser != "" && sys.usersSysType == ObstorUsersSysType {
 			_, ok = sys.iamUsersMap[cred.ParentUser]
 		}
 		// for LDAP service accounts with ParentUser set
@@ -1468,7 +1465,7 @@ func (sys *IAMSys) AddUsersToGroup(group string, members []string) error {
 		return errInvalidArgument
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1524,7 +1521,7 @@ func (sys *IAMSys) RemoveUsersFromGroup(group string, members []string) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1604,7 +1601,7 @@ func (sys *IAMSys) SetGroupStatus(group string, enabled bool) error {
 		return errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
 	}
 
@@ -1646,7 +1643,7 @@ func (sys *IAMSys) GetGroupDescription(group string) (gd madmin.GroupDesc, err e
 
 	policy := strings.Join(ps, ",")
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return madmin.GroupDesc{
 			Name:   group,
 			Policy: policy,
@@ -1675,7 +1672,7 @@ func (sys *IAMSys) ListGroups() (r []string, err error) {
 		return r, errServerNotInitialized
 	}
 
-	if sys.usersSysType != ObStorUsersSysType {
+	if sys.usersSysType != ObstorUsersSysType {
 		return nil, errIAMActionNotAllowed
 	}
 
@@ -1715,7 +1712,7 @@ func (sys *IAMSys) policyDBSet(name, policyName string, userType IAMUserType, is
 		return errInvalidArgument
 	}
 
-	if sys.usersSysType == ObStorUsersSysType {
+	if sys.usersSysType == ObstorUsersSysType {
 		if !isGroup {
 			if _, ok := sys.iamUsersMap[name]; !ok {
 				return errNoSuchUser
@@ -1812,7 +1809,7 @@ func (sys *IAMSys) PolicyDBGet(name string, isGroup bool, groups ...string) ([]s
 // and group map and check the appropriate policy maps directly.
 func (sys *IAMSys) policyDBGet(name string, isGroup bool) (policies []string, err error) {
 	if isGroup {
-		if sys.usersSysType == ObStorUsersSysType {
+		if sys.usersSysType == ObstorUsersSysType {
 			g, ok := sys.iamGroupsMap[name]
 			if !ok {
 				return nil, errNoSuchGroup
@@ -1830,7 +1827,7 @@ func (sys *IAMSys) policyDBGet(name string, isGroup bool) (policies []string, er
 
 	var u auth.Credentials
 	var ok bool
-	if sys.usersSysType == ObStorUsersSysType {
+	if sys.usersSysType == ObstorUsersSysType {
 		// When looking for a user's policies, we also check if the user
 		// and the groups they are member of are enabled.
 
@@ -2258,7 +2255,7 @@ func (sys *IAMSys) EnableLDAPSys() {
 // NewIAMSys - creates new config system object.
 func NewIAMSys() *IAMSys {
 	return &IAMSys{
-		usersSysType:            ObStorUsersSysType,
+		usersSysType:            ObstorUsersSysType,
 		iamUsersMap:             make(map[string]auth.Credentials),
 		iamPolicyDocsMap:        make(map[string]iampolicy.Policy),
 		iamUserPolicyMap:        make(map[string]MappedPolicy),

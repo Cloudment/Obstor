@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +113,7 @@ func (f stringNotEqualsIgnoreCaseFunc) name() name {
 }
 
 func (f stringNotEqualsIgnoreCaseFunc) String() string {
-	return toStringEqualsIgnoreCaseFuncString(stringNotEqualsIgnoreCase, f.stringEqualsIgnoreCaseFunc.k, f.stringEqualsIgnoreCaseFunc.values)
+	return toStringEqualsIgnoreCaseFuncString(stringNotEqualsIgnoreCase, f.k, f.values)
 }
 
 func validateStringEqualsIgnoreCaseValues(n name, key Key, values set.StringSet) error {

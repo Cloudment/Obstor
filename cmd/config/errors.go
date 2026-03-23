@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +100,7 @@ var (
 	ErrInvalidCacheEncryptionKey = newErrFn(
 		"Invalid cache encryption master key value",
 		"Please check the passed value",
-		"OBSTOR_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://pgg.net/docs/obstor/minio-disk-cache-guide",
+		"OBSTOR_CACHE_ENCRYPTION_MASTER_KEY: For more information, please refer to https://obstor.net/docs/obstor-disk-cache-guide",
 	)
 
 	ErrInvalidCacheRange = newErrFn(
@@ -122,19 +123,19 @@ var (
 	ErrInvalidRotatingCredentialsBackendEncrypted = newErrFn(
 		"Invalid rotating credentials",
 		"Please set correct rotating credentials in the environment for decryption",
-		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables OBSTOR_ROOT_USER_OLD and OBSTOR_ROOT_PASSWORD_OLD to be able to re-encrypt the ObStor config, user IAM and policies with new credentials`,
+		`Detected encrypted config backend, correct old access and secret keys should be specified via environment variables OBSTOR_ROOT_USER_OLD and OBSTOR_ROOT_PASSWORD_OLD to be able to re-encrypt the Obstor config, user IAM and policies with new credentials`,
 	)
 
 	ErrInvalidCredentialsBackendEncrypted = newErrFn(
 		"Invalid credentials",
 		"Please set correct credentials in the environment for decryption",
-		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, correct access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the Obstor config, user IAM and policies`,
 	)
 
 	ErrMissingCredentialsBackendEncrypted = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`Detected encrypted config backend, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the ObStor config, user IAM and policies`,
+		`Detected encrypted config backend, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD to be able to decrypt the Obstor config, user IAM and policies`,
 	)
 
 	ErrInvalidCredentials = newErrFn(
@@ -158,26 +159,26 @@ var (
 	ErrInvalidErasureEndpoints = newErrFn(
 		"Invalid endpoint(s) in erasure mode",
 		"Please provide correct combination of local/remote paths",
-		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://obstor.net/docs/obstor-erasure-code-quickstart-guide",
 	)
 
 	ErrInvalidNumberOfErasureEndpoints = newErrFn(
 		"Invalid total number of endpoints for erasure mode",
 		"Please provide an even number of endpoints greater or equal to 4",
-		"For more information, please refer to https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://obstor.net/docs/obstor-erasure-code-quickstart-guide",
 	)
 
 	ErrStorageClassValue = newErrFn(
 		"Invalid storage class value",
 		"Please check the value",
-		`OBSTOR_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
-OBSTOR_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for ObStor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
+		`OBSTOR_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for Obstor server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
+OBSTOR_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for Obstor server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
 Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class for more information`,
 	)
 
 	ErrUnexpectedBackendVersion = newErrFn(
 		"Backend version seems to be too recent",
-		"Please update to the latest ObStor version",
+		"Please update to the latest Obstor version",
 		"",
 	)
 
@@ -195,7 +196,7 @@ Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/s
 		"Please check the FS endpoint",
 		`FS mode requires only one writable disk path
 Example 1:
-   $ minio server /data/minio/`,
+   $ obstor server /data/obstor/`,
 	)
 
 	ErrUnsupportedBackend = newErrFn(
@@ -206,8 +207,8 @@ Example 1:
 
 	ErrUnableToWriteInBackend = newErrFn(
 		"Unable to write to the backend",
-		"Please ensure ObStor binary has write permissions for the backend",
-		`Verify if ObStor binary is running as the same user who has write permissions for the backend`,
+		"Please ensure Obstor binary has write permissions for the backend",
+		`Verify if Obstor binary is running as the same user who has write permissions for the backend`,
 	)
 
 	ErrPortAlreadyInUse = newErrFn(
@@ -218,8 +219,8 @@ Example 1:
 
 	ErrPortAccess = newErrFn(
 		"Unable to use specified port",
-		"Please ensure ObStor binary has 'cap_net_bind_service=+ep' permissions",
-		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/minio' to provide sufficient permissions`,
+		"Please ensure Obstor binary has 'cap_net_bind_service=+ep' permissions",
+		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/obstor' to provide sufficient permissions`,
 	)
 
 	ErrSSLUnexpectedError = newErrFn(
@@ -243,7 +244,7 @@ Example 1:
 	ErrNoCertsAndHTTPSEndpoints = newErrFn(
 		"HTTPS specified in endpoints, but no TLS certificate is found on the local machine",
 		"Please add TLS certificate or use HTTP endpoints only",
-		"Refer to https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls for information about how to load a TLS certificate in your server",
+		"Refer to https://obstor.net/docs/how-to-secure-access-to-obstor-server-with-tls for information about how to load a TLS certificate in your server",
 	)
 
 	ErrCertsAndHTTPEndpoints = newErrFn(
@@ -260,7 +261,7 @@ Example 1:
 
 	ErrUnexpectedError = newErrFn(
 		"Unexpected error",
-		"Please contact ObStor at https://pgg.net/discord",
+		"Please contact Obstor at https://pgg.net/discord",
 		"",
 	)
 
@@ -279,7 +280,7 @@ Example 1:
 	ErrInvalidGWSSEEnvValue = newErrFn(
 		"Invalid gateway SSE configuration",
 		"",
-		"Refer to https://pgg.net/docs/obstor/minio-kms-quickstart-guide.html for setting up SSE",
+		"Refer to https://obstor.net/docs/obstor-kms-quickstart-guide.html for setting up SSE",
 	)
 
 	ErrInvalidReplicationWorkersValue = newErrFn(

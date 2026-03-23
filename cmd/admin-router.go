@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018, 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +20,8 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/pkg/madmin"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -31,7 +32,7 @@ const (
 	adminAPIVersionV2Prefix = SlashSeparator + adminAPIVersionV2
 )
 
-// adminAPIHandlers provides HTTP handlers for ObStor admin API.
+// adminAPIHandlers provides HTTP handlers for Obstor admin API.
 type adminAPIHandlers struct{}
 
 // registerAdminRouter - Add handler functions for each service REST API routes.
@@ -49,9 +50,9 @@ func registerAdminRouter(router *mux.Router, enableConfigOps, enableIAMOps bool)
 	}
 
 	for _, adminVersion := range adminVersions {
-		// Restart and stop ObStor service.
+		// Restart and stop Obstor service.
 		adminRouter.Methods(http.MethodPost).Path(adminVersion+"/service").HandlerFunc(httpTraceAll(adminAPI.ServiceHandler)).Queries("action", "{action:.*}")
-		// Update ObStor servers.
+		// Update Obstor servers.
 		adminRouter.Methods(http.MethodPost).Path(adminVersion+"/update").HandlerFunc(httpTraceAll(adminAPI.ServerUpdateHandler)).Queries("updateURL", "{updateURL:.*}")
 
 		// Info operations

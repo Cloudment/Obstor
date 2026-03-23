@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +25,8 @@ import (
 	"hash"
 	"io"
 
-	"github.com/minio/highwayhash"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/minio/highwayhash"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -54,7 +55,7 @@ func (a BitrotAlgorithm) New() hash.Hash {
 		hh, _ := highwayhash.New(magicHighwayHash256Key) // New will never return error since key is 256 bit
 		return hh
 	default:
-		logger.CriticalIf(GlobalContext, errors.New("Unsupported bitrot algorithm"))
+		logger.CriticalIf(GlobalContext, errors.New("unsupported bitrot algorithm"))
 		return nil
 	}
 }
@@ -70,7 +71,7 @@ func (a BitrotAlgorithm) Available() bool {
 func (a BitrotAlgorithm) String() string {
 	name, ok := bitrotAlgorithms[a]
 	if !ok {
-		logger.CriticalIf(GlobalContext, errors.New("Unsupported bitrot algorithm"))
+		logger.CriticalIf(GlobalContext, errors.New("unsupported bitrot algorithm"))
 	}
 	return name
 }

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,7 @@ package madmin
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -37,7 +38,7 @@ func (adm *AdminClient) InfoCannedPolicy(ctx context.Context, policyName string)
 		queryValues: queryValues,
 	}
 
-	// Execute GET on /minio/admin/v3/info-canned-policy
+	// Execute GET on /obstor/admin/v3/info-canned-policy
 	resp, err := adm.executeMethod(ctx, http.MethodGet, reqData)
 
 	defer closeResponse(resp)
@@ -58,7 +59,7 @@ func (adm *AdminClient) ListCannedPolicies(ctx context.Context) (map[string]*iam
 		relPath: adminAPIPrefix + "/list-canned-policies",
 	}
 
-	// Execute GET on /minio/admin/v3/list-canned-policies
+	// Execute GET on /obstor/admin/v3/list-canned-policies
 	resp, err := adm.executeMethod(ctx, http.MethodGet, reqData)
 
 	defer closeResponse(resp)
@@ -70,7 +71,7 @@ func (adm *AdminClient) ListCannedPolicies(ctx context.Context) (map[string]*iam
 		return nil, httpRespToErrorResponse(resp)
 	}
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (adm *AdminClient) RemoveCannedPolicy(ctx context.Context, policyName strin
 		queryValues: queryValues,
 	}
 
-	// Execute DELETE on /minio/admin/v3/remove-canned-policy to remove policy.
+	// Execute DELETE on /obstor/admin/v3/remove-canned-policy to remove policy.
 	resp, err := adm.executeMethod(ctx, http.MethodDelete, reqData)
 
 	defer closeResponse(resp)
@@ -132,7 +133,7 @@ func (adm *AdminClient) AddCannedPolicy(ctx context.Context, policyName string, 
 		content:     buf,
 	}
 
-	// Execute PUT on /minio/admin/v3/add-canned-policy to set policy.
+	// Execute PUT on /obstor/admin/v3/add-canned-policy to set policy.
 	resp, err := adm.executeMethod(ctx, http.MethodPut, reqData)
 
 	defer closeResponse(resp)
@@ -163,7 +164,7 @@ func (adm *AdminClient) SetPolicy(ctx context.Context, policyName, entityName st
 		queryValues: queryValues,
 	}
 
-	// Execute PUT on /minio/admin/v3/set-user-or-group-policy to set policy.
+	// Execute PUT on /obstor/admin/v3/set-user-or-group-policy to set policy.
 	resp, err := adm.executeMethod(ctx, http.MethodPut, reqData)
 	defer closeResponse(resp)
 	if err != nil {

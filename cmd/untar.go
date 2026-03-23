@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +118,7 @@ func untar(r io.Reader, putObject func(reader io.Reader, info os.FileInfo, name 
 	case formatUnknown:
 		r = bf
 	default:
-		return fmt.Errorf("Unsupported format %s", f)
+		return fmt.Errorf("unsupported format %s", f)
 	}
 	tarReader := tar.NewReader(r)
 	for {

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,10 +106,10 @@ const (
 	// AWSPrincipalType - user principal type currently supported values are "User" and "Anonymous".
 	AWSPrincipalType Key = "aws:principaltype"
 
-	// AWSUserID - user unique ID, in ObStor this value is same as your user Access Key.
+	// AWSUserID - user unique ID, in Obstor this value is same as your user Access Key.
 	AWSUserID Key = "aws:userid"
 
-	// AWSUsername - user friendly name, in ObStor this value is same as your user Access Key.
+	// AWSUsername - user friendly name, in Obstor this value is same as your user Access Key.
 	AWSUsername Key = "aws:username"
 
 	// S3SignatureVersion - identifies the version of AWS Signature that you want to support for authenticated requests.
@@ -173,7 +174,7 @@ func substFuncFromValues(values map[string][]string) func(string) string {
 		for _, key := range CommonKeys {
 			// Empty values are not supported for policy variables.
 			if rvalues, ok := values[key.Name()]; ok && rvalues[0] != "" {
-				v = strings.Replace(v, key.VarName(), rvalues[0], -1)
+				v = strings.ReplaceAll(v, key.VarName(), rvalues[0])
 			}
 		}
 		return v
@@ -262,9 +263,10 @@ func (set KeySet) Merge(mset KeySet) {
 
 // Difference - returns a key set contains difference of two keys.
 // Example:
-//     keySet1 := ["one", "two", "three"]
-//     keySet2 := ["two", "four", "three"]
-//     keySet1.Difference(keySet2) == ["one"]
+//
+//	keySet1 := ["one", "two", "three"]
+//	keySet2 := ["two", "four", "three"]
+//	keySet1.Difference(keySet2) == ["one"]
 func (set KeySet) Difference(sset KeySet) KeySet {
 	nset := make(KeySet)
 

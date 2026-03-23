@@ -1,7 +1,9 @@
+//go:build !fips
 // +build !fips
 
 /*
  * MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +22,5 @@ package cmd
 
 var (
 	// Newer official download info URLs appear earlier below.
-	minioReleaseInfoURL = minioReleaseURL + "minio.sha256sum"
+	minioReleaseInfoURL = minioReleaseURL + "obstor.sha256sum"
 )

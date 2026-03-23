@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,10 +82,11 @@ func validateCredentialfields(t *testing.T, testNum int, expectedCredentials cre
 // A valid format of creadential should be of the following format.
 // Credential = accessKey + SlashSeparator+ scope
 // where scope = string.Join([]string{  currTime.Format(yyyymmdd),
-// 			globalMinioDefaultRegion,
-//               	"s3",
-//		        "aws4_request",
-//                       },SlashSeparator)
+//
+//				globalMinioDefaultRegion,
+//	              	"s3",
+//			        "aws4_request",
+//	                      },SlashSeparator)
 func TestParseCredentialHeader(t *testing.T) {
 
 	sampleTimeStr := UTCNow().Format(yyyymmdd)

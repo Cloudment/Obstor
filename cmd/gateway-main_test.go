@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +60,8 @@ func TestRunRegisteredGatewayCommand(t *testing.T) {
 		t.Errorf("RegisterGatewayCommand got unexpected error: %s", err)
 	}
 
-	if err = newApp("minio").Run(
-		[]string{"minio", "gateway", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
+	if err = newApp("obstor").Run(
+		[]string{"obstor", "gateway", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
 		t.Errorf("running registered gateway command got unexpected error: %s", err)
 	}
 }
@@ -75,11 +76,11 @@ func TestParseGatewayEndpoint(t *testing.T) {
 	}{
 		{"http://127.0.0.1:9000", "127.0.0.1:9000", false, false},
 		{"https://127.0.0.1:9000", "127.0.0.1:9000", true, false},
-		{"http://play.pgg.net:9000", "play.pgg.net:9000", false, false},
-		{"https://play.pgg.net:9000", "play.pgg.net:9000", true, false},
+		{"http://play.obstor.net:9000", "play.obstor.net:9000", false, false},
+		{"https://play.obstor.net:9000", "play.obstor.net:9000", true, false},
 		{"ftp://127.0.0.1:9000", "", false, true},
-		{"ftp://play.pgg.net:9000", "", false, true},
-		{"play.pgg.net:9000", "play.pgg.net:9000", true, false},
+		{"ftp://play.obstor.net:9000", "", false, true},
+		{"play.obstor.net:9000", "play.obstor.net:9000", true, false},
 	}
 
 	for i, test := range testCases {

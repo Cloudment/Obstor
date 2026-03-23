@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,15 +52,14 @@ func (r *wrapReader) ETag() ETag {
 // It is mainly used to provide a high-level io.Reader
 // access to the ETag computed by a low-level io.Reader:
 //
-//   content := etag.NewReader(r.Body, nil)
+//	content := etag.NewReader(r.Body, nil)
 //
-//   compressedContent := Compress(content)
-//   encryptedContent := Encrypt(compressedContent)
+//	compressedContent := Compress(content)
+//	encryptedContent := Encrypt(compressedContent)
 //
-//   // Now, we need an io.Reader that can access
-//   // the ETag computed over the content.
-//   reader := etag.Wrap(encryptedContent, content)
-//
+//	// Now, we need an io.Reader that can access
+//	// the ETag computed over the content.
+//	reader := etag.Wrap(encryptedContent, content)
 func Wrap(wrapped, content io.Reader) io.Reader {
 	if t, ok := content.(Tagger); ok {
 		return wrapReader{

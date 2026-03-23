@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +65,7 @@ var (
 type Config struct {
 	XMLName xml.Name `xml:"ReplicationConfiguration" json:"-"`
 	Rules   []Rule   `xml:"Rule" json:"Rules"`
-	// RoleArn is being reused for ObStor replication ARN
+	// RoleArn is being reused for Obstor replication ARN
 	RoleArn string `xml:"Role" json:"Role"`
 }
 
@@ -181,7 +182,7 @@ func (c Config) Replicate(obj ObjectOpts) bool {
 		if obj.OpType == DeleteReplicationType {
 			switch {
 			case obj.VersionID != "":
-				// // check ObStor extension for versioned deletes
+				// // check Obstor extension for versioned deletes
 				return rule.DeleteReplication.Status == Enabled
 			default:
 				return rule.DeleteMarkerReplication.Status == Enabled

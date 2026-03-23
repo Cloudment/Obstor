@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +38,9 @@ import (
 
 var (
 	gatewayCmd = cli.Command{
-		Name:            "gateway",
-		Usage:           "start object storage gateway",
-		Flags:           append(ServerFlags, GlobalFlags...),
+		Name:     "gateway",
+		Usage:    "start object storage gateway",
+		Flags:    append(ServerFlags, GlobalFlags...),
 		HideHelp: true,
 	}
 )
@@ -66,7 +67,7 @@ func (l *GatewayLocker) Walk(ctx context.Context, bucket, prefix string, results
 
 			for {
 				// set maxKeys to '0' to list maximum possible objects in single call.
-				loi, err := l.ObjectLayer.ListObjects(ctx, bucket, prefix, marker, "", 0)
+				loi, err := l.ListObjects(ctx, bucket, prefix, marker, "", 0)
 				if err != nil {
 					logger.LogIf(ctx, err)
 					return
@@ -128,7 +129,7 @@ func ParseGatewayEndpoint(arg string) (endPoint string, secure bool, err error) 
 	case "https":
 		return u.Host, true, nil
 	default:
-		return "", false, fmt.Errorf("Unrecognized scheme %s", u.Scheme)
+		return "", false, fmt.Errorf("unrecognized scheme %s", u.Scheme)
 	}
 }
 
@@ -151,7 +152,7 @@ func ValidateGatewayArguments(serverAddr, endpointAddr string) error {
 	return nil
 }
 
-// StartGateway - handler for 'minio gateway <name>'.
+// StartGateway - handler for 'obstor gateway <name>'.
 func StartGateway(ctx *cli.Context, gw Gateway) {
 	defer globalDNSCache.Stop()
 
@@ -201,8 +202,8 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	globalMinioHost, globalMinioPort = mustSplitHostPort(globalCLIContext.Addr)
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie obstor will start listening on IPv6 address whereas another
+	// (non-)obstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
 	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the gateway")
 

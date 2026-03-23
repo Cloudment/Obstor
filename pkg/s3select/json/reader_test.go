@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ package json
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -28,13 +28,14 @@ import (
 )
 
 func TestNewReader(t *testing.T) {
-	files, err := ioutil.ReadDir("testdata")
+	files, err := os.ReadDir("testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, file := range files {
-		t.Run(file.Name(), func(t *testing.T) {
-			f, err := os.Open(filepath.Join("testdata", file.Name()))
+		name := filepath.Base(file.Name())
+		t.Run(name, func(t *testing.T) {
+			f, err := os.Open(filepath.Join("testdata", name))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -48,12 +49,12 @@ func TestNewReader(t *testing.T) {
 			}
 			r.Close()
 			if err != io.EOF {
-				t.Fatalf("Reading failed with %s, %s", err, file.Name())
+				t.Fatalf("Reading failed with %s, %s", err, name)
 			}
 		})
 
-		t.Run(file.Name()+"-close", func(t *testing.T) {
-			f, err := os.Open(filepath.Join("testdata", file.Name()))
+		t.Run(name+"-close", func(t *testing.T) {
+			f, err := os.Open(filepath.Join("testdata", name))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -67,20 +68,21 @@ func TestNewReader(t *testing.T) {
 				}
 			}
 			if err != io.EOF {
-				t.Fatalf("Reading failed with %s, %s", err, file.Name())
+				t.Fatalf("Reading failed with %s, %s", err, name)
 			}
 		})
 	}
 }
 
 func BenchmarkReader(b *testing.B) {
-	files, err := ioutil.ReadDir("testdata")
+	files, err := os.ReadDir("testdata")
 	if err != nil {
 		b.Fatal(err)
 	}
 	for _, file := range files {
-		b.Run(file.Name(), func(b *testing.B) {
-			f, err := ioutil.ReadFile(filepath.Join("testdata", file.Name()))
+		name := filepath.Base(file.Name())
+		b.Run(name, func(b *testing.B) {
+			f, err := os.ReadFile(filepath.Join("testdata", name))
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -89,7 +91,7 @@ func BenchmarkReader(b *testing.B) {
 			b.ResetTimer()
 			var record sql.Record
 			for i := 0; i < b.N; i++ {
-				r := NewReader(ioutil.NopCloser(bytes.NewBuffer(f)), &ReaderArgs{})
+				r := NewReader(io.NopCloser(bytes.NewBuffer(f)), &ReaderArgs{})
 				for {
 					record, err = r.Read(record)
 					if err != nil {
@@ -98,7 +100,7 @@ func BenchmarkReader(b *testing.B) {
 				}
 				r.Close()
 				if err != io.EOF {
-					b.Fatalf("Reading failed with %s, %s", err, file.Name())
+					b.Fatalf("Reading failed with %s, %s", err, name)
 				}
 			}
 		})

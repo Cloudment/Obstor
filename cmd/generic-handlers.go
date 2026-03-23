@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ package cmd
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"strings"
 	"sync/atomic"
@@ -32,6 +34,15 @@ import (
 	"github.com/cloudment/obstor/cmd/logger"
 	humanize "github.com/dustin/go-humanize"
 )
+
+// drainBody drains and closes the request body to prevent goroutine leaks
+// from clients that hold connections open. (CVE-2022-31028)
+func drainBody(body io.ReadCloser) {
+	if body != nil {
+		io.Copy(io.Discard, body)
+		body.Close()
+	}
+}
 
 // Adds limiting body size middleware
 
@@ -63,6 +74,7 @@ const (
 func setRequestHeaderSizeLimitHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if isHTTPHeaderSizeTooLarge(r.Header) {
+			drainBody(r.Body)
 			writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrMetadataTooLarge), r.URL, guessIsBrowserReq(r))
 			atomic.AddUint64(&globalHTTPStats.rejectedRequestsHeader, 1)
 			return
@@ -95,8 +107,8 @@ func isHTTPHeaderSizeTooLarge(header http.Header) bool {
 // ReservedMetadataPrefix is the prefix of a metadata key which
 // is reserved and for internal use only.
 const (
-	ReservedMetadataPrefix      = "X-Minio-Internal-"
-	ReservedMetadataPrefixLower = "x-minio-internal-"
+	ReservedMetadataPrefix      = "X-Obstor-Internal-"
+	ReservedMetadataPrefixLower = "x-obstor-internal-"
 )
 
 // ServeHTTP fails if the request contains at least one reserved header which
@@ -104,6 +116,7 @@ const (
 func filterReservedMetadata(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if containsReservedMetadata(r.Header) {
+			drainBody(r.Body)
 			writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrUnsupportedMetadata), r.URL, guessIsBrowserReq(r))
 			return
 		}
@@ -125,7 +138,7 @@ func containsReservedMetadata(header http.Header) bool {
 
 // Reserved bucket.
 const (
-	minioReservedBucket     = "minio"
+	minioReservedBucket     = "obstor"
 	minioReservedBucketPath = SlashSeparator + minioReservedBucket
 	loginPathPrefix         = SlashSeparator + "login"
 )
@@ -265,7 +278,7 @@ func setBrowserCacheControlHandler(h http.Handler) http.Handler {
 	})
 }
 
-// Check to allow access to the reserved "bucket" `/minio` for Admin
+// Check to allow access to the reserved "bucket" `/obstor` for Admin
 // API requests.
 func isAdminReq(r *http.Request) bool {
 	return strings.HasPrefix(r.URL.Path, adminPathPrefix)
@@ -345,6 +358,7 @@ func setTimeValidityHandler(h http.Handler) http.Handler {
 				// All our internal APIs are sensitive towards Date
 				// header, for all requests where Date header is not
 				// present we will reject such clients.
+				drainBody(r.Body)
 				writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(errCode), r.URL, guessIsBrowserReq(r))
 				atomic.AddUint64(&globalHTTPStats.rejectedRequestsTime, 1)
 				return
@@ -353,6 +367,7 @@ func setTimeValidityHandler(h http.Handler) http.Handler {
 			// or in the future, reject request otherwise.
 			curTime := UTCNow()
 			if curTime.Sub(amzDate) > globalMaxSkewTime || amzDate.Sub(curTime) > globalMaxSkewTime {
+				drainBody(r.Body)
 				writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrRequestTimeTooSkewed), r.URL, guessIsBrowserReq(r))
 				atomic.AddUint64(&globalHTTPStats.rejectedRequestsTime, 1)
 				return
@@ -421,6 +436,7 @@ func setRequestValidityHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check for bad components in URL path.
 		if hasBadPathComponent(r.URL.Path) {
+			drainBody(r.Body)
 			writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrInvalidResourceName), r.URL, guessIsBrowserReq(r))
 			atomic.AddUint64(&globalHTTPStats.rejectedRequestsInvalid, 1)
 			return
@@ -429,6 +445,7 @@ func setRequestValidityHandler(h http.Handler) http.Handler {
 		for _, vv := range r.URL.Query() {
 			for _, v := range vv {
 				if hasBadPathComponent(v) {
+					drainBody(r.Body)
 					writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrInvalidResourceName), r.URL, guessIsBrowserReq(r))
 					atomic.AddUint64(&globalHTTPStats.rejectedRequestsInvalid, 1)
 					return
@@ -436,6 +453,7 @@ func setRequestValidityHandler(h http.Handler) http.Handler {
 			}
 		}
 		if hasMultipleAuth(r) {
+			drainBody(r.Body)
 			writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrInvalidRequest), r.URL, guessIsBrowserReq(r))
 			atomic.AddUint64(&globalHTTPStats.rejectedRequestsInvalid, 1)
 			return

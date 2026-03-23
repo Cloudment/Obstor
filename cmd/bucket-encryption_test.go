@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@ func TestValidateBucketSSEConfig(t *testing.T) {
 		expectedErr error
 		shouldPass  bool
 	}{
-		// ObStor supported XML
+		// Obstor supported XML
 		{
 			inputXML: `<ServerSideEncryptionConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 			<Rule>
@@ -50,7 +51,7 @@ func TestValidateBucketSSEConfig(t *testing.T) {
 			</ApplyServerSideEncryptionByDefault>
 			</Rule>
 			</ServerSideEncryptionConfiguration>`,
-			expectedErr: errors.New("Unsupported bucket encryption configuration"),
+			expectedErr: errors.New("unsupported bucket encryption configuration"),
 			shouldPass:  false,
 		},
 	}

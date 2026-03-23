@@ -5,7 +5,7 @@
 
 // Copyright 2020 MinIO, Inc. All rights reserved.
 // forked from https://github.com/gorilla/rpc/v2
-// modified to be used with MinIO under Apache
+// modified to be used with Obstor under Apache
 // 2.0 license that can be found in the LICENSE file.
 
 package json2
@@ -38,7 +38,7 @@ type clientRequest struct {
 
 // clientResponse represents a JSON-RPC response returned to a client.
 type clientResponse struct {
-	Version string               `json:"jsonrpc"`
+	Version string           `json:"jsonrpc"`
 	Result  *json.RawMessage `json:"result"`
 	Error   *json.RawMessage `json:"error"`
 }

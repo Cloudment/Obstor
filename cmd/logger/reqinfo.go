@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,7 @@ type ReqInfo struct {
 	RemoteHost   string   // Client Host/IP
 	Host         string   // Node Host/IP
 	UserAgent    string   // User Agent
-	DeploymentID string   // x-minio-deployment-id
+	DeploymentID string   // x-obstor-deployment-id
 	RequestID    string   // x-amz-request-id
 	API          string   // API name - GetObject PutObject NewMultipartUpload etc.
 	BucketName   string   // Bucket name

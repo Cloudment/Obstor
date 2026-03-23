@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +36,10 @@ import (
 func handleEncryptedConfigBackend(objAPI ObjectLayer) error {
 	encrypted, err := checkBackendEncrypted(objAPI)
 	if err != nil {
-		return fmt.Errorf("Unable to encrypt config %w", err)
+		return fmt.Errorf("unable to encrypt config %w", err)
 	}
 	if err = migrateConfigPrefixToEncrypted(objAPI, encrypted); err != nil {
-		return fmt.Errorf("Unable to migrate all config at .minio.sys/config/: %w", err)
+		return fmt.Errorf("unable to migrate all config at .obstor.sys/config/: %w", err)
 	}
 	return nil
 }
@@ -92,9 +93,9 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 			if err != nil {
 				return err
 			}
-			logger.Info("Attempting to re-encrypt config, IAM users and policies on ObStor with %q (%s)", stat.DefaultKey, stat.Name)
+			logger.Info("Attempting to re-encrypt config, IAM users and policies on Obstor with %q (%s)", stat.DefaultKey, stat.Name)
 		} else {
-			logger.Info("Attempting to migrate encrypted config, IAM users and policies on ObStor to a plaintext format. To encrypt all ObStor config data a KMS is needed")
+			logger.Info("Attempting to migrate encrypted config, IAM users and policies on Obstor to a plaintext format. To encrypt all Obstor config data a KMS is needed")
 		}
 	}
 
@@ -118,7 +119,7 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 		if !utf8.Valid(data) {
 			data, err = decryptData(data, globalActiveCred)
 			if err != nil {
-				return fmt.Errorf("Decrypting config failed %w, possibly credentials are incorrect", err)
+				return fmt.Errorf("decrypting config failed %w, possibly credentials are incorrect", err)
 			}
 		}
 
@@ -156,9 +157,9 @@ func migrateConfigPrefixToEncrypted(objAPI ObjectLayer, encrypted bool) error {
 			if err != nil {
 				return err
 			}
-			logger.Info("Attempting to re-encrypt config, IAM users and policies on ObStor with %q (%s)", stat.DefaultKey, stat.Name)
+			logger.Info("Attempting to re-encrypt config, IAM users and policies on Obstor with %q (%s)", stat.DefaultKey, stat.Name)
 		} else {
-			logger.Info("Attempting to migrate encrypted config, IAM users and policies on ObStor to a plaintext format. To encrypt all ObStor config data a KMS is needed")
+			logger.Info("Attempting to migrate encrypted config, IAM users and policies on Obstor to a plaintext format. To encrypt all Obstor config data a KMS is needed")
 		}
 	}
 
@@ -177,7 +178,7 @@ func migrateConfigPrefixToEncrypted(objAPI ObjectLayer, encrypted bool) error {
 			if !utf8.Valid(data) {
 				data, err = decryptData(data, globalActiveCred)
 				if err != nil {
-					return fmt.Errorf("Decrypting config failed %w, possibly credentials are incorrect", err)
+					return fmt.Errorf("decrypting config failed %w, possibly credentials are incorrect", err)
 				}
 			}
 			if GlobalKMS != nil {

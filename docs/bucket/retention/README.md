@@ -1,6 +1,6 @@
 # Object Lock and Immutablity Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor server allows WORM for specific objects or by configuring a bucket with default object lock configuration that applies default retention mode and retention duration to all objects. This makes objects in the bucket immutable i.e. delete of the version are not allowed until an expiry specified in the bucket's object lock configuration or object retention.
+Obstor server allows WORM for specific objects or by configuring a bucket with default object lock configuration that applies default retention mode and retention duration to all objects. This makes objects in the bucket immutable i.e. delete of the version are not allowed until an expiry specified in the bucket's object lock configuration or object retention.
 
 Object locking requires locking to be enabled on a bucket at the time of bucket creation, object locking also automatically enables versioning on the bucket. In addition, a default retention period and retention mode can be configured on a bucket to be applied to objects created in that bucket.
 
@@ -10,7 +10,7 @@ Independent of retention, an object can also be under legal hold. This effective
 
 ### 1. Prerequisites
 
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+- Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide)
 - Install `awscli` - [Installing AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
 ### 2. Set bucket WORM configuration
@@ -53,8 +53,8 @@ See https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html fo
 
 ## Explore Further
 
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)
+- [Use `minio-go` SDK with Obstor Server](https://obstor.net/docs/golang-client-quickstart-guide)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +84,7 @@ func TestManyWalksSameParam(t *testing.T) {
 		tw.mu.Lock()
 		if walks, ok := tw.pool[params]; ok {
 			if len(walks) != treeWalkSameEntryLimit {
-				t.Error("There aren't as many walks as were Set")
+				t.Error("there aren't as many walks as were Set")
 			}
 		}
 		tw.mu.Unlock()
@@ -92,7 +93,7 @@ func TestManyWalksSameParam(t *testing.T) {
 			if walks, ok := tw.pool[params]; ok {
 				// Before ith Release we should have n-i treeWalk go-routines.
 				if treeWalkSameEntryLimit-i != len(walks) {
-					t.Error("There aren't as many walks as were Set")
+					t.Error("there aren't as many walks as were Set")
 				}
 			}
 			tw.mu.Unlock()
@@ -128,7 +129,7 @@ func TestManyWalksSameParamPrune(t *testing.T) {
 		tw.mu.Lock()
 		if walks, ok := tw.pool[params]; ok {
 			if len(walks) != treeWalkSameEntryLimit {
-				t.Error("There aren't as many walks as were Set")
+				t.Error("there aren't as many walks as were Set")
 			}
 		}
 		tw.mu.Unlock()
@@ -137,7 +138,7 @@ func TestManyWalksSameParamPrune(t *testing.T) {
 			if walks, ok := tw.pool[params]; ok {
 				// Before ith Release we should have n-i treeWalk go-routines.
 				if treeWalkSameEntryLimit-i != len(walks) {
-					t.Error("There aren't as many walks as were Set")
+					t.Error("there aren't as many walks as were Set")
 				}
 			}
 			tw.mu.Unlock()

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	slashpath "path"
 	"runtime"
@@ -117,7 +117,7 @@ func TestIsValidVolname(t *testing.T) {
 // creates a temp dir and sets up xlStorage layer.
 // returns xlStorage layer, temp dir path to be used for the purpose of tests.
 func newXLStorageTestSetup() (*xlStorageDiskIDCheck, string, error) {
-	diskPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	diskPath, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		return nil, "", err
 	}
@@ -154,7 +154,7 @@ func createPermDeniedFile(t *testing.T) (permDeniedDir string) {
 	}()
 
 	var err error
-	if permDeniedDir, err = ioutil.TempDir(globalTestTmpDir, "minio-"); err != nil {
+	if permDeniedDir, err = os.MkdirTemp(globalTestTmpDir, "minio-"); err != nil {
 		errMsg = fmt.Sprintf("Unable to create temporary directory. %v", err)
 		return permDeniedDir
 	}
@@ -164,7 +164,7 @@ func createPermDeniedFile(t *testing.T) (permDeniedDir string) {
 		return permDeniedDir
 	}
 
-	if err = ioutil.WriteFile(slashpath.Join(permDeniedDir, "mybucket", "myobject"), []byte(""), 0400); err != nil {
+	if err = os.WriteFile(slashpath.Join(permDeniedDir, "mybucket", "myobject"), []byte(""), 0400); err != nil {
 		errMsg = fmt.Sprintf("Unable to create file %v. %v", slashpath.Join(permDeniedDir, "mybucket", "myobject"), err)
 		return permDeniedDir
 	}
@@ -192,7 +192,7 @@ func removePermDeniedFile(permDeniedDir string) {
 
 // TestXLStorages xlStorage.getDiskInfo()
 func TestXLStorageGetDiskInfo(t *testing.T) {
-	path, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	path, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Unable to create a temporary directory, %s", err)
 	}
@@ -215,7 +215,7 @@ func TestXLStorageGetDiskInfo(t *testing.T) {
 }
 
 func TestXLStorageIsDirEmpty(t *testing.T) {
-	tmp, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	tmp, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -229,7 +229,7 @@ func TestXLStorageIsDirEmpty(t *testing.T) {
 
 	// Should give false for not-a-directory.
 	dir2 := slashpath.Join(tmp, "file")
-	err = ioutil.WriteFile(dir2, []byte("hello"), 0777)
+	err = os.WriteFile(dir2, []byte("hello"), 0777)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -260,7 +260,7 @@ func TestXLStorageReadVersion(t *testing.T) {
 
 	defer os.RemoveAll(path)
 
-	xlMeta, _ := ioutil.ReadFile("testdata/xl.meta")
+	xlMeta, _ := os.ReadFile("testdata/xl.meta")
 
 	// Create files for the test cases.
 	if err = xlStorage.MakeVol(context.Background(), "exists"); err != nil {
@@ -480,7 +480,7 @@ func TestXLStorageMakeVol(t *testing.T) {
 
 	// Setup test environment.
 	// Create a file.
-	if err := ioutil.WriteFile(slashpath.Join(path, "vol-as-file"), []byte{}, os.ModePerm); err != nil {
+	if err := os.WriteFile(slashpath.Join(path, "vol-as-file"), []byte{}, os.ModePerm); err != nil {
 		t.Fatalf("Unable to create file, %s", err)
 	}
 	// Create a directory.
@@ -525,7 +525,7 @@ func TestXLStorageMakeVol(t *testing.T) {
 
 	// TestXLStorage for permission denied.
 	if runtime.GOOS != globalWindowsOSName {
-		permDeniedDir, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+		permDeniedDir, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 		if err != nil {
 			t.Fatalf("Unable to create temporary directory. %v", err)
 		}
@@ -579,7 +579,7 @@ func TestXLStorageDeleteVol(t *testing.T) {
 	if err = os.Mkdir(vol, 0777); err != nil {
 		t.Fatalf("Unable to create directory, %s", err)
 	}
-	if err = ioutil.WriteFile(slashpath.Join(vol, "test-file"), []byte{}, os.ModePerm); err != nil {
+	if err = os.WriteFile(slashpath.Join(vol, "test-file"), []byte{}, os.ModePerm); err != nil {
 		t.Fatalf("Unable to create file, %s", err)
 	}
 
@@ -622,7 +622,7 @@ func TestXLStorageDeleteVol(t *testing.T) {
 	// TestXLStorage for permission denied.
 	if runtime.GOOS != globalWindowsOSName {
 		var permDeniedDir string
-		if permDeniedDir, err = ioutil.TempDir(globalTestTmpDir, "minio-"); err != nil {
+		if permDeniedDir, err = os.MkdirTemp(globalTestTmpDir, "minio-"); err != nil {
 			t.Fatalf("Unable to create temporary directory. %v", err)
 		}
 		defer removePermDeniedFile(permDeniedDir)
@@ -1178,7 +1178,7 @@ func TestXLStorageReadFile(t *testing.T) {
 								expectErrno = uintptr(errno)
 							}
 						}
-						if !(expectErrno != 0 && resultErrno != 0 && expectErrno == resultErrno) {
+						if expectErrno == 0 || resultErrno == 0 || expectErrno != resultErrno {
 							t.Errorf("Case: %d %#v, expected: %s, got: %s", i+1, testCase, testCase.expectedErr, err)
 						}
 					}
@@ -1329,7 +1329,7 @@ func TestXLStorageFormatFileChange(t *testing.T) {
 	}
 
 	// Change the format.json such that "this" is changed to "randomid".
-	if err = ioutil.WriteFile(pathJoin(xlStorage.String(), minioMetaBucket, formatConfigFile), []byte(`{"version":"1","format":"xl","id":"592a41c2-b7cc-4130-b883-c4b5cb15965b","xl":{"version":"3","this":"randomid","sets":[["e07285a6-8c73-4962-89c6-047fb939f803","33b8d431-482d-4376-b63c-626d229f0a29","cff6513a-4439-4dc1-bcaa-56c9e880c352","randomid","9c9f21d5-1f15-4737-bce6-835faa0d9626","0a59b346-1424-4fc2-9fa2-a2e80541d0c1","7924a3dc-b69a-4971-9a2e-014966d6aebb","4d2b8dd9-4e48-444b-bdca-c89194b26042"]],"distributionAlgo":"CRCMOD"}}`), 0644); err != nil {
+	if err = os.WriteFile(pathJoin(xlStorage.String(), minioMetaBucket, formatConfigFile), []byte(`{"version":"1","format":"xl","id":"592a41c2-b7cc-4130-b883-c4b5cb15965b","xl":{"version":"3","this":"randomid","sets":[["e07285a6-8c73-4962-89c6-047fb939f803","33b8d431-482d-4376-b63c-626d229f0a29","cff6513a-4439-4dc1-bcaa-56c9e880c352","randomid","9c9f21d5-1f15-4737-bce6-835faa0d9626","0a59b346-1424-4fc2-9fa2-a2e80541d0c1","7924a3dc-b69a-4971-9a2e-014966d6aebb","4d2b8dd9-4e48-444b-bdca-c89194b26042"]],"distributionAlgo":"CRCMOD"}}`), 0644); err != nil {
 		t.Fatalf("ioutil.WriteFile failed with %s", err)
 	}
 

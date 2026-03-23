@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +31,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/cloudment/obstor/cmd/config"
 	xhttp "github.com/cloudment/obstor/cmd/http"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var (
@@ -157,7 +158,7 @@ func (c *OperatorDNS) Close() error {
 
 // List - Retrieves list of DNS entries for the domain.
 // This is a No Op for Operator because, there is no intent to enforce global
-// namespace at ObStor level with this DNS entry. The global namespace in
+// namespace at Obstor level with this DNS entry. The global namespace in
 // enforced by the Kubernetes Operator
 func (c *OperatorDNS) List() (srvRecords map[string][]SrvRecord, err error) {
 	return nil, ErrNotImplemented
@@ -165,7 +166,7 @@ func (c *OperatorDNS) List() (srvRecords map[string][]SrvRecord, err error) {
 
 // Get - Retrieves DNS records for a bucket.
 // This is a No Op for Operator because, there is no intent to enforce global
-// namespace at ObStor level with this DNS entry. The global namespace in
+// namespace at Obstor level with this DNS entry. The global namespace in
 // enforced by the Kubernetes Operator
 func (c *OperatorDNS) Get(bucket string) (srvRecords []SrvRecord, err error) {
 	return nil, ErrNotImplemented
@@ -176,7 +177,7 @@ func (c *OperatorDNS) String() string {
 	return "webhookDNS"
 }
 
-// OperatorDNS - represents dns config for ObStor k8s operator.
+// OperatorDNS - represents dns config for Obstor k8s operator.
 type OperatorDNS struct {
 	httpClient *http.Client
 	Endpoint   string

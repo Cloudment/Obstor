@@ -1,16 +1,16 @@
-# How to secure access to ObStor on Kubernetes with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to secure access to Obstor on Kubernetes with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-This document explains how to configure ObStor server with TLS certificates on Kubernetes.
+This document explains how to configure Obstor server with TLS certificates on Kubernetes.
 
 ## 1. Prerequisites
 
-- Familiarity with [ObStor deployment process on Kubernetes](https://pgg.net/docs/obstor/deploy-minio-on-kubernetes).
+- Familiarity with [Obstor deployment process on Kubernetes](https://obstor.net/docs/deploy-obstor-on-kubernetes).
 
 - Kubernetes cluster with `kubectl` configured.
 
-- Acquire TLS certificates, either from a CA or [create self-signed certificates](https://pgg.net/docs/obstor/how-to-secure-access-to-minio-server-with-tls).
+- Acquire TLS certificates, either from a CA or [create self-signed certificates](https://obstor.net/docs/how-to-secure-access-to-obstor-server-with-tls).
 
-For a [distributed ObStor setup](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide), where there are multiple pods with different domain names expected to run, you will either need wildcard certificates valid for all the domains or have specific certificates for each domain. If you are going to use specific certificates, make sure to create Kubernetes secrets accordingly.
+For a [distributed Obstor setup](https://obstor.net/docs/distributed-obstor-quickstart-guide), where there are multiple pods with different domain names expected to run, you will either need wildcard certificates valid for all the domains or have specific certificates for each domain. If you are going to use specific certificates, make sure to create Kubernetes secrets accordingly.
 
 For testing purposes, here is [how to create self-signed certificates](https://github.com/cloudment/obstor/tree/master/docs/tls#3-generate-self-signed-certificates).
 
@@ -23,7 +23,7 @@ below.
 Then type
 
 ```sh
-kubectl create secret generic tls-ssl-minio --from-file=path/to/private.key --from-file=path/to/public.crt
+kubectl create secret generic tls-ssl-obstor --from-file=path/to/private.key --from-file=path/to/public.crt
 ```
 
 Cross check if the secret is created successfully using
@@ -32,7 +32,7 @@ Cross check if the secret is created successfully using
 kubectl get secrets
 ```
 
-You should see a secret named `tls-ssl-minio`.
+You should see a secret named `tls-ssl-obstor`.
 
 ## 3. Update deployment yaml file
 
@@ -44,7 +44,7 @@ If you're using certificates provided by a CA, add the below section in your yam
     volumes:
       - name: secret-volume
         secret:
-          secretName: tls-ssl-minio
+          secretName: tls-ssl-obstor
           items:
           - key: public.crt
             path: public.crt
@@ -60,12 +60,12 @@ Note that the `secretName` should be same as the secret name created in previous
 ```yaml
     volumeMounts:
         - name: secret-volume
-          mountPath: /<user-running-minio>/.minio/certs
+          mountPath: /<user-running-obstor>/.obstor/certs
 ```
 
 Here the name of `volumeMount` should match the name of `volume` created previously. Also `mountPath` must be set to the path of
-the ObStor server's config sub-directory that is used to store certificates. By default, the location is
-`/<user-running-minio>/.minio/certs`.
+the Obstor server's config sub-directory that is used to store certificates. By default, the location is
+`/<user-running-obstor>/.obstor/certs`.
 
-*Tip*: In a standard Kubernetes configuration, this will be `/root/.minio/certs`. Kubernetes will mount the secrets volume read-only,
-so avoid setting `mountPath` to a path that ObStor server expects to write to.
+*Tip*: In a standard Kubernetes configuration, this will be `/root/.obstor/certs`. Kubernetes will mount the secrets volume read-only,
+so avoid setting `mountPath` to a path that Obstor server expects to write to.

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +52,7 @@ func (d DeleteMarkerReplication) Validate() error {
 	return nil
 }
 
-// DeleteReplication - whether versioned deletes are replicated - this is a ObStor only
+// DeleteReplication - whether versioned deletes are replicated - this is a Obstor only
 // extension.
 type DeleteReplication struct {
 	Status Status `xml:"Status"` // should be set to "Disabled" by default
@@ -96,7 +97,7 @@ type Rule struct {
 	Status                  Status                  `xml:"Status" json:"Status"`
 	Priority                int                     `xml:"Priority" json:"Priority"`
 	DeleteMarkerReplication DeleteMarkerReplication `xml:"DeleteMarkerReplication" json:"DeleteMarkerReplication"`
-	// ObStor extension to replicate versioned deletes
+	// Obstor extension to replicate versioned deletes
 	DeleteReplication DeleteReplication `xml:"DeleteReplication" json:"DeleteReplication"`
 	Destination       Destination       `xml:"Destination" json:"Destination"`
 	Filter            Filter            `xml:"Filter" json:"Filter"`

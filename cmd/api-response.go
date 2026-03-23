@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -418,7 +419,7 @@ func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 	var data = ListBucketsResponse{}
 	var owner = Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "obstor",
 	}
 
 	for _, bucket := range buckets {
@@ -439,7 +440,7 @@ func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delim
 	versions := make([]ObjectVersion, 0, len(resp.Objects))
 	var owner = Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "obstor",
 	}
 	var data = ListVersionsResponse{}
 
@@ -497,7 +498,7 @@ func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingTy
 	contents := make([]Object, 0, len(resp.Objects))
 	var owner = Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "obstor",
 	}
 	var data = ListObjectsResponse{}
 
@@ -546,7 +547,7 @@ func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter,
 	contents := make([]Object, 0, len(objects))
 	var owner = Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "obstor",
 	}
 	var data = ListObjectsV2Response{}
 
@@ -786,11 +787,15 @@ func writeErrorResponse(ctx context.Context, w http.ResponseWriter, err APIError
 		err.Description = fmt.Sprintf("The authorization header is malformed; the region is wrong; expecting '%s'.", globalServerRegion)
 	case "AccessDenied":
 		// The request is from browser and also if browser
-		// is enabled we need to redirect.
+		// is enabled we need to redirect to the console login.
+		// But only for paths that look like console navigation
+		// (no file extension) - not for S3 object requests.
 		if browser && globalBrowserEnabled {
-			w.Header().Set(xhttp.Location, minioReservedBucketPath+reqURL.Path)
-			w.WriteHeader(http.StatusTemporaryRedirect)
-			return
+			if path.Ext(reqURL.Path) == "" {
+				w.Header().Set(xhttp.Location, minioReservedBucketPath+reqURL.Path)
+				w.WriteHeader(http.StatusTemporaryRedirect)
+				return
+			}
 		}
 	}
 

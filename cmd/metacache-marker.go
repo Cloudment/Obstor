@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ func parseMarker(s string) (marker, uuid string) {
 	end := strings.LastIndex(s, "]")
 	tag := strings.Trim(s[start:end], "[]")
 	tags := strings.Split(tag, ",")
+tagLoop:
 	for _, tag := range tags {
 		kv := strings.Split(tag, ":")
 		if len(kv) < 2 {
@@ -46,7 +48,7 @@ func parseMarker(s string) (marker, uuid string) {
 		switch kv[0] {
 		case "minio_cache":
 			if kv[1] != markerTagVersion {
-				break
+				break tagLoop
 			}
 		case "id":
 			uuid = kv[1]

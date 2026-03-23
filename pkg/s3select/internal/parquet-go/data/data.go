@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2019 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,15 +50,15 @@ func NewRowGroup(chunks []*ColumnChunk, numRows, offset int64) *parquet.RowGroup
 		rows.Columns = append(rows.Columns, &chunk.ColumnChunk)
 		rows.TotalByteSize += chunk.dataLen
 
-		chunk.ColumnChunk.FileOffset = offset
+		chunk.FileOffset = offset
 
 		if chunk.isDictPage {
 			dictPageOffset := offset
-			chunk.ColumnChunk.MetaData.DictionaryPageOffset = &dictPageOffset
+			chunk.MetaData.DictionaryPageOffset = &dictPageOffset
 			offset += chunk.dictPageLen
 		}
 
-		chunk.ColumnChunk.MetaData.DataPageOffset = offset
+		chunk.MetaData.DataPageOffset = offset
 		offset += chunk.dataPageLen
 	}
 

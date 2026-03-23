@@ -1,69 +1,69 @@
-# ObStor Docker Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Obstor Docker Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
 ## Prerequisites
 Docker installed on your machine. Download the relevant installer from [here](https://www.docker.com/community-edition#/download).
 
-## Run Standalone ObStor on Docker.
-ObStor needs a persistent volume to store configuration and application data. However, for testing purposes, you can launch ObStor by simply passing a directory (`/data` in the example below). This directory gets created in the container filesystem at the time of container start. But all the data is lost after container exits.
+## Run Standalone Obstor on Docker.
+Obstor needs a persistent volume to store configuration and application data. However, for testing purposes, you can launch Obstor by simply passing a directory (`/data` in the example below). This directory gets created in the container filesystem at the time of container start. But all the data is lost after container exits.
 
 ```sh
 docker run -p 9000:9000 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
-To create a ObStor container with persistent storage, you need to map local persistent directories from the host OS to virtual config `~/.minio` and export `/data` directories. To do this, run the below commands
+To create a Obstor container with persistent storage, you need to map local persistent directories from the host OS to virtual config `~/.obstor` and export `/data` directories. To do this, run the below commands
 
 #### GNU/Linux and macOS
 ```sh
 docker run -p 9000:9000 \
-  --name minio1 \
+  --name obstor1 \
   -v /mnt/data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
 #### Windows
 ```sh
 docker run -p 9000:9000 \
-  --name minio1 \
+  --name obstor1 \
   -v D:\data:/data \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
-## Run Distributed ObStor on Docker
-Distributed ObStor can be deployed via [Docker Compose](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose) or [Swarm mode](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm). The major difference between these two being, Docker Compose creates a single host, multi-container deployment, while Swarm mode creates a multi-host, multi-container deployment.
+## Run Distributed Obstor on Docker
+Distributed Obstor can be deployed via [Docker Compose](https://obstor.net/docs/deploy-obstor-on-docker-compose) or [Swarm mode](https://obstor.net/docs/deploy-obstor-on-docker-swarm). The major difference between these two being, Docker Compose creates a single host, multi-container deployment, while Swarm mode creates a multi-host, multi-container deployment.
 
-This means Docker Compose lets you quickly get started with Distributed ObStor on your computer - ideal for development, testing, staging environments. While deploying Distributed ObStor on Swarm offers a more robust, production level deployment.
+This means Docker Compose lets you quickly get started with Distributed Obstor on your computer - ideal for development, testing, staging environments. While deploying Distributed Obstor on Swarm offers a more robust, production level deployment.
 
-## ObStor Docker Tips
+## Obstor Docker Tips
 
-### ObStor Custom Access and Secret Keys
-To override ObStor's auto-generated keys, you may pass secret and access keys explicitly as environment variables. ObStor server also allows regular strings as access and secret keys.
+### Obstor Custom Access and Secret Keys
+To override Obstor's auto-generated keys, you may pass secret and access keys explicitly as environment variables. Obstor server also allows regular strings as access and secret keys.
 
 #### GNU/Linux and macOS
 ```sh
-docker run -p 9000:9000 --name minio1 \
+docker run -p 9000:9000 --name obstor1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v /mnt/data:/data \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
 #### Windows
 ```powershell
-docker run -p 9000:9000 --name minio1 \
+docker run -p 9000:9000 --name obstor1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
-### Run ObStor Docker as a regular user
+### Run Obstor Docker as a regular user
 Docker provides standardized mechanisms to run docker containers as non-root users.
 
 #### GNU/Linux and macOS
@@ -74,11 +74,11 @@ On Linux and macOS you can use `--user` to run the container as regular user.
 mkdir -p ${HOME}/data
 docker run -p 9000:9000 \
   --user $(id -u):$(id -g) \
-  --name minio1 \
+  --name obstor1 \
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v ${HOME}/data:/data \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
 #### Windows
@@ -88,38 +88,38 @@ On windows you would need to use [Docker integrated windows authentication](http
 
 ```powershell
 docker run -p 9000:9000 \
-  --name minio1 \
+  --name obstor1 \
   --security-opt "credentialspec=file://myuser.json"
   -e "OBSTOR_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "OBSTOR_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 
-### ObStor Custom Access and Secret Keys using Docker secrets
-To override ObStor's auto-generated keys, you may pass secret and access keys explicitly by creating access and secret keys as [Docker secrets](https://docs.docker.com/engine/swarm/secrets/). ObStor server also allows regular strings as access and secret keys.
+### Obstor Custom Access and Secret Keys using Docker secrets
+To override Obstor's auto-generated keys, you may pass secret and access keys explicitly by creating access and secret keys as [Docker secrets](https://docs.docker.com/engine/swarm/secrets/). Obstor server also allows regular strings as access and secret keys.
 
 ```
 echo "AKIAIOSFODNN7EXAMPLE" | docker secret create access_key -
 echo "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" | docker secret create secret_key -
 ```
 
-Create a ObStor service using `docker service` to read from Docker secrets.
+Create a Obstor service using `docker service` to read from Docker secrets.
 ```
-docker service create --name="minio-service" --secret="access_key" --secret="secret_key" minio/minio server /data
+docker service create --name="obstor-service" --secret="access_key" --secret="secret_key" ghcr.io/cloudment/obstor server /data
 ```
 
 Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/)
 
-#### ObStor Custom Access and Secret Key files
+#### Obstor Custom Access and Secret Key files
 To use other secret names follow the instructions above and replace `access_key` and `secret_key` with your custom names (e.g. `my_secret_key`,`my_custom_key`). Run your service with
 ```
-docker service create --name="minio-service" \
+docker service create --name="obstor-service" \
   --secret="my_access_key" \
   --secret="my_secret_key" \
   --env="OBSTOR_ROOT_USER_FILE=my_access_key" \
   --env="OBSTOR_ROOT_PASSWORD_FILE=my_secret_key" \
-  minio/minio server /data
+  ghcr.io/cloudment/obstor server /data
 ```
 `OBSTOR_ROOT_USER_FILE` and `OBSTOR_ROOT_PASSWORD_FILE` also support custom absolute paths, in case Docker secrets are mounted to custom locations or other tools are used to mount secrets into the container. For example, HashiCorp Vault injects secrets to `/vault/secrets`. With the custom names above, set the environment variables to
 ```
@@ -148,15 +148,15 @@ To stop a running container, you can use the [`docker stop`](https://docs.docker
 docker stop <container_id>
 ```
 
-### ObStor container logs
-To access ObStor logs, you can use the [`docker logs`](https://docs.docker.com/engine/reference/commandline/logs/) command.
+### Obstor container logs
+To access Obstor logs, you can use the [`docker logs`](https://docs.docker.com/engine/reference/commandline/logs/) command.
 
 ```sh
 docker logs <container_id>
 ```
 
-### Monitor ObStor Docker Container
-To monitor the resources used by ObStor container, you can use the [`docker stats`](https://docs.docker.com/engine/reference/commandline/stats/) command.
+### Monitor Obstor Docker Container
+To monitor the resources used by Obstor container, you can use the [`docker stats`](https://docs.docker.com/engine/reference/commandline/stats/) command.
 
 ```sh
 docker stats <container_id>
@@ -164,7 +164,7 @@ docker stats <container_id>
 
 ## Explore Further
 
-* [Deploy ObStor on Docker Compose](https://pgg.net/docs/obstor/deploy-minio-on-docker-compose)
-* [Deploy ObStor on Docker Swarm](https://pgg.net/docs/obstor/deploy-minio-on-docker-swarm)
-* [Distributed ObStor Quickstart Guide](https://pgg.net/docs/obstor/distributed-minio-quickstart-guide)
-* [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
+* [Deploy Obstor on Docker Compose](https://obstor.net/docs/deploy-obstor-on-docker-compose)
+* [Deploy Obstor on Docker Swarm](https://obstor.net/docs/deploy-obstor-on-docker-swarm)
+* [Distributed Obstor Quickstart Guide](https://obstor.net/docs/distributed-obstor-quickstart-guide)
+* [Obstor Erasure Code QuickStart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)

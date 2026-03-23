@@ -1,16 +1,15 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
+FROM alpine:3.23
 
 ARG TARGETARCH
-
 ARG RELEASE
 
-LABEL name="ObStor" \
+LABEL name="Obstor" \
       vendor="PGG Inc <oss@pgg.net>" \
       maintainer="PGG Inc <oss@pgg.net>" \
       version="${RELEASE}" \
       release="${RELEASE}" \
-      summary="ObStor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
-      description="ObStor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. ObStor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
+      summary="Obstor is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
+      description="Obstor object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. Obstor is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
 ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_SECRET_KEY_FILE=secret_key \
@@ -19,24 +18,19 @@ ENV OBSTOR_ACCESS_KEY_FILE=access_key \
     OBSTOR_KMS_SECRET_KEY_FILE=kms_master_key \
     OBSTOR_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
 
-COPY dockerscripts/verify-minio.sh /usr/bin/verify-minio.sh
+COPY dockerscripts/verify-obstor.sh /usr/bin/verify-obstor.sh
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 COPY CREDITS /licenses/CREDITS
 COPY LICENSE /licenses/LICENSE
 
-RUN \
-     microdnf update --nodocs && \
-     microdnf install curl ca-certificates shadow-utils util-linux --nodocs && \
-     rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-     microdnf install minisign --nodocs && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE} -o /usr/bin/minio && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.sha256sum -o /usr/bin/minio.sha256sum && \
-     curl -s -q https://dl.pgg.net/server/minio/release/linux-${TARGETARCH}/archive/minio.${RELEASE}.minisig -o /usr/bin/minio.minisig && \
-     microdnf clean all && \
-     chmod +x /usr/bin/minio && \
-     chmod +x /usr/bin/docker-entrypoint.sh && \
-     chmod +x /usr/bin/verify-minio.sh && \
-     /usr/bin/verify-minio.sh
+RUN apk add --no-cache curl ca-certificates su-exec minisign && \
+    curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE} -o /usr/bin/obstor && \
+    curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.sha256sum -o /usr/bin/obstor.sha256sum && \
+    curl -s -q https://dl.pgg.net/packages/obstor/release/linux-${TARGETARCH}/archive/obstor.${RELEASE}.minisig -o /usr/bin/obstor.minisig && \
+    chmod +x /usr/bin/obstor && \
+    chmod +x /usr/bin/docker-entrypoint.sh && \
+    chmod +x /usr/bin/verify-obstor.sh && \
+    /usr/bin/verify-obstor.sh
 
 EXPOSE 9000
 

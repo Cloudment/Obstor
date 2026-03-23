@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +22,10 @@ import (
 	"math"
 	"time"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/bucket/replication"
 	"github.com/cloudment/obstor/pkg/hash"
 	"github.com/cloudment/obstor/pkg/madmin"
+	humanize "github.com/dustin/go-humanize"
 )
 
 // BackendType - represents different backend types.
@@ -372,7 +373,7 @@ type ListObjectVersionsInfo struct {
 	// request to get next set of objects.
 	//
 	// NOTE: AWS S3 returns NextMarker only if you have delimiter request parameter specified,
-	//       ObStor always returns NextMarker.
+	//       Obstor always returns NextMarker.
 	NextMarker string
 
 	// NextVersionIDMarker may be set of IsTruncated is true
@@ -398,7 +399,7 @@ type ListObjectsInfo struct {
 	// request to get next set of objects.
 	//
 	// NOTE: AWS S3 returns NextMarker only if you have delimiter request parameter specified,
-	//       ObStor always returns NextMarker.
+	//       Obstor always returns NextMarker.
 	NextMarker string
 
 	// List of objects info for this request.

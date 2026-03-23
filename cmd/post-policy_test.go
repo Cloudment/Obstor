@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,7 +234,7 @@ func testPostPolicyBucketHandler(obj ObjectLayer, instanceType string, t TestErr
 		if rec.Code == http.StatusNoContent {
 			objInfo, err := obj.GetObjectInfo(context.Background(), bucketName, testCase.objectName+"/upload.txt", opts)
 			if err != nil {
-				t.Error("Unexpected error: ", err)
+				t.Error("unexpected error: ", err)
 			}
 			for k, v := range testCase.expectedHeaders {
 				if objInfo.UserDefined[k] != v {
@@ -486,7 +487,7 @@ func testPostPolicyBucketHandlerRedirect(obj ObjectLayer, instanceType string, t
 	// Get the uploaded object info
 	info, err := obj.GetObjectInfo(context.Background(), bucketName, targetObj, opts)
 	if err != nil {
-		t.Error("Unexpected error: ", err)
+		t.Error("unexpected error: ", err)
 	}
 
 	redirectURL.RawQuery = getRedirectPostRawQuery(info)

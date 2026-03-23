@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rjeczalik/notify"
+	"github.com/fsnotify/fsnotify"
 )
 
 // LoadX509KeyPairFunc is a function that parses a private key and
@@ -56,7 +57,7 @@ type Manager struct {
 	defaultCert  pair
 
 	loadX509KeyPair LoadX509KeyPairFunc
-	events          chan notify.EventInfo
+	watcher         *fsnotify.Watcher
 	ctx             context.Context
 }
 
@@ -83,6 +84,11 @@ func NewManager(ctx context.Context, certFile, keyFile string, loadX509KeyPair L
 		return nil, err
 	}
 
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil, err
+	}
+
 	manager = &Manager{
 		certificates: map[pair]*tls.Certificate{},
 		defaultCert: pair{
@@ -90,7 +96,7 @@ func NewManager(ctx context.Context, certFile, keyFile string, loadX509KeyPair L
 			CertFile: certFile,
 		},
 		loadX509KeyPair: loadX509KeyPair,
-		events:          make(chan notify.EventInfo, 1),
+		watcher:         watcher,
 		ctx:             ctx,
 	}
 	if err := manager.AddCertificate(certFile, keyFile); err != nil {
@@ -156,7 +162,7 @@ func (m *Manager) AddCertificate(certFile, keyFile string) (err error) {
 	// match the client SNI to a SAN since the SNI is meant to communicate the destination
 	// host name and clients will not set the SNI to an IP address.
 	// Allowing multiple certificates with IP SANs lead to errors that confuses users - like:
-	// "It works for `https://instance.minio.local` but not for `https://10.0.2.1`"
+	// "It works for `https://instance.obstor.local` but not for `https://10.0.2.1`"
 	if len(m.certificates) > 0 && len(certificate.Leaf.IPAddresses) > 0 {
 		return errors.New("cert: certificate must not contain any IP SANs: only the default certificate may contain IP SANs")
 	}
@@ -169,10 +175,10 @@ func (m *Manager) AddCertificate(certFile, keyFile string) (err error) {
 		// for directory changes only, while we can still watch for changes
 		// on files on other platforms. Watch parent directory on all platforms
 		// for simplicity.
-		if err = notify.Watch(filepath.Dir(certFile), m.events, eventWrite...); err != nil {
+		if err = m.watcher.Add(filepath.Dir(certFile)); err != nil {
 			return err
 		}
-		if err = notify.Watch(filepath.Dir(keyFile), m.events, eventWrite...); err != nil {
+		if err = m.watcher.Add(filepath.Dir(keyFile)); err != nil {
 			return err
 		}
 	}
@@ -217,13 +223,13 @@ func (m *Manager) watchFileEvents() {
 		select {
 		case <-m.ctx.Done():
 			return
-		case event := <-m.events:
-			if !isWriteEvent(event.Event()) {
+		case event := <-m.watcher.Events:
+			if !isWriteEvent(event.Op) {
 				continue
 			}
 
 			for pair := range m.certificates {
-				if p := event.Path(); pair.KeyFile == p || pair.CertFile == p {
+				if p := event.Name; pair.KeyFile == p || pair.CertFile == p {
 					certificate, err := m.loadX509KeyPair(pair.CertFile, pair.KeyFile)
 					if err != nil {
 						continue
@@ -289,7 +295,7 @@ func (m *Manager) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, 
 	// via SNI.
 	//
 	// Note: The certificate.Leaf should be non-nil and contain the actual
-	// client certificate of ObStor that should be presented to the peer (TLS client).
+	// client certificate of Obstor that should be presented to the peer (TLS client).
 	// Otherwise, the leaf certificate has to be parsed again - which is kind of
 	// expensive and may cause a performance issue. For more information, check the
 	// docs of tls.ClientHelloInfo.SupportsCertificate.
@@ -323,7 +329,7 @@ func (m *Manager) GetClientCertificate(reqInfo *tls.CertificateRequestInfo) (*tl
 	// be accepted by the peer (TLS server) based on reqInfo.
 	//
 	// Note: The certificate.Leaf should be non-nil and contain the actual
-	// client certificate of ObStor that should be presented to the peer (TLS server).
+	// client certificate of Obstor that should be presented to the peer (TLS server).
 	// Otherwise, the leaf certificate has to be parsed again - which is kind of
 	// expensive and may cause a performance issue. For more information, check the
 	// docs of tls.CertificateRequestInfo.SupportsCertificate.

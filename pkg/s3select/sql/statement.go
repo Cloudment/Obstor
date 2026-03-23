@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +23,10 @@ import (
 	"strings"
 
 	"github.com/cloudment/obstor/pkg/s3select/jstream"
-	"github.com/minio/simdjson-go"
 )
 
 var (
-	errBadLimitSpecified = errors.New("Limit value must be a positive integer")
+	errBadLimitSpecified = errors.New("limit value must be a positive integer")
 )
 
 const (
@@ -88,12 +88,12 @@ func ParseSelectStatement(s string) (stmt SelectStatement, err error) {
 	if selectAST.Where != nil {
 		whereQProp := selectAST.Where.analyze(&selectAST)
 		if whereQProp.err != nil {
-			err = errQueryAnalysisFailure(fmt.Errorf("Where clause error: %w", whereQProp.err))
+			err = errQueryAnalysisFailure(fmt.Errorf("where clause error: %w", whereQProp.err))
 			return
 		}
 
 		if whereQProp.isAggregation {
-			err = errQueryAnalysisFailure(errors.New("WHERE clause cannot have an aggregation"))
+			err = errQueryAnalysisFailure(errors.New("where clause cannot have an aggregation"))
 			return
 		}
 	}
@@ -162,43 +162,12 @@ func (e *SelectStatement) EvalFrom(format string, input Record) ([]*Record, erro
 			return nil, err
 		}
 
-		var kvs jstream.KVS
 		switch v := txedRec.(type) {
 		case jstream.KVS:
-			kvs = v
-
-		case []interface{}:
-			recs := make([]*Record, len(v))
-			for i, val := range v {
-				tmpRec := input.Clone(nil)
-				if err = tmpRec.Replace(val); err != nil {
-					return nil, err
-				}
-				recs[i] = &tmpRec
-			}
-			return recs, nil
-
-		default:
-			kvs = jstream.KVS{jstream.KV{Key: "_1", Value: v}}
-		}
-
-		if err = input.Replace(kvs); err != nil {
-			return nil, err
-		}
-
-		return []*Record{&input}, nil
-	case simdjson.Object:
-		txedRec, _, err := jsonpathEval(e.selectAST.From.Table.PathExpr[1:], rec)
-		if err != nil {
-			return nil, err
-		}
-
-		switch v := txedRec.(type) {
-		case simdjson.Object:
-			err := input.Replace(v)
-			if err != nil {
+			if err = input.Replace(v); err != nil {
 				return nil, err
 			}
+			return []*Record{&input}, nil
 
 		case []interface{}:
 			recs := make([]*Record, len(v))
@@ -218,7 +187,6 @@ func (e *SelectStatement) EvalFrom(format string, input Record) ([]*Record, erro
 				return nil, err
 			}
 		}
-		return []*Record{&input}, nil
 	}
 	return nil, errDataSource(errors.New("unexpected non JSON input"))
 }
@@ -259,7 +227,7 @@ func (e *SelectStatement) isPassingWhereClause(input Record) (bool, error) {
 
 	b, ok := value.ToBool()
 	if !ok {
-		err = fmt.Errorf("WHERE expression did not return bool")
+		err = fmt.Errorf("where expression did not return bool")
 		return false, err
 	}
 

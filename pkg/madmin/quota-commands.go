@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,7 @@ package madmin
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -66,7 +67,7 @@ func (adm *AdminClient) GetBucketQuota(ctx context.Context, bucket string) (q Bu
 		queryValues: queryValues,
 	}
 
-	// Execute GET on /minio/admin/v3/get-quota
+	// Execute GET on /obstor/admin/v3/get-quota
 	resp, err := adm.executeMethod(ctx, http.MethodGet, reqData)
 
 	defer closeResponse(resp)
@@ -78,7 +79,7 @@ func (adm *AdminClient) GetBucketQuota(ctx context.Context, bucket string) (q Bu
 		return q, httpRespToErrorResponse(resp)
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return q, err
 	}
@@ -106,7 +107,7 @@ func (adm *AdminClient) SetBucketQuota(ctx context.Context, bucket string, quota
 		content:     data,
 	}
 
-	// Execute PUT on /minio/admin/v3/set-bucket-quota to set quota for a bucket.
+	// Execute PUT on /obstor/admin/v3/set-bucket-quota to set quota for a bucket.
 	resp, err := adm.executeMethod(ctx, http.MethodPut, reqData)
 
 	defer closeResponse(resp)

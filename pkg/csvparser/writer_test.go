@@ -77,7 +77,7 @@ func TestWrite(t *testing.T) {
 type errorWriter struct{}
 
 func (e errorWriter) Write(b []byte) (int, error) {
-	return 0, errors.New("Test")
+	return 0, errors.New("test")
 }
 
 func TestError(t *testing.T) {
@@ -97,6 +97,6 @@ func TestError(t *testing.T) {
 	err = f.Error()
 
 	if err == nil {
-		t.Error("Error should not be nil")
+		t.Error("error should not be nil")
 	}
 }

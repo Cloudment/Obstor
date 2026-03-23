@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +79,7 @@ func GetHealthInfo(ctx context.Context, drive, fsPath string) (Latency, Throughp
 		if n, err := w.Write(data); err != nil {
 			return Latency{}, Throughput{}, err
 		} else if n != blockSize {
-			return Latency{}, Throughput{}, fmt.Errorf("Expected to write %d, but only wrote %d", blockSize, n)
+			return Latency{}, Throughput{}, fmt.Errorf("expected to write %d, but only wrote %d", blockSize, n)
 		}
 		latencyInSecs := time.Since(startTime).Seconds()
 		latencies[i] = latencyInSecs

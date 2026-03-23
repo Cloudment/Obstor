@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +47,7 @@ type HTTPRangeSpec struct {
 func (h *HTTPRangeSpec) GetLength(resourceSize int64) (rangeLength int64, err error) {
 	switch {
 	case resourceSize < 0:
-		return 0, errors.New("Resource size cannot be negative")
+		return 0, errors.New("resource size cannot be negative")
 
 	case h == nil:
 		rangeLength = resourceSize
@@ -72,7 +73,7 @@ func (h *HTTPRangeSpec) GetLength(resourceSize int64) (rangeLength int64, err er
 		rangeLength = resourceSize - h.Start
 
 	default:
-		return 0, errors.New("Unexpected range specification case")
+		return 0, errors.New("unexpected range specification case")
 	}
 
 	return rangeLength, nil
@@ -122,11 +123,11 @@ func parseRequestRangeSpec(rangeString string) (hrange *HTTPRangeSpec, err error
 	// Convert offsetBeginString only if its not empty.
 	if len(offsetBeginString) > 0 {
 		if offsetBeginString[0] == '+' {
-			return nil, fmt.Errorf("Byte position ('%s') must not have a sign", offsetBeginString)
+			return nil, fmt.Errorf("byte position ('%s') must not have a sign", offsetBeginString)
 		} else if offsetBegin, err = strconv.ParseInt(offsetBeginString, 10, 64); err != nil {
 			return nil, fmt.Errorf("'%s' does not have a valid first byte position value", rangeString)
 		} else if offsetBegin < 0 {
-			return nil, fmt.Errorf("First byte position is negative ('%d')", offsetBegin)
+			return nil, fmt.Errorf("first byte position is negative ('%d')", offsetBegin)
 		}
 	}
 
@@ -135,11 +136,11 @@ func parseRequestRangeSpec(rangeString string) (hrange *HTTPRangeSpec, err error
 	// Convert offsetEndString only if its not empty.
 	if len(offsetEndString) > 0 {
 		if offsetEndString[0] == '+' {
-			return nil, fmt.Errorf("Byte position ('%s') must not have a sign", offsetEndString)
+			return nil, fmt.Errorf("byte position ('%s') must not have a sign", offsetEndString)
 		} else if offsetEnd, err = strconv.ParseInt(offsetEndString, 10, 64); err != nil {
 			return nil, fmt.Errorf("'%s' does not have a valid last byte position value", rangeString)
 		} else if offsetEnd < 0 {
-			return nil, fmt.Errorf("Last byte position is negative ('%d')", offsetEnd)
+			return nil, fmt.Errorf("last byte position is negative ('%d')", offsetEnd)
 		}
 	}
 

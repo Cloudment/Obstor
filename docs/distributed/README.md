@@ -1,80 +1,80 @@
-# Distributed ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Distributed Obstor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
-ObStor in distributed mode lets you pool multiple drives (even on different machines) into a single object storage server. As drives are distributed across several nodes, distributed ObStor can withstand multiple node failures and yet ensure full data protection.
+Obstor in distributed mode lets you pool multiple drives (even on different machines) into a single object storage server. As drives are distributed across several nodes, distributed Obstor can withstand multiple node failures and yet ensure full data protection.
 
-## Why distributed ObStor?
+## Why distributed Obstor?
 
-ObStor in distributed mode can help you setup a highly-available storage system with a single object storage deployment. With distributed ObStor, you can optimally use storage devices, irrespective of their location in a network.
+Obstor in distributed mode can help you setup a highly-available storage system with a single object storage deployment. With distributed Obstor, you can optimally use storage devices, irrespective of their location in a network.
 
 ### Data protection
 
-Distributed ObStor provides protection against multiple node/drive failures and [bit rot](https://github.com/cloudment/obstor/blob/master/docs/erasure/README.md#what-is-bit-rot-protection) using [erasure code](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide). As the minimum disks required for distributed ObStor is 4 (same as minimum disks required for erasure coding), erasure code automatically kicks in as you launch distributed ObStor.
+Distributed Obstor provides protection against multiple node/drive failures and [bit rot](https://github.com/cloudment/obstor/blob/main/docs/erasure/README.md#what-is-bit-rot-protection) using [erasure code](https://obstor.net/docs/obstor-erasure-code-quickstart-guide). As the minimum disks required for distributed Obstor is 4 (same as minimum disks required for erasure coding), erasure code automatically kicks in as you launch distributed Obstor.
 
 ### High availability
 
-A stand-alone ObStor server would go down if the server hosting the disks goes offline. In contrast, a distributed ObStor setup with _m_ servers and _n_ disks will have your data safe as long as _m/2_ servers or _m*n_/2 or more disks are online.
+A stand-alone Obstor server would go down if the server hosting the disks goes offline. In contrast, a distributed Obstor setup with _m_ servers and _n_ disks will have your data safe as long as _m/2_ servers or _m*n_/2 or more disks are online.
 
-For example, an 16-server distributed setup with 200 disks per node would continue serving files, up to 4 servers can be offline in default configuration i.e around 800 disks down ObStor would continue to read and write objects.
+For example, an 16-server distributed setup with 200 disks per node would continue serving files, up to 4 servers can be offline in default configuration i.e around 800 disks down Obstor would continue to read and write objects.
 
-Refer to sizing guide for more understanding on default values chosen depending on your erasure stripe size [here](https://github.com/cloudment/obstor/blob/master/docs/distributed/SIZING.md). Parity settings can be changed using [storage classes](https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class).
+Refer to sizing guide for more understanding on default values chosen depending on your erasure stripe size [here](https://github.com/cloudment/obstor/blob/main/docs/distributed/SIZING.md). Parity settings can be changed using [storage classes](https://github.com/cloudment/obstor/tree/master/docs/erasure/storage-class).
 
 ### Consistency Guarantees
 
-ObStor follows strict **read-after-write** and **list-after-write** consistency model for all i/o operations both in distributed and standalone modes.
+Obstor follows strict **read-after-write** and **list-after-write** consistency model for all i/o operations both in distributed and standalone modes.
 
 # Get started
 
-If you're aware of stand-alone ObStor set up, the process remains largely the same. ObStor server automatically switches to stand-alone or distributed mode, depending on the command line parameters.
+If you're aware of stand-alone Obstor set up, the process remains largely the same. Obstor server automatically switches to stand-alone or distributed mode, depending on the command line parameters.
 
 ## 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).
 
-## 2. Run distributed ObStor
+## 2. Run distributed Obstor
 
-To start a distributed ObStor instance, you just need to pass drive locations as parameters to the minio server command. Then, you’ll need to run the same command on all the participating nodes.
+To start a distributed Obstor instance, you just need to pass drive locations as parameters to the obstor server command. Then, you’ll need to run the same command on all the participating nodes.
 
 __NOTE:__
 
-- All the nodes running distributed ObStor need to have same access key and secret key for the nodes to connect. To achieve this, it is __recommended__ to export access key and secret key as environment variables, `OBSTOR_ROOT_USER` and `OBSTOR_ROOT_PASSWORD`, on all the nodes before executing ObStor server command.
-- __ObStor creates erasure-coding sets of *4* to *16* drives per set.  The number of drives you provide in total must be a multiple of one of those numbers.__
-- __ObStor chooses the largest EC set size which divides into the total number of drives or total number of nodes given - making sure to keep the uniform distribution i.e each node participates equal number of drives per set__.
+- All the nodes running distributed Obstor need to have same access key and secret key for the nodes to connect. To achieve this, it is __recommended__ to export access key and secret key as environment variables, `OBSTOR_ROOT_USER` and `OBSTOR_ROOT_PASSWORD`, on all the nodes before executing Obstor server command.
+- __Obstor creates erasure-coding sets of *4* to *16* drives per set.  The number of drives you provide in total must be a multiple of one of those numbers.__
+- __Obstor chooses the largest EC set size which divides into the total number of drives or total number of nodes given - making sure to keep the uniform distribution i.e each node participates equal number of drives per set__.
 - __Each object is written to a single EC set, and therefore is spread over no more than 16 drives.__
-- __All the nodes running distributed ObStor setup are recommended to be homogeneous, i.e. same operating system, same number of disks and same network interconnects.__
-- ObStor distributed mode requires __fresh directories__. If required, the drives can be shared with other applications. You can do this by using a sub-directory exclusive to ObStor. For example, if you have mounted your volume under `/export`, pass `/export/data` as arguments to ObStor server.
+- __All the nodes running distributed Obstor setup are recommended to be homogeneous, i.e. same operating system, same number of disks and same network interconnects.__
+- Obstor distributed mode requires __fresh directories__. If required, the drives can be shared with other applications. You can do this by using a sub-directory exclusive to Obstor. For example, if you have mounted your volume under `/export`, pass `/export/data` as arguments to Obstor server.
 - The IP addresses and drive paths below are for demonstration purposes only, you need to replace these with the actual IP addresses and drive paths/folders.
-- Servers running distributed ObStor instances should be less than 15 minutes apart. You can enable [NTP](http://www.ntp.org/) service as a best practice to ensure same times across servers.
+- Servers running distributed Obstor instances should be less than 15 minutes apart. You can enable [NTP](http://www.ntp.org/) service as a best practice to ensure same times across servers.
 - `OBSTOR_DOMAIN` environment variable should be defined and exported for bucket DNS style support.
-- Running Distributed ObStor on __Windows__ operating system is considered **experimental**. Please proceed with caution.
+- Running Distributed Obstor on __Windows__ operating system is considered **experimental**. Please proceed with caution.
 
-Example 1: Start distributed ObStor instance on n nodes with m drives each mounted at `/export1` to `/exportm` (pictured below), by running this command on all the n nodes:
+Example 1: Start distributed Obstor instance on n nodes with m drives each mounted at `/export1` to `/exportm` (pictured below), by running this command on all the n nodes:
 
-![Distributed ObStor, n nodes with m drives each](https://github.com/cloudment/obstor/blob/master/docs/screenshots/Architecture-diagram_distributed_nm.png?raw=true)
+![Distributed Obstor, n nodes with m drives each](https://github.com/cloudment/obstor/blob/main/docs/screenshots/Architecture-diagram_distributed_nm.png?raw=true)
 
 #### GNU/Linux and macOS
 
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio server http://host{1...n}/export{1...m}
+obstor server http://host{1...n}/export{1...m}
 ```
 
 > __NOTE:__ In above example `n` and `m` represent positive integers, *do not copy paste and expect it work make the changes according to local deployment and setup*.
 
-> __NOTE:__ `{1...n}` shown have 3 dots! Using only 2 dots `{1..n}` will be interpreted by your shell and won't be passed to ObStor server, affecting the erasure coding order, which would impact performance and high availability. __Always use ellipses syntax `{1...n}` (3 dots!) for optimal erasure-code distribution__
+> __NOTE:__ `{1...n}` shown have 3 dots! Using only 2 dots `{1..n}` will be interpreted by your shell and won't be passed to Obstor server, affecting the erasure coding order, which would impact performance and high availability. __Always use ellipses syntax `{1...n}` (3 dots!) for optimal erasure-code distribution__
 
 #### Expanding existing distributed setup
-ObStor supports expanding distributed erasure coded clusters by specifying new set of clusters on the command-line as shown below:
+Obstor supports expanding distributed erasure coded clusters by specifying new set of clusters on the command-line as shown below:
 
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio server http://host{1...n}/export{1...m} http://host{o...z}/export{1...m}
+obstor server http://host{1...n}/export{1...m} http://host{o...z}/export{1...m}
 ```
 
 For example:
 ```
-minio server http://host{1...4}/export{1...16} http://host{5...12}/export{1...16}
+obstor server http://host{1...4}/export{1...16} http://host{5...12}/export{1...16}
 ```
 
 Now the server has expanded total storage by _(newly_added_servers\*m)_ more disks, taking the total count to _(existing_servers\*m)+(newly_added_servers\*m)_ disks. New object upload requests automatically start using the least used cluster. This expansion strategy works endlessly, so you can perpetually expand your clusters as needed.  When you restart, it is immediate and non-disruptive to the applications. Each group of servers in the command-line is called a pool. There are 2 server pools in this example. New objects are placed in server pools in proportion to the amount of free space in each pool. Within each pool, the location of the erasure-set of drives is determined based on a deterministic hashing algorithm.
@@ -82,12 +82,12 @@ Now the server has expanded total storage by _(newly_added_servers\*m)_ more dis
 > __NOTE:__ __Each pool you add must have the same erasure coding parity configuration as the original pool, so the same data redundancy SLA is maintained.__
 
 ## 3. Test your setup
-To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide).
+To test this setup, access the Obstor server via browser or [`mc`](https://obstor.net/docs/obstor-client-quickstart-guide).
 
 ## Explore Further
-- [ObStor Erasure Code QuickStart Guide](https://pgg.net/docs/obstor/minio-erasure-code-quickstart-guide)
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor Erasure Code QuickStart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
+- [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)
+- [Use `minio-go` SDK with Obstor Server](https://obstor.net/docs/golang-client-quickstart-guide)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

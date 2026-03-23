@@ -4,7 +4,7 @@
 
 - [AssumeRoleWithLDAPIdentity [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)](#assumerolewithldapidentity-slackhttpsslackminioslacktypesvghttpsslackminio)
     - [Introduction](#introduction)
-    - [Configuring AD/LDAP on ObStor](#configuring-adldap-on-minio)
+    - [Configuring AD/LDAP on Obstor](#configuring-adldap-on-obstor)
         - [Supported modes of operation](#supported-modes-of-operation)
             - [Lookup-Bind Mode](#lookup-bind-mode)
             - [Username-Format Mode](#username-format-mode)
@@ -26,25 +26,25 @@
 
 ## Introduction
 
-ObStor provides a custom STS API that allows integration with LDAP based corporate environments including Microsoft Active Directory. The ObStor server can be configured in two possible modes: either using a LDAP separate service account, called lookup-bind mode or in username-format mode. In either case the login flow for a user is the same as the STS flow:
+Obstor provides a custom STS API that allows integration with LDAP based corporate environments including Microsoft Active Directory. The Obstor server can be configured in two possible modes: either using a LDAP separate service account, called lookup-bind mode or in username-format mode. In either case the login flow for a user is the same as the STS flow:
 
 1. User provides their AD/LDAP username and password to the STS API.
-2. ObStor verifies the login credentials with the AD/LDAP server.
-3. On success, ObStor queries the AD/LDAP server for a list of groups that the user is a member of.
+2. Obstor verifies the login credentials with the AD/LDAP server.
+3. On success, Obstor queries the AD/LDAP server for a list of groups that the user is a member of.
    - This is done via a customizable AD/LDAP search query.
-4. ObStor then generates temporary credentials for the user storing the list of groups in a cryptographically secure session token. The temporary access key, secret key and session token are returned to the user.
-5. The user can now use these credentials to make requests to the ObStor server.
+4. Obstor then generates temporary credentials for the user storing the list of groups in a cryptographically secure session token. The temporary access key, secret key and session token are returned to the user.
+5. The user can now use these credentials to make requests to the Obstor server.
 
-The administrator will associate IAM access policies with each group and if required with the user too. The ObStor server then evaluates applicable policies on a user (these are the policies associated with the groups along with the policy on the user if any) to check if the request should be allowed or denied.
+The administrator will associate IAM access policies with each group and if required with the user too. The Obstor server then evaluates applicable policies on a user (these are the policies associated with the groups along with the policy on the user if any) to check if the request should be allowed or denied.
 
-## Configuring AD/LDAP on ObStor
+## Configuring AD/LDAP on Obstor
 
-LDAP STS configuration can be performed via ObStor's standard configuration API (i.e. using `mc admin config set/get` commands) or equivalently via environment variables. For brevity we refer to environment variables here.
+LDAP STS configuration can be performed via Obstor's standard configuration API (i.e. using `mc admin config set/get` commands) or equivalently via environment variables. For brevity we refer to environment variables here.
 
 LDAP is configured via the following environment variables:
 
 ```
-$ mc admin config set myminio identity_ldap --env
+$ mc admin config set myobstor identity_ldap --env
 KEY:
 identity_ldap  enable LDAP SSO support
 
@@ -66,15 +66,15 @@ OBSTOR_IDENTITY_LDAP_COMMENT                 (sentence)  optionally add a commen
 
 ### Supported modes of operation ###
 
-The two supported modes of LDAP configuration differ in how the ObStor server derives the Distinguished Name (DN) of the user from their username provided in the STS API. _Exactly one must be used in a valid configuration_.
+The two supported modes of LDAP configuration differ in how the Obstor server derives the Distinguished Name (DN) of the user from their username provided in the STS API. _Exactly one must be used in a valid configuration_.
 
 Once a unique DN for the user is derived, the server verifies the user's credentials with the LDAP server and on success, looks up the user's groups via a configured group search query and finally temporary object storage credentials are generated and returned.
 
 #### Lookup-Bind Mode ####
 
-In this mode, the a low-privilege read-only LDAP service account is configured in the ObStor server by providing the account's Distinguished Name (DN) and password. It is the new and preferred mode for LDAP integration.
+In this mode, the a low-privilege read-only LDAP service account is configured in the Obstor server by providing the account's Distinguished Name (DN) and password. It is the new and preferred mode for LDAP integration.
 
-This service account is used by the ObStor server to lookup a user's DN given their username. The lookup is performed via an LDAP search filter query that is also configured by the administrator.
+This service account is used by the Obstor server to lookup a user's DN given their username. The lookup is performed via an LDAP search filter query that is also configured by the administrator.
 
 This mode is enabled by setting the following variables:
 
@@ -91,7 +91,7 @@ If you set an empty lookup bind password, the lookup bind will use the unauthent
 
 In this mode, the server does not use a separate LDAP service account. Instead, the username and password provided in the STS API call are used to login to the LDAP server and also to lookup the user's groups. This mode preserves older behavior for compatibility, but users are encouraged to use the Lookup-Bind mode.
 
-The DN to use to login to LDAP is computed from a username format configuration parameter. This is a list of possible DN templates to be used. For each such template, the username is substituted and the DN is generated. Each generated DN is tried by the ObStor server to login to LDAP. If exactly one successful DN is found, it is used to perform the groups lookup as well.
+The DN to use to login to LDAP is computed from a username format configuration parameter. This is a list of possible DN templates to be used. For each such template, the username is substituted and the DN is generated. Each generated DN is tried by the Obstor server to login to LDAP. If exactly one successful DN is found, it is used to perform the groups lookup as well.
 
 This mode is enabled by setting the following variables:
 
@@ -101,18 +101,18 @@ OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT         (list)      ";" separated list of u
 
 ### Group membership search
 
-ObStor can be configured to find the groups of a user from AD/LDAP by specifying the folllowing variables:
+Obstor can be configured to find the groups of a user from AD/LDAP by specifying the folllowing variables:
 
 ```
 OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER     (string)    search filter for groups e.g. "(&(objectclass=groupOfNames)(memberUid=%s))"
 OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN    (list)      ";" separated list of group search base DNs e.g. "dc=myldapserver,dc=com"
 ```
 
-When a user logs in via the STS API, the ObStor server queries the AD/LDAP server with the given search filter and extracts the DN from the search results. These values represent the groups that the user is a member of. On each access ObStor applies the IAM policies attached to these groups in ObStor.
+When a user logs in via the STS API, the Obstor server queries the AD/LDAP server with the given search filter and extracts the DN from the search results. These values represent the groups that the user is a member of. On each access Obstor applies the IAM policies attached to these groups in Obstor.
 
-**ObStor sends LDAP credentials to LDAP server for validation. So we _strongly recommend_ to use ObStor with AD/LDAP server over TLS or StartTLS _only_. Using plain-text connection between ObStor and LDAP server means _credentials can be compromised_ by anyone listening to network traffic.**
+**Obstor sends LDAP credentials to LDAP server for validation. So we _strongly recommend_ to use Obstor with AD/LDAP server over TLS or StartTLS _only_. Using plain-text connection between Obstor and LDAP server means _credentials can be compromised_ by anyone listening to network traffic.**
 
-If a self-signed certificate is being used, the certificate can be added to ObStor's certificates directory, so it can be trusted by the server. An example setup for development or experimentation:
+If a self-signed certificate is being used, the certificate can be added to Obstor's certificates directory, so it can be trusted by the server. An example setup for development or experimentation:
 
 ```shell
 export OBSTOR_IDENTITY_LDAP_SERVER_ADDR=myldapserver.com:636
@@ -135,27 +135,27 @@ In the configuration variables, `%s` is substituted with the *username* from the
 
 ## Managing User/Group Access Policy
 
-Access policies may be configured on a group or on a user directly. Access policies are first defined on the ObStor server using IAM policy JSON syntax. The `mc` tool is used to issue the necessary commands.
+Access policies may be configured on a group or on a user directly. Access policies are first defined on the Obstor server using IAM policy JSON syntax. The `mc` tool is used to issue the necessary commands.
 
 **Note that by default no policy is set on a user**. Thus even if they successfully authenticate with AD/LDAP credentials, they have no access to object storage as the default access policy is to deny all access.
 
 To define a new policy, you can use the [AWS policy generator](https://awspolicygen.s3.amazonaws.com/policygen.html). Copy the policy into a text file `mypolicy.json` and issue the command like so:
 
 ```sh
-mc admin policy add myminio mypolicy mypolicy.json
+mc admin policy add myobstor mypolicy mypolicy.json
 ```
 
 To assign the policy to a user or group, use the full DN of the user or group:
 
 ```sh
-mc admin policy set myminio mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
+mc admin policy set myobstor mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
 ```
 
 ```sh
-mc admin policy set myminio mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
+mc admin policy set myobstor mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
 ```
 
-**Please note that when AD/LDAP is configured, ObStor will not support long term users defined internally.** Only AD/LDAP users are allowed. In addition to this, the server will not support operations on users or groups using `mc admin user` or `mc admin group` commands except `mc admin user info` and `mc admin group info` to list set policies for users and groups. This is because users and groups are defined externally in AD/LDAP.
+**Please note that when AD/LDAP is configured, Obstor will not support long term users defined internally.** Only AD/LDAP users are allowed. In addition to this, the server will not support operations on users or groups using `mc admin user` or `mc admin group` commands except `mc admin user info` and `mc admin group info` to list set policies for users and groups. This is because users and groups are defined externally in AD/LDAP.
 
 
 ## API Request Parameters
@@ -231,15 +231,15 @@ http://obstor.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouse
 
 With multiple OU hierarchies for users, and multiple group search base DN's.
 ```
-$ export OBSTOR_ROOT_USER=minio
-$ export OBSTOR_ROOT_PASSWORD=minio123
+$ export OBSTOR_ROOT_USER=obstor
+$ export OBSTOR_ROOT_PASSWORD=obstor123
 $ export OBSTOR_IDENTITY_LDAP_SERVER_ADDR='my.ldap-active-dir-server.com:636'
 $ export OBSTOR_IDENTITY_LDAP_USERNAME_FORMAT='cn=%s,ou=Users,ou=BUS1,ou=LOB,dc=somedomain,dc=com;cn=%s,ou=Users,ou=BUS2,ou=LOB,dc=somedomain,dc=com'
-$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=minioad,dc=local;dc=somedomain,dc=com'
+$ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=obstorad,dc=local;dc=somedomain,dc=com'
 $ export OBSTOR_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=group)(member=%s))'
-$ minio server ~/test
+$ obstor server ~/test
 ```
-You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/master/docs/sts/ldap.go):
+You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/cloudment/obstor/main/docs/sts/ldap.go):
 ```
 $ go run ldap.go -u foouser -p foopassword
 
@@ -253,8 +253,8 @@ $ go run ldap.go -u foouser -p foopassword
 ```
 
 ## Caveats
-**LDAP STS credentials are not yet supported on ObStor Browser UI, we may add this feature in future releases.**
+**LDAP STS credentials are not yet supported on Obstor Browser UI, we may add this feature in future releases.**
 
 ## Explore Further
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

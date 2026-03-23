@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +27,13 @@ import (
 
 func TestDecryptData(t *testing.T) {
 	cred1 := auth.Credentials{
-		AccessKey: "minio",
-		SecretKey: "minio123",
+		AccessKey: "obstor",
+		SecretKey: "obstor123",
 	}
 
 	cred2 := auth.Credentials{
-		AccessKey: "minio",
-		SecretKey: "minio1234",
+		AccessKey: "obstor",
+		SecretKey: "obstor1234",
 	}
 
 	data := []byte(`config data`)
@@ -63,7 +64,7 @@ func TestDecryptData(t *testing.T) {
 				t.Errorf("Expected success, saw failure %v", err)
 			}
 			if err == nil && !test.success {
-				t.Error("Expected failure, saw success")
+				t.Error("expected failure, saw success")
 			}
 			if test.success {
 				if !bytes.Equal(ddata, data) {

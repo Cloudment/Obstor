@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2014, 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-// Package trie implements a simple trie tree for minio server/tools borrows
+// Package trie implements a simple trie tree for obstor server/tools borrows
 // idea from - https://godoc.org/golang.org/x/text/internal/triegen.
 package trie
 

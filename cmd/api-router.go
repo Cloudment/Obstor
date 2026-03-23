@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +21,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/wildcard"
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
 
@@ -194,11 +195,11 @@ func registerAPIRouter(router *mux.Router) {
 				if err != nil {
 					host = r.Host
 				}
-				// Make sure to skip matching minio.<domain>` this is
+				// Make sure to skip matching obstor.<domain>` this is
 				// specifically meant for operator/k8s deployment
 				// The reason we need to skip this is for a special
 				// usecase where we need to make sure that
-				// minio.<namespace>.svc.<cluster_domain> is ignored
+				// obstor.<namespace>.svc.<cluster_domain> is ignored
 				// by the bucketDNS style to ensure that path style
 				// is available and honored at this domain.
 				//
@@ -421,7 +422,7 @@ func registerAPIRouter(router *mux.Router) {
 		// DeleteBucket
 		router.Methods(http.MethodDelete).HandlerFunc(
 			collectAPIStats("deletebucket", maxClients(httpTraceAll(api.DeleteBucketHandler))))
-		// ObStor extension API for replication.
+		// Obstor extension API for replication.
 		//
 		// GetBucketReplicationMetrics
 		router.Methods(http.MethodGet).HandlerFunc(

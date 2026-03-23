@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +21,8 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"path"
+	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -42,6 +45,17 @@ type indexHandler struct {
 }
 
 func (h indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// If the path looks like an S3 object request (has a file extension
+	// in a sub-path), return an error instead of the SPA shell.
+	trimmed := strings.TrimPrefix(r.URL.Path, minioReservedBucketPath+SlashSeparator)
+	if strings.Contains(trimmed, SlashSeparator) && path.Ext(trimmed) != "" {
+		w.Header().Set("Content-Type", "application/xml")
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, `<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>NoSuchKey</Code><Message>The /obstor/ path is the web console. Use the S3 API path instead: /%s</Message><Resource>%s</Resource></Error>`,
+			trimmed, r.URL.Path)
+		return
+	}
 	r.URL.Path = minioReservedBucketPath + SlashSeparator
 	h.handler.ServeHTTP(w, r)
 }
@@ -51,7 +65,7 @@ const assetPrefix = "production"
 // specialAssets are files which are unique files not embedded inside index_bundle.js.
 const specialAssets = "index_bundle.*.js|loader.css|logo.svg|firefox.png|safari.png|chrome.png|favicon-16x16.png|favicon-32x32.png|favicon-96x96.png"
 
-// registerWebRouter - registers web router for serving minio browser.
+// registerWebRouter - registers web router for serving obstor browser.
 func registerWebRouter(router *mux.Router) error {
 	// Initialize Web.
 	web := &webAPIHandlers{
@@ -62,7 +76,7 @@ func registerWebRouter(router *mux.Router) error {
 	// Initialize a new json2 codec.
 	codec := json2.NewCodec()
 
-	// ObStor browser router.
+	// Obstor browser router.
 	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
 
 	// Initialize json rpc handlers.
@@ -90,7 +104,7 @@ func registerWebRouter(router *mux.Router) error {
 		return err
 	}
 
-	// RPC handler at URI - /minio/webrpc
+	// RPC handler at URI - /obstor/webrpc
 	webBrowserRouter.Methods(http.MethodPost).Path("/webrpc").Handler(webRPC)
 	webBrowserRouter.Methods(http.MethodPut).Path("/upload/{bucket}/{object:.+}").HandlerFunc(httpTraceHdrs(web.Upload))
 

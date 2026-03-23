@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +22,8 @@ import (
 	"strings"
 	"sync"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
+	humanize "github.com/dustin/go-humanize"
 )
 
 const (
@@ -51,7 +52,7 @@ var globalObjLayerMutex sync.RWMutex
 // Global object layer, only accessed by globalObjectAPI.
 var globalObjectAPI ObjectLayer
 
-//Global cacheObjects, only accessed by newCacheObjectsFn().
+// Global cacheObjects, only accessed by newCacheObjectsFn().
 var globalCacheObjectAPI CacheObjectLayer
 
 // Checks if the object is a directory, this logic uses
@@ -96,10 +97,7 @@ func listObjectsNonSlash(ctx context.Context, bucket, prefix, marker, delimiter 
 	var eof bool
 	var prevPrefix string
 
-	for {
-		if len(objInfos) == maxKeys {
-			break
-		}
+	for len(objInfos) != maxKeys {
 		result, ok := <-walkResultCh
 		if !ok {
 			eof = true
@@ -261,10 +259,7 @@ func listObjects(ctx context.Context, obj ObjectLayer, bucket, prefix, marker, d
 	}
 
 	// Default is recursive, if delimiter is set then list non recursive.
-	recursive := true
-	if delimiter == SlashSeparator {
-		recursive = false
-	}
+	recursive := delimiter != SlashSeparator
 
 	walkResultCh, endWalkCh := tpool.Release(listParams{bucket, recursive, marker, prefix})
 	if walkResultCh == nil {

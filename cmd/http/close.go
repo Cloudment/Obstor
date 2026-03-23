@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@ package http
 
 import (
 	"io"
-	"io/ioutil"
 )
 
 // DrainBody close non nil response with any response Body.
@@ -37,6 +37,6 @@ func DrainBody(respBody io.ReadCloser) {
 		// the same connection for future uses.
 		//  - http://stackoverflow.com/a/17961593/4465767
 		defer respBody.Close()
-		io.Copy(ioutil.Discard, respBody)
+		io.Copy(io.Discard, respBody)
 	}
 }

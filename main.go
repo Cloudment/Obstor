@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +26,12 @@ package main // import "github.com/cloudment/obstor"
 import (
 	"os"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 
 	// Import gateway
 	_ "github.com/cloudment/obstor/cmd/gateway"
 )
 
 func main() {
-	minio.Main(os.Args)
+	obstor.Main(os.Args)
 }

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"io/ioutil"
+	"os"
 
 	"github.com/cloudment/obstor/pkg/env"
 )
@@ -38,7 +39,7 @@ const EnvCertPassword = "OBSTOR_CERT_PASSWD"
 func ParsePublicCertFile(certFile string) (x509Certs []*x509.Certificate, err error) {
 	// Read certificate file.
 	var data []byte
-	if data, err = ioutil.ReadFile(certFile); err != nil {
+	if data, err = os.ReadFile(certFile); err != nil {
 		return nil, err
 	}
 
@@ -72,11 +73,11 @@ func ParsePublicCertFile(certFile string) (x509Certs []*x509.Certificate, err er
 // from the provided paths. The private key may be encrypted and is
 // decrypted using the ENV_VAR: OBSTOR_CERT_PASSWD.
 func LoadX509KeyPair(certFile, keyFile string) (tls.Certificate, error) {
-	certPEMBlock, err := ioutil.ReadFile(certFile)
+	certPEMBlock, err := os.ReadFile(certFile)
 	if err != nil {
 		return tls.Certificate{}, ErrSSLUnexpectedError(err)
 	}
-	keyPEMBlock, err := ioutil.ReadFile(keyFile)
+	keyPEMBlock, err := os.ReadFile(keyFile)
 	if err != nil {
 		return tls.Certificate{}, ErrSSLUnexpectedError(err)
 	}

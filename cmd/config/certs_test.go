@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"testing"
@@ -27,7 +27,7 @@ import (
 func createTempFile(prefix, content string) (tempFile string, err error) {
 	var tmpfile *os.File
 
-	if tmpfile, err = ioutil.TempFile("", prefix); err != nil {
+	if tmpfile, err = os.CreateTemp("", prefix); err != nil {
 		return tempFile, err
 	}
 
@@ -167,8 +167,8 @@ M9ofSEt/bdRD
 		expectedErr       error
 	}{
 		{"nonexistent-file", 0, nonexistentErr},
-		{tempFile1, 0, fmt.Errorf("Empty public certificate file %s", tempFile1)},
-		{tempFile2, 0, fmt.Errorf("Could not read PEM block from file %s", tempFile2)},
+		{tempFile1, 0, fmt.Errorf("empty public certificate file %s", tempFile1)},
+		{tempFile2, 0, fmt.Errorf("could not read PEM block from file %s", tempFile2)},
 		{tempFile3, 0, fmt.Errorf("asn1: structure error: sequence tag mismatch")},
 		{tempFile4, 1, nil},
 		{tempFile5, 2, nil},

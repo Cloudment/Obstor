@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +17,6 @@ package etag
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -130,7 +130,7 @@ var readerTests = []struct { // Reference values computed by: echo <content> | m
 func TestReader(t *testing.T) {
 	for i, test := range readerTests {
 		reader := NewReader(strings.NewReader(test.Content), test.ETag)
-		if _, err := io.Copy(ioutil.Discard, reader); err != nil {
+		if _, err := io.Copy(io.Discard, reader); err != nil {
 			t.Fatalf("Test %d: read failed: %v", i, err)
 		}
 		if ETag := reader.ETag(); !Equal(ETag, test.ETag) {

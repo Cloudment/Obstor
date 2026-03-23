@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +81,12 @@ type StorageAPI interface {
 
 	GetDiskLoc() (poolIdx, setIdx, diskIdx int) // Retrieve location indexes.
 	SetDiskLoc(poolIdx, setIdx, diskIdx int)    // Set location indexes.
+
+	// Block-level operations for content-addressed block storage.
+	WriteBlock(ctx context.Context, hash string, data []byte) error
+	ReadBlock(ctx context.Context, hash string) ([]byte, error)
+	HasBlock(ctx context.Context, hash string) (bool, error)
+	DeleteBlock(ctx context.Context, hash string) error
 }
 
 // storageReader is an io.Reader view of a disk

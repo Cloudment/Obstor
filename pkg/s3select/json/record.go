@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +103,7 @@ func (r *Record) Set(name string, value *sql.Value) (sql.Record, error) {
 		return nil, fmt.Errorf("unsupported sql value %v and type %v", value, value.GetTypeString())
 	}
 
-	name = strings.Replace(name, "*", "__ALL__", -1)
+	name = strings.ReplaceAll(name, "*", "__ALL__")
 	r.KVS = append(r.KVS, jstream.KV{Key: name, Value: v})
 	return r, nil
 }
@@ -130,7 +131,7 @@ func (r *Record) WriteCSV(writer io.Writer, opts sql.WriteCSVOpts) error {
 			}
 			columnValue = string(b)
 		default:
-			return fmt.Errorf("Cannot marshal unhandled type: %T", kv.Value)
+			return fmt.Errorf("cannot marshal unhandled type: %T", kv.Value)
 		}
 		csvRecord = append(csvRecord, columnValue)
 	}

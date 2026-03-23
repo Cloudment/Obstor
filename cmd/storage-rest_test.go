@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +19,14 @@ package cmd
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http/httptest"
 	"os"
 	"reflect"
 	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudment/obstor/cmd/config"
 	xnet "github.com/cloudment/obstor/pkg/net"
+	"github.com/gorilla/mux"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,8 +82,8 @@ func testStorageAPIListVols(t *testing.T, storage StorageAPI) {
 		expectedResult []VolInfo
 		expectErr      bool
 	}{
-		{nil, []VolInfo{{Name: ".minio.sys"}}, false},
-		{[]string{"foo"}, []VolInfo{{Name: ".minio.sys"}, {Name: "foo"}}, false},
+		{nil, []VolInfo{{Name: ".obstor.sys"}}, false},
+		{[]string{"foo"}, []VolInfo{{Name: ".obstor.sys"}, {Name: "foo"}}, false},
 	}
 
 	for i, testCase := range testCases {
@@ -421,7 +421,7 @@ func newStorageRESTHTTPServerClient(t *testing.T) (*httptest.Server, *storageRES
 		globalMinioHost, globalMinioPort = prevHost, prevPort
 	}()
 
-	endpointPath, err := ioutil.TempDir("", ".TestStorageREST.")
+	endpointPath, err := os.MkdirTemp("", ".TestStorageREST.")
 	if err != nil {
 		t.Fatalf("unexpected error %v", err)
 	}

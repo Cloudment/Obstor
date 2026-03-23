@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +38,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
 	"math/rand"
 	"net"
@@ -92,7 +92,7 @@ func TestMain(m *testing.M) {
 
 	if !testing.Verbose() {
 		// Disable printing console messages during tests.
-		color.Output = ioutil.Discard
+		color.Output = io.Discard
 		logger.Disable = true
 	}
 	// Uncomment the following line to see trace logs during unit tests.
@@ -120,19 +120,19 @@ func TestMain(m *testing.M) {
 // concurrency level for certain parallel tests.
 const testConcurrencyLevel = 10
 
-///
-/// Excerpts from @lsegal - https://github.com/aws/aws-sdk-js/issues/659#issuecomment-120477258
-///
-///  User-Agent:
-///
-///      This is ignored from signing because signing this causes problems with generating pre-signed URLs
-///      (that are executed by other agents) or when customers pass requests through proxies, which may
-///      modify the user-agent.
-///
-///  Authorization:
-///
-///      Is skipped for obvious reasons
-///
+// /
+// / Excerpts from @lsegal - https://github.com/aws/aws-sdk-js/issues/659#issuecomment-120477258
+// /
+// /  User-Agent:
+// /
+// /      This is ignored from signing because signing this causes problems with generating pre-signed URLs
+// /      (that are executed by other agents) or when customers pass requests through proxies, which may
+// /      modify the user-agent.
+// /
+// /  Authorization:
+// /
+// /      Is skipped for obvious reasons
+// /
 var ignoredHeaders = map[string]bool{
 	"Authorization": true,
 	"User-Agent":    true,
@@ -285,10 +285,11 @@ func isSameType(obj1, obj2 interface{}) bool {
 	return reflect.TypeOf(obj1) == reflect.TypeOf(obj2)
 }
 
-// TestServer encapsulates an instantiation of a ObStor instance with a temporary backend.
+// TestServer encapsulates an instantiation of a Obstor instance with a temporary backend.
 // Example usage:
-//   s := StartTestServer(t,"Erasure")
-//   defer s.Stop()
+//
+//	s := StartTestServer(t,"Erasure")
+//	defer s.Stop()
 type TestServer struct {
 	Root      string
 	Disks     EndpointServerPools
@@ -505,12 +506,12 @@ func truncateChunkByHalfSigv4(req *http.Request) (*http.Request, error) {
 
 	newChunkHdr := []byte(fmt.Sprintf("%s"+s3ChunkSignatureStr+"%s\r\n",
 		hexChunkSize, chunkSignature))
-	newChunk, err := ioutil.ReadAll(bufReader)
+	newChunk, err := io.ReadAll(bufReader)
 	if err != nil {
 		return nil, err
 	}
 	newReq := req
-	newReq.Body = ioutil.NopCloser(
+	newReq.Body = io.NopCloser(
 		bytes.NewReader(bytes.Join([][]byte{newChunkHdr, newChunk[:len(newChunk)/2]},
 			[]byte(""))),
 	)
@@ -527,14 +528,14 @@ func malformDataSigV4(req *http.Request, newByte byte) (*http.Request, error) {
 
 	newChunkHdr := []byte(fmt.Sprintf("%s"+s3ChunkSignatureStr+"%s\r\n",
 		hexChunkSize, chunkSignature))
-	newChunk, err := ioutil.ReadAll(bufReader)
+	newChunk, err := io.ReadAll(bufReader)
 	if err != nil {
 		return nil, err
 	}
 
 	newChunk[0] = newByte
 	newReq := req
-	newReq.Body = ioutil.NopCloser(
+	newReq.Body = io.NopCloser(
 		bytes.NewReader(bytes.Join([][]byte{newChunkHdr, newChunk},
 			[]byte(""))),
 	)
@@ -554,13 +555,13 @@ func malformChunkSizeSigV4(req *http.Request, badSize int64) (*http.Request, err
 	newHexChunkSize := []byte(fmt.Sprintf("%x", n))
 	newChunkHdr := []byte(fmt.Sprintf("%s"+s3ChunkSignatureStr+"%s\r\n",
 		newHexChunkSize, chunkSignature))
-	newChunk, err := ioutil.ReadAll(bufReader)
+	newChunk, err := io.ReadAll(bufReader)
 	if err != nil {
 		return nil, err
 	}
 
 	newReq := req
-	newReq.Body = ioutil.NopCloser(
+	newReq.Body = io.NopCloser(
 		bytes.NewReader(bytes.Join([][]byte{newChunkHdr, newChunk},
 			[]byte(""))),
 	)
@@ -573,7 +574,7 @@ func signStreamingRequest(req *http.Request, accessKey, secretKey string, currTi
 	// Get hashed payload.
 	hashedPayload := req.Header.Get("x-amz-content-sha256")
 	if hashedPayload == "" {
-		return "", fmt.Errorf("Invalid hashed payload")
+		return "", fmt.Errorf("invalid hashed payload")
 	}
 
 	// Set x-amz-date.
@@ -600,8 +601,8 @@ func signStreamingRequest(req *http.Request, accessKey, secretKey string, currTi
 	for _, k := range headers {
 		buf.WriteString(k)
 		buf.WriteByte(':')
-		switch {
-		case k == "host":
+		switch k {
+		case "host":
 			buf.WriteString(req.URL.Host)
 			fallthrough
 		default:
@@ -620,7 +621,7 @@ func signStreamingRequest(req *http.Request, accessKey, secretKey string, currTi
 	signedHeaders := strings.Join(headers, ";")
 
 	// Get canonical query string.
-	req.URL.RawQuery = strings.Replace(req.URL.Query().Encode(), "+", "%20", -1)
+	req.URL.RawQuery = strings.ReplaceAll(req.URL.Query().Encode(), "+", "%20")
 
 	// Get canonical URI.
 	canonicalURI := s3utils.EncodePath(req.URL.Path)
@@ -686,10 +687,10 @@ func newTestStreamingRequest(method, urlStr string, dataLength, chunkSize int64,
 	}
 
 	if body == nil {
-		// this is added to avoid panic during ioutil.ReadAll(req.Body).
+		// this is added to avoid panic during io.ReadAll(req.Body).
 		// th stack trace can be found here  https://github.com/cloudment/obstor/pull/2074 .
 		// This is very similar to https://github.com/golang/go/issues/7527.
-		req.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
+		req.Body = io.NopCloser(bytes.NewReader([]byte("")))
 	}
 
 	contentLength := calculateStreamContentLength(dataLength, chunkSize)
@@ -703,7 +704,7 @@ func newTestStreamingRequest(method, urlStr string, dataLength, chunkSize int64,
 	body.Seek(0, 0)
 
 	// Add body
-	req.Body = ioutil.NopCloser(body)
+	req.Body = io.NopCloser(body)
 	req.ContentLength = contentLength
 
 	return req, nil
@@ -754,7 +755,7 @@ func assembleStreamingChunks(req *http.Request, body io.ReadSeeker, chunkSize in
 		}
 
 	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(stream))
+	req.Body = io.NopCloser(bytes.NewReader(stream))
 	return req, nil
 }
 
@@ -817,7 +818,7 @@ func newTestStreamingSignedRequest(method, urlStr string, contentLength, chunkSi
 func preSignV4(req *http.Request, accessKeyID, secretAccessKey string, expires int64) error {
 	// Presign is not needed for anonymous credentials.
 	if accessKeyID == "" || secretAccessKey == "" {
-		return errors.New("Presign cannot be generated without access and secret keys")
+		return errors.New("presign cannot be generated without access and secret keys")
 	}
 
 	region := globalServerRegion
@@ -838,7 +839,7 @@ func preSignV4(req *http.Request, accessKeyID, secretAccessKey string, expires i
 	extractedSignedHeaders := make(http.Header)
 	extractedSignedHeaders.Set("host", req.Host)
 
-	queryStr := strings.Replace(query.Encode(), "+", "%20", -1)
+	queryStr := strings.ReplaceAll(query.Encode(), "+", "%20")
 	canonicalRequest := getCanonicalRequest(extractedSignedHeaders, unsignedPayload, queryStr, req.URL.Path, req.Method)
 	stringToSign := getStringToSign(canonicalRequest, date, scope)
 	signingKey := getSigningKey(secretAccessKey, date, region, serviceS3)
@@ -858,7 +859,7 @@ func preSignV4(req *http.Request, accessKeyID, secretAccessKey string, expires i
 func preSignV2(req *http.Request, accessKeyID, secretAccessKey string, expires int64) error {
 	// Presign is not needed for anonymous credentials.
 	if accessKeyID == "" || secretAccessKey == "" {
-		return errors.New("Presign cannot be generated without access and secret keys")
+		return errors.New("presign cannot be generated without access and secret keys")
 	}
 
 	// FIXME: Remove following portion of code after fixing a bug in minio-go preSignV2.
@@ -924,7 +925,7 @@ func signRequestV4(req *http.Request, accessKey, secretKey string) error {
 	// Get hashed payload.
 	hashedPayload := req.Header.Get("x-amz-content-sha256")
 	if hashedPayload == "" {
-		return fmt.Errorf("Invalid hashed payload")
+		return fmt.Errorf("invalid hashed payload")
 	}
 
 	currTime := UTCNow()
@@ -955,8 +956,8 @@ func signRequestV4(req *http.Request, accessKey, secretKey string) error {
 	for _, k := range headers {
 		buf.WriteString(k)
 		buf.WriteByte(':')
-		switch {
-		case k == "host":
+		switch k {
+		case "host":
 			buf.WriteString(req.URL.Host)
 			fallthrough
 		default:
@@ -975,7 +976,7 @@ func signRequestV4(req *http.Request, accessKey, secretKey string) error {
 	signedHeaders := strings.Join(headers, ";")
 
 	// Get canonical query string.
-	req.URL.RawQuery = strings.Replace(req.URL.Query().Encode(), "+", "%20", -1)
+	req.URL.RawQuery = strings.ReplaceAll(req.URL.Query().Encode(), "+", "%20")
 
 	// Get canonical URI.
 	canonicalURI := s3utils.EncodePath(req.URL.Path)
@@ -1048,11 +1049,11 @@ func newTestRequest(method, urlStr string, contentLength int64, body io.ReadSeek
 	// Save for subsequent use
 	var hashedPayload string
 	var md5Base64 string
-	switch {
-	case body == nil:
+	switch body {
+	case nil:
 		hashedPayload = getSHA256Hash([]byte{})
 	default:
-		payloadBytes, err := ioutil.ReadAll(body)
+		payloadBytes, err := io.ReadAll(body)
 		if err != nil {
 			return nil, err
 		}
@@ -1170,7 +1171,7 @@ func newTestSignedRequestV4(method, urlStr string, contentLength int64, body io.
 
 // Return new WebRPC request object.
 func newWebRPCRequest(methodRPC, authorization string, body io.ReadSeeker) (*http.Request, error) {
-	req, err := http.NewRequest(http.MethodPost, "/minio/webrpc", nil)
+	req, err := http.NewRequest(http.MethodPost, "/obstor/webrpc", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1183,12 +1184,12 @@ func newWebRPCRequest(methodRPC, authorization string, body io.ReadSeeker) (*htt
 	if body != nil {
 		body.Seek(0, 0)
 		// Add body
-		req.Body = ioutil.NopCloser(body)
+		req.Body = io.NopCloser(body)
 	} else {
-		// this is added to avoid panic during ioutil.ReadAll(req.Body).
+		// this is added to avoid panic during io.ReadAll(req.Body).
 		// th stack trace can be found here  https://github.com/cloudment/obstor/pull/2074 .
 		// This is very similar to https://github.com/golang/go/issues/7527.
-		req.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
+		req.Body = io.NopCloser(bytes.NewReader([]byte("")))
 	}
 	return req, nil
 }
@@ -1532,14 +1533,14 @@ func getListenNotificationURL(endPoint, bucketName string, prefixes, suffixes, e
 
 // returns temp root directory. `
 func getTestRoot() (string, error) {
-	return ioutil.TempDir(globalTestTmpDir, "api-")
+	return os.MkdirTemp(globalTestTmpDir, "api-")
 }
 
-// getRandomDisks - Creates a slice of N random disks, each of the form - minio-XXX
+// getRandomDisks - Creates a slice of N random disks, each of the form - obstor-XXX
 func getRandomDisks(N int) ([]string, error) {
 	var erasureDisks []string
 	for i := 0; i < N; i++ {
-		path, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+		path, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 		if err != nil {
 			// Remove directories created so far.
 			removeRoots(erasureDisks)
@@ -1594,7 +1595,7 @@ func removeRoots(roots []string) {
 	}
 }
 
-//removeDiskN - removes N disks from supplied disk slice.
+// removeDiskN - removes N disks from supplied disk slice.
 func removeDiskN(disks []string, n int) {
 	if n > len(disks) {
 		n = len(disks)
@@ -1657,11 +1658,14 @@ func prepareTestBackend(ctx context.Context, instanceType string) (ObjectLayer, 
 // response for anonymous/unsigned and unknown signature type HTTP request.
 
 // Here is the brief description of some of the arguments to the function below.
-//   apiRouter - http.Handler with the relevant API endPoint (API endPoint under test) registered.
-//   anonReq   - unsigned *http.Request to invoke the handler's response for anonymous requests.
-//   policyFunc    - function to return bucketPolicy statement which would permit the anonymous request to be served.
+//
+//	apiRouter - http.Handler with the relevant API endPoint (API endPoint under test) registered.
+//	anonReq   - unsigned *http.Request to invoke the handler's response for anonymous requests.
+//	policyFunc    - function to return bucketPolicy statement which would permit the anonymous request to be served.
+//
 // The test works in 2 steps, here is the description of the steps.
-//   STEP 1: Call the handler with the unsigned HTTP request (anonReq), assert for the `ErrAccessDenied` error response.
+//
+//	STEP 1: Call the handler with the unsigned HTTP request (anonReq), assert for the `ErrAccessDenied` error response.
 func ExecObjectLayerAPIAnonTest(t *testing.T, obj ObjectLayer, testName, bucketName, objectName, instanceType string, apiRouter http.Handler,
 	anonReq *http.Request, bucketPolicy *policy.Policy) {
 
@@ -1671,21 +1675,21 @@ func ExecObjectLayerAPIAnonTest(t *testing.T, obj ObjectLayer, testName, bucketN
 	// simple function which returns a message which gives the context of the test
 	// and then followed by the the actual error message.
 	failTestStr := func(testType, failMsg string) string {
-		return fmt.Sprintf("ObStor %s: %s fail for \"%s\": \n<Error> %s", instanceType, testType, testName, failMsg)
+		return fmt.Sprintf("Obstor %s: %s fail for \"%s\": \n<Error> %s", instanceType, testType, testName, failMsg)
 	}
 
 	// httptest Recorder to capture all the response by the http handler.
 	rec := httptest.NewRecorder()
 	// reading the body to preserve it so that it can be used again for second attempt of sending unsigned HTTP request.
 	// If the body is read in the handler the same request cannot be made use of.
-	buf, err := ioutil.ReadAll(anonReq.Body)
+	buf, err := io.ReadAll(anonReq.Body)
 	if err != nil {
 		t.Fatal(failTestStr(anonTestStr, err.Error()))
 	}
 
 	// creating 2 read closer (to set as request body) from the body content.
-	readerOne := ioutil.NopCloser(bytes.NewBuffer(buf))
-	readerTwo := ioutil.NopCloser(bytes.NewBuffer(buf))
+	readerOne := io.NopCloser(bytes.NewBuffer(buf))
+	readerTwo := io.NopCloser(bytes.NewBuffer(buf))
 
 	anonReq.Body = readerOne
 
@@ -1702,7 +1706,7 @@ func ExecObjectLayerAPIAnonTest(t *testing.T, obj ObjectLayer, testName, bucketN
 	if anonReq.Method != http.MethodHead {
 		// read the response body.
 		var actualContent []byte
-		actualContent, err = ioutil.ReadAll(rec.Body)
+		actualContent, err = io.ReadAll(rec.Body)
 		if err != nil {
 			t.Fatal(failTestStr(anonTestStr, fmt.Sprintf("Failed parsing response body: <ERROR> %v", err)))
 		}
@@ -1732,7 +1736,7 @@ func ExecObjectLayerAPIAnonTest(t *testing.T, obj ObjectLayer, testName, bucketN
 	// verify the response body for `ErrAccessDenied` message =.
 	if anonReq.Method != http.MethodHead {
 		// read the response body.
-		actualContent, err := ioutil.ReadAll(rec.Body)
+		actualContent, err := io.ReadAll(rec.Body)
 		if err != nil {
 			t.Fatal(failTestStr(unknownSignTestStr, fmt.Sprintf("Failed parsing response body: <ERROR> %v", err)))
 		}
@@ -1789,22 +1793,22 @@ func ExecObjectLayerAPINilTest(t TestErrHandler, bucketName, objectName, instanc
 	// for other type of HTTP requests compare the response body content with the expected one.
 	if req.Method != http.MethodHead {
 		// read the response body.
-		actualContent, err := ioutil.ReadAll(rec.Body)
+		actualContent, err := io.ReadAll(rec.Body)
 		if err != nil {
-			t.Fatalf("ObStor %s: Failed parsing response body: <ERROR> %v", instanceType, err)
+			t.Fatalf("Obstor %s: Failed parsing response body: <ERROR> %v", instanceType, err)
 		}
 
 		actualError := &APIErrorResponse{}
 		if err = xml.Unmarshal(actualContent, actualError); err != nil {
-			t.Errorf("ObStor %s: error response failed to parse error XML", instanceType)
+			t.Errorf("Obstor %s: error response failed to parse error XML", instanceType)
 		}
 
 		if actualError.BucketName != bucketName {
-			t.Errorf("ObStor %s: error response bucket name differs from expected value", instanceType)
+			t.Errorf("Obstor %s: error response bucket name differs from expected value", instanceType)
 		}
 
 		if actualError.Key != objectName {
-			t.Errorf("ObStor %s: error response object name differs from expected value", instanceType)
+			t.Errorf("Obstor %s: error response object name differs from expected value", instanceType)
 		}
 	}
 }
@@ -1981,7 +1985,7 @@ func ExecObjectLayerDiskAlteredTest(t *testing.T, objTest objTestDiskNotFoundTyp
 type objTestStaleFilesType func(obj ObjectLayer, instanceType string, dirs []string, t *testing.T)
 
 // ExecObjectLayerStaleFilesTest - executes object layer tests those leaves stale
-// files/directories under .minio/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
+// files/directories under .obstor/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
 func ExecObjectLayerStaleFilesTest(t *testing.T, objTest objTestStaleFilesType) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2156,7 +2160,7 @@ func generateTLSCertKey(host string) ([]byte, []byte, error) {
 	rsaBits := 2048
 
 	if len(host) == 0 {
-		return nil, nil, fmt.Errorf("Missing host parameter")
+		return nil, nil, fmt.Errorf("missing host parameter")
 	}
 
 	publicKey := func(priv interface{}) interface{} {
@@ -2229,7 +2233,7 @@ func generateTLSCertKey(host string) ([]byte, []byte, error) {
 
 	derBytes, err := x509.CreateCertificate(crand.Reader, &template, &template, publicKey(priv), priv)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to create certificate: %w", err)
+		return nil, nil, fmt.Errorf("failed to create certificate: %w", err)
 	}
 
 	certOut := bytes.NewBuffer([]byte{})
@@ -2336,7 +2340,7 @@ func uploadTestObject(t *testing.T, apiRouter http.Handler, creds auth.Credentia
 
 	checkRespErr := func(rec *httptest.ResponseRecorder, exp int) {
 		if rec.Code != exp {
-			b, err := ioutil.ReadAll(rec.Body)
+			b, err := io.ReadAll(rec.Body)
 			t.Fatalf("Expected: %v, Got: %v, Body: %s, err: %v", exp, rec.Code, string(b), err)
 		}
 	}

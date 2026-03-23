@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -447,7 +448,7 @@ func TestParseEndpointSet(t *testing.T) {
 			true,
 		},
 		{
-			"http://rack{1...4}.mydomain.minio{1...16}/data",
+			"http://rack{1...4}.mydomain.obstor{1...16}/data",
 			endpointSet{
 				[]ellipses.ArgPattern{
 					[]ellipses.Pattern{
@@ -458,7 +459,7 @@ func TestParseEndpointSet(t *testing.T) {
 						},
 						{
 							Prefix: "http://rack",
-							Suffix: ".mydomain.minio",
+							Suffix: ".mydomain.obstor",
 							Seq:    getSequences(1, 4, 0),
 						},
 					},

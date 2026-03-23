@@ -1,15 +1,15 @@
-# ObStor Admin Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
-ObStor supports multiple admin users in addition to default operator credential created during server startup. New admins can be added after server starts up, and server can be configured to deny or allow access to different admin operations for these users. This document explains how to add/remove admin users and modify their access rights.
+# Obstor Admin Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+Obstor supports multiple admin users in addition to default operator credential created during server startup. New admins can be added after server starts up, and server can be configured to deny or allow access to different admin operations for these users. This document explains how to add/remove admin users and modify their access rights.
 
 ## Get started
 In this document we will explain in detail on how to configure admin users.
 
 ### 1. Prerequisites
-- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
+- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+- Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide)
 
 ### 2. Create a new admin user with CreateUser, DeleteUser and ConfigUpdate permissions
-Use [`mc admin policy`](https://pgg.net/docs/obstor/minio-admin-complete-guide.html#policies) to create custom admin policies.
+Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide.html#policies) to create custom admin policies.
 
 Create new canned policy file `adminManageUser.json`. This policy enables admin user to
 manage other users.
@@ -44,29 +44,29 @@ EOF
 
 Create new canned policy by name `userManager` using `userManager.json` policy file.
 ```
-mc admin policy add myminio userManager adminManageUser.json
+mc admin policy add myobstor userManager adminManageUser.json
 ```
 
-Create a new admin user `admin1` on ObStor use `mc admin user`.
+Create a new admin user `admin1` on Obstor use `mc admin user`.
 ```
-mc admin user add myminio admin1 admin123
+mc admin user add myobstor admin1 admin123
 ```
 
 Once the user is successfully created you can now apply the `userManage` policy for this user.
 
 ```
-mc admin policy set myminio userManager user=admin1
+mc admin policy set myobstor userManager user=admin1
 ```
 
 This admin user will then be allowed to perform create/delete user operations via `mc admin user`
 
 ### 3. Configure `mc` and create another user user1 with attached policy user1policy
 ```
-mc alias set myminio-admin1 http://localhost:9000 admin1 admin123 --api s3v4
+mc alias set myobstor-admin1 http://localhost:9000 admin1 admin123 --api s3v4
 
-mc admin user add myminio-admin1 user1 user123
-mc admin policy add myminio-admin1 user1policy ~/user1policy.json
-mc admin policy set myminio-admin1 user1policy user=user1
+mc admin user add myobstor-admin1 user1 user123
+mc admin policy add myobstor-admin1 user1policy ~/user1policy.json
+mc admin policy set myobstor-admin1 user1policy user=user1
 ```
 
 ### 4. List of permissions defined for admin operations
@@ -113,10 +113,10 @@ mc admin policy set myminio-admin1 user1policy user=user1
 
 ### 5. Using an external IDP for admin users
 Admin users can also be externally managed by an IDP by configuring admin policy with
-special permissions listed above. Follow [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide) to manage users with an IDP.
+special permissions listed above. Follow [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide) to manage users with an IDP.
 
 ## Explore Further
-- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor Client Complete Guide](https://obstor.net/docs/obstor-client-complete-guide)
+- [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

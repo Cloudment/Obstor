@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,15 +77,15 @@ const (
 	libraryName    = "madmin-go"
 	libraryVersion = "0.0.1"
 
-	libraryAdminURLPrefix = "/minio/admin"
+	libraryAdminURLPrefix = "/obstor/admin"
 )
 
 // User Agent should always following the below style.
 // Please open an issue to discuss any new changes here.
 //
-//	ObStor (OS; ARCH) LIB/VER APP/VER
+//	Obstor (OS; ARCH) LIB/VER APP/VER
 const (
-	libraryUserAgentPrefix = "ObStor (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
+	libraryUserAgentPrefix = "Obstor (" + runtime.GOOS + "; " + runtime.GOARCH + ") "
 	libraryUserAgent       = libraryUserAgentPrefix + libraryName + "/" + libraryVersion
 )
 
@@ -95,7 +96,7 @@ type Options struct {
 	// Add future fields here
 }
 
-// New - instantiate minio admin client
+// New - instantiate obstor admin client
 func New(endpoint string, accessKeyID, secretAccessKey string, secure bool) (*AdminClient, error) {
 	creds := credentials.NewStaticV4(accessKeyID, secretAccessKey, "")
 
@@ -106,7 +107,7 @@ func New(endpoint string, accessKeyID, secretAccessKey string, secure bool) (*Ad
 	return clnt, nil
 }
 
-// NewWithOptions - instantiate minio admin client with options.
+// NewWithOptions - instantiate obstor admin client with options.
 func NewWithOptions(endpoint string, opts *Options) (*AdminClient, error) {
 	clnt, err := privateNew(endpoint, opts.Creds, opts.Secure)
 	if err != nil {
@@ -305,7 +306,7 @@ func (adm AdminClient) do(req *http.Request) (*http.Response, error) {
 				return nil, &url.Error{
 					Op:  urlErr.Op,
 					URL: urlErr.URL,
-					Err: errors.New("Connection closed by foreign host " + urlErr.URL + ". Retry again."),
+					Err: errors.New("connection closed by foreign host " + urlErr.URL + ". Retry again."),
 				}
 			}
 		}

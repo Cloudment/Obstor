@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +106,7 @@ func (f stringNotEqualsFunc) name() name {
 }
 
 func (f stringNotEqualsFunc) String() string {
-	return toStringEqualsFuncString(stringNotEquals, f.stringEqualsFunc.k, f.stringEqualsFunc.values)
+	return toStringEqualsFuncString(stringNotEquals, f.k, f.values)
 }
 
 func valuesToStringSlice(n name, values ValueSet) ([]string, error) {

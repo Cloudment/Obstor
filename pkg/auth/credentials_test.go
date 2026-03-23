@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +49,7 @@ func TestExpToInt64(t *testing.T) {
 				t.Errorf("Expected success but got failure %s", err)
 			}
 			if err == nil && testCase.expectedFailure {
-				t.Error("Expected failure but got success")
+				t.Error("expected failure but got success")
 			}
 		})
 	}

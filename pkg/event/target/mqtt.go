@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,7 @@ import (
 
 const (
 	reconnectInterval = 5 // In Seconds
-	storePrefix       = "minio"
+	storePrefix       = "obstor"
 )
 
 // MQTT input constants
@@ -241,7 +242,7 @@ func NewMQTTTarget(id string, args MQTTArgs, doneCh <-chan struct{}, loggerOnce 
 				ok := token.WaitTimeout(reconnectInterval * time.Second)
 				if ok && token.Error() != nil {
 					target.loggerOnce(context.Background(),
-						fmt.Errorf("Previous connect failed with %w attempting a reconnect",
+						fmt.Errorf("previous connect failed with %w attempting a reconnect",
 							token.Error()),
 						target.ID())
 					time.Sleep(reconnectInterval * time.Second)

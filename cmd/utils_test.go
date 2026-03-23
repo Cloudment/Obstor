@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -189,7 +189,7 @@ func TestStartProfiler(t *testing.T) {
 // checkURL - checks if passed address correspond
 func checkURL(urlStr string) (*url.URL, error) {
 	if urlStr == "" {
-		return nil, errors.New("Address cannot be empty")
+		return nil, errors.New("address cannot be empty")
 	}
 	u, err := url.Parse(urlStr)
 	if err != nil {
@@ -237,7 +237,7 @@ func TestDumpRequest(t *testing.T) {
 		RequestURI string      `json:"reqURI"`
 		Header     http.Header `json:"header"`
 	}
-	jsonReq = strings.Replace(jsonReq, "%%", "%", -1)
+	jsonReq = strings.ReplaceAll(jsonReq, "%%", "%")
 	res := jsonResult{}
 	if err = json.Unmarshal([]byte(jsonReq), &res); err != nil {
 		t.Fatal(err)
@@ -343,7 +343,7 @@ func TestJSONLoad(t *testing.T) {
 
 // Test jsonSave.
 func TestJSONSave(t *testing.T) {
-	f, err := ioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017,2018,2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -330,7 +331,7 @@ func TestCreateEndpoints(t *testing.T) {
 	}
 }
 
-// Tests get local peer functionality, local peer is supposed to only return one entry per minio service.
+// Tests get local peer functionality, local peer is supposed to only return one entry per obstor service.
 // So it means that if you have say localhost:9000 and localhost:9001 as endpointArgs then localhost:9001
 // is considered a remote service from localhost:9000 perspective.
 func TestGetLocalPeer(t *testing.T) {

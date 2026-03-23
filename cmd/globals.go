@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +36,7 @@ import (
 	xldap "github.com/cloudment/obstor/cmd/config/identity/ldap"
 	"github.com/cloudment/obstor/cmd/config/identity/openid"
 	"github.com/cloudment/obstor/cmd/config/policy/opa"
+	"github.com/cloudment/obstor/cmd/config/replication"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
@@ -46,12 +48,12 @@ import (
 	"github.com/cloudment/obstor/pkg/pubsub"
 )
 
-// minio configuration related constants.
+// obstor configuration related constants.
 const (
 	GlobalMinioDefaultPort = "9000"
 
 	globalMinioDefaultRegion = ""
-	// This is a sha256 output of ``arn:aws:iam::minio:user/admin``,
+	// This is a sha256 output of ``arn:aws:iam::obstor:user/admin``,
 	// this is kept in present form to be compatible with S3 owner ID
 	// requirements -
 	//
@@ -116,13 +118,13 @@ var globalCLIContext = struct {
 }{}
 
 var (
-	// Indicates if the running minio server is distributed setup.
+	// Indicates if the running obstor server is distributed setup.
 	globalIsDistErasure = false
 
-	// Indicates if the running minio server is an erasure-code backend.
+	// Indicates if the running obstor server is an erasure-code backend.
 	globalIsErasure = false
 
-	// Indicates if the running minio is in gateway mode.
+	// Indicates if the running obstor is in gateway mode.
 	globalIsGateway = false
 
 	// Name of gateway server, e.g S3, GCS, Azure, etc
@@ -137,9 +139,9 @@ var (
 	// This flag is set to 'us-east-1' by default
 	globalServerRegion = globalMinioDefaultRegion
 
-	// ObStor local server address (in `host:port` format)
+	// Obstor local server address (in `host:port` format)
 	globalMinioAddr = ""
-	// ObStor default port, can be changed through command line.
+	// Obstor default port, can be changed through command line.
 	globalMinioPort = GlobalMinioDefaultPort
 	// Holds the host that was passed using --address
 	globalMinioHost = ""
@@ -220,7 +222,7 @@ var (
 	globalPublicCerts []*x509.Certificate
 
 	globalDomainNames []string      // Root domains for virtual host style requests
-	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed ObStor deployment
+	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed Obstor deployment
 
 	globalOperationTimeout       = newDynamicTimeout(10*time.Minute, 5*time.Minute) // default timeout for general ops
 	globalDeleteOperationTimeout = newDynamicTimeout(5*time.Minute, 1*time.Minute)  // default time for delete ops
@@ -293,19 +295,38 @@ var (
 	globalDNSCache *xhttp.DNSCache
 
 	globalForwarder *handlers.Forwarder
+
+	// Block replication config.
+	globalReplicationConfig replication.Config
+	globalIsReplicated      bool
 	// Add new variable global values here.
 )
 
 var errSelfTestFailure = errors.New("self test failed. unsafe to start server")
 
-// Returns minio global information, as a key value map.
+// Returns obstor global information, as a key value map.
 // returned list of global values is not an exhaustive
 // list. Feel free to add new relevant fields.
 func getGlobalInfo() (globalInfo map[string]interface{}) {
+	// Count unique nodes (hosts) and total drives
+	nodeSet := make(map[string]struct{})
+	totalDrives := 0
+	for _, pool := range globalEndpoints {
+		for _, ep := range pool.Endpoints {
+			totalDrives++
+			host := ep.Host
+			if host == "" {
+				host = "localhost"
+			}
+			nodeSet[host] = struct{}{}
+		}
+	}
+
 	globalInfo = map[string]interface{}{
 		"serverRegion": globalServerRegion,
 		"domains":      globalDomainNames,
-		// Add more relevant global settings here.
+		"nodes":        len(nodeSet),
+		"drives":       totalDrives,
 	}
 
 	return globalInfo

@@ -3,6 +3,7 @@
 
 /*
  * MinIO Cloud Storage, (C) 2019,2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +38,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/cloudment/obstor/pkg/auth"
-	"github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
@@ -59,7 +60,7 @@ type AssumeRoleWithWebIdentityResponse struct {
 }
 
 // WebIdentityResult - Contains the response to a successful AssumeRoleWithWebIdentity
-// request, including temporary credentials that can be used to make ObStor API requests.
+// request, including temporary credentials that can be used to make Obstor API requests.
 type WebIdentityResult struct {
 	AssumedRoleUser             AssumedRoleUser  `xml:",omitempty"`
 	Audience                    string           `xml:",omitempty"`
@@ -147,7 +148,7 @@ func main() {
 
 	ddoc, err := parseDiscoveryDoc(configEndpoint)
 	if err != nil {
-		log.Println(fmt.Errorf("Failed to parse OIDC discovery document %s", err))
+		log.Println(fmt.Errorf("failed to parse OIDC discovery document %s", err))
 		fmt.Println(err)
 		return
 	}
@@ -205,32 +206,32 @@ func main() {
 
 		sts, err := credentials.NewSTSWebIdentity(stsEndpoint, getWebTokenExpiry)
 		if err != nil {
-			log.Println(fmt.Errorf("Could not get STS credentials: %s", err))
+			log.Println(fmt.Errorf("could not get STS credentials: %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		opts := &minio.Options{
+		opts := &obstor.Options{
 			Creds:        sts,
-			BucketLookup: minio.BucketLookupAuto,
+			BucketLookup: obstor.BucketLookupAuto,
 		}
 
 		u, err := url.Parse(stsEndpoint)
 		if err != nil {
-			log.Println(fmt.Errorf("Failed to parse STS Endpoint: %s", err))
+			log.Println(fmt.Errorf("failed to parse STS Endpoint: %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		clnt, err := minio.New(u.Host, opts)
+		clnt, err := obstor.New(u.Host, opts)
 		if err != nil {
-			log.Println(fmt.Errorf("Error while initializing Minio client, %s", err))
+			log.Println(fmt.Errorf("error while initializing Minio client, %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		buckets, err := clnt.ListBuckets(r.Context())
 		if err != nil {
-			log.Println(fmt.Errorf("Error while listing buckets, %s", err))
+			log.Println(fmt.Errorf("error while listing buckets, %s", err))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

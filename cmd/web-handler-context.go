@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,4 +249,12 @@ func newWebContext(r *http.Request, args ToKeyValuer, api string) context.Contex
 		ObjectName:   object,
 	}
 	return logger.SetReqInfo(GlobalContext, reqInfo)
+}
+
+// ToKeyValue implementation for GetObjectLocationsArgs
+func (args *GetObjectLocationsArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	km.SetPrefix(args.Prefix)
+	return km
 }

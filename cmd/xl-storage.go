@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	pathutil "path"
@@ -367,7 +367,7 @@ func (s *xlStorage) SetDiskLoc(poolIdx, setIdx, diskIdx int) {
 func (s *xlStorage) Healing() *healingTracker {
 	healingFile := pathJoin(s.diskPath, minioMetaBucket,
 		bucketMetaPrefix, healingTrackerFilename)
-	b, err := ioutil.ReadFile(healingFile)
+	b, err := os.ReadFile(healingFile)
 	if err != nil {
 		return nil
 	}
@@ -1077,6 +1077,12 @@ func (s *xlStorage) ReadVersion(ctx context.Context, volume, path, versionID str
 		return fi, err
 	}
 
+	// Block-replicated objects store data in content-addressed blocks,
+	// not in the DataDir. Skip the part-file read.
+	if len(fi.Blocks) > 0 {
+		return fi, nil
+	}
+
 	if readData {
 		if len(fi.Data) > 0 || fi.Size == 0 {
 			return fi, nil
@@ -1142,7 +1148,7 @@ func (s *xlStorage) readAllData(volumeDir string, filePath string, requireDirect
 	}
 
 	defer r.Close()
-	buf, err = ioutil.ReadAll(r)
+	buf, err = io.ReadAll(r)
 	if err != nil {
 		err = osErrToFileErr(err)
 	}
@@ -2102,7 +2108,7 @@ func (s *xlStorage) RenameFile(ctx context.Context, srcVolume, srcPath, dstVolum
 	srcIsDir := HasSuffix(srcPath, SlashSeparator)
 	dstIsDir := HasSuffix(dstPath, SlashSeparator)
 	// Either src and dst have to be directories or files, else return error.
-	if !(srcIsDir && dstIsDir || !srcIsDir && !dstIsDir) {
+	if srcIsDir != dstIsDir {
 		return errFileAccessDenied
 	}
 	srcFilePath := pathutil.Join(srcVolumeDir, srcPath)
@@ -2205,5 +2211,69 @@ func (s *xlStorage) VerifyFile(ctx context.Context, volume, path string, fi File
 		}
 	}
 
+	return nil
+}
+
+// WriteBlock writes a content-addressed block to disk atomically.
+// Blocks are stored under <diskPath>/blocks/<hash[0:2]>/<hash[2:4]>/<hash>.
+func (s *xlStorage) WriteBlock(ctx context.Context, hash string, data []byte) error {
+	blockDir := pathutil.Join(s.diskPath, blockStoragePath(hash))
+	dir := pathutil.Dir(blockDir)
+
+	if err := os.MkdirAll(dir, 0777); err != nil {
+		return err
+	}
+
+	// Check if block already exists (content-addressed dedup).
+	if _, err := os.Stat(blockDir); err == nil {
+		return nil
+	}
+
+	// Atomic write: write to temp, then rename.
+	tmp := blockDir + ".tmp"
+	if err := os.WriteFile(tmp, data, 0666); err != nil {
+		os.Remove(tmp)
+		return err
+	}
+	if err := os.Rename(tmp, blockDir); err != nil {
+		os.Remove(tmp)
+		return err
+	}
+	return nil
+}
+
+// ReadBlock reads a content-addressed block from disk.
+func (s *xlStorage) ReadBlock(ctx context.Context, hash string) ([]byte, error) {
+	blockPath := pathutil.Join(s.diskPath, blockStoragePath(hash))
+	data, err := os.ReadFile(blockPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, errFileNotFound
+		}
+		return nil, err
+	}
+	return data, nil
+}
+
+// HasBlock checks if a content-addressed block exists on disk.
+func (s *xlStorage) HasBlock(ctx context.Context, hash string) (bool, error) {
+	blockPath := pathutil.Join(s.diskPath, blockStoragePath(hash))
+	_, err := os.Stat(blockPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// DeleteBlock removes a content-addressed block from disk.
+func (s *xlStorage) DeleteBlock(ctx context.Context, hash string) error {
+	blockPath := pathutil.Join(s.diskPath, blockStoragePath(hash))
+	err := os.Remove(blockPath)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
 	return nil
 }

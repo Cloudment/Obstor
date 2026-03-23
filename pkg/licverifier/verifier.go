@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-// Package licverifier implements a simple library to verify ObStor Subnet license keys.
+// Package licverifier implements a simple library to verify Obstor Subnet license keys.
 package licverifier
 
 import (
@@ -56,7 +57,7 @@ const (
 func NewLicenseVerifier(pemBytes []byte) (*LicenseVerifier, error) {
 	pbKey, err := jwt.ParseECPublicKeyFromPEM(pemBytes)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse public key: %s", err)
+		return nil, fmt.Errorf("failed to parse public key: %s", err)
 	}
 	return &LicenseVerifier{
 		ecPubKey: pbKey,
@@ -68,28 +69,28 @@ func NewLicenseVerifier(pemBytes []byte) (*LicenseVerifier, error) {
 func toLicenseInfo(claims jwt.MapClaims) (LicenseInfo, error) {
 	accID, ok := claims[accountID].(float64)
 	if !ok || ok && accID <= 0 {
-		return LicenseInfo{}, errors.New("Invalid accountId in claims")
+		return LicenseInfo{}, errors.New("invalid accountId in claims")
 	}
 	email, ok := claims[sub].(string)
 	if !ok {
-		return LicenseInfo{}, errors.New("Invalid email in claims")
+		return LicenseInfo{}, errors.New("invalid email in claims")
 	}
 	expiryTS, ok := claims[expiresAt].(float64)
 	if !ok {
-		return LicenseInfo{}, errors.New("Invalid time of expiry in claims")
+		return LicenseInfo{}, errors.New("invalid time of expiry in claims")
 	}
 	expiresAt := time.Unix(int64(expiryTS), 0)
 	orgName, ok := claims[organization].(string)
 	if !ok {
-		return LicenseInfo{}, errors.New("Invalid organization in claims")
+		return LicenseInfo{}, errors.New("invalid organization in claims")
 	}
 	storageCap, ok := claims[capacity].(float64)
 	if !ok {
-		return LicenseInfo{}, errors.New("Invalid storage capacity in claims")
+		return LicenseInfo{}, errors.New("invalid storage capacity in claims")
 	}
 	plan, ok := claims[plan].(string)
 	if !ok {
-		return LicenseInfo{}, errors.New("Invalid plan in claims")
+		return LicenseInfo{}, errors.New("invalid plan in claims")
 	}
 	return LicenseInfo{
 		Email:           email,
@@ -108,10 +109,10 @@ func (lv *LicenseVerifier) Verify(license string) (LicenseInfo, error) {
 		return lv.ecPubKey, nil
 	})
 	if err != nil {
-		return LicenseInfo{}, fmt.Errorf("Failed to verify license: %s", err)
+		return LicenseInfo{}, fmt.Errorf("failed to verify license: %s", err)
 	}
 	if claims, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
 		return toLicenseInfo(*claims)
 	}
-	return LicenseInfo{}, errors.New("Invalid claims found in license")
+	return LicenseInfo{}, errors.New("invalid claims found in license")
 }

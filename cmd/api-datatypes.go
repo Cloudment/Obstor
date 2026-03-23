@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@ type DeletedObject struct {
 	ObjectName            string `xml:"Key,omitempty"`
 	VersionID             string `xml:"VersionId,omitempty"`
 
-	// ObStor extensions to support delete marker replication
+	// Obstor extensions to support delete marker replication
 	// Replication status of DeleteMarker
 	DeleteMarkerReplicationStatus string `xml:"DeleteMarkerReplicationStatus,omitempty"`
 	// MTime of DeleteMarker on source that needs to be propagated to replica
@@ -47,10 +48,10 @@ type DeleteMarkerMTime struct {
 // MarshalXML encodes expiration date if it is non-zero and encodes
 // empty string otherwise
 func (t DeleteMarkerMTime) MarshalXML(e *xml.Encoder, startElement xml.StartElement) error {
-	if t.Time.IsZero() {
+	if t.IsZero() {
 		return nil
 	}
-	return e.EncodeElement(t.Time.Format(time.RFC3339), startElement)
+	return e.EncodeElement(t.Format(time.RFC3339), startElement)
 }
 
 // ObjectToDelete carries key name for the object to delete.

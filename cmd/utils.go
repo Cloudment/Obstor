@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -40,14 +40,14 @@ import (
 	"sync"
 	"time"
 
-	humanize "github.com/dustin/go-humanize"
-	"github.com/gorilla/mux"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/cmd/rest"
 	"github.com/cloudment/obstor/pkg/certs"
 	"github.com/cloudment/obstor/pkg/handlers"
 	"github.com/cloudment/obstor/pkg/madmin"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/http2"
 )
 
@@ -150,7 +150,7 @@ func hasContentMD5(h http.Header) bool {
 	return ok
 }
 
-/// http://docs.aws.amazon.com/AmazonS3/latest/dev/UploadingObjects.html
+// / http://docs.aws.amazon.com/AmazonS3/latest/dev/UploadingObjects.html
 const (
 	// Maximum object size per PUT request is 5TB.
 	// This is a divergence from S3 limit on purpose to support
@@ -281,7 +281,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 	// library creates to store profiling data.
 	switch madmin.ProfilerType(profilerType) {
 	case madmin.ProfilerCPU:
-		dirPath, err := ioutil.TempDir("", "profile")
+		dirPath, err := os.MkdirTemp("", "profile")
 		if err != nil {
 			return nil, err
 		}
@@ -301,7 +301,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 				return nil, err
 			}
 			defer os.RemoveAll(dirPath)
-			return ioutil.ReadFile(fn)
+			return os.ReadFile(fn)
 		}
 	case madmin.ProfilerMEM:
 		runtime.GC()
@@ -345,7 +345,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 			return buf.Bytes(), err
 		}
 	case madmin.ProfilerTrace:
-		dirPath, err := ioutil.TempDir("", "profile")
+		dirPath, err := os.MkdirTemp("", "profile")
 		if err != nil {
 			return nil, err
 		}
@@ -366,7 +366,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 				return nil, err
 			}
 			defer os.RemoveAll(dirPath)
-			return ioutil.ReadFile(fn)
+			return os.ReadFile(fn)
 		}
 	default:
 		return nil, errors.New("profiler type unknown")
@@ -375,7 +375,7 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 	return prof, nil
 }
 
-// minioProfiler - minio profiler interface.
+// minioProfiler - obstor profiler interface.
 type minioProfiler interface {
 	// Return base profile. 'nil' if none.
 	Base() []byte
@@ -395,7 +395,7 @@ func dumpRequest(r *http.Request) string {
 	header.Set("Host", r.Host)
 	// Replace all '%' to '%%' so that printer format parser
 	// to ignore URL encoded values.
-	rawURI := strings.Replace(r.RequestURI, "%", "%%", -1)
+	rawURI := strings.ReplaceAll(r.RequestURI, "%", "%%")
 	req := struct {
 		Method     string      `json:"method"`
 		RequestURI string      `json:"reqURI"`
@@ -456,7 +456,7 @@ func newInternodeHTTPTransport(tlsConfig *tls.Config, dialTimeout time.Duration)
 		WriteBufferSize:       32 << 10, // 32KiB moving up from 4KiB default
 		ReadBufferSize:        32 << 10, // 32KiB moving up from 4KiB default
 		IdleConnTimeout:       15 * time.Second,
-		ResponseHeaderTimeout: 15 * time.Minute, // Set conservative timeouts for ObStor internode.
+		ResponseHeaderTimeout: 15 * time.Minute, // Set conservative timeouts for Obstor internode.
 		TLSHandshakeTimeout:   15 * time.Second,
 		ExpectContinueTimeout: 15 * time.Second,
 		TLSClientConfig:       tlsConfig,
@@ -567,7 +567,7 @@ func newCustomHTTPTransport(tlsConfig *tls.Config, dialTimeout time.Duration) fu
 		WriteBufferSize:       16 << 10, // 16KiB moving up from 4KiB default
 		ReadBufferSize:        16 << 10, // 16KiB moving up from 4KiB default
 		IdleConnTimeout:       15 * time.Second,
-		ResponseHeaderTimeout: 3 * time.Minute, // Set conservative timeouts for ObStor internode.
+		ResponseHeaderTimeout: 3 * time.Minute, // Set conservative timeouts for Obstor internode.
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 10 * time.Second,
 		TLSClientConfig:       tlsConfig,
@@ -853,7 +853,7 @@ func lcp(strs []string, pre bool) string {
 	return xfix
 }
 
-// Returns the mode in which ObStor is running
+// Returns the mode in which Obstor is running
 func getMinioMode() string {
 	mode := globalMinioModeFS
 	if globalIsDistErasure {
@@ -938,7 +938,7 @@ func (t *timedValue) update(v interface{}) {
 	t.lastUpdate = time.Now()
 }
 
-// On ObStor a directory object is stored as a regular object with "__XLDIR__" suffix.
+// On Obstor a directory object is stored as a regular object with "__XLDIR__" suffix.
 // For ex. "prefix/" is stored as "prefix__XLDIR__"
 func encodeDirObject(object string) string {
 	if HasSuffix(object, slashSeparator) {

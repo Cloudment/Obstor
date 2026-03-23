@@ -24,7 +24,7 @@ assignees: ''
 ## Steps to Reproduce (for bugs)
 <!--- Provide a link to a live example, or an unambiguous set of steps to -->
 <!--- reproduce this bug. Include code to reproduce, if relevant -->
-<!--- and make sure you have followed https://github.com/cloudment/obstor/tree/release/docs/debugging to capture relevant logs -->
+<!--- and make sure you have followed https://github.com/Cloudment/Obstor/tree/main/docs/debugging to capture relevant logs -->
 
 1.
 2.
@@ -37,10 +37,11 @@ assignees: ''
 
 ## Regression
 <!-- Is this issue a regression? (Yes / No) -->
-<!-- If Yes, optionally please include minio version or commit id or PR# that caused this regression, if you have these details. -->
+<!-- If Yes, optionally please include obstor version or commit id or PR# that caused this regression, if you have these details. -->
 
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
-* Version used (`minio --version`):
+* Version used (`obstor --version`):
 * Server setup and configuration:
 * Operating System and version (`uname -a`):
+* Go version (`go version`):

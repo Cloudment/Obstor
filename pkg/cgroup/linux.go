@@ -1,7 +1,9 @@
+//go:build linux
 // +build linux
 
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +27,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -71,7 +72,7 @@ func GetEntries(pid int) (CGEntries, error) {
 // at /proc/<pid>/cgroup.
 //
 // CGROUP entries id, component and path are always in
-// the following format. ``ID:COMPONENT:PATH``
+// the following format. “ID:COMPONENT:PATH“
 //
 // Following code block parses this information and
 // returns a procCGroup which is a parsed list of all
@@ -165,7 +166,7 @@ func GetMemoryLimit(pid int) (limit uint64, err error) {
 		// might not be installed. We fallback to using the the sysfs
 		// path instead to lookup memory limits.
 		var b []byte
-		b, err = ioutil.ReadFile(getMemoryLimitFilePath(path))
+		b, err = os.ReadFile(getMemoryLimitFilePath(path))
 		if err != nil {
 			return 0, err
 		}

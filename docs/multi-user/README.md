@@ -1,16 +1,16 @@
-# ObStor Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
-ObStor supports multiple long term users in addition to default user created during server startup. New users can be added after server starts up, and server can be configured to deny or allow access to buckets and resources to each of these users. This document explains how to add/remove users and modify their access rights.
+# Obstor Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+Obstor supports multiple long term users in addition to default user created during server startup. New users can be added after server starts up, and server can be configured to deny or allow access to buckets and resources to each of these users. This document explains how to add/remove users and modify their access rights.
 
 ## Get started
 In this document we will explain in detail on how to configure multiple users.
 
 ### 1. Prerequisites
-- Install mc - [ObStor Client Quickstart Guide](https://pgg.net/docs/obstor/minio-client-quickstart-guide.html)
-- Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide)
-- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/master/docs/sts/etcd.md)
+- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+- Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide)
+- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/main/docs/sts/etcd.md)
 
 ### 2. Create a new user with canned policy
-Use [`mc admin policy`](https://pgg.net/docs/obstor/minio-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
+Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
 
 Create new canned policy file `getonly.json`. This policy enables users to download all objects under `my-bucketname`.
 ```json
@@ -35,88 +35,88 @@ EOF
 
 Create new canned policy by name `getonly` using `getonly.json` policy file.
 ```
-mc admin policy add myminio getonly getonly.json
+mc admin policy add myobstor getonly getonly.json
 ```
 
-Create a new user `newuser` on ObStor use `mc admin user`.
+Create a new user `newuser` on Obstor use `mc admin user`.
 ```
-mc admin user add myminio newuser newuser123
+mc admin user add myobstor newuser newuser123
 ```
 
 Once the user is successfully created you can now apply the `getonly` policy for this user.
 ```
-mc admin policy set myminio getonly user=newuser
+mc admin policy set myobstor getonly user=newuser
 ```
 
 ### 3. Create a new group
 ```
-mc admin group add myminio newgroup newuser
+mc admin group add myobstor newgroup newuser
 ```
 
 Once the group is successfully created you can now apply the `getonly` policy for this group.
 ```
-mc admin policy set myminio getonly group=newgroup
+mc admin policy set myobstor getonly group=newgroup
 ```
 
 ### 4. Disable user
 Disable user `newuser`.
 ```
-mc admin user disable myminio newuser
+mc admin user disable myobstor newuser
 ```
 
 Disable group `newgroup`.
 ```
-mc admin group disable myminio newgroup
+mc admin group disable myobstor newgroup
 ```
 
 ### 5. Remove user
 Remove the user `newuser`.
 ```
-mc admin user remove myminio newuser
+mc admin user remove myobstor newuser
 ```
 
 Remove the user `newuser` from a group.
 ```
-mc admin group remove myminio newgroup newuser
+mc admin group remove myobstor newgroup newuser
 ```
 
 Remove the group `newgroup`.
 ```
-mc admin group remove myminio newgroup
+mc admin group remove myobstor newgroup
 ```
 
 ### 6. Change user or group policy
 Change the policy for user `newuser` to `putonly` canned policy.
 ```
-mc admin policy set myminio putonly user=newuser
+mc admin policy set myobstor putonly user=newuser
 ```
 
 Change the policy for group `newgroup` to `putonly` canned policy.
 ```
-mc admin policy set myminio putonly group=newgroup
+mc admin policy set myobstor putonly group=newgroup
 ```
 
 ### 7. List all users or groups
 List all enabled and disabled users.
 ```
-mc admin user list myminio
+mc admin user list myobstor
 ```
 
 List all enabled or disabled groups.
 ```
-mc admin group list myminio
+mc admin group list myobstor
 ```
 
 ### 8. Configure `mc`
 ```
-mc alias set myminio-newuser http://localhost:9000 newuser newuser123 --api s3v4
-mc cat myminio-newuser/my-bucketname/my-objectname
+mc alias set myobstor-newuser http://localhost:9000 newuser newuser123 --api s3v4
+mc cat myobstor-newuser/my-bucketname/my-objectname
 ```
 
 ### Policy Variables
 You can use policy variables in the *Resource* element and in string comparisons in the *Condition* element.
 
-You can use a policy variable in the Resource element, but only in the resource portion of the ARN. This portion of the ARN appears after the 5th colon (:). You can't use a variable to replace parts of the ARN before the 5th colon, such as the service or account. The following policy might be attached to a group. It gives each of the users in the group full programmatic access to a user-specific object (their own "home directory") in ObStor.
+You can use a policy variable in the Resource element, but only in the resource portion of the ARN. This portion of the ARN appears after the 5th colon (:). You can't use a variable to replace parts of the ARN before the 5th colon, such as the service or account. The following policy might be attached to a group. It gives each of the users in the group full programmatic access to a user-specific object (their own "home directory") in Obstor.
 
 ```
 {
@@ -168,7 +168,7 @@ List of policy variables for OpenID based STS.
 "jwt:client_id"
 ```
 
-Following example shows OpenID users with full programmatic access to a OpenID user-specific directory (their own "home directory") in ObStor.
+Following example shows OpenID users with full programmatic access to a OpenID user-specific directory (their own "home directory") in Obstor.
 ```
 {
   "Version": "2012-10-17",
@@ -191,7 +191,7 @@ Following example shows OpenID users with full programmatic access to a OpenID u
 }
 ```
 
-If the user is authenticating using an STS credential which was authorized from AD/LDAP we allow `ldap:*` variables, currently only supports `ldap:user`. Following example shows LDAP users full programmatic access to a LDAP user-specific directory (their own "home directory") in ObStor.
+If the user is authenticating using an STS credential which was authorized from AD/LDAP we allow `ldap:*` variables, currently only supports `ldap:user`. Following example shows LDAP users full programmatic access to a LDAP user-specific directory (their own "home directory") in Obstor.
 ```
 {
   "Version": "2012-10-17",
@@ -218,9 +218,9 @@ If the user is authenticating using an STS credential which was authorized from 
 
 - *aws:CurrentTime* - This can be used for conditions that check the date and time.
 - *aws:EpochTime* - This is the date in epoch or Unix time, for use with date/time conditions.
-- *aws:PrincipalType* - This value indicates whether the principal is an account (Root credential), user (ObStor user), or assumed role (STS)
+- *aws:PrincipalType* - This value indicates whether the principal is an account (Root credential), user (Obstor user), or assumed role (STS)
 - *aws:SecureTransport* - This is a Boolean value that represents whether the request was sent over TLS.
-- *aws:SourceIp* - This is the requester's IP address, for use with IP address conditions. If running behind Nginx like proxies, ObStor preserve's the source IP.
+- *aws:SourceIp* - This is the requester's IP address, for use with IP address conditions. If running behind Nginx like proxies, Obstor preserve's the source IP.
 
 ```
 {
@@ -234,12 +234,12 @@ If the user is authenticating using an STS credential which was authorized from 
 }
 ```
 
-- *aws:UserAgent* - This value is a string that contains information about the requester's client application. This string is generated by the client and can be unreliable. You can only use this context key from `mc` or other ObStor SDKs which standardize the User-Agent string.
-- *aws:username* - This is a string containing the friendly name of the current user, this value would point to STS temporary credential in `AssumeRole`ed requests, instead use `jwt:preferred_username` in case of OpenID connect and `ldap:user` in case of AD/LDAP connect. *aws:userid* is an alias to *aws:username* in ObStor.
+- *aws:UserAgent* - This value is a string that contains information about the requester's client application. This string is generated by the client and can be unreliable. You can only use this context key from `mc` or other Obstor SDKs which standardize the User-Agent string.
+- *aws:username* - This is a string containing the friendly name of the current user, this value would point to STS temporary credential in `AssumeRole`ed requests, instead use `jwt:preferred_username` in case of OpenID connect and `ldap:user` in case of AD/LDAP connect. *aws:userid* is an alias to *aws:username* in Obstor.
 
 
 ## Explore Further
-- [ObStor Client Complete Guide](https://pgg.net/docs/obstor/minio-client-complete-guide)
-- [ObStor STS Quickstart Guide](https://pgg.net/docs/obstor/minio-sts-quickstart-guide)
-- [ObStor Admin Complete Guide](https://pgg.net/docs/obstor/minio-admin-complete-guide.html)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Obstor Client Complete Guide](https://obstor.net/docs/obstor-client-complete-guide)
+- [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

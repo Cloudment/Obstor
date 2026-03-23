@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,19 +79,19 @@ FLAGS:
   {{range .VisibleFlags}}{{.}}
   {{end}}{{end}}
 EXAMPLES:
-  1. Start minio server on "/home/shared" directory.
+  1. Start obstor server on "/home/shared" directory.
      {{.Prompt}} {{.HelpName}} /home/shared
 
   2. Start single node server with 64 local drives "/mnt/data1" to "/mnt/data64".
      {{.Prompt}} {{.HelpName}} /mnt/data{1...64}
 
-  3. Start distributed minio server on an 32 node setup with 32 drives each, run following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}minio
+  3. Start distributed obstor server on an 32 node setup with 32 drives each, run following command on all the nodes
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}obstor
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
      {{.Prompt}} {{.HelpName}} http://node{1...32}.example.com/mnt/export{1...32}
 
-  4. Start distributed minio server in an expanded setup, run the following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}minio
+  4. Start distributed obstor server in an expanded setup, run the following command on all the nodes
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}obstor
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
      {{.Prompt}} {{.HelpName}} http://node{1...16}.example.com/mnt/export{1...32} \
             http://node{17...64}.example.com/mnt/export{1...64}
@@ -170,8 +171,8 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	}, rest.DefaultTimeout)()
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie obstor will start listening on IPv6 address whereas another
+	// (non-)obstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
 	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the server")
 
@@ -290,14 +291,14 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		select {
 		case <-ctx.Done():
 			// Retry was canceled successfully.
-			return fmt.Errorf("Initializing sub-systems stopped gracefully %w", ctx.Err())
+			return fmt.Errorf("initializing sub-systems stopped gracefully %w", ctx.Err())
 		default:
 		}
 
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
 		if _, err = txnLk.GetLock(ctx, lockTimeout); err != nil {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. trying to acquire lock")
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. trying to acquire lock")
 
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
@@ -305,7 +306,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 
 		// These messages only meant primarily for distributed setup, so only log during distributed setup.
 		if globalIsDistErasure {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. lock acquired")
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. lock acquired")
 		}
 
 		// Migrate all backend configs to encrypted backend configs, optionally
@@ -319,7 +320,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 				// All successful return.
 				if globalIsDistErasure {
 					// These messages only meant primarily for distributed setup, so only log during distributed setup.
-					logger.Info("All ObStor sub-systems initialized successfully")
+					logger.Info("All Obstor sub-systems initialized successfully")
 				}
 				return nil
 			}
@@ -328,13 +329,13 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		txnLk.Unlock() // Unlock the transaction lock and allow other nodes to acquire the lock if possible.
 
 		if configRetriableErrors(err) {
-			logger.Info("Waiting for all ObStor sub-systems to be initialized.. possible cause (%v)", err)
+			logger.Info("Waiting for all Obstor sub-systems to be initialized.. possible cause (%v)", err)
 			time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 			continue
 		}
 
 		// Any other unhandled return right here.
-		return fmt.Errorf("Unable to initialize sub-systems: %w", err)
+		return fmt.Errorf("unable to initialize sub-systems: %w", err)
 	}
 }
 
@@ -348,7 +349,7 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 
 	buckets, err := newObject.ListBuckets(ctx)
 	if err != nil {
-		return fmt.Errorf("Unable to list buckets to heal: %w", err)
+		return fmt.Errorf("unable to list buckets to heal: %w", err)
 	}
 
 	if globalIsErasure {
@@ -372,17 +373,17 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 			}, index)
 		}
 		if err := g.WaitErr(); err != nil {
-			return fmt.Errorf("Unable to list buckets to heal: %w", err)
+			return fmt.Errorf("unable to list buckets to heal: %w", err)
 		}
 	}
 
 	// Initialize config system.
 	if err = globalConfigSys.Init(newObject); err != nil {
 		if configRetriableErrors(err) {
-			return fmt.Errorf("Unable to initialize config system: %w", err)
+			return fmt.Errorf("unable to initialize config system: %w", err)
 		}
 		// Any other config errors we simply print a message and proceed forward.
-		logger.LogIf(ctx, fmt.Errorf("Unable to initialize config, some features may be missing %w", err))
+		logger.LogIf(ctx, fmt.Errorf("unable to initialize config, some features may be missing %w", err))
 	}
 
 	// Populate existing buckets to the etcd backend
@@ -403,7 +404,7 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 	return nil
 }
 
-// serverMain handler called for 'minio server' command.
+// serverMain handler called for 'obstor server' command.
 func serverMain(ctx *cli.Context) {
 	defer globalDNSCache.Stop()
 
@@ -419,7 +420,6 @@ func serverMain(ctx *cli.Context) {
 
 	// Perform any self-tests
 	bitrotSelfTest()
-	erasureSelfTest()
 	compressSelfTest()
 
 	// Handle all server command args.
@@ -549,6 +549,11 @@ func serverMain(ctx *cli.Context) {
 
 	// Initialize users credentials and policies in background right after config has initialized.
 	go globalIAMSys.Init(GlobalContext, newObject)
+
+	// Start SFTP server if enabled.
+	if globalSFTPConfig.Enabled {
+		startSFTPServer(globalSFTPConfig)
+	}
 
 	// Prints the formatted startup message, if err is not nil then it prints additional information as well.
 	printStartupMessage(getAPIEndpoints(), err)

@@ -1,40 +1,40 @@
-# ObStor Server Debugging Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Obstor Server Debugging Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
 ### HTTP Trace
-HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/minio-admin-complete-guide.md#command-trace---display-minio-server-http-trace) command.
+HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/obstor-admin-complete-guide.md#command-trace---display-obstor-server-http-trace) command.
 
 Example:
 ```sh
-minio server /data
+obstor server /data
 ```
 
 Default trace is succinct only to indicate the API operations being called and the HTTP response status.
 ```sh
-mc admin trace myminio
+mc admin trace myobstor
 ```
 
 To trace entire HTTP request
 ```sh
-mc admin trace --verbose myminio
+mc admin trace --verbose myobstor
 ```
 
 To trace entire HTTP request and also internode communication
 ```sh
-mc admin trace --all --verbose myminio
+mc admin trace --all --verbose myobstor
 ```
 
 
 ### Subnet Health
-Subnet Health diagnostics help ensure that the underlying infrastructure that runs ObStor is configured correctly, and is functioning properly. This test is one-shot long running one, that is recommended to be run as soon as the cluster is first provisioned, and each time a failure scenario is encountered. Note that the test incurs majority of the available resources on the system. Care must be taken when using this to debug failure scenario, so as to prevent larger outages. Health tests can be triggered using `mc admin subnet health` command.
+Subnet Health diagnostics help ensure that the underlying infrastructure that runs Obstor is configured correctly, and is functioning properly. This test is one-shot long running one, that is recommended to be run as soon as the cluster is first provisioned, and each time a failure scenario is encountered. Note that the test incurs majority of the available resources on the system. Care must be taken when using this to debug failure scenario, so as to prevent larger outages. Health tests can be triggered using `mc admin subnet health` command.
 
 Example:
 ```sh
-minio server /data
+obstor server /data
 ```
 
 The command takes no flags
 ```sh
-mc admin subnet health myminio
+mc admin subnet health myobstor
 ```
 
 The output printed will be of the form

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018, 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +115,7 @@ func (l *localLocker) Unlock(args dsync.LockArgs) (reply bool, err error) {
 
 	if !l.canTakeUnlock(args.Resources...) {
 		// Unless it is a write lock reject it.
-		return reply, fmt.Errorf("Unlock attempted on a read locked entity: %s", args.Resources)
+		return reply, fmt.Errorf("unlock attempted on a read locked entity: %s", args.Resources)
 	}
 	for _, resource := range args.Resources {
 		lri, ok := l.lockMap[resource]
@@ -227,7 +228,7 @@ func (l *localLocker) ForceUnlock(ctx context.Context, args dsync.LockArgs) (rep
 		l.mutex.Lock()
 		defer l.mutex.Unlock()
 		if len(args.UID) != 0 {
-			return false, fmt.Errorf("ForceUnlock called with non-empty UID: %s", args.UID)
+			return false, fmt.Errorf("forceUnlock called with non-empty UID: %s", args.UID)
 		}
 		for _, resource := range args.Resources {
 			delete(l.lockMap, resource) // Remove the lock (irrespective of write or read lock)

@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +34,8 @@ import (
 
 // Parse parses s as single-key KMS. The given string
 // is expected to have the following format:
-//  <key-id>:<base64-key>
+//
+//	<key-id>:<base64-key>
 //
 // The returned KMS implementation uses the parsed
 // key ID and key to derive new DEKs and decrypt ciphertext.

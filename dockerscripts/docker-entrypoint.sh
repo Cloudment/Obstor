@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+# PGG Obstor, (C) 2021-2026 PGG, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +16,10 @@
 # limitations under the License.
 #
 
-# If command starts with an option, prepend minio.
-if [ "${1}" != "minio" ]; then
+# If command starts with an option, prepend obstor.
+if [ "${1}" != "obstor" ]; then
     if [ -n "${1}" ]; then
-        set -- minio "$@"
+        set -- obstor "$@"
     fi
 fi
 

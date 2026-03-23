@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +20,16 @@ package cmd
 import "errors"
 
 // errErasureReadQuorum - did not meet read quorum.
-var errErasureReadQuorum = errors.New("Read failed. Insufficient number of disks online")
+var errErasureReadQuorum = errors.New("read failed. Insufficient number of nodes online")
 
 // errErasureWriteQuorum - did not meet write quorum.
-var errErasureWriteQuorum = errors.New("Write failed. Insufficient number of disks online")
+var errErasureWriteQuorum = errors.New("write failed. Insufficient number of nodes online")
 
-// errNoHealRequired - returned when healing is attempted on a previously healed disks.
-var errNoHealRequired = errors.New("No healing is required")
+// errNoHealRequired - returned when healing is attempted on a previously healed object.
+var errNoHealRequired = errors.New("no healing is required")
+
+// errBlockNotFound - block hash not found on any node.
+var errBlockNotFound = errors.New("block not found")
+
+// errBlockCorrupt - block data does not match its hash.
+var errBlockCorrupt = errors.New("block data corrupt")

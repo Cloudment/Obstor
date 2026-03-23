@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +23,8 @@ import (
 )
 
 const (
-	// Default minio configuration directory where below configuration files/directories are stored.
-	defaultMinioConfigDir = ".minio"
+	// Default obstor configuration directory where below configuration files/directories are stored.
+	defaultMinioConfigDir = ".obstor"
 
 	// Directory contains below files/directories for HTTPS configuration.
 	certsDir = "certs"

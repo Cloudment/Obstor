@@ -23,11 +23,11 @@ type buffer struct {
 
 // reader implements io.ReadCloser with goroutine-based readahead.
 type reader struct {
-	closer io.Closer    // non-nil when wrapping an io.ReadCloser
+	closer io.Closer     // non-nil when wrapping an io.ReadCloser
 	bufs   chan buffer   // filled buffers sent from the background goroutine
 	cur    buffer        // current buffer being consumed by Read
 	off    int           // read offset within cur.data[:cur.n]
-	done   chan struct{}  // closed to signal the background goroutine to stop
+	done   chan struct{} // closed to signal the background goroutine to stop
 	once   sync.Once     // ensures Close is idempotent
 	err    error         // sticky error returned after all buffered data is drained
 }

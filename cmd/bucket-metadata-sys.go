@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,10 +175,10 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 			bucketTargetsFile: bucketTargetsFile,
 		})
 		if err != nil {
-			return fmt.Errorf("Error encrypting bucket target metadata %w", err)
+			return fmt.Errorf("error encrypting bucket target metadata %w", err)
 		}
 	default:
-		return fmt.Errorf("Unknown bucket %s metadata update requested %s", bucket, configFile)
+		return fmt.Errorf("unknown bucket %s metadata update requested %s", bucket, configFile)
 	}
 
 	if err := meta.Save(GlobalContext, objAPI); err != nil {

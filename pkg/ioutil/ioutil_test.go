@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	goioutil "io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -44,11 +44,11 @@ func TestDeadlineWriter(t *testing.T) {
 	_, err := w.Write([]byte("1"))
 	w.Close()
 	if err != context.Canceled {
-		t.Error("DeadlineWriter shouldn't be successful - should return context.Canceled")
+		t.Error("deadlineWriter shouldn't be successful - should return context.Canceled")
 	}
 	_, err = w.Write([]byte("1"))
 	if err != context.Canceled {
-		t.Error("DeadlineWriter shouldn't be successful - should return context.Canceled")
+		t.Error("deadlineWriter shouldn't be successful - should return context.Canceled")
 	}
 	w = NewDeadlineWriter(&sleepWriter{timeout: 100 * time.Millisecond}, 600*time.Millisecond)
 	n, err := w.Write([]byte("abcd"))
@@ -62,25 +62,25 @@ func TestDeadlineWriter(t *testing.T) {
 }
 
 func TestCloseOnWriter(t *testing.T) {
-	writer := WriteOnClose(goioutil.Discard)
+	writer := WriteOnClose(io.Discard)
 	if writer.HasWritten() {
-		t.Error("WriteOnCloser must not be marked as HasWritten")
+		t.Error("writeOnCloser must not be marked as HasWritten")
 	}
 	writer.Write(nil)
 	if !writer.HasWritten() {
-		t.Error("WriteOnCloser must be marked as HasWritten")
+		t.Error("writeOnCloser must be marked as HasWritten")
 	}
 
-	writer = WriteOnClose(goioutil.Discard)
+	writer = WriteOnClose(io.Discard)
 	writer.Close()
 	if !writer.HasWritten() {
-		t.Error("WriteOnCloser must be marked as HasWritten")
+		t.Error("writeOnCloser must be marked as HasWritten")
 	}
 }
 
 // Test for AppendFile.
 func TestAppendFile(t *testing.T) {
-	f, err := goioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +89,7 @@ func TestAppendFile(t *testing.T) {
 	f.WriteString("aaaaaaaaaa")
 	f.Close()
 
-	f, err = goioutil.TempFile("", "")
+	f, err = os.CreateTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestAppendFile(t *testing.T) {
 		t.Error(err)
 	}
 
-	b, err := goioutil.ReadFile(name1)
+	b, err := os.ReadFile(name1)
 	if err != nil {
 		t.Error(err)
 	}
@@ -129,7 +129,7 @@ func TestSkipReader(t *testing.T) {
 	}
 	for i, testCase := range testCases {
 		r := NewSkipReader(testCase.src, testCase.skipLen)
-		b, err := goioutil.ReadAll(r)
+		b, err := io.ReadAll(r)
 		if err != nil {
 			t.Errorf("Case %d: Unexpected err %v", i, err)
 		}
@@ -140,7 +140,7 @@ func TestSkipReader(t *testing.T) {
 }
 
 func TestSameFile(t *testing.T) {
-	f, err := goioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Errorf("Error creating tmp file: %v", err)
 	}
@@ -158,7 +158,7 @@ func TestSameFile(t *testing.T) {
 	if !SameFile(fi1, fi2) {
 		t.Fatal("Expected the files to be same")
 	}
-	if err = goioutil.WriteFile(tmpFile, []byte("aaa"), 0644); err != nil {
+	if err = os.WriteFile(tmpFile, []byte("aaa"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	fi2, err = os.Stat(tmpFile)

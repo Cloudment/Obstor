@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ package cmd
 import (
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -96,12 +96,12 @@ func TestDownloadURL(t *testing.T) {
 		}
 	} else {
 		if runtime.GOOS == "windows" {
-			if durl != minioReleaseURL+"minio.exe" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"minio.exe", durl)
+			if durl != minioReleaseURL+"obstor.exe" {
+				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor.exe", durl)
 			}
 		} else {
-			if durl != minioReleaseURL+"minio" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"minio", durl)
+			if durl != minioReleaseURL+"obstor" {
+				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor", durl)
 			}
 		}
 	}
@@ -133,19 +133,19 @@ func TestUserAgent(t *testing.T) {
 			envName:     "",
 			envValue:    "",
 			mode:        globalMinioModeFS,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
 		},
 		{
 			envName:     "MESOS_CONTAINER_NAME",
 			envValue:    "mesos-11111",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
 		},
 		{
 			envName:     "KUBERNETES_SERVICE_HOST",
 			envValue:    "10.11.148.5",
 			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("ObStor (%s; %s; %s; %s; source) ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET ObStor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
 		},
 	}
 
@@ -160,7 +160,7 @@ func TestUserAgent(t *testing.T) {
 		str := getUserAgent(testCase.mode)
 		expectedStr := testCase.expectedStr
 		if IsDocker() {
-			expectedStr = strings.Replace(expectedStr, "; source", "; docker; source", -1)
+			expectedStr = strings.ReplaceAll(expectedStr, "; source", "; docker; source")
 		}
 		if str != expectedStr {
 			t.Errorf("Test %d: expected: %s, got: %s", i+1, expectedStr, str)
@@ -211,7 +211,7 @@ func TestIsKubernetes(t *testing.T) {
 // Tests if the environment we are running is Helm chart.
 func TestGetHelmVersion(t *testing.T) {
 	createTempFile := func(content string) string {
-		tmpfile, err := ioutil.TempFile("", "helm-testfile-")
+		tmpfile, err := os.CreateTemp("", "helm-testfile-")
 		if err != nil {
 			t.Fatalf("Unable to create temporary file. %s", err)
 		}
@@ -225,8 +225,8 @@ func TestGetHelmVersion(t *testing.T) {
 	}
 
 	filename := createTempFile(
-		`app="virtuous-rat-minio"
-chart="minio-0.1.3"
+		`app="virtuous-rat-obstor"
+chart="obstor-0.1.3"
 heritage="Tiller"
 pod-template-hash="818089471"`)
 
@@ -238,7 +238,7 @@ pod-template-hash="818089471"`)
 	}{
 		{"", ""},
 		{"/tmp/non-existing-file", ""},
-		{filename, "minio-0.1.3"},
+		{filename, "obstor-0.1.3"},
 	}
 
 	for _, testCase := range testCases {
@@ -254,7 +254,7 @@ func TestDownloadReleaseData(t *testing.T) {
 	httpServer1 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer httpServer1.Close()
 	httpServer2 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z")
+		fmt.Fprintln(w, "fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z")
 	}))
 	defer httpServer2.Close()
 	httpServer3 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -268,8 +268,8 @@ func TestDownloadReleaseData(t *testing.T) {
 		expectedErr        error
 	}{
 		{httpServer1.URL, "", nil},
-		{httpServer2.URL, "fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z\n", nil},
-		{httpServer3.URL, "", fmt.Errorf("Error downloading URL %s. Response: 404 Not Found", httpServer3.URL)},
+		{httpServer2.URL, "fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z\n", nil},
+		{httpServer3.URL, "", fmt.Errorf("error downloading URL %s. Response: 404 Not Found", httpServer3.URL)},
 	}
 
 	for _, testCase := range testCases {
@@ -307,12 +307,12 @@ func TestParseReleaseData(t *testing.T) {
 		{"more than two fields", time.Time{}, "", "", true},
 		{"more than", time.Time{}, "", "", true},
 		{"more than.two.fields", time.Time{}, "", "", true},
-		{"more minio.RELEASE.fields", time.Time{}, "", "", true},
-		{"more minio.RELEASE.2016-10-07T01-16-39Z", time.Time{}, "", "", true},
-		{"fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
-			"minio.RELEASE.2016-10-07T01-16-39Z", false},
-		{"fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z.customer-hotfix\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
-			"minio.RELEASE.2016-10-07T01-16-39Z.customer-hotfix", false},
+		{"more obstor.RELEASE.fields", time.Time{}, "", "", true},
+		{"more obstor.RELEASE.2016-10-07T01-16-39Z", time.Time{}, "", "", true},
+		{"fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
+			"obstor.RELEASE.2016-10-07T01-16-39Z", false},
+		{"fbe246edbd382902db9a4035df7dce8cb441357d obstor.RELEASE.2016-10-07T01-16-39Z.customer-hotfix\n", releaseTime, "fbe246edbd382902db9a4035df7dce8cb441357d",
+			"obstor.RELEASE.2016-10-07T01-16-39Z.customer-hotfix", false},
 	}
 
 	for i, testCase := range testCases {

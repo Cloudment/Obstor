@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +21,9 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 )
 
-// GatewayMinioSysTmp prefix is used in Azure/GCS gateway for save metadata sent by Initialize Multipart Upload API.
+// GatewayObstorSysTmp prefix is used in Azure/GCS gateway for save metadata sent by Initialize Multipart Upload API.
 const (
-	GatewayMinioSysTmp  = "minio.sys.tmp/"
+	GatewayObstorSysTmp = "obstor.sys.tmp/"
 	AzureBackendGateway = "azure"
 	GCSBackendGateway   = "gcs"
 	HDFSBackendGateway  = "hdfs"

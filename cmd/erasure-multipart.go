@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -278,28 +279,47 @@ func (er erasureObjects) ListMultipartUploads(ctx context.Context, bucket, objec
 //
 // Internally this function creates 'uploads.json' associated for the
 // incoming object at
-// '.minio.sys/multipart/bucket/object/uploads.json' on all the
+// '.obstor.sys/multipart/bucket/object/uploads.json' on all the
 // disks. `uploads.json` carries metadata regarding on-going multipart
 // operation(s) on the object.
 func (er erasureObjects) newMultipartUpload(ctx context.Context, bucket string, object string, opts ObjectOptions) (string, error) {
 	onlineDisks := er.getDisks()
-	parityDrives := globalStorageClass.GetParityForSC(opts.UserDefined[xhttp.AmzStorageClass])
-	if parityDrives <= 0 {
-		parityDrives = er.defaultParityCount
+
+	var writeQuorum int
+	var fi FileInfo
+
+	if globalIsReplicated {
+		writeQuorum = globalReplicationConfig.WriteQuorum()
+		blockSize := globalReplicationConfig.BlockSize
+		if blockSize <= 0 {
+			blockSize = 1 << 20
+		}
+		fi = FileInfo{
+			Volume:  bucket,
+			Name:    pathJoin(bucket, object),
+			ModTime: UTCNow(),
+			Erasure: ErasureInfo{
+				Algorithm:    "block-replication",
+				DataBlocks:   1,
+				ParityBlocks: 0,
+				BlockSize:    blockSize,
+				Index:        1,
+				Distribution: []int{1},
+			},
+		}
+	} else {
+		parityDrives := globalStorageClass.GetParityForSC(opts.UserDefined[xhttp.AmzStorageClass])
+		if parityDrives <= 0 {
+			parityDrives = er.defaultParityCount
+		}
+		dataDrives := len(onlineDisks) - parityDrives
+		writeQuorum = dataDrives
+		if dataDrives == parityDrives {
+			writeQuorum++
+		}
+		fi = newFileInfo(pathJoin(bucket, object), dataDrives, parityDrives)
 	}
 
-	dataDrives := len(onlineDisks) - parityDrives
-	// we now know the number of blocks this object needs for data and parity.
-	// establish the writeQuorum using this data
-	writeQuorum := dataDrives
-	if dataDrives == parityDrives {
-		writeQuorum++
-	}
-
-	// Initialize parts metadata
-	partsMetadata := make([]FileInfo, len(onlineDisks))
-
-	fi := newFileInfo(pathJoin(bucket, object), dataDrives, parityDrives)
 	if opts.Versioned {
 		fi.VersionID = opts.VersionID
 		if fi.VersionID == "" {
@@ -308,7 +328,8 @@ func (er erasureObjects) newMultipartUpload(ctx context.Context, bucket string, 
 	}
 	fi.DataDir = mustGetUUID()
 
-	// Initialize erasure metadata.
+	// Initialize parts metadata
+	partsMetadata := make([]FileInfo, len(onlineDisks))
 	for index := range partsMetadata {
 		partsMetadata[index] = fi
 	}
@@ -323,10 +344,11 @@ func (er erasureObjects) newMultipartUpload(ctx context.Context, bucket string, 
 		modTime = UTCNow()
 	}
 
-	onlineDisks, partsMetadata = shuffleDisksAndPartsMetadata(onlineDisks, partsMetadata, fi)
+	if !globalIsReplicated {
+		onlineDisks, partsMetadata = shuffleDisksAndPartsMetadata(onlineDisks, partsMetadata, fi)
+	}
 
 	// Fill all the necessary metadata.
-	// Update `xl.meta` content on each disks.
 	for index := range partsMetadata {
 		partsMetadata[index].Metadata = opts.UserDefined
 		partsMetadata[index].ModTime = modTime
@@ -340,7 +362,6 @@ func (er erasureObjects) newMultipartUpload(ctx context.Context, bucket string, 
 		return "", toObjectErr(err, minioMetaMultipartBucket, uploadIDPath)
 	}
 
-	// Return success.
 	return uploadID, nil
 }
 
@@ -430,6 +451,11 @@ func (er erasureObjects) PutObjectPart(ctx context.Context, bucket, object, uplo
 	fi, err := pickValidFileInfo(ctx, partsMetadata, modTime, dataDir, writeQuorum)
 	if err != nil {
 		return pi, err
+	}
+
+	// Block-replicated multipart path.
+	if globalIsReplicated && len(fi.Blocks) >= 0 {
+		return er.putBlockReplicatedPart(ctx, bucket, object, uploadID, partID, r, fi, storageDisks, writeQuorum, uploadIDLock, &readLocked)
 	}
 
 	onlineDisks = shuffleDisks(onlineDisks, fi.Erasure.Distribution)
@@ -577,6 +603,136 @@ func (er erasureObjects) PutObjectPart(ctx context.Context, bucket, object, uplo
 		ETag:         md5hex,
 		LastModified: fi.ModTime,
 		Size:         fi.Size,
+		ActualSize:   data.ActualSize(),
+	}, nil
+}
+
+// putBlockReplicatedPart stores a multipart part using content-addressed blocks.
+func (er erasureObjects) putBlockReplicatedPart(ctx context.Context, bucket, object, uploadID string,
+	partID int, r *PutObjReader, fi FileInfo, storageDisks []StorageAPI, writeQuorum int,
+	uploadIDLock RWLocker, readLocked *bool) (PartInfo, error) {
+
+	data := r.Reader
+	blockSize := globalReplicationConfig.BlockSize
+	if blockSize <= 0 {
+		blockSize = 1 << 20
+	}
+	replicator := NewBlockReplicator(blockSize, globalReplicationConfig.ReplicationFactor)
+
+	// Stream data in block-sized chunks.
+	var partBlocks []BlockRef
+	buf := make([]byte, blockSize)
+	var partSize int64
+	idx := 0
+
+	for {
+		n, readErr := io.ReadFull(data, buf)
+		if readErr != nil && readErr != io.EOF && readErr != io.ErrUnexpectedEOF {
+			return PartInfo{}, readErr
+		}
+		if n == 0 {
+			break
+		}
+
+		blockData := buf[:n]
+		blockHash := hashBlockData(blockData)
+		partBlocks = append(partBlocks, BlockRef{
+			Hash:  blockHash,
+			Size:  int64(n),
+			Index: idx,
+		})
+		partSize += int64(n)
+
+		if err := replicator.WriteBlock(ctx, blockHash, blockData, storageDisks, writeQuorum); err != nil {
+			return PartInfo{}, toObjectErr(err, bucket, object)
+		}
+		idx++
+
+		if readErr == io.EOF || readErr == io.ErrUnexpectedEOF {
+			break
+		}
+	}
+
+	// Should return IncompleteBody{} error when reader has fewer bytes than specified.
+	if data.Size() > 0 && partSize < data.Size() {
+		return PartInfo{}, IncompleteBody{Bucket: bucket, Object: object}
+	}
+
+	// Switch from read lock to write lock for metadata update.
+	uploadIDLock.RUnlock()
+	*readLocked = false
+	var err error
+	ctx, err = uploadIDLock.GetLock(ctx, globalOperationTimeout)
+	if err != nil {
+		return PartInfo{}, err
+	}
+	defer uploadIDLock.Unlock()
+
+	if err = er.checkUploadIDExists(ctx, bucket, object, uploadID); err != nil {
+		return PartInfo{}, toObjectErr(err, bucket, object, uploadID)
+	}
+
+	uploadIDPath := er.getUploadIDDir(bucket, object, uploadID)
+
+	// Re-read metadata.
+	partsMetadata, errs := readAllFileInfo(ctx, storageDisks, minioMetaMultipartBucket, uploadIDPath, "", false)
+	reducedErr := reduceWriteQuorumErrs(ctx, errs, objectOpIgnoredErrs, writeQuorum)
+	if reducedErr == errErasureWriteQuorum {
+		return PartInfo{}, toObjectErr(reducedErr, bucket, object)
+	}
+
+	onlineDisks, modTime, dataDir := listOnlineDisks(storageDisks, partsMetadata, errs)
+	fi, err = pickValidFileInfo(ctx, partsMetadata, modTime, dataDir, writeQuorum)
+	if err != nil {
+		return PartInfo{}, err
+	}
+
+	fi.ModTime = UTCNow()
+	md5hex := r.MD5CurrentHexString()
+	fi.AddObjectPart(partID, md5hex, partSize, data.ActualSize())
+
+	// Append this part's blocks to the metadata block list.
+	// We store blocks per-part, using the part index offset.
+	blockOffset := 0
+	for _, p := range fi.Parts {
+		if p.Number == partID {
+			break
+		}
+		// Count existing blocks from other parts to avoid overlap.
+		blockOffset += int(ceilFrac(p.Size, blockSize))
+	}
+	// Re-index blocks with global offset.
+	for i := range partBlocks {
+		partBlocks[i].Index = blockOffset + i
+	}
+	// Remove any old blocks from a previous upload of the same part.
+	var newBlocks []BlockRef
+	for _, blk := range fi.Blocks {
+		if blk.Index < blockOffset || blk.Index >= blockOffset+len(partBlocks) {
+			newBlocks = append(newBlocks, blk)
+		}
+	}
+	fi.Blocks = append(newBlocks, partBlocks...)
+
+	for i, disk := range onlineDisks {
+		if disk == OfflineDisk {
+			continue
+		}
+		partsMetadata[i].Size = fi.Size
+		partsMetadata[i].ModTime = fi.ModTime
+		partsMetadata[i].Parts = fi.Parts
+		partsMetadata[i].Blocks = fi.Blocks
+	}
+
+	if _, err = writeUniqueFileInfo(ctx, onlineDisks, minioMetaMultipartBucket, uploadIDPath, partsMetadata, writeQuorum); err != nil {
+		return PartInfo{}, toObjectErr(err, minioMetaMultipartBucket, uploadIDPath)
+	}
+
+	return PartInfo{
+		PartNumber:   partID,
+		ETag:         md5hex,
+		LastModified: fi.ModTime,
+		Size:         partSize,
 		ActualSize:   data.ActualSize(),
 	}, nil
 }
@@ -790,9 +946,10 @@ func (er erasureObjects) CompleteMultipartUpload(ctx context.Context, bucket str
 	// Calculate consolidated actual size.
 	var objectActualSize int64
 
-	// Order online disks in accordance with distribution order.
-	// Order parts metadata in accordance with distribution order.
-	onlineDisks, partsMetadata = shuffleDisksAndPartsMetadataByIndex(onlineDisks, partsMetadata, fi)
+	// Order online disks in accordance with distribution order (skip for block-replicated).
+	if len(fi.Blocks) == 0 {
+		onlineDisks, partsMetadata = shuffleDisksAndPartsMetadataByIndex(onlineDisks, partsMetadata, fi)
+	}
 
 	// Save current erasure metadata for validation.
 	var currentFI = fi
@@ -870,6 +1027,9 @@ func (er erasureObjects) CompleteMultipartUpload(ctx context.Context, bucket str
 			partsMetadata[index].ModTime = fi.ModTime
 			partsMetadata[index].Metadata = fi.Metadata
 			partsMetadata[index].Parts = fi.Parts
+			if len(fi.Blocks) > 0 {
+				partsMetadata[index].Blocks = fi.Blocks
+			}
 		}
 	}
 

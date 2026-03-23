@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
     - master
+    - main
 
 jobs:
   build:
@@ -11,14 +12,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go-version: [1.16.x]
+        go-version: [1.26.x]
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '12'
-      - uses: actions/setup-go@v2
+          node-version: '25'
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 10
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
       - name: Build on ${{ matrix.os }}
@@ -27,7 +31,7 @@ jobs:
           CGO_ENABLED: 0
           GO111MODULE: on
         run: |
-          go build --ldflags="-s -w" -o %GOPATH%\bin\minio.exe
+          go build --ldflags="-s -w" -o %GOPATH%\bin\obstor.exe
           go test -v --timeout 50m ./...
       - name: Build on ${{ matrix.os }}
         if: matrix.os == 'ubuntu-latest'
@@ -46,5 +50,5 @@ jobs:
           make crosscompile
           make verify
           make verify-healing
-          cd browser && npm install && npm run test && cd ..
-          bash -c 'shopt -s globstar; shellcheck mint/**/*.sh'
+          cd browser && pnpm install && pnpm run format && cd ..
+          bash -c 'shopt -s globstar; shellcheck tests/**/*.sh'

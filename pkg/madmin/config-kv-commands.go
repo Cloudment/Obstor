@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,7 @@ func (adm *AdminClient) DelConfigKV(ctx context.Context, k string) (err error) {
 		content: econfigBytes,
 	}
 
-	// Execute DELETE on /minio/admin/v3/del-config-kv to delete config key.
+	// Execute DELETE on /obstor/admin/v3/del-config-kv to delete config key.
 	resp, err := adm.executeMethod(ctx, http.MethodDelete, reqData)
 
 	defer closeResponse(resp)
@@ -52,7 +53,7 @@ func (adm *AdminClient) DelConfigKV(ctx context.Context, k string) (err error) {
 
 const (
 	// ConfigAppliedHeader is the header indicating whether the config was applied without requiring a restart.
-	ConfigAppliedHeader = "x-minio-config-applied"
+	ConfigAppliedHeader = "x-obstor-config-applied"
 
 	// ConfigAppliedTrue is the value set in header if the config was applied.
 	ConfigAppliedTrue = "true"
@@ -70,7 +71,7 @@ func (adm *AdminClient) SetConfigKV(ctx context.Context, kv string) (restart boo
 		content: econfigBytes,
 	}
 
-	// Execute PUT on /minio/admin/v3/set-config-kv to set config key/value.
+	// Execute PUT on /obstor/admin/v3/set-config-kv to set config key/value.
 	resp, err := adm.executeMethod(ctx, http.MethodPut, reqData)
 
 	defer closeResponse(resp)
@@ -90,7 +91,7 @@ func (adm *AdminClient) GetConfigKV(ctx context.Context, key string) ([]byte, er
 	v := url.Values{}
 	v.Set("key", key)
 
-	// Execute GET on /minio/admin/v3/get-config-kv?key={key} to get value of key.
+	// Execute GET on /obstor/admin/v3/get-config-kv?key={key} to get value of key.
 	resp, err := adm.executeMethod(ctx,
 		http.MethodGet,
 		requestData{

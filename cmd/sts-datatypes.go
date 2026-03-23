@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +55,7 @@ type AssumeRoleResponse struct {
 
 // AssumeRoleResult - Contains the response to a successful AssumeRole
 // request, including temporary credentials that can be used to make
-// ObStor API requests.
+// Obstor API requests.
 type AssumeRoleResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.
@@ -85,7 +86,7 @@ type AssumeRoleWithWebIdentityResponse struct {
 }
 
 // WebIdentityResult - Contains the response to a successful AssumeRoleWithWebIdentity
-// request, including temporary credentials that can be used to make ObStor API requests.
+// request, including temporary credentials that can be used to make Obstor API requests.
 type WebIdentityResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.
@@ -135,7 +136,7 @@ type AssumeRoleWithClientGrantsResponse struct {
 }
 
 // ClientGrantsResult - Contains the response to a successful AssumeRoleWithClientGrants
-// request, including temporary credentials that can be used to make ObStor API requests.
+// request, including temporary credentials that can be used to make Obstor API requests.
 type ClientGrantsResult struct {
 	// The identifiers for the temporary security credentials that the operation
 	// returns.

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,12 +183,12 @@ func ValidateParity(ssParity, setDriveCount int) error {
 	// SS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if ssParity > 0 && ssParity < minParityDisks {
-		return fmt.Errorf("Standard storage class parity %d should be greater than or equal to %d",
+		return fmt.Errorf("standard storage class parity %d should be greater than or equal to %d",
 			ssParity, minParityDisks)
 	}
 
 	if ssParity > setDriveCount/2 {
-		return fmt.Errorf("Standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
+		return fmt.Errorf("standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
 	}
 
 	return nil
@@ -198,27 +199,27 @@ func validateParity(ssParity, rrsParity, setDriveCount int) (err error) {
 	// SS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if ssParity > 0 && ssParity < minParityDisks {
-		return fmt.Errorf("Standard storage class parity %d should be greater than or equal to %d",
+		return fmt.Errorf("standard storage class parity %d should be greater than or equal to %d",
 			ssParity, minParityDisks)
 	}
 
 	// RRS parity disks should be greater than or equal to minParityDisks.
 	// Parity below minParityDisks is not supported.
 	if rrsParity > 0 && rrsParity < minParityDisks {
-		return fmt.Errorf("Reduced redundancy storage class parity %d should be greater than or equal to %d", rrsParity, minParityDisks)
+		return fmt.Errorf("reduced redundancy storage class parity %d should be greater than or equal to %d", rrsParity, minParityDisks)
 	}
 
 	if ssParity > setDriveCount/2 {
-		return fmt.Errorf("Standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
+		return fmt.Errorf("standard storage class parity %d should be less than or equal to %d", ssParity, setDriveCount/2)
 	}
 
 	if rrsParity > setDriveCount/2 {
-		return fmt.Errorf("Reduced redundancy storage class parity %d should be less than  or equal to %d", rrsParity, setDriveCount/2)
+		return fmt.Errorf("reduced redundancy storage class parity %d should be less than or equal to %d", rrsParity, setDriveCount/2)
 	}
 
 	if ssParity > 0 && rrsParity > 0 {
 		if ssParity > 0 && ssParity < rrsParity {
-			return fmt.Errorf("Standard storage class parity disks %d should be greater than or equal to Reduced redundancy storage class parity disks %d", ssParity, rrsParity)
+			return fmt.Errorf("standard storage class parity disks %d should be greater than or equal to reduced redundancy storage class parity disks %d", ssParity, rrsParity)
 		}
 	}
 	return nil
@@ -231,10 +232,13 @@ func validateParity(ssParity, rrsParity, setDriveCount int) (err error) {
 //
 // -- if input storage class is empty then standard is assumed
 // -- if input is RRS but RRS is not configured default '2' parity
-//    for RRS is assumed
+//
+//	for RRS is assumed
+//
 // -- if input is STANDARD but STANDARD is not configured '0' parity
-//    is returned, the caller is expected to choose the right parity
-//    at that point.
+//
+//	is returned, the caller is expected to choose the right parity
+//	at that point.
 func (sCfg Config) GetParityForSC(sc string) (parity int) {
 	ConfigLock.RLock()
 	defer ConfigLock.RUnlock()

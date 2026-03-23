@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +42,7 @@ const (
 type Config struct {
 	Enabled bool `json:"enabled"`
 
-	// E.g. "ldap.minio.io:636"
+	// E.g. "ldap.obstor.net:636"
 	ServerAddr string `json:"serverAddr"`
 
 	// STS credentials expiry duration
@@ -188,7 +189,7 @@ func (l *Config) lookupBind(conn *ldap.Conn) error {
 		err = conn.Bind(l.LookupBindDN, l.LookupBindPassword)
 	}
 	if ldap.IsErrorWithCode(err, 49) {
-		return fmt.Errorf("LDAP Lookup Bind user invalid credentials error: %v", err)
+		return fmt.Errorf("ldap Lookup Bind user invalid credentials error: %v", err)
 	}
 	return err
 }
@@ -213,7 +214,7 @@ func (l *Config) usernameFormatsBind(conn *ldap.Conn, username, password string)
 			bindDistNames = append(bindDistNames, bindDN)
 			successCount++
 		} else if !ldap.IsErrorWithCode(errs[i], 49) {
-			return "", fmt.Errorf("LDAP Bind request failed with unexpected error: %v", errs[i])
+			return "", fmt.Errorf("ldap Bind request failed with unexpected error: %v", errs[i])
 		}
 	}
 	if successCount == 0 {
@@ -238,7 +239,7 @@ func (l *Config) usernameFormatsBind(conn *ldap.Conn, username, password string)
 // assumed to be using the lookup bind service account. It is required that the
 // search result in at most one result.
 func (l *Config) lookupUserDN(conn *ldap.Conn, username string) (string, error) {
-	filter := strings.Replace(l.UserDNSearchFilter, "%s", ldap.EscapeFilter(username), -1)
+	filter := strings.ReplaceAll(l.UserDNSearchFilter, "%s", ldap.EscapeFilter(username))
 	searchRequest := ldap.NewSearchRequest(
 		l.UserDNSearchBaseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
@@ -252,10 +253,10 @@ func (l *Config) lookupUserDN(conn *ldap.Conn, username string) (string, error) 
 		return "", err
 	}
 	if len(searchResult.Entries) == 0 {
-		return "", fmt.Errorf("User DN for %s not found", username)
+		return "", fmt.Errorf("user DN for %s not found", username)
 	}
 	if len(searchResult.Entries) != 1 {
-		return "", fmt.Errorf("Multiple DNs for %s found - please fix the search filter", username)
+		return "", fmt.Errorf("multiple DNs for %s found - please fix the search filter", username)
 	}
 	return searchResult.Entries[0].DN, nil
 }
@@ -265,8 +266,8 @@ func (l *Config) searchForUserGroups(conn *ldap.Conn, username, bindDN string) (
 	var groups []string
 	if l.GroupSearchFilter != "" {
 		for _, groupSearchBase := range l.GroupSearchBaseDistNames {
-			filter := strings.Replace(l.GroupSearchFilter, "%s", ldap.EscapeFilter(username), -1)
-			filter = strings.Replace(filter, "%d", ldap.EscapeFilter(bindDN), -1)
+			filter := strings.ReplaceAll(l.GroupSearchFilter, "%s", ldap.EscapeFilter(username))
+			filter = strings.ReplaceAll(filter, "%d", ldap.EscapeFilter(bindDN))
 			searchRequest := ldap.NewSearchRequest(
 				groupSearchBase,
 				ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
@@ -278,7 +279,7 @@ func (l *Config) searchForUserGroups(conn *ldap.Conn, username, bindDN string) (
 			var newGroups []string
 			newGroups, err := getGroups(conn, searchRequest)
 			if err != nil {
-				errRet := fmt.Errorf("Error finding groups of %s: %v", bindDN, err)
+				errRet := fmt.Errorf("error finding groups of %s: %v", bindDN, err)
 				return nil, errRet
 			}
 
@@ -309,7 +310,7 @@ func (l *Config) LookupUserDN(username string) (string, []string, error) {
 	// Lookup user DN
 	bindDN, err := l.lookupUserDN(conn, username)
 	if err != nil {
-		errRet := fmt.Errorf("Unable to find user DN: %w", err)
+		errRet := fmt.Errorf("unable to find user DN: %w", err)
 		return "", nil, errRet
 	}
 
@@ -340,14 +341,14 @@ func (l *Config) Bind(username, password string) (string, []string, error) {
 		// Lookup user DN
 		bindDN, err = l.lookupUserDN(conn, username)
 		if err != nil {
-			errRet := fmt.Errorf("Unable to find user DN: %s", err)
+			errRet := fmt.Errorf("unable to find user DN: %s", err)
 			return "", nil, errRet
 		}
 
 		// Authenticate the user credentials.
 		err = conn.Bind(bindDN, password)
 		if err != nil {
-			errRet := fmt.Errorf("LDAP auth failed for DN %s: %v", bindDN, err)
+			errRet := fmt.Errorf("ldap auth failed for DN %s: %v", bindDN, err)
 			return "", nil, errRet
 		}
 
@@ -365,7 +366,7 @@ func (l *Config) Bind(username, password string) (string, []string, error) {
 		// Bind to the successful bindDN again.
 		err = conn.Bind(bindDN, password)
 		if err != nil {
-			errRet := fmt.Errorf("LDAP conn failed though auth for DN %s succeeded: %v", bindDN, err)
+			errRet := fmt.Errorf("ldap conn failed though auth for DN %s succeeded: %v", bindDN, err)
 			return "", nil, errRet
 		}
 	}
@@ -382,7 +383,7 @@ func (l *Config) Bind(username, password string) (string, []string, error) {
 // Connect connect to ldap server.
 func (l *Config) Connect() (ldapConn *ldap.Conn, err error) {
 	if l == nil {
-		return nil, errors.New("LDAP is not configured")
+		return nil, errors.New("ldap is not configured")
 	}
 
 	if _, _, err = net.SplitHostPort(l.ServerAddr); err != nil {
@@ -420,12 +421,12 @@ func (l Config) GetExpiryDuration() time.Duration {
 func (l Config) testConnection() error {
 	conn, err := l.Connect()
 	if err != nil {
-		return fmt.Errorf("Error creating connection to LDAP server: %v", err)
+		return fmt.Errorf("error creating connection to LDAP server: %v", err)
 	}
 	defer conn.Close()
 	if l.isUsingLookupBind {
 		if err = l.lookupBind(conn); err != nil {
-			return fmt.Errorf("Error connecting as LDAP Lookup Bind user: %v", err)
+			return fmt.Errorf("error connecting as LDAP Lookup Bind user: %v", err)
 		}
 		return nil
 	}
@@ -442,11 +443,11 @@ func (l Config) testConnection() error {
 	if err == nil {
 		// We don't expect to successfully guess a credential in this
 		// way.
-		return fmt.Errorf("Unexpected random credentials success for user=%s password=%s", username, password)
+		return fmt.Errorf("unexpected random credentials success for user=%s password=%s", username, password)
 	} else if strings.HasPrefix(err.Error(), "All username formats failed due to invalid credentials: ") {
 		return nil
 	}
-	return fmt.Errorf("LDAP connection test error: %v", err)
+	return fmt.Errorf("ldap connection test error: %v", err)
 }
 
 // Enabled returns if jwks is enabled.
@@ -476,10 +477,10 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 	if v := env.Get(EnvSTSExpiry, kvs.Get(STSExpiry)); v != "" {
 		expDur, err := time.ParseDuration(v)
 		if err != nil {
-			return l, errors.New("LDAP expiry time err:" + err.Error())
+			return l, errors.New("ldap expiry time err:" + err.Error())
 		}
 		if expDur <= 0 {
-			return l, errors.New("LDAP expiry time has to be positive")
+			return l, errors.New("ldap expiry time has to be positive")
 		}
 		l.STSExpiryDuration = v
 		l.stsExpiryDuration = expDur
@@ -517,7 +518,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 		userDNSearchBaseDN := env.Get(EnvUserDNSearchBaseDN, kvs.Get(UserDNSearchBaseDN))
 		userDNSearchFilter := env.Get(EnvUserDNSearchFilter, kvs.Get(UserDNSearchFilter))
 		if userDNSearchFilter == "" || userDNSearchBaseDN == "" {
-			return l, errors.New("In lookup bind mode, userDN search base DN and userDN search filter are both required")
+			return l, errors.New("in lookup bind mode, userDN search base DN and userDN search filter are both required")
 		}
 		l.UserDNSearchBaseDN = userDNSearchBaseDN
 		l.UserDNSearchFilter = userDNSearchFilter
@@ -526,7 +527,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 	// Username format configuration.
 	if v := env.Get(EnvUsernameFormat, kvs.Get(UsernameFormat)); v != "" {
 		if !strings.Contains(v, "%s") {
-			return l, errors.New("LDAP username format doesn't have '%s' substitution")
+			return l, errors.New("ldap username format doesn't have '%s' substitution")
 		}
 		l.UsernameFormats = strings.Split(v, dnDelimiter)
 	}
@@ -534,7 +535,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 	// Either lookup bind mode or username format is supported, but not
 	// both.
 	if l.isUsingLookupBind && len(l.UsernameFormats) > 0 {
-		return l, errors.New("Lookup Bind mode and Username Format mode are not supported at the same time")
+		return l, errors.New("lookup Bind mode and Username Format mode are not supported at the same time")
 	}
 
 	// At least one of bind mode or username format must be used.
@@ -544,7 +545,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 
 	// Test connection to LDAP server.
 	if err := l.testConnection(); err != nil {
-		return l, fmt.Errorf("Connection test for LDAP server failed: %v", err)
+		return l, fmt.Errorf("connection test for LDAP server failed: %v", err)
 	}
 
 	// Group search params configuration
@@ -553,7 +554,7 @@ func Lookup(kvs config.KVS, rootCAs *x509.CertPool) (l Config, err error) {
 
 	// Either all group params must be set or none must be set.
 	if (grpSearchFilter != "" && grpSearchBaseDN == "") || (grpSearchFilter == "" && grpSearchBaseDN != "") {
-		return l, errors.New("All group related parameters must be set")
+		return l, errors.New("all group related parameters must be set")
 	}
 
 	if grpSearchFilter != "" {

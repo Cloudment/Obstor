@@ -3,6 +3,7 @@
 
 /*
  * MinIO Cloud Storage, (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@
 package disk_test
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -28,7 +28,7 @@ import (
 )
 
 func TestFree(t *testing.T) {
-	path, err := ioutil.TempDir(os.TempDir(), "minio-")
+	path, err := os.MkdirTemp(os.TempDir(), "minio-")
 	defer os.RemoveAll(path)
 	if err != nil {
 		t.Fatal(err)
@@ -40,6 +40,6 @@ func TestFree(t *testing.T) {
 	}
 
 	if di.FSType == "UNKNOWN" {
-		t.Error("Unexpected FSType", di.FSType)
+		t.Error("unexpected FSType", di.FSType)
 	}
 }

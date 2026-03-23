@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,7 +207,7 @@ func (lc Lifecycle) FilterActionableRules(obj ObjectOpts) []Rule {
 		if !strings.HasPrefix(obj.Name, rule.GetPrefix()) {
 			continue
 		}
-		// Indicates whether ObStor will remove a delete marker with no
+		// Indicates whether Obstor will remove a delete marker with no
 		// noncurrent versions. If set to true, the delete marker will
 		// be expired; if set to false the policy takes no action. This
 		// cannot be specified with Days or Date in a Lifecycle
@@ -215,14 +216,14 @@ func (lc Lifecycle) FilterActionableRules(obj ObjectOpts) []Rule {
 			rules = append(rules, rule)
 			continue
 		}
-		// The NoncurrentVersionExpiration action requests ObStor to expire
+		// The NoncurrentVersionExpiration action requests Obstor to expire
 		// noncurrent versions of objects x days after the objects become
 		// noncurrent.
 		if !rule.NoncurrentVersionExpiration.IsDaysNull() {
 			rules = append(rules, rule)
 			continue
 		}
-		// The NoncurrentVersionTransition action requests ObStor to transition
+		// The NoncurrentVersionTransition action requests Obstor to transition
 		// noncurrent versions of objects x days after the objects become
 		// noncurrent.
 		if !rule.NoncurrentVersionTransition.IsDaysNull() {
@@ -273,7 +274,7 @@ func (lc Lifecycle) ComputeAction(obj ObjectOpts) Action {
 
 	for _, rule := range lc.FilterActionableRules(obj) {
 		if obj.ExpiredObjectDeleteMarker() && rule.Expiration.DeleteMarker.val {
-			// Indicates whether ObStor will remove a delete marker with no noncurrent versions.
+			// Indicates whether Obstor will remove a delete marker with no noncurrent versions.
 			// Only latest marker is removed. If set to true, the delete marker will be expired;
 			// if set to false the policy takes no action. This cannot be specified with Days or
 			// Date in a Lifecycle Expiration Policy.
@@ -352,8 +353,9 @@ func (lc Lifecycle) ComputeAction(obj ObjectOpts) Action {
 // ExpectedExpiryTime calculates the expiry, transition or restore date/time based on a object modtime.
 // The expected transition or restore time is always a midnight time following the the object
 // modification time plus the number of transition/restore days.
-//   e.g. If the object modtime is `Thu May 21 13:42:50 GMT 2020` and the object should
-//       transition in 1 day, then the expected transition time is `Fri, 23 May 2020 00:00:00 GMT`
+//
+//	e.g. If the object modtime is `Thu May 21 13:42:50 GMT 2020` and the object should
+//	    transition in 1 day, then the expected transition time is `Fri, 23 May 2020 00:00:00 GMT`
 func ExpectedExpiryTime(modTime time.Time, days int) time.Time {
 	t := modTime.UTC().Add(time.Duration(days+1) * 24 * time.Hour)
 	return t.Truncate(24 * time.Hour)

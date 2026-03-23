@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019-2024 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 // github.com/bcicen/jstream using only the Go standard library's
 // encoding/json package.
 //
-// It reimplements the subset of jstream used by ObStor:
+// It reimplements the subset of jstream used by Obstor:
 //   - KV, KVS types (ordered key-value pairs with custom JSON marshaling)
 //   - Decoder with depth-based filtering and ObjectAsKVS mode
 //   - MetaValue with ValueType discrimination

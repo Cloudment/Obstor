@@ -1,7 +1,9 @@
+//go:build linux
 // +build linux
 
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +21,13 @@
 package cgroup
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 // Testing parsing correctness for various process cgroup files.
 func TestProcCGroup(t *testing.T) {
-	tmpPath, err := ioutil.TempFile("", "cgroup")
+	tmpPath, err := os.CreateTemp("", "cgroup")
 	if err != nil {
 		t.Fatal(err)
 	}

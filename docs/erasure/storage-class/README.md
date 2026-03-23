@@ -1,14 +1,14 @@
-# ObStor Storage Class Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Storage Class Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
-ObStor server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
+Obstor server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
 
-This page is intended as a summary of ObStor Erasure Coding. For a more complete explanation, see https://pgg.net/docs/obstor/minio/baremetal/concepts/erasure-coding.html.
+This page is intended as a summary of Obstor Erasure Coding. For a more complete explanation, see https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding.html.
 
 ## Overview
 
-ObStor supports two storage classes, Reduced Redundancy class and Standard class. These classes can be defined using environment variables
-set before starting ObStor server. After the data and parity disks for each storage class are defined using environment variables,
-you can set the storage class of an object via request metadata field `x-amz-storage-class`. ObStor server then honors the storage class by
+Obstor supports two storage classes, Reduced Redundancy class and Standard class. These classes can be defined using environment variables
+set before starting Obstor server. After the data and parity disks for each storage class are defined using environment variables,
+you can set the storage class of an object via request metadata field `x-amz-storage-class`. Obstor server then honors the storage class by
 saving the object in specific number of data and parity disks.
 
 ## Storage usage
@@ -17,11 +17,11 @@ The selection of varying data and parity drives has a direct impact on the drive
 redundancy or better drive space utilization.
 
 To get an idea of how various combinations of data and parity drives affect the storage usage, let’s take an example of a 100 MiB file stored
-on 16 drive ObStor deployment. If you use eight data and eight parity drives, the file space usage will be approximately twice, i.e. 100 MiB
+on 16 drive Obstor deployment. If you use eight data and eight parity drives, the file space usage will be approximately twice, i.e. 100 MiB
 file will take 200 MiB space. But, if you use ten data and six parity drives, same 100 MiB file takes around 160 MiB. If you use 14 data and
 two parity drives, 100 MiB file takes only approximately 114 MiB.
 
-Below is a list of data/parity drives and corresponding _approximate_ storage space usage on a 16 drive ObStor deployment. The field _storage
+Below is a list of data/parity drives and corresponding _approximate_ storage space usage on a 16 drive Obstor deployment. The field _storage
 usage ratio_ is simply the drive space used by the file after erasure-encoding, divided by actual file size.
 
 | Total Drives (N) | Data Drives (D) | Parity Drives (P) | Storage Usage Ratio |
@@ -53,8 +53,8 @@ The default value for the `STANDARD` storage class depends on the number of volu
 | 6-7              |                 EC:3  |
 | 8 or more        |                 EC:4  |
 
-Prior to the ``RELEASE.2021-01-30T00-20-58Z`` ObStor release, the default `STANDARD` value was `EC(N/2)` where `N` was the number of erasure set drives.
-For more complete documentation on Erasure Set sizing, see the [ObStor Documentation on Erasure Sets](https://pgg.net/docs/obstor/minio/baremetal/concepts/erasure-coding.html#erasure-sets).
+Prior to the ``RELEASE.2021-01-30T00-20-58Z`` Obstor release, the default `STANDARD` value was `EC(N/2)` where `N` was the number of erasure set drives.
+For more complete documentation on Erasure Set sizing, see the [Obstor Documentation on Erasure Sets](https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding.html#erasure-sets).
 
 ### Allowed values for REDUCED_REDUNDANCY storage class
 
@@ -88,18 +88,18 @@ more details.
 
 *Note*
 
-- If `STANDARD` storage class is set via environment variables or `mc admin config` get/set commands, and `x-amz-storage-class` is not present in request metadata, ObStor server will
+- If `STANDARD` storage class is set via environment variables or `mc admin config` get/set commands, and `x-amz-storage-class` is not present in request metadata, Obstor server will
 apply `STANDARD` storage class to the object. This means the data and parity disks will be used as set in `STANDARD` storage class.
 
-- If storage class is not defined before starting ObStor server, and subsequent PutObject metadata field has `x-amz-storage-class` present
-with values `REDUCED_REDUNDANCY` or `STANDARD`, ObStor server uses default parity values.
+- If storage class is not defined before starting Obstor server, and subsequent PutObject metadata field has `x-amz-storage-class` present
+with values `REDUCED_REDUNDANCY` or `STANDARD`, Obstor server uses default parity values.
 
 ### Set metadata
 
 In below example `minio-go` is used to set the storage class to `REDUCED_REDUNDANCY`. This means this object will be split across 6 data disks and 2 parity disks (as per the storage class set in previous step).
 
 ```go
-s3Client, err := minio.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+s3Client, err := obstor.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 if err != nil {
 	log.Fatalln(err)
 }
@@ -114,7 +114,7 @@ if err != nil {
 	log.Fatalln(err)
 }
 
-n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
+n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), obstor.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
 if err != nil {
 	log.Fatalln(err)
 }

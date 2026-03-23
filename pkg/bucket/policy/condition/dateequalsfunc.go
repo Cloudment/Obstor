@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +107,7 @@ func (f dateNotEqualsFunc) name() name {
 }
 
 func (f dateNotEqualsFunc) String() string {
-	return toDateEqualsFuncString(dateNotEquals, f.dateEqualsFunc.k, f.dateEqualsFunc.value)
+	return toDateEqualsFuncString(dateNotEquals, f.k, f.value)
 }
 
 func valueToTime(n name, values ValueSet) (v time.Time, err error) {

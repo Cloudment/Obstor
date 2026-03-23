@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +58,7 @@ func TestUpdateClaimsExpiry(t *testing.T) {
 				t.Errorf("Expected success, got failure %s", err)
 			}
 			if err == nil && testCase.expectedFailure {
-				t.Error("Expected failure, got success")
+				t.Error("expected failure, got success")
 			}
 		})
 	}

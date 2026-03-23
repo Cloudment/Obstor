@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ func TestKeyValueMap(t *testing.T) {
 	prefix := "prefix"
 	username := "username"
 	policy := "policy"
-	host := "pgg.net"
+	host := "obstor.net"
 	objects := []string{object, object}
 
 	km := KeyValueMap{}
@@ -93,7 +94,7 @@ func TestNewWebContext(t *testing.T) {
 		Marker:     "marker",
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://pgg.net", bytes.NewReader([]byte("nothing")))
+	req, err := http.NewRequest(http.MethodPost, "http://obstor.net", bytes.NewReader([]byte("nothing")))
 	if err != nil {
 		t.Fatal("Unexpected failure while creating a test request")
 	}

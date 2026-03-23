@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ import (
 // Name - event type enum.
 // Refer http://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-event-types-and-destinations
 // for most basic values we have since extend this and its not really much applicable other than a reference point.
-// "s3:Replication:OperationCompletedReplication" is a ObStor extension.
+// "s3:Replication:OperationCompletedReplication" is a Obstor extension.
 type Name int
 
 // Values of event Name

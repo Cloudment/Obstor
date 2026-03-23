@@ -5,7 +5,7 @@
 
 // Copyright 2020 MinIO, Inc. All rights reserved.
 // forked from https://github.com/gorilla/rpc/v2
-// modified to be used with MinIO under Apache
+// modified to be used with Obstor under Apache
 // 2.0 license that can be found in the LICENSE file.
 
 package rpc
@@ -127,13 +127,13 @@ func (s *Server) RegisterAfterFunc(f func(i *RequestInfo)) {
 //
 // Methods from the receiver will be extracted if these rules are satisfied:
 //
-//    - The receiver is exported (begins with an upper case letter) or local
-//      (defined in the package registering the service).
-//    - The method name is exported.
-//    - The method has three arguments: *http.Request, *args, *reply.
-//    - All three arguments are pointers.
-//    - The second and third arguments are exported or local.
-//    - The method has return type error.
+//   - The receiver is exported (begins with an upper case letter) or local
+//     (defined in the package registering the service).
+//   - The method name is exported.
+//   - The method has three arguments: *http.Request, *args, *reply.
+//   - All three arguments are pointers.
+//   - The second and third arguments are exported or local.
+//   - The method has return type error.
 //
 // All other methods are ignored.
 func (s *Server) RegisterService(receiver interface{}, name string) error {

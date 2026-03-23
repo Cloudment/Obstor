@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +38,7 @@ const (
 	// Captures all the previous SetKV operations and allows rollback.
 	minioConfigHistoryPrefix = minioConfigPrefix + "/history"
 
-	// ObStor configuration file.
+	// Obstor configuration file.
 	minioConfigFile = "config.json"
 )
 
@@ -211,21 +212,21 @@ func initConfig(objAPI ObjectLayer) error {
 		}
 	}
 
-	// Migrates ${HOME}/.minio/config.json or config.json.deprecated
-	// to '<export_path>/.minio.sys/config/config.json'
+	// Migrates ${HOME}/.obstor/config.json or config.json.deprecated
+	// to '<export_path>/.obstor.sys/config/config.json'
 	// ignore if the file doesn't exist.
 	// If etcd is set then migrates /config/config.json
-	// to '<export_path>/.minio.sys/config/config.json'
+	// to '<export_path>/.obstor.sys/config/config.json'
 	if err := migrateConfigToMinioSys(objAPI); err != nil {
 		return err
 	}
 
-	// Migrates backend '<export_path>/.minio.sys/config/config.json' to latest version.
+	// Migrates backend '<export_path>/.obstor.sys/config/config.json' to latest version.
 	if err := migrateMinioSysConfig(objAPI); err != nil {
 		return err
 	}
 
-	// Migrates backend '<export_path>/.minio.sys/config/config.json' to
+	// Migrates backend '<export_path>/.obstor.sys/config/config.json' to
 	// latest config format.
 	if err := migrateMinioSysConfigToKV(objAPI); err != nil {
 		return err

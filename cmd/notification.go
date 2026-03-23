@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018, 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1383,12 +1384,12 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	uniqueID := fmt.Sprintf("%X", eventTime.UnixNano())
 
 	respElements := map[string]string{
-		"x-amz-request-id":        args.RespElements["requestId"],
-		"x-minio-origin-endpoint": globalMinioEndpoint, // ObStor specific custom elements.
+		"x-amz-request-id":         args.RespElements["requestId"],
+		"x-obstor-origin-endpoint": globalMinioEndpoint, // Obstor specific custom elements.
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
-		respElements["x-minio-deployment-id"] = globalDeploymentID
+		respElements["x-obstor-deployment-id"] = globalDeploymentID
 	}
 	if args.RespElements["content-length"] != "" {
 		respElements["content-length"] = args.RespElements["content-length"]
@@ -1399,7 +1400,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	}
 	newEvent := event.Event{
 		EventVersion:      "2.0",
-		EventSource:       "minio:s3",
+		EventSource:       "obstor:s3",
 		AwsRegion:         args.ReqParams["region"],
 		EventTime:         eventTime.Format(event.AMZTimeFormat),
 		EventName:         args.EventName,
@@ -1440,7 +1441,7 @@ func sendEvent(args eventArgs) {
 	args.Object.Size, _ = args.Object.GetActualSize()
 
 	// avoid generating a notification for REPLICA creation event.
-	if _, ok := args.ReqParams[xhttp.ObStorSourceReplicationRequest]; ok {
+	if _, ok := args.ReqParams[xhttp.ObstorSourceReplicationRequest]; ok {
 		return
 	}
 	// remove sensitive encryption entries in metadata.

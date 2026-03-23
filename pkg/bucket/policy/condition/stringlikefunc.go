@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +114,7 @@ func (f stringNotLikeFunc) name() name {
 }
 
 func (f stringNotLikeFunc) String() string {
-	return toStringLikeFuncString(stringNotLike, f.stringLikeFunc.k, f.stringLikeFunc.values)
+	return toStringLikeFuncString(stringNotLike, f.k, f.values)
 }
 
 func validateStringLikeValues(n name, key Key, values set.StringSet) error {

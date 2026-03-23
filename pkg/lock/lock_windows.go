@@ -1,7 +1,9 @@
+//go:build windows
 // +build windows
 
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,7 +210,7 @@ func Open(path string, flag int, perm os.FileMode) (*os.File, error) {
 	case syscall.O_WRONLY | syscall.O_CREAT | syscall.O_APPEND:
 		access = syscall.FILE_APPEND_DATA
 	default:
-		return nil, fmt.Errorf("Unsupported flag (%d)", flag)
+		return nil, fmt.Errorf("unsupported flag (%d)", flag)
 	}
 
 	var createflag uint32

@@ -3,6 +3,7 @@
 
 /*
  * MinIO Cloud Storage, (C) 2019,2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +32,7 @@ import (
 	"net/url"
 	"strings"
 
-	minio "github.com/minio/minio-go/v7"
+	obstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
@@ -101,12 +102,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Uncomment this to use ObStor API operations by initializing minio
+	// Uncomment this to use Obstor API operations by initializing obstor
 	// client with obtained credentials.
 
-	opts := &minio.Options{
+	opts := &obstor.Options{
 		Creds:        sts,
-		BucketLookup: minio.BucketLookupAuto,
+		BucketLookup: obstor.BucketLookupAuto,
 	}
 
 	u, err := url.Parse(stsEndpoint)
@@ -114,13 +115,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	clnt, err := minio.New(u.Host, opts)
+	clnt, err := obstor.New(u.Host, opts)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	d := bytes.NewReader([]byte("Hello, World"))
-	n, err := clnt.PutObject(context.Background(), "my-bucketname", "my-objectname", d, d.Size(), minio.PutObjectOptions{})
+	n, err := clnt.PutObject(context.Background(), "my-bucketname", "my-objectname", d, d.Size(), obstor.PutObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)
 	}

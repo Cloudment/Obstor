@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,93 +23,43 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/klauspost/reedsolomon"
 	"github.com/cloudment/obstor/cmd/logger"
 )
 
-// getDataBlockLen - get length of data blocks from encoded blocks.
-func getDataBlockLen(enBlocks [][]byte, dataBlocks int) int {
-	size := 0
-	// Figure out the data block length.
-	for _, block := range enBlocks[:dataBlocks] {
-		size += len(block)
-	}
-	return size
-}
-
-// Writes all the data blocks from encoded blocks until requested
-// outSize length. Provides a way to skip bytes until the offset.
+// writeDataBlocks writes data blocks to dst. Legacy function kept for test compatibility.
 func writeDataBlocks(ctx context.Context, dst io.Writer, enBlocks [][]byte, dataBlocks int, offset int64, length int64) (int64, error) {
-	// Offset and out size cannot be negative.
 	if offset < 0 || length < 0 {
 		logger.LogIf(ctx, errUnexpected)
 		return 0, errUnexpected
 	}
-
-	// Do we have enough blocks?
 	if len(enBlocks) < dataBlocks {
-		logger.LogIf(ctx, fmt.Errorf("diskBlocks(%d)/dataBlocks(%d) - %w", len(enBlocks), dataBlocks, reedsolomon.ErrTooFewShards))
-		return 0, reedsolomon.ErrTooFewShards
+		return 0, fmt.Errorf("too few blocks: have %d, need %d", len(enBlocks), dataBlocks)
 	}
 
-	// Do we have enough data?
-	if int64(getDataBlockLen(enBlocks, dataBlocks)) < length {
-		logger.LogIf(ctx, fmt.Errorf("getDataBlockLen(enBlocks, dataBlocks)(%d)/length(%d) - %w", getDataBlockLen(enBlocks, dataBlocks), length, reedsolomon.ErrShortData))
-		return 0, reedsolomon.ErrShortData
-	}
-
-	// Counter to decrement total left to write.
 	write := length
-
-	// Counter to increment total written.
 	var totalWritten int64
-
-	// Write all data blocks to dst.
 	for _, block := range enBlocks[:dataBlocks] {
-		// Skip blocks until we have reached our offset.
 		if offset >= int64(len(block)) {
-			// Decrement offset.
 			offset -= int64(len(block))
 			continue
 		} else {
-			// Skip until offset.
 			block = block[offset:]
-
-			// Reset the offset for next iteration to read everything
-			// from subsequent blocks.
 			offset = 0
 		}
-
-		// We have written all the blocks, write the last remaining block.
 		if write < int64(len(block)) {
 			n, err := io.Copy(dst, bytes.NewReader(block[:write]))
 			if err != nil {
-				if err != io.ErrClosedPipe {
-					logger.LogIf(ctx, err)
-				}
 				return 0, err
 			}
 			totalWritten += n
 			break
 		}
-
-		// Copy the block.
 		n, err := io.Copy(dst, bytes.NewReader(block))
 		if err != nil {
-			// The writer will be closed incase of range queries, which will emit ErrClosedPipe.
-			if err != io.ErrClosedPipe {
-				logger.LogIf(ctx, err)
-			}
 			return 0, err
 		}
-
-		// Decrement output size.
 		write -= n
-
-		// Increment written.
 		totalWritten += n
 	}
-
-	// Success.
 	return totalWritten, nil
 }

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +58,7 @@ func parseBucketQuota(bucket string, data []byte) (quotaCfg *madmin.BucketQuota,
 		return quotaCfg, err
 	}
 	if !quotaCfg.IsValid() {
-		return quotaCfg, fmt.Errorf("Invalid quota config %#v", quotaCfg)
+		return quotaCfg, fmt.Errorf("invalid quota config %#v", quotaCfg)
 	}
 	return
 }

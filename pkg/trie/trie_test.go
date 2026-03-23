@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +52,8 @@ func TestInsert(t *testing.T) {
 func TestPrefixMatch(t *testing.T) {
 	trie := NewTrie()
 
-	// Feed it some fodder: only 'minio' and 'miny-os' should trip the matcher.
-	trie.Insert("minio")
+	// Feed it some fodder: only 'obstor' and 'miny-os' should trip the matcher.
+	trie.Insert("obstor")
 	trie.Insert("amazon")
 	trie.Insert("cheerio")
 	trie.Insert("miny-o's")
@@ -62,7 +63,7 @@ func TestPrefixMatch(t *testing.T) {
 		t.Errorf("expected two matches, got: %d", len(matches))
 	}
 
-	if matches[0] != "minio" && matches[1] != "minio" {
-		t.Errorf("expected one match to be 'minio', got: '%s' and '%s'", matches[0], matches[1])
+	if matches[0] != "obstor" && matches[1] != "obstor" {
+		t.Errorf("expected one match to be 'obstor', got: '%s' and '%s'", matches[0], matches[1])
 	}
 }

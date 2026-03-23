@@ -1,5 +1,6 @@
 /*
  * mimedb: Mime Database, (C) 2015 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -68,7 +68,7 @@ type mimeEntry struct {
 
 type mimeDB map[string]mimeEntry
 
-//  JSON data from gobindata and parse them into extDB.
+// JSON data from gobindata and parse them into extDB.
 func convertDB(jsonFile string) (mimeDB, error) {
 	// Structure of JSON data from mime-db project.
 	type dbEntry struct {
@@ -78,7 +78,7 @@ func convertDB(jsonFile string) (mimeDB, error) {
 	}
 
 	// Access embedded "db.json" inside go-bindata.
-	jsonDB, err := ioutil.ReadFile(jsonFile)
+	jsonDB, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}

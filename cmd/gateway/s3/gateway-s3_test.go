@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	miniogo "github.com/minio/minio-go/v7"
 
-	minio "github.com/cloudment/obstor/cmd"
+	obstor "github.com/cloudment/obstor/cmd"
 )
 
 func errResponse(code string) miniogo.ErrorResponse {
@@ -40,45 +41,45 @@ func TestS3ToObjectError(t *testing.T) {
 	}{
 		{
 			inputErr:    errResponse("BucketAlreadyOwnedByYou"),
-			expectedErr: minio.BucketAlreadyOwnedByYou{},
+			expectedErr: obstor.BucketAlreadyOwnedByYou{},
 		},
 		{
 			inputErr:    errResponse("BucketNotEmpty"),
-			expectedErr: minio.BucketNotEmpty{},
+			expectedErr: obstor.BucketNotEmpty{},
 		},
 		{
 			inputErr:    errResponse("InvalidBucketName"),
-			expectedErr: minio.BucketNameInvalid{},
+			expectedErr: obstor.BucketNameInvalid{},
 		},
 		{
 			inputErr:    errResponse("InvalidPart"),
-			expectedErr: minio.InvalidPart{},
+			expectedErr: obstor.InvalidPart{},
 		},
 		{
 			inputErr:    errResponse("NoSuchBucketPolicy"),
-			expectedErr: minio.BucketPolicyNotFound{},
+			expectedErr: obstor.BucketPolicyNotFound{},
 		},
 		{
 			inputErr:    errResponse("NoSuchBucket"),
-			expectedErr: minio.BucketNotFound{},
+			expectedErr: obstor.BucketNotFound{},
 		},
 		// with empty Object in miniogo.ErrorRepsonse, NoSuchKey
 		// is interpreted as BucketNotFound
 		{
 			inputErr:    errResponse("NoSuchKey"),
-			expectedErr: minio.BucketNotFound{},
+			expectedErr: obstor.BucketNotFound{},
 		},
 		{
 			inputErr:    errResponse("NoSuchUpload"),
-			expectedErr: minio.InvalidUploadID{},
+			expectedErr: obstor.InvalidUploadID{},
 		},
 		{
 			inputErr:    errResponse("XMinioInvalidObjectName"),
-			expectedErr: minio.ObjectNameInvalid{},
+			expectedErr: obstor.ObjectNameInvalid{},
 		},
 		{
 			inputErr:    errResponse("AccessDenied"),
-			expectedErr: minio.PrefixAccessDenied{},
+			expectedErr: obstor.PrefixAccessDenied{},
 		},
 		{
 			inputErr:    errResponse("XAmzContentSHA256Mismatch"),
@@ -86,7 +87,7 @@ func TestS3ToObjectError(t *testing.T) {
 		},
 		{
 			inputErr:    errResponse("EntityTooSmall"),
-			expectedErr: minio.PartTooSmall{},
+			expectedErr: obstor.PartTooSmall{},
 		},
 		{
 			inputErr:    nil,
@@ -97,7 +98,7 @@ func TestS3ToObjectError(t *testing.T) {
 			inputErr: miniogo.ErrorResponse{
 				Code: "NoSuchKey",
 			},
-			expectedErr: minio.ObjectNotFound{
+			expectedErr: obstor.ObjectNotFound{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -116,7 +117,7 @@ func TestS3ToObjectError(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		actualErr := minio.ErrorRespToObjectError(tc.inputErr, tc.bucket, tc.object)
+		actualErr := obstor.ErrorRespToObjectError(tc.inputErr, tc.bucket, tc.object)
 		if actualErr != nil && tc.expectedErr != nil && actualErr.Error() != tc.expectedErr.Error() {
 			t.Errorf("Test case %d: Expected error %v but received error %v", i+1, tc.expectedErr, actualErr)
 		}

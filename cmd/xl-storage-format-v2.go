@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +20,17 @@ package cmd
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/minio/highwayhash"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
+	"github.com/google/uuid"
+	"github.com/minio/highwayhash"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -138,7 +140,8 @@ type ErasureAlgo uint8
 const (
 	invalidErasureAlgo ErasureAlgo = 0
 	ReedSolomon        ErasureAlgo = 1
-	lastErasureAlgo    ErasureAlgo = 2
+	BlockReplication   ErasureAlgo = 2
+	lastErasureAlgo    ErasureAlgo = 3
 )
 
 func (e ErasureAlgo) valid() bool {
@@ -149,6 +152,8 @@ func (e ErasureAlgo) String() string {
 	switch e {
 	case ReedSolomon:
 		return "reedsolomon"
+	case BlockReplication:
+		return "block-replication"
 	}
 	return ""
 }
@@ -836,6 +841,16 @@ func (z *xlMetaV2) AddVersion(fi FileInfo) error {
 			}
 		}
 
+		// Store block replication refs in MetaSys as JSON.
+		if len(fi.Blocks) > 0 {
+			if ventry.ObjectV2.MetaSys == nil {
+				ventry.ObjectV2.MetaSys = make(map[string][]byte)
+			}
+			if blocksJSON, jerr := json.Marshal(fi.Blocks); jerr == nil {
+				ventry.ObjectV2.MetaSys["x-obstor-blocks"] = blocksJSON
+			}
+		}
+
 		// If asked to save data.
 		if len(fi.Data) > 0 || fi.Size == 0 {
 			z.data.replace(fi.VersionID, fi.Data)
@@ -970,6 +985,14 @@ func (j xlMetaV2Object) ToFileInfo(volume, path string) (FileInfo, error) {
 		fi.Erasure.Distribution[i] = int(j.ErasureDist[i])
 	}
 	fi.DataDir = uuid.UUID(j.DataDir).String()
+
+	// Restore block replication refs from MetaSys.
+	if blocksJSON, ok := j.MetaSys["x-obstor-blocks"]; ok && len(blocksJSON) > 0 {
+		var blocks []BlockRef
+		if jerr := json.Unmarshal(blocksJSON, &blocks); jerr == nil {
+			fi.Blocks = blocks
+		}
+	}
 
 	return fi, nil
 }

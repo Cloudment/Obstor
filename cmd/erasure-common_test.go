@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +73,7 @@ func TestErasureParentDirIsObject(t *testing.T) {
 			_, err = obj.PutObject(GlobalContext, bucketName, testCase.objectName,
 				mustGetPutObjReader(t, bytes.NewReader([]byte(objectContent)), int64(len(objectContent)), "", ""), ObjectOptions{})
 			if testCase.expectedErr && err == nil {
-				t.Error("Expected error but got nil")
+				t.Error("expected error but got nil")
 			}
 			if !testCase.expectedErr && err != nil {
 				t.Errorf("Expected nil but got %v", err)

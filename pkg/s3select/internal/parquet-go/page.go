@@ -1,5 +1,6 @@
 /*
  * Minio Cloud Storage, (C) 2018 Minio, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,23 +26,22 @@ import (
 	"math"
 	"strings"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/cloudment/obstor/pkg/s3select/internal/parquet-go/gen-go/parquet"
 )
 
 // getBitWidth - returns bits required to place num e.g.
 //
-//    num | width
-//   -----|-------
-//     0  |   0
-//     1  |   1
-//     2  |   2
-//     3  |   2
-//     4  |   3
-//     5  |   3
-//    ... |  ...
-//    ... |  ...
-//
+//	 num | width
+//	-----|-------
+//	  0  |   0
+//	  1  |   1
+//	  2  |   2
+//	  3  |   2
+//	  4  |   3
+//	  5  |   3
+//	 ... |  ...
+//	 ... |  ...
 func getBitWidth(num uint64) (width uint64) {
 	for ; num != 0; num >>= 1 {
 		width++
@@ -491,7 +491,7 @@ func (page *page) getRLDLFromRawData(columnNameIndexMap map[string]int, schemaEl
 		return int64(numValues), numRows, nil
 	}
 
-	return 0, 0, fmt.Errorf("Unsupported page type %v", pageType)
+	return 0, 0, fmt.Errorf("unsupported page type %v", pageType)
 }
 
 func (page *page) getValueFromRawData(columnNameIndexMap map[string]int, schemaElements []*parquet.SchemaElement) (err error) {
@@ -635,7 +635,7 @@ func (page *page) toDataPage(compressType parquet.CompressionCodec) []byte {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -725,7 +725,7 @@ func (page *page) toDataPageV2(compressType parquet.CompressionCodec) []byte {
 	}
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -754,7 +754,7 @@ func (page *page) toDictPage(compressType parquet.CompressionCodec, dataType par
 	page.Header.DictionaryPageHeader.Encoding = parquet.Encoding_PLAIN
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)
@@ -812,7 +812,7 @@ func (page *page) toDictDataPage(compressType parquet.CompressionCodec, bitWidth
 	page.Header.DataPageHeader.Encoding = parquet.Encoding_PLAIN_DICTIONARY
 
 	ts := thrift.NewTSerializer()
-	ts.Protocol = thrift.NewTCompactProtocolFactory().GetProtocol(ts.Transport)
+	ts.Protocol = thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}).GetProtocol(ts.Transport)
 	pageHeaderBytes, err := ts.Write(context.TODO(), page.Header)
 	if err != nil {
 		panic(err)

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +96,7 @@ func TestPrintCLIAccessMsg(t *testing.T) {
 	}
 
 	apiEndpoints := []string{"http://127.0.0.1:9000"}
-	printCLIAccessMsg(apiEndpoints[0], "myminio")
+	printCLIAccessMsg(apiEndpoints[0], "myobstor")
 }
 
 // Test print startup message.

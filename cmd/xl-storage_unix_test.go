@@ -1,7 +1,9 @@
+//go:build linux || darwin || dragonfly || freebsd || netbsd || openbsd
 // +build linux darwin dragonfly freebsd netbsd openbsd
 
 /*
  * MinIO Cloud Storage, (C) 2016-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +22,6 @@ package cmd
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path"
 	"syscall"
@@ -37,7 +38,7 @@ func getUmask() int {
 
 // Tests if the directory and file creations happen with proper umask.
 func TestIsValidUmaskVol(t *testing.T) {
-	tmpPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	tmpPath, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Initializing temporary directory failed with %s.", err)
 	}
@@ -79,7 +80,7 @@ func TestIsValidUmaskVol(t *testing.T) {
 
 // Tests if the file creations happen with proper umask.
 func TestIsValidUmaskFile(t *testing.T) {
-	tmpPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	tmpPath, err := os.MkdirTemp(globalTestTmpDir, "minio-")
 	if err != nil {
 		t.Fatalf("Initializing temporary directory failed with %s.", err)
 	}

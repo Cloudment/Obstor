@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,12 +194,40 @@ func getLatestFileInfo(ctx context.Context, partsMetadata []FileInfo, errs []err
 //
 // - disks which have all parts specified in the latest xl.meta.
 //
-// - slice of errors about the state of data files on disk - can have
-//   a not-found error or a hash-mismatch error.
+//   - slice of errors about the state of data files on disk - can have
+//     a not-found error or a hash-mismatch error.
 func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetadata []FileInfo, errs []error, bucket,
 	object string, scanMode madmin.HealScanMode) ([]StorageAPI, []error) {
 	availableDisks := make([]StorageAPI, len(onlineDisks))
 	dataErrs := make([]error, len(onlineDisks))
+
+	// Check if this is a block-replicated object.
+	blockReplicated := false
+	for _, meta := range partsMetadata {
+		if meta.IsValid() && len(meta.Blocks) > 0 {
+			blockReplicated = true
+			break
+		}
+	}
+
+	// Block-replicated objects: every disk that has valid metadata is available.
+	// Block data integrity is verified by content-addressing (SHA-256).
+	if blockReplicated {
+		for i, onlineDisk := range onlineDisks {
+			if errs[i] != nil {
+				dataErrs[i] = errs[i]
+				continue
+			}
+			if onlineDisk == nil {
+				dataErrs[i] = errDiskNotFound
+				continue
+			}
+			if partsMetadata[i].IsValid() {
+				availableDisks[i] = onlineDisk
+			}
+		}
+		return availableDisks, dataErrs
+	}
 
 	inconsistent := 0
 	for i, meta := range partsMetadata {
@@ -219,12 +248,9 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 		}
 	}
 
-	erasureDistributionReliable := true
-	if inconsistent > len(partsMetadata)/2 {
-		// If there are too many inconsistent files, then we can't trust erasure.Distribution (most likely
-		// because of bugs found in CopyObject/PutObjectTags) https://github.com/cloudment/obstor/pull/10772
-		erasureDistributionReliable = false
-	}
+	// If there are too many inconsistent files, then we can't trust erasure.Distribution (most likely
+	// because of bugs found in CopyObject/PutObjectTags) https://github.com/cloudment/obstor/pull/10772
+	erasureDistributionReliable := inconsistent <= len(partsMetadata)/2
 
 	for i, onlineDisk := range onlineDisks {
 		if errs[i] != nil {

@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -482,7 +483,7 @@ func (f *fileScorer) queueString() string {
 		if i > 0 {
 			res.WriteByte('\n')
 		}
-		res.WriteString(fmt.Sprintf("%03d: %s (score: %.3f, bytes: %d)", i, v.name, v.score, v.size))
+		fmt.Fprintf(&res, "%03d: %s (score: %.3f, bytes: %d)", i, v.name, v.score, v.size)
 		i++
 		e = e.Next()
 	}

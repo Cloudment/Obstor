@@ -1,52 +1,52 @@
-# Shared Backend ObStor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Shared Backend Obstor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
-ObStor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
-distributed filesystems) as the storage backend for multiple ObStor servers. Synchronization among ObStor servers is taken care by design.
-Read more about the ObStor shared mode design [here](https://github.com/cloudment/obstor/blob/master/docs/shared-backend/DESIGN.md).
+Obstor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
+distributed filesystems) as the storage backend for multiple Obstor servers. Synchronization among Obstor servers is taken care by design.
+Read more about the Obstor shared mode design [here](https://github.com/cloudment/obstor/blob/main/docs/shared-backend/DESIGN.md).
 
-ObStor shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
+Obstor shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
 
-- You have already invested in NAS and would like to use ObStor to add S3 compatibility to your storage tier.
+- You have already invested in NAS and would like to use Obstor to add S3 compatibility to your storage tier.
 - You need to use NAS with an S3 interface due to your application architecture requirements.
 - You expect huge traffic and need a load balanced S3 compatible server, serving files from a single NAS backend.
 
-With a proxy running in front of multiple, shared mode ObStor servers, it is very easy to create a Highly Available, load balanced, AWS S3 compatible storage system.
+With a proxy running in front of multiple, shared mode Obstor servers, it is very easy to create a Highly Available, load balanced, AWS S3 compatible storage system.
 
 # Get started
 
-If you're aware of stand-alone ObStor set up, the installation and running remains the same.
+If you're aware of stand-alone Obstor set up, the installation and running remains the same.
 
 ## 1. Prerequisites
 
-Install ObStor - [ObStor Quickstart Guide](https://pgg.net/docs/obstor/minio-quickstart-guide).
+Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).
 
-## 2. Run ObStor on Shared Backend
+## 2. Run Obstor on Shared Backend
 
-To run ObStor shared backend instances, you need to start multiple ObStor servers pointing to the same backend storage. We'll see examples on how to do this in the following sections.
+To run Obstor shared backend instances, you need to start multiple Obstor servers pointing to the same backend storage. We'll see examples on how to do this in the following sections.
 
 *Note*
 
-- All the nodes running shared ObStor need to have same access key and secret key. To achieve this, we export access key and secret key as environment variables on all the nodes before executing ObStor server command.
+- All the nodes running shared Obstor need to have same access key and secret key. To achieve this, we export access key and secret key as environment variables on all the nodes before executing Obstor server command.
 - The drive paths below are for demonstration purposes only, you need to replace these with the actual drive paths/folders.
 
-#### ObStor shared mode on Ubuntu 16.04 LTS.
+#### Obstor shared mode on Ubuntu 16.04 LTS.
 
-You'll need the path to the shared volume, e.g. `/path/to/nfs-volume`. Then run the following commands on all the nodes you'd like to launch ObStor.
+You'll need the path to the shared volume, e.g. `/path/to/nfs-volume`. Then run the following commands on all the nodes you'd like to launch Obstor.
 
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-minio gateway nas /path/to/nfs-volume
+obstor gateway nas /path/to/nfs-volume
 ```
 
-#### ObStor shared mode on Windows 2012 Server
+#### Obstor shared mode on Windows 2012 Server
 
-You'll need the path to the shared volume, e.g. `\\remote-server\smb`. Then run the following commands on all the nodes you'd like to launch ObStor.
+You'll need the path to the shared volume, e.g. `\\remote-server\smb`. Then run the following commands on all the nodes you'd like to launch Obstor.
 
 ```cmd
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
-minio.exe gateway nas \\remote-server\smb\export
+obstor.exe gateway nas \\remote-server\smb\export
 ```
 
 *Windows Tip*
@@ -57,16 +57,16 @@ If a remote volume, e.g. `\\remote-server\smb` is mounted as a drive, e.g. `M:\`
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
 net use m: \\remote-server\smb\export /P:Yes
-minio.exe gateway nas M:\export
+obstor.exe gateway nas M:\export
 ```
 
 ## 3. Test your setup
 
-To test this setup, access the ObStor server via browser or [`mc`](https://pgg.net/docs/obstor/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the ObStor shared backend endpoints.
+To test this setup, access the Obstor server via browser or [`mc`](https://obstor.net/docs/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the Obstor shared backend endpoints.
 
 ## Explore Further
-- [Use `mc` with ObStor Server](https://pgg.net/docs/obstor/minio-client-quickstart-guide)
-- [Use `aws-cli` with ObStor Server](https://pgg.net/docs/obstor/aws-cli-with-minio)
-- [Use `s3cmd` with ObStor Server](https://pgg.net/docs/obstor/s3cmd-with-minio)
-- [Use `minio-go` SDK with ObStor Server](https://pgg.net/docs/obstor/golang-client-quickstart-guide)
-- [The ObStor documentation website](https://pgg.net/docs/obstor)
+- [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
+- [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
+- [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)
+- [Use `minio-go` SDK with Obstor Server](https://obstor.net/docs/golang-client-quickstart-guide)
+- [The Obstor documentation website](https://obstor.net/docs/obstor)

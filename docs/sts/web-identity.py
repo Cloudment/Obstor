@@ -20,12 +20,12 @@ from uuid import uuid4
 import boto3
 import requests
 from botocore.client import Config
-from flask import Flask, request
+from flask import Flask, request, escape
 
 boto3.set_stream_logger('boto3.resources', logging.DEBUG)
 
 authorize_url = "http://localhost:8080/auth/realms/minio/protocol/openid-connect/auth"
-token_url = "http://localhost:8080/auth/realms/minio/protocol/openid-connect/token"
+token_url = "https://localhost:8080/auth/realms/minio/protocol/openid-connect/token"
 
 # callback url specified when the application was defined
 callback_uri = "http://localhost:8000/oauth2/callback"
@@ -69,14 +69,14 @@ def make_authorization_url():
 def callback():
     error = request.args.get('error', '')
     if error:
-        return "Error: " + error
+        return "Error: " + escape(error)
 
     authorization_code = request.args.get('code')
 
     data = {'grant_type': 'authorization_code',
             'code': authorization_code, 'redirect_uri': callback_uri}
     access_token_response = requests.post(
-        token_url, data=data, verify=False, allow_redirects=False, auth=(client_id, client_secret))
+        token_url, data=data, allow_redirects=False, auth=(client_id, client_secret))
 
     print('body: ' + access_token_response.text)
 
@@ -108,4 +108,4 @@ def callback():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=False, port=8000)

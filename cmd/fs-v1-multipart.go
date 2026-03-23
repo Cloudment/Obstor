@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	pathutil "path"
 	"sort"
@@ -34,12 +35,12 @@ import (
 	"github.com/cloudment/obstor/pkg/trie"
 )
 
-// Returns EXPORT/.minio.sys/multipart/SHA256/UPLOADID
+// Returns EXPORT/.obstor.sys/multipart/SHA256/UPLOADID
 func (fs *FSObjects) getUploadIDDir(bucket, object, uploadID string) string {
 	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))), uploadID)
 }
 
-// Returns EXPORT/.minio.sys/multipart/SHA256
+// Returns EXPORT/.obstor.sys/multipart/SHA256
 func (fs *FSObjects) getMultipartSHADir(bucket, object string) string {
 	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))))
 }
@@ -239,7 +240,7 @@ func (fs *FSObjects) NewMultipartUpload(ctx context.Context, bucket, object stri
 		return "", err
 	}
 
-	if err = ioutil.WriteFile(pathJoin(uploadIDDir, fs.metaJSONFile), fsMetaBytes, 0644); err != nil {
+	if err = os.WriteFile(pathJoin(uploadIDDir, fs.metaJSONFile), fsMetaBytes, 0644); err != nil {
 		logger.LogIf(ctx, err)
 		return "", err
 	}
@@ -248,8 +249,8 @@ func (fs *FSObjects) NewMultipartUpload(ctx context.Context, bucket, object stri
 }
 
 // CopyObjectPart - similar to PutObjectPart but reads data from an existing
-// object. Internally incoming data is written to '.minio.sys/tmp' location
-// and safely renamed to '.minio.sys/multipart' for reach parts.
+// object. Internally incoming data is written to '.obstor.sys/tmp' location
+// and safely renamed to '.obstor.sys/multipart' for reach parts.
 func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, dstBucket, dstObject, uploadID string, partID int,
 	startOffset int64, length int64, srcInfo ObjectInfo, srcOpts, dstOpts ObjectOptions) (pi PartInfo, e error) {
 
@@ -275,8 +276,8 @@ func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, d
 
 // PutObjectPart - reads incoming data until EOF for the part file on
 // an ongoing multipart transaction. Internally incoming data is
-// written to '.minio.sys/tmp' location and safely renamed to
-// '.minio.sys/multipart' for reach parts.
+// written to '.obstor.sys/tmp' location and safely renamed to
+// '.obstor.sys/multipart' for reach parts.
 func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, r *PutObjReader, opts ObjectOptions) (pi PartInfo, e error) {
 	if opts.VersionID != "" && opts.VersionID != nullVersionID {
 		return pi, VersionNotFound{
@@ -519,7 +520,7 @@ func (fs *FSObjects) ListObjectParts(ctx context.Context, bucket, object, upload
 	}
 	defer rc.Close()
 
-	fsMetaBytes, err := ioutil.ReadAll(rc)
+	fsMetaBytes, err := io.ReadAll(rc)
 	if err != nil {
 		return result, toObjectErr(err, bucket, object)
 	}

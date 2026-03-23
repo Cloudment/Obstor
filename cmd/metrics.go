@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2020 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +34,16 @@ var (
 	httpRequestsDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "s3_ttfb_seconds",
-			Help:    "Time taken by requests served by current ObStor server instance",
+			Help:    "Time taken by requests served by current Obstor server instance",
 			Buckets: []float64{.05, .1, .25, .5, 1, 2.5, 5, 10},
 		},
 		[]string{"api"},
 	)
 	minioVersionInfo = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "minio",
+			Namespace: "obstor",
 			Name:      "version_info",
-			Help:      "Version of current ObStor server instance",
+			Help:      "Version of current Obstor server instance",
 		},
 		[]string{
 			// current version
@@ -59,7 +60,7 @@ const (
 	cacheNamespace       = "cache"
 	s3Namespace          = "s3"
 	bucketNamespace      = "bucket"
-	minioNamespace       = "minio"
+	minioNamespace       = "obstor"
 	diskNamespace        = "disk"
 	interNodeNamespace   = "internode"
 )
@@ -76,7 +77,7 @@ func init() {
 // to define metric and  help string
 func newMinioCollector() *minioCollector {
 	return &minioCollector{
-		desc: prometheus.NewDesc("minio_stats", "Statistics exposed by ObStor server", nil, nil),
+		desc: prometheus.NewDesc("obstor_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 
@@ -93,7 +94,7 @@ func (c *minioCollector) Describe(ch chan<- *prometheus.Desc) {
 // Collect is called by the Prometheus registry when collecting metrics.
 func (c *minioCollector) Collect(ch chan<- prometheus.Metric) {
 
-	// Expose ObStor's version information
+	// Expose Obstor's version information
 	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	storageMetricsPrometheus(ch)
@@ -111,7 +112,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(minioNamespace, "nodes", "online"),
-			"Total number of ObStor nodes online",
+			"Total number of Obstor nodes online",
 			nil, nil),
 		prometheus.GaugeValue,
 		float64(nodesUp),
@@ -119,14 +120,14 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(minioNamespace, "nodes", "offline"),
-			"Total number of ObStor nodes offline",
+			"Total number of Obstor nodes offline",
 			nil, nil),
 		prometheus.GaugeValue,
 		float64(nodesDown),
 	)
 }
 
-// collects healing specific metrics for ObStor instance in Prometheus specific format
+// collects healing specific metrics for Obstor instance in Prometheus specific format
 // and sends to given channel
 func healingMetricsPrometheus(ch chan<- prometheus.Metric) {
 	if !globalIsErasure {
@@ -185,7 +186,7 @@ func healingMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects gateway specific metrics for ObStor instance in Prometheus specific format
+// collects gateway specific metrics for Obstor instance in Prometheus specific format
 // and sends to given channel
 func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	if !globalIsGateway || (globalGatewayName != S3BackendGateway && globalGatewayName != AzureBackendGateway && globalGatewayName != GCSBackendGateway) {
@@ -206,7 +207,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "bytes_received"),
-			"Total number of bytes received by current ObStor Gateway "+globalGatewayName+" backend",
+			"Total number of bytes received by current Obstor Gateway "+globalGatewayName+" backend",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(m.GetBytesReceived()),
@@ -214,7 +215,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "bytes_sent"),
-			"Total number of bytes sent by current ObStor Gateway to "+globalGatewayName+" backend",
+			"Total number of bytes sent by current Obstor Gateway to "+globalGatewayName+" backend",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(m.GetBytesSent()),
@@ -223,7 +224,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current ObStor Gateway",
+			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Get)),
@@ -232,7 +233,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current ObStor Gateway",
+			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Head)),
@@ -241,7 +242,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current ObStor Gateway",
+			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Put)),
@@ -250,7 +251,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current ObStor Gateway",
+			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Post)),
@@ -258,7 +259,7 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 }
 
-// collects cache metrics for ObStor server in Prometheus specific format
+// collects cache metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	cacheObjLayer := newCachedObjectLayerFn()
@@ -270,7 +271,7 @@ func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(cacheNamespace, "hits", "total"),
-			"Total number of disk cache hits in current ObStor instance",
+			"Total number of disk cache hits in current Obstor instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(cacheObjLayer.CacheStats().getHits()),
@@ -278,7 +279,7 @@ func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(cacheNamespace, "misses", "total"),
-			"Total number of disk cache misses in current ObStor instance",
+			"Total number of disk cache misses in current Obstor instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(cacheObjLayer.CacheStats().getMisses()),
@@ -286,7 +287,7 @@ func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(cacheNamespace, "data", "served"),
-			"Total number of bytes served from cache of current ObStor instance",
+			"Total number of bytes served from cache of current Obstor instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(cacheObjLayer.CacheStats().getBytesServed()),
@@ -334,7 +335,7 @@ func cacheMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects http metrics for ObStor server in Prometheus specific format
+// collects http metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 	httpStats := globalHTTPStats.toServerHTTPStats()
@@ -343,7 +344,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(
 			prometheus.NewDesc(
 				prometheus.BuildFQName(s3Namespace, "requests", "current"),
-				"Total number of running s3 requests in current ObStor server instance",
+				"Total number of running s3 requests in current Obstor server instance",
 				[]string{"api"}, nil),
 			prometheus.CounterValue,
 			float64(value),
@@ -355,7 +356,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(
 			prometheus.NewDesc(
 				prometheus.BuildFQName(s3Namespace, "requests", "total"),
-				"Total number of s3 requests in current ObStor server instance",
+				"Total number of s3 requests in current Obstor server instance",
 				[]string{"api"}, nil),
 			prometheus.CounterValue,
 			float64(value),
@@ -367,7 +368,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(
 			prometheus.NewDesc(
 				prometheus.BuildFQName(s3Namespace, "errors", "total"),
-				"Total number of s3 errors in current ObStor server instance",
+				"Total number of s3 errors in current Obstor server instance",
 				[]string{"api"}, nil),
 			prometheus.CounterValue,
 			float64(value),
@@ -379,7 +380,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(
 			prometheus.NewDesc(
 				prometheus.BuildFQName(s3Namespace, "canceled", "total"),
-				"Total number of client canceled s3 request in current ObStor server instance",
+				"Total number of client canceled s3 request in current Obstor server instance",
 				[]string{"api"}, nil),
 			prometheus.CounterValue,
 			float64(value),
@@ -388,7 +389,7 @@ func httpMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects network metrics for ObStor server in Prometheus specific format
+// collects network metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	connStats := globalConnStats.toServerConnStats()
@@ -397,7 +398,7 @@ func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(interNodeNamespace, "tx", "bytes_total"),
-			"Total number of bytes sent to the other peer nodes by current ObStor server instance",
+			"Total number of bytes sent to the other peer nodes by current Obstor server instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(connStats.TotalOutputBytes),
@@ -406,7 +407,7 @@ func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(interNodeNamespace, "rx", "bytes_total"),
-			"Total number of internode bytes received by current ObStor server instance",
+			"Total number of internode bytes received by current Obstor server instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(connStats.TotalInputBytes),
@@ -416,7 +417,7 @@ func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(s3Namespace, "tx", "bytes_total"),
-			"Total number of s3 bytes sent by current ObStor server instance",
+			"Total number of s3 bytes sent by current Obstor server instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(connStats.S3OutputBytes),
@@ -425,7 +426,7 @@ func networkMetricsPrometheus(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(s3Namespace, "rx", "bytes_total"),
-			"Total number of s3 bytes received by current ObStor server instance",
+			"Total number of s3 bytes received by current Obstor server instance",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(connStats.S3InputBytes),
@@ -605,7 +606,7 @@ func bucketUsageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// collects storage metrics for ObStor server in Prometheus specific format
+// collects storage metrics for Obstor server in Prometheus specific format
 // and sends to given channel
 func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	objLayer := newObjectLayerFn()
@@ -665,21 +666,21 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 		GetTotalUsableCapacityFree(server.Disks, s),
 	)
 
-	// ObStor Offline Disks per node
+	// Obstor Offline Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(minioNamespace, "disks", "offline"),
-			"Total number of offline disks in current ObStor server instance",
+			"Total number of offline disks in current Obstor server instance",
 			nil, nil),
 		prometheus.GaugeValue,
 		float64(offlineDisks.Sum()),
 	)
 
-	// ObStor Total Disks per node
+	// Obstor Total Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
 			prometheus.BuildFQName(minioNamespace, "disks", "total"),
-			"Total number of disks for current ObStor server instance",
+			"Total number of disks for current Obstor server instance",
 			nil, nil),
 		prometheus.GaugeValue,
 		float64(totalDisks.Sum()),

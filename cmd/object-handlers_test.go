@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2016, 2017, 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,6 @@ import (
 	"runtime"
 	"strings"
 
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -36,10 +36,10 @@ import (
 	"sync"
 	"testing"
 
-	humanize "github.com/dustin/go-humanize"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
 	ioutilx "github.com/cloudment/obstor/pkg/ioutil"
+	humanize "github.com/dustin/go-humanize"
 )
 
 // Type to capture different modifications to API request to simulate failure cases.
@@ -173,7 +173,7 @@ func testAPIHeadObjectHandler(obj ObjectLayer, instanceType, bucketName string, 
 	anonReq, err := newTestRequest(http.MethodHead, getHeadObjectURL("", bucketName, objectName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -193,7 +193,7 @@ func testAPIHeadObjectHandler(obj ObjectLayer, instanceType, bucketName string, 
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -538,7 +538,7 @@ func testAPIGetObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 			t.Fatalf("Case %d: Expected the response status to be `%d`, but instead found `%d`", i+1, testCase.expectedRespStatus, rec.Code)
 		}
 		// read the response body.
-		actualContent, err := ioutil.ReadAll(rec.Body)
+		actualContent, err := io.ReadAll(rec.Body)
 		if err != nil {
 			t.Fatalf("Test %d: %s: Failed reading response body: <ERROR> %v", i+1, instanceType, err)
 		}
@@ -587,7 +587,7 @@ func testAPIGetObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 		}
 
 		// read the response body.
-		actualContent, err = ioutil.ReadAll(recV2.Body)
+		actualContent, err = io.ReadAll(recV2.Body)
 		if err != nil {
 			t.Fatalf("Test %d: %s: Failed to read response body: <ERROR> %v", i+1, instanceType, err)
 		}
@@ -618,7 +618,7 @@ func testAPIGetObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 	anonReq, err := newTestRequest(http.MethodGet, getGetObjectURL("", bucketName, objectName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -638,7 +638,7 @@ func testAPIGetObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -748,7 +748,7 @@ func testAPIGetObjectWithMPHandler(obj ObjectLayer, instanceType, bucketName str
 		// Check response code (we make only valid requests in
 		// this test)
 		if rec.Code != http.StatusPartialContent && rec.Code != http.StatusOK {
-			bd, err1 := ioutil.ReadAll(rec.Body)
+			bd, err1 := io.ReadAll(rec.Body)
 			t.Fatalf("%s Object: %s Case %d ByteRange: %s: Got response status `%d` and body: %s,%v",
 				instanceType, object, i+1, byteRange, rec.Code, string(bd), err1)
 		}
@@ -835,7 +835,7 @@ func testAPIGetObjectWithMPHandler(obj ObjectLayer, instanceType, bucketName str
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -933,7 +933,7 @@ func testAPIGetObjectWithPartNumberHandler(obj ObjectLayer, instanceType, bucket
 
 		// Check response code (we make only valid requests in this test)
 		if rec.Code != http.StatusPartialContent && rec.Code != http.StatusOK {
-			bd, err1 := ioutil.ReadAll(rec.Body)
+			bd, err1 := io.ReadAll(rec.Body)
 			t.Fatalf("%s Object: %s ObjectIndex %d PartNumber: %d: Got response status `%d` and body: %s,%v",
 				instanceType, object, oindex, partNumber, rec.Code, string(bd), err1)
 		}
@@ -1257,7 +1257,7 @@ func testAPIPutObjectStreamSigV4Handler(obj ObjectLayer, instanceType, bucketNam
 				i+1, instanceType, testCase.expectedRespStatus, rec.Code, testCase.fault)
 		}
 		// read the response body.
-		actualContent, err := ioutil.ReadAll(rec.Body)
+		actualContent, err := io.ReadAll(rec.Body)
 		if err != nil {
 			t.Fatalf("Test %d: %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
 		}
@@ -1524,7 +1524,7 @@ func testAPIPutObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 	anonReq, err := newTestRequest(http.MethodPut, getPutObjectURL("", bucketName, objectName),
 		int64(len("hello")), bytes.NewReader([]byte("hello")))
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -1544,7 +1544,7 @@ func testAPIPutObjectHandler(obj ObjectLayer, instanceType, bucketName string, a
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -1606,7 +1606,7 @@ func testAPICopyObjectPartHandlerSanity(obj ObjectLayer, instanceType, bucketNam
 	uploadID, err := obj.NewMultipartUpload(context.Background(), bucketName, testObject, opts)
 	if err != nil {
 		// Failed to create NewMultipartUpload, abort.
-		t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+		t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 	}
 
 	a := 0
@@ -1722,7 +1722,7 @@ func testAPICopyObjectPartHandler(obj ObjectLayer, instanceType, bucketName stri
 	uploadID, err := obj.NewMultipartUpload(context.Background(), bucketName, testObject, opts)
 	if err != nil {
 		// Failed to create NewMultipartUpload, abort.
-		t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+		t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 	}
 
 	// test cases with inputs and expected result for Copy Object.
@@ -1973,7 +1973,7 @@ func testAPICopyObjectPartHandler(obj ObjectLayer, instanceType, bucketName stri
 	nilReq, err := newTestSignedRequestV4(http.MethodPut, getCopyObjectPartURL("", nilBucket, nilObject, "0", "0"),
 		0, bytes.NewReader([]byte("testNilObjLayer")), "", "", nil)
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 
 	// Below is how CopyObjectPartHandler is registered.
@@ -2439,7 +2439,7 @@ func testAPICopyObjectHandler(obj ObjectLayer, instanceType, bucketName string, 
 	// Its necessary to set the "X-Amz-Copy-Source" header for the request to be accepted by the handler.
 	nilReq.Header.Set("X-Amz-Copy-Source", url.QueryEscape(SlashSeparator+nilBucket+SlashSeparator+nilObject))
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 
 	// execute the object layer set to `nil` test.
@@ -2566,7 +2566,7 @@ func testAPINewMultipartHandler(obj ObjectLayer, instanceType, bucketName string
 	anonReq, err := newTestRequest(http.MethodPost, getNewMultipartURL("", bucketName, objectName), 0, nil)
 
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -2586,7 +2586,7 @@ func testAPINewMultipartHandler(obj ObjectLayer, instanceType, bucketName string
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -2630,7 +2630,7 @@ func testAPINewMultipartHandlerParallel(obj ObjectLayer, instanceType, bucketNam
 			apiRouter.ServeHTTP(rec, req)
 			// Assert the response code with the expected status.
 			if rec.Code != http.StatusOK {
-				t.Errorf("ObStor %s:  Expected the response status to be `%d`, but instead found `%d`", instanceType, http.StatusOK, rec.Code)
+				t.Errorf("Obstor %s:  Expected the response status to be `%d`, but instead found `%d`", instanceType, http.StatusOK, rec.Code)
 				return
 			}
 			// decode the response body.
@@ -2639,7 +2639,7 @@ func testAPINewMultipartHandlerParallel(obj ObjectLayer, instanceType, bucketNam
 
 			err = decoder.Decode(multipartResponse)
 			if err != nil {
-				t.Errorf("ObStor %s: Error decoding the recorded response Body", instanceType)
+				t.Errorf("Obstor %s: Error decoding the recorded response Body", instanceType)
 				return
 			}
 			// push the obtained upload ID from the response into the array.
@@ -2684,7 +2684,7 @@ func testAPICompleteMultipartHandler(obj ObjectLayer, instanceType, bucketName s
 		uploadID, err = obj.NewMultipartUpload(context.Background(), bucketName, objectName, opts)
 		if err != nil {
 			// Failed to create NewMultipartUpload, abort.
-			t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+			t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 		}
 
 		uploadIDs = append(uploadIDs, uploadID)
@@ -2955,19 +2955,19 @@ func testAPICompleteMultipartHandler(obj ObjectLayer, instanceType, bucketName s
 		apiRouter.ServeHTTP(rec, req)
 		// Assert the response code with the expected status.
 		if rec.Code != testCase.expectedRespStatus {
-			t.Errorf("Case %d: ObStor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
+			t.Errorf("Case %d: Obstor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
 		}
 
 		// read the response body.
-		actualContent, err = ioutil.ReadAll(rec.Body)
+		actualContent, err = io.ReadAll(rec.Body)
 		if err != nil {
-			t.Fatalf("Test %d : ObStor %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
+			t.Fatalf("Test %d : Obstor %s: Failed parsing response body: <ERROR> %v", i+1, instanceType, err)
 		}
 
 		if rec.Code == http.StatusOK {
 			// Verify whether the bucket obtained object is same as the one created.
 			if !bytes.Equal(testCase.expectedContent, actualContent) {
-				t.Errorf("Test %d : ObStor %s: CompleteMultipart response content differs from expected value. got %s, expecte %s", i+1, instanceType,
+				t.Errorf("Test %d : Obstor %s: CompleteMultipart response content differs from expected value. got %s, expecte %s", i+1, instanceType,
 					string(actualContent), string(testCase.expectedContent))
 			}
 			continue
@@ -2975,15 +2975,15 @@ func testAPICompleteMultipartHandler(obj ObjectLayer, instanceType, bucketName s
 
 		actualError := &APIErrorResponse{}
 		if err = xml.Unmarshal(actualContent, actualError); err != nil {
-			t.Errorf("ObStor %s: error response failed to parse error XML", instanceType)
+			t.Errorf("Obstor %s: error response failed to parse error XML", instanceType)
 		}
 
 		if actualError.BucketName != bucketName {
-			t.Errorf("ObStor %s: error response bucket name differs from expected value", instanceType)
+			t.Errorf("Obstor %s: error response bucket name differs from expected value", instanceType)
 		}
 
 		if actualError.Key != objectName {
-			t.Errorf("ObStor %s: error response object name (%s) differs from expected value (%s)", instanceType, actualError.Key, objectName)
+			t.Errorf("Obstor %s: error response object name (%s) differs from expected value (%s)", instanceType, actualError.Key, objectName)
 		}
 	}
 
@@ -3002,7 +3002,7 @@ func testAPICompleteMultipartHandler(obj ObjectLayer, instanceType, bucketName s
 	anonReq, err := newTestRequest(http.MethodPost, getCompleteMultipartUploadURL("", bucketName, objectName, uploadIDs[1]),
 		int64(len(completeBytes)), bytes.NewReader(completeBytes))
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -3024,7 +3024,7 @@ func testAPICompleteMultipartHandler(obj ObjectLayer, instanceType, bucketName s
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -3055,7 +3055,7 @@ func testAPIAbortMultipartHandler(obj ObjectLayer, instanceType, bucketName stri
 		uploadID, err = obj.NewMultipartUpload(context.Background(), bucketName, objectName, opts)
 		if err != nil {
 			// Failed to create NewMultipartUpload, abort.
-			t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+			t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 		}
 
 		uploadIDs = append(uploadIDs, uploadID)
@@ -3157,7 +3157,7 @@ func testAPIAbortMultipartHandler(obj ObjectLayer, instanceType, bucketName stri
 		apiRouter.ServeHTTP(rec, req)
 		// Assert the response code with the expected status.
 		if rec.Code != testCase.expectedRespStatus {
-			t.Errorf("Case %d: ObStor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
+			t.Errorf("Case %d: Obstor %s: Expected the response status to be `%d`, but instead found `%d`", i+1, instanceType, testCase.expectedRespStatus, rec.Code)
 		}
 	}
 
@@ -3165,7 +3165,7 @@ func testAPIAbortMultipartHandler(obj ObjectLayer, instanceType, bucketName stri
 	anonReq, err := newTestRequest(http.MethodDelete, getAbortMultipartUploadURL("", bucketName, objectName, uploadIDs[1]),
 		0, nil)
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, objectName, err)
 	}
 
@@ -3187,7 +3187,7 @@ func testAPIAbortMultipartHandler(obj ObjectLayer, instanceType, bucketName stri
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -3299,7 +3299,7 @@ func testAPIDeleteObjectHandler(obj ObjectLayer, instanceType, bucketName string
 		apiRouter.ServeHTTP(rec, req)
 		// Assert the response code with the expected status.
 		if rec.Code != testCase.expectedRespStatus {
-			t.Fatalf("ObStor %s: Case %d: Expected the response status to be `%d`, but instead found `%d`", instanceType, i+1, testCase.expectedRespStatus, rec.Code)
+			t.Fatalf("Obstor %s: Case %d: Expected the response status to be `%d`, but instead found `%d`", instanceType, i+1, testCase.expectedRespStatus, rec.Code)
 		}
 
 		// Verify response of the V2 signed HTTP request.
@@ -3318,7 +3318,7 @@ func testAPIDeleteObjectHandler(obj ObjectLayer, instanceType, bucketName string
 		apiRouter.ServeHTTP(recV2, reqV2)
 		// Assert the response code with the expected status.
 		if recV2.Code != testCase.expectedRespStatus {
-			t.Errorf("Case %d: ObStor %s: Expected the response status to be `%d`, but instead found `%d`", i+1,
+			t.Errorf("Case %d: Obstor %s: Expected the response status to be `%d`, but instead found `%d`", i+1,
 				instanceType, testCase.expectedRespStatus, recV2.Code)
 		}
 
@@ -3327,7 +3327,7 @@ func testAPIDeleteObjectHandler(obj ObjectLayer, instanceType, bucketName string
 	// Test for Anonymous/unsigned http request.
 	anonReq, err := newTestRequest(http.MethodDelete, getDeleteObjectURL("", bucketName, anonObjectName), 0, nil)
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, anonObjectName, err)
 	}
 
@@ -3347,7 +3347,7 @@ func testAPIDeleteObjectHandler(obj ObjectLayer, instanceType, bucketName string
 		0, nil, "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create HTTP request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -3375,7 +3375,7 @@ func testAPIPutObjectPartHandlerStreaming(obj ObjectLayer, instanceType, bucketN
 
 	// Get uploadID of the mulitpart upload initiated.
 	var mpartResp InitiateMultipartUploadResponse
-	mpartRespBytes, err := ioutil.ReadAll(rec.Result().Body)
+	mpartRespBytes, err := io.ReadAll(rec.Result().Body)
 	if err != nil {
 		t.Fatalf("[%s] Failed to read NewMultipartUpload response <ERROR> %v", instanceType, err)
 
@@ -3417,7 +3417,7 @@ func testAPIPutObjectPartHandlerStreaming(obj ObjectLayer, instanceType, bucketN
 		apiRouter.ServeHTTP(rec, req)
 
 		if test.expectedErr != noAPIErr {
-			errBytes, err := ioutil.ReadAll(rec.Result().Body)
+			errBytes, err := io.ReadAll(rec.Result().Body)
 			if err != nil {
 				t.Fatalf("Test %d %s Failed to read error response from upload part request %s/%s: <ERROR> %v",
 					i+1, instanceType, bucketName, testObject, err)
@@ -3443,7 +3443,8 @@ func testAPIPutObjectPartHandlerStreaming(obj ObjectLayer, instanceType, bucketN
 }
 
 // TestAPIPutObjectPartHandler - Tests validate the response of PutObjectPart HTTP handler
-//  for variety of inputs.
+//
+//	for variety of inputs.
 func TestAPIPutObjectPartHandler(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecExtendedObjectLayerAPITest(t, testAPIPutObjectPartHandler, []string{"PutObjectPart"})
@@ -3461,7 +3462,7 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 	uploadID, err := obj.NewMultipartUpload(context.Background(), bucketName, testObject, opts)
 	if err != nil {
 		// Failed to create NewMultipartUpload, abort.
-		t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+		t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 	}
 
 	uploadIDCopy := uploadID
@@ -3621,7 +3622,7 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 
 	for i, test := range testCases {
 		// Using sub-tests introduced in Go 1.7.
-		t.Run(fmt.Sprintf("ObStor %s : Test case %d.", instanceType, i+1), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Obstor %s : Test case %d.", instanceType, i+1), func(t *testing.T) {
 
 			var reqV4, reqV2 *http.Request
 			var recV4, recV2 *httptest.ResponseRecorder
@@ -3701,7 +3702,7 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 				if test.expectedAPIError != noAPIErr {
 					var errBytes []byte
 					// read the response body.
-					errBytes, err = ioutil.ReadAll(rec.Result().Body)
+					errBytes, err = io.ReadAll(rec.Result().Body)
 					if err != nil {
 						t.Fatalf("%s, Failed to read error response from upload part request \"%s\"/\"%s\": <ERROR> %v.",
 							reqType, bucketName, test.objectName, err)
@@ -3731,7 +3732,7 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 	anonReq, err := newTestRequest(http.MethodPut, getPutObjectPartURL("", bucketName, testObject, uploadIDCopy, "1"),
 		int64(len("hello")), bytes.NewReader([]byte("hello")))
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, testObject, err)
 	}
 
@@ -3751,7 +3752,7 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 		0, bytes.NewReader([]byte("testNilObjLayer")), "", "", nil)
 
 	if err != nil {
-		t.Errorf("ObStor %s: Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s: Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` manages the operation.
@@ -3759,7 +3760,8 @@ func testAPIPutObjectPartHandler(obj ObjectLayer, instanceType, bucketName strin
 }
 
 // TestAPIListObjectPartsHandlerPreSign - Tests validate the response of ListObjectParts HTTP handler
-//  when signature type of the HTTP request is `Presigned`.
+//
+//	when signature type of the HTTP request is `Presigned`.
 func TestAPIListObjectPartsHandlerPreSign(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecObjectLayerAPITest(t, testAPIListObjectPartsHandlerPreSign,
@@ -3780,7 +3782,7 @@ func testAPIListObjectPartsHandlerPreSign(obj ObjectLayer, instanceType, bucketN
 
 	// Get uploadID of the mulitpart upload initiated.
 	var mpartResp InitiateMultipartUploadResponse
-	mpartRespBytes, err := ioutil.ReadAll(rec.Result().Body)
+	mpartRespBytes, err := io.ReadAll(rec.Result().Body)
 	if err != nil {
 		t.Fatalf("[%s] Failed to read NewMultipartUpload response <ERROR> %v", instanceType, err)
 
@@ -3848,7 +3850,8 @@ func testAPIListObjectPartsHandlerPreSign(obj ObjectLayer, instanceType, bucketN
 }
 
 // TestAPIListObjectPartsHandler - Tests validate the response of ListObjectParts HTTP handler
-//  for variety of success/failure cases.
+//
+//	for variety of success/failure cases.
 func TestAPIListObjectPartsHandler(t *testing.T) {
 	defer DetectTestLeak(t)()
 	ExecExtendedObjectLayerAPITest(t, testAPIListObjectPartsHandler, []string{"ListObjectParts"})
@@ -3864,7 +3867,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 	uploadID, err := obj.NewMultipartUpload(context.Background(), bucketName, testObject, opts)
 	if err != nil {
 		// Failed to create NewMultipartUpload, abort.
-		t.Fatalf("ObStor %s : <ERROR>  %s", instanceType, err)
+		t.Fatalf("Obstor %s : <ERROR>  %s", instanceType, err)
 	}
 
 	uploadIDCopy := uploadID
@@ -3872,7 +3875,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 	// create an object Part, will be used to test list object parts.
 	_, err = obj.PutObjectPart(context.Background(), bucketName, testObject, uploadID, 1, mustGetPutObjReader(t, bytes.NewReader([]byte("hello")), int64(len("hello")), "5d41402abc4b2a76b9719d911017c592", ""), opts)
 	if err != nil {
-		t.Fatalf("ObStor %s : %s.", instanceType, err)
+		t.Fatalf("Obstor %s : %s.", instanceType, err)
 	}
 
 	// expected error types for invalid inputs to ListObjectParts handler.
@@ -3941,7 +3944,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 	for i, test := range testCases {
 		var reqV4, reqV2 *http.Request
 		// Using sub-tests introduced in Go 1.7.
-		t.Run(fmt.Sprintf("ObStor %s: Test case %d failed.", instanceType, i+1), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Obstor %s: Test case %d failed.", instanceType, i+1), func(t *testing.T) {
 			recV2 := httptest.NewRecorder()
 			recV4 := httptest.NewRecorder()
 
@@ -4004,7 +4007,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 
 					var errBytes []byte
 					// read the response body.
-					errBytes, err = ioutil.ReadAll(rec.Result().Body)
+					errBytes, err = io.ReadAll(rec.Result().Body)
 					if err != nil {
 						t.Fatalf("%s,Failed to read error response list object parts request %s/%s: <ERROR> %v", reqType, bucketName, testObject, err)
 					}
@@ -4034,7 +4037,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 	anonReq, err := newTestRequest(http.MethodGet,
 		getListMultipartURLWithParams("", bucketName, testObject, uploadIDCopy, "", "", ""), 0, nil)
 	if err != nil {
-		t.Fatalf("ObStor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
+		t.Fatalf("Obstor %s: Failed to create an anonymous request for %s/%s: <ERROR> %v",
 			instanceType, bucketName, testObject, err)
 	}
 
@@ -4054,7 +4057,7 @@ func testAPIListObjectPartsHandler(obj ObjectLayer, instanceType, bucketName str
 		getListMultipartURLWithParams("", nilBucket, nilObject, "dummy-uploadID", "0", "0", ""),
 		0, nil, "", "", nil)
 	if err != nil {
-		t.Errorf("ObStor %s:Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
+		t.Errorf("Obstor %s:Failed to create http request for testing the response when object Layer is set to `nil`.", instanceType)
 	}
 	// execute the object layer set to `nil` test.
 	// `ExecObjectLayerAPINilTest` sets the Object Layer to `nil` and calls the handler.

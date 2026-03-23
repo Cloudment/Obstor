@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018-2021 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +35,9 @@ import (
 // derived from password using the Argon2id PBKDF.
 //
 // The returned ciphertext data consists of:
-//    salt | AEAD ID | nonce | encrypted data
-//     32      1         8      ~ len(data)
+//
+//	salt | AEAD ID | nonce | encrypted data
+//	 32      1         8      ~ len(data)
 func EncryptData(password string, data []byte) ([]byte, error) {
 	salt := sioutil.MustRandom(32)
 

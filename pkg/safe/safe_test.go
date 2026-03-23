@@ -1,5 +1,6 @@
 /*
  * MinIO Client (C) 2015, 2016, 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 package safe
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -28,7 +28,7 @@ type MySuite struct {
 }
 
 func (s *MySuite) SetUpSuite(t *testing.T) {
-	root, err := ioutil.TempDir(os.TempDir(), "safe_test.go.")
+	root, err := os.MkdirTemp(os.TempDir(), "safe_test.go.")
 	if err != nil {
 		t.Fatal(err)
 	}

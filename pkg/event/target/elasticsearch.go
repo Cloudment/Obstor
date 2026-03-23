@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +18,12 @@
 package target
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -30,7 +34,8 @@ import (
 	"github.com/cloudment/obstor/pkg/event"
 	xnet "github.com/cloudment/obstor/pkg/net"
 
-	"github.com/olivere/elastic/v7"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
 // Elastic constants
@@ -95,7 +100,7 @@ func (a ElasticsearchArgs) Validate() error {
 type ElasticsearchTarget struct {
 	id         event.TargetID
 	args       ElasticsearchArgs
-	client     *elastic.Client
+	client     *elasticsearch.Client
 	store      Store
 	loggerOnce func(ctx context.Context, err error, id interface{}, errKind ...interface{})
 }
@@ -122,14 +127,32 @@ func (target *ElasticsearchTarget) IsActive() (bool, error) {
 		}
 		target.client = client
 	}
-	_, code, err := target.client.Ping(target.args.URL.String()).HttpHeadOnly(true).Do(ctx)
+	res, err := target.client.Ping(target.client.Ping.WithContext(ctx))
 	if err != nil {
-		if elastic.IsConnErr(err) || elastic.IsContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
+		if isConnErr(err) || isContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
 			return false, errNotConnected
 		}
 		return false, err
 	}
-	return !(code >= http.StatusBadRequest), nil
+	defer res.Body.Close()
+	return res.StatusCode < http.StatusBadRequest, nil
+}
+
+// isConnErr returns true if the error is a network connection error.
+func isConnErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	var netErr net.Error
+	return errors.As(err, &netErr)
+}
+
+// isContextErr returns true if the error is a context cancellation or deadline exceeded error.
+func isContextErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	return errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)
 }
 
 // Save - saves the events to the store if queuestore is configured, which will be replayed when the elasticsearch connection is active.
@@ -138,7 +161,7 @@ func (target *ElasticsearchTarget) Save(eventData event.Event) error {
 		return target.store.Put(eventData)
 	}
 	err := target.send(eventData)
-	if elastic.IsConnErr(err) || elastic.IsContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
+	if isConnErr(err) || isContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
 		return errNotConnected
 	}
 	return err
@@ -150,25 +173,76 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 	var key string
 
 	exists := func() (bool, error) {
-		return target.client.Exists().Index(target.args.Index).Type("event").Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
+		req := esapi.ExistsRequest{
+			Index:      target.args.Index,
+			DocumentID: key,
+		}
+		res, err := req.Do(context.Background(), target.client)
+		if err != nil {
+			return false, err
+		}
+		defer res.Body.Close()
+		return !res.IsError(), nil
 	}
 
 	remove := func() error {
-		exists, err := exists()
-		if err == nil && exists {
-			_, err = target.client.Delete().Index(target.args.Index).Type("event").Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
+		docExists, err := exists()
+		if err == nil && docExists {
+			req := esapi.DeleteRequest{
+				Index:      target.args.Index,
+				DocumentID: key,
+			}
+			res, err := req.Do(context.Background(), target.client)
+			if err != nil {
+				return err
+			}
+			defer res.Body.Close()
+			if res.IsError() {
+				return fmt.Errorf("delete failed: %s", res.String())
+			}
 		}
 		return err
 	}
 
 	update := func() error {
-		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Id(key).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
-		return err
+		data, err := json.Marshal(map[string]interface{}{"Records": []event.Event{eventData}})
+		if err != nil {
+			return err
+		}
+		req := esapi.IndexRequest{
+			Index:      target.args.Index,
+			DocumentID: key,
+			Body:       bytes.NewReader(data),
+		}
+		res, err := req.Do(context.Background(), target.client)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
+		if res.IsError() {
+			return fmt.Errorf("index failed: %s", res.String())
+		}
+		return nil
 	}
 
 	add := func() error {
-		_, err := target.client.Index().Index(target.args.Index).Type("event").BodyJson(map[string]interface{}{"Records": []event.Event{eventData}}).Do(context.Background()) //nolint:staticcheck // SA1019: elasticsearch Types being removed, migration deferred
-		return err
+		data, err := json.Marshal(map[string]interface{}{"Records": []event.Event{eventData}})
+		if err != nil {
+			return err
+		}
+		req := esapi.IndexRequest{
+			Index: target.args.Index,
+			Body:  bytes.NewReader(data),
+		}
+		res, err := req.Do(context.Background(), target.client)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
+		if res.IsError() {
+			return fmt.Errorf("index failed: %s", res.String())
+		}
+		return nil
 	}
 
 	if target.args.Format == event.NamespaceFormat {
@@ -214,7 +288,7 @@ func (target *ElasticsearchTarget) Send(eventKey string) error {
 	}
 
 	if err := target.send(eventData); err != nil {
-		if elastic.IsConnErr(err) || elastic.IsContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
+		if isConnErr(err) || isContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
 			return errNotConnected
 		}
 		return err
@@ -226,52 +300,59 @@ func (target *ElasticsearchTarget) Send(eventKey string) error {
 
 // Close - does nothing and available for interface compatibility.
 func (target *ElasticsearchTarget) Close() error {
-	if target.client != nil {
-		// Stops the background processes that the client is running.
-		target.client.Stop()
-	}
 	return nil
 }
 
 // createIndex - creates the index if it does not exist.
-func createIndex(client *elastic.Client, args ElasticsearchArgs) error {
-	exists, err := client.IndexExists(args.Index).Do(context.Background())
+func createIndex(client *elasticsearch.Client, args ElasticsearchArgs) error {
+	res, err := client.Indices.Exists([]string{args.Index})
 	if err != nil {
 		return err
 	}
-	if !exists {
-		var createIndex *elastic.IndicesCreateResult
-		if createIndex, err = client.CreateIndex(args.Index).Do(context.Background()); err != nil {
+	defer res.Body.Close()
+	if res.StatusCode == http.StatusNotFound {
+		res, err = client.Indices.Create(args.Index)
+		if err != nil {
 			return err
 		}
-
-		if !createIndex.Acknowledged {
-			return fmt.Errorf("index %v not created", args.Index)
+		defer res.Body.Close()
+		if res.IsError() {
+			return fmt.Errorf("index %v not created: %s", args.Index, res.String())
 		}
 	}
 	return nil
 }
 
-// newClient - creates a new elastic client with args provided.
-func newClient(args ElasticsearchArgs) (*elastic.Client, error) {
-	// Client options
-	options := []elastic.ClientOptionFunc{elastic.SetURL(args.URL.String()),
-		elastic.SetMaxRetries(10), //nolint:staticcheck // SA1019: elastic.SetMaxRetries deprecated, Retry migration deferred
-		elastic.SetSniff(false),
-		elastic.SetHttpClient(&http.Client{Transport: args.Transport})}
-	// Set basic auth
-	if args.Username != "" && args.Password != "" {
-		options = append(options, elastic.SetBasicAuth(args.Username, args.Password))
+// newClient - creates a new elasticsearch client with args provided.
+func newClient(args ElasticsearchArgs) (*elasticsearch.Client, error) {
+	cfg := elasticsearch.Config{
+		Addresses:  []string{args.URL.String()},
+		Transport:  args.Transport,
+		MaxRetries: 10,
 	}
-	// Create a client
-	client, err := elastic.NewClient(options...)
+	if args.Username != "" && args.Password != "" {
+		cfg.Username = args.Username
+		cfg.Password = args.Password
+	}
+
+	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {
-		// https://github.com/olivere/elastic/wiki/Connection-Errors
-		if elastic.IsConnErr(err) || elastic.IsContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
+		if isConnErr(err) || isContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
 			return nil, errNotConnected
 		}
 		return nil, err
 	}
+
+	// Ping to verify connection
+	res, err := client.Ping()
+	if err != nil {
+		if isConnErr(err) || isContextErr(err) || xnet.IsNetworkOrHostDown(err, false) {
+			return nil, errNotConnected
+		}
+		return nil, err
+	}
+	res.Body.Close()
+
 	if err = createIndex(client, args); err != nil {
 		return nil, err
 	}

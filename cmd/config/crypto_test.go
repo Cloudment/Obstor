@@ -1,4 +1,5 @@
 // MinIO Cloud Storage, (C) 2021 MinIO, Inc.
+// PGG Obstor, (C) 2021-2026 PGG, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/cloudment/obstor/pkg/kms"
@@ -61,7 +61,7 @@ func TestEncryptDecrypt(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Test %d: failed to encrypt stream: %v", i, err)
 		}
-		data, err := ioutil.ReadAll(ciphertext)
+		data, err := io.ReadAll(ciphertext)
 		if err != nil {
 			t.Fatalf("Test %d: failed to encrypt stream: %v", i, err)
 		}
@@ -70,7 +70,7 @@ func TestEncryptDecrypt(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Test %d: failed to decrypt stream: %v", i, err)
 		}
-		data, err = ioutil.ReadAll(plaintext)
+		data, err = io.ReadAll(plaintext)
 		if err != nil {
 			t.Fatalf("Test %d: failed to decrypt stream: %v", i, err)
 		}
@@ -103,7 +103,7 @@ func BenchmarkEncrypt(b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			if _, err = io.Copy(ioutil.Discard, ciphertext); err != nil {
+			if _, err = io.Copy(io.Discard, ciphertext); err != nil {
 				b.Fatal(err)
 			}
 			plaintext.Reset(data)

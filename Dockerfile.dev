@@ -1,11 +1,13 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
+FROM alpine:3.23
 
 ARG TARGETARCH
 
 LABEL maintainer="PGG Inc <oss@pgg.net>"
 
+RUN apk add --no-cache curl ca-certificates su-exec
+
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/
-COPY minio /usr/bin/
+COPY obstor /usr/bin/
 
 ENV OBSTOR_UPDATE=off \
     OBSTOR_ACCESS_KEY_FILE=access_key \
@@ -14,10 +16,7 @@ ENV OBSTOR_UPDATE=off \
     OBSTOR_ROOT_PASSWORD_FILE=secret_key \
     OBSTOR_KMS_SECRET_KEY_FILE=kms_master_key
 
-RUN microdnf update --nodocs
-RUN microdnf install curl ca-certificates shadow-utils util-linux --nodocs
-RUN microdnf clean all && \
-    chmod +x /usr/bin/minio  && \
+RUN chmod +x /usr/bin/obstor && \
     chmod +x /usr/bin/docker-entrypoint.sh
 
 EXPOSE 9000

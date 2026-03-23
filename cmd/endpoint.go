@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017-2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,8 +119,8 @@ func NewEndpoint(arg string) (ep Endpoint, e error) {
 		// Valid URL style endpoint is
 		// - Scheme field must contain "http" or "https"
 		// - All field should be empty except Host and Path.
-		if !((u.Scheme == "http" || u.Scheme == "https") &&
-			u.User == nil && u.Opaque == "" && !u.ForceQuery && u.RawQuery == "" && u.Fragment == "") {
+		if (u.Scheme != "http" && u.Scheme != "https") ||
+			u.User != nil || u.Opaque != "" || u.ForceQuery || u.RawQuery != "" || u.Fragment != "" {
 			return ep, fmt.Errorf("invalid URL endpoint format")
 		}
 
@@ -158,7 +159,7 @@ func NewEndpoint(arg string) (ep Endpoint, e error) {
 		// On windows having a preceding SlashSeparator will cause problems, if the
 		// command line already has C:/<export-folder/ in it. Final resulting
 		// path on windows might become C:/C:/ this will cause problems
-		// of starting minio server properly in distributed mode on windows.
+		// of starting obstor server properly in distributed mode on windows.
 		// As a special case make sure to trim the separator.
 
 		// NOTE: It is also perfectly fine for windows users to have a path
@@ -178,7 +179,7 @@ func NewEndpoint(arg string) (ep Endpoint, e error) {
 	} else {
 		// Only check if the arg is an ip address and ask for scheme since its absent.
 		// localhost, example.com, any FQDN cannot be disambiguated from a regular file path such as
-		// /mnt/export1. So we go ahead and start the minio server in FS modes in these cases.
+		// /mnt/export1. So we go ahead and start the obstor server in FS modes in these cases.
 		if isHostIP(arg) {
 			return ep, fmt.Errorf("invalid URL endpoint format: missing scheme http or https")
 		}
@@ -401,17 +402,13 @@ func (endpoints Endpoints) UpdateIsLocal(foundPrevLocal bool) error {
 	startTime := time.Now()
 	keepAliveTicker := time.NewTicker(10 * time.Millisecond)
 	defer keepAliveTicker.Stop()
-	for {
-		// Break if the local endpoint is found already Or all the endpoints are resolved.
-		if foundLocal || (epsResolved == len(endpoints)) {
-			break
-		}
+	for !foundLocal && epsResolved != len(endpoints) {
 		// Retry infinitely on Kubernetes and Docker swarm.
 		// This is needed as the remote hosts are sometime
 		// not available immediately.
 		select {
 		case <-globalOSSignalCh:
-			return fmt.Errorf("The endpoint resolution got interrupted")
+			return fmt.Errorf("the endpoint resolution got interrupted")
 		default:
 			for i, resolved := range resolvedList {
 				if resolved {
@@ -743,7 +740,7 @@ func CreateEndpoints(serverAddr string, foundLocal bool, args ...[]string) (Endp
 
 	// Error out if we have less than 2 unique servers.
 	if len(uniqueArgs.ToSlice()) < 2 && setupType == DistErasureSetupType {
-		err := fmt.Errorf("Unsupported number of endpoints (%s), minimum number of servers cannot be less than 2 in distributed setup", endpoints)
+		err := fmt.Errorf("unsupported number of endpoints (%s), minimum number of servers cannot be less than 2 in distributed setup", endpoints)
 		return endpoints, setupType, err
 	}
 
@@ -849,7 +846,7 @@ func getOnlineProxyEndpointIdx() int {
 			if resp.StatusCode != http.StatusOK {
 				return errors.New(resp.Status)
 			}
-			if v := resp.Header.Get(xhttp.ObStorServerStatus); v == unavailable {
+			if v := resp.Header.Get(xhttp.ObstorServerStatus); v == unavailable {
 				return errors.New(v)
 			}
 			return nil

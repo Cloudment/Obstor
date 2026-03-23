@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2017 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,5 +22,5 @@ import "errors"
 // GetStats - stub implementation for Solaris, this will not give us
 // complete functionality but will enable fs setups on Solaris.
 func GetStats() (stats Stats, err error) {
-	return Stats{}, errors.New("Not implemented")
+	return Stats{}, errors.New("not implemented")
 }

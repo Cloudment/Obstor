@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2018 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@
 //
 // * Namespace format
 //
-// On each create or update object event in ObStor Object storage
+// On each create or update object event in Obstor Object storage
 // server, a row is created or updated in the table in MySQL. On each
 // object removal, the corresponding row is deleted from the table.
 //
@@ -28,7 +29,7 @@
 // table name in the configuration. A sample SQL command that creates
 // a command with the required structure is:
 //
-//     CREATE TABLE myminio (
+//     CREATE TABLE myobstor (
 //         key_name VARCHAR(2048),
 //         value JSONB,
 //         PRIMARY KEY (key_name),
@@ -46,7 +47,7 @@
 // A different table schema is used for this format. A sample SQL
 // commant that creates a table with the required structure is:
 //
-// CREATE TABLE myminio (
+// CREATE TABLE myobstor (
 //     event_time TIMESTAMP WITH TIME ZONE NOT NULL,
 //     event_data JSONB
 // );
@@ -414,7 +415,7 @@ func NewMySQLTarget(id string, args MySQLArgs, doneCh <-chan struct{}, loggerOnc
 
 	err = target.db.Ping()
 	if err != nil {
-		if target.store == nil || !(IsConnRefusedErr(err) || IsConnResetErr(err)) {
+		if target.store == nil || (!IsConnRefusedErr(err) && !IsConnResetErr(err)) {
 			target.loggerOnce(context.Background(), err, target.ID())
 			return target, err
 		}

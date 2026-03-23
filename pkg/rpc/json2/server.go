@@ -4,8 +4,9 @@
 // license that can be found in the LICENSE file.
 
 // Copyright 2020 MinIO, Inc. All rights reserved.
+// Copyright 2021-2026 PGG, Inc. All rights reserved.
 // forked from https://github.com/gorilla/rpc/v2
-// modified to be used with MinIO under Apache
+// modified to be used with Obstor under Apache
 // 2.0 license that can be found in the LICENSE file.
 
 package json2

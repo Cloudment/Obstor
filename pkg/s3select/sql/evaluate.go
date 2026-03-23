@@ -1,5 +1,6 @@
 /*
  * MinIO Cloud Storage, (C) 2019 MinIO, Inc.
+ * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +24,13 @@ import (
 	"math"
 
 	"github.com/cloudment/obstor/pkg/s3select/jstream"
-	"github.com/minio/simdjson-go"
 )
 
 var (
 	errInvalidASTNode    = errors.New("invalid AST Node")
 	errExpectedBool      = errors.New("expected bool")
-	errLikeNonStrArg     = errors.New("LIKE clause requires string arguments")
-	errLikeInvalidEscape = errors.New("LIKE clause has invalid ESCAPE character")
+	errLikeNonStrArg     = errors.New("like clause requires string arguments")
+	errLikeInvalidEscape = errors.New("like clause has invalid ESCAPE character")
 	errNotImplemented    = errors.New("not implemented")
 )
 
@@ -375,7 +375,7 @@ func (e *JSONPath) evalNode(r Record, tableAlias string) (*Value, error) {
 	pathExpr := e.StripTableAlias(alias)
 	_, rawVal := r.Raw()
 	switch rowVal := rawVal.(type) {
-	case jstream.KVS, simdjson.Object:
+	case jstream.KVS:
 		if len(pathExpr) == 0 {
 			pathExpr = []*JSONPathElement{{Key: &ObjectKey{ID: e.BaseKey}}}
 		}
@@ -426,23 +426,12 @@ func jsonToValue(result interface{}) (*Value, error) {
 			dst[i] = *v
 		}
 		return FromArray(dst), nil
-	case simdjson.Object:
-		o := rval
-		elems, err := o.Parse(nil)
-		if err != nil {
-			return nil, err
-		}
-		bs, err := elems.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-		return FromBytes(bs), nil
 	case []Value:
 		return FromArray(rval), nil
 	case nil:
 		return FromNull(), nil
 	}
-	return nil, fmt.Errorf("Unhandled value type: %T", result)
+	return nil, fmt.Errorf("unhandled value type: %T", result)
 }
 
 func (e *PrimaryTerm) evalNode(r Record, tableAlias string) (res *Value, err error) {
