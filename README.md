@@ -1,9 +1,9 @@
-# Obstor Quickstart Guide
+# :lobster: Obstor Quickstart Guide
 [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
 [![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://pgg.net)
 
-Obstor is a High Performance Object Storage released under Apache License v2.0. It is API compatible with Amazon S3 cloud storage service. Use Obstor to build high performance infrastructure for machine learning, analytics and application data workloads.
+Obstor is a high-performance object storage system supporting popular transfer protocols like S3, SFTP, and Hadoop. It is API compatible with the Amazon S3 cloud storage service, making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
 
 This README provides quickstart instructions on running Obstor on baremetal hardware, including Docker-based installations. For Kubernetes environments,
 use the [Obstor Kubernetes Operator](https://github.com/minio/operator/blob/master/README.md).
