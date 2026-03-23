@@ -3,7 +3,7 @@
 
 [![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://pgg.net)
 
-Obstor is a high-performance object storage system supporting popular transfer protocols like S3, SFTP, and Hadoop. It is API compatible with the Amazon S3 cloud storage service, making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
+Obstor is a high-performance object storage system supporting popular transfer protocols like S3, SFTP, and Hadoop making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
 
 This README provides quickstart instructions on running Obstor on baremetal hardware, including Docker-based installations. For Kubernetes environments,
 use the [Obstor Kubernetes Operator](https://github.com/minio/operator/blob/master/README.md).
@@ -14,7 +14,7 @@ Use the following commands to run a standalone Obstor server on a Docker contain
 
 Standalone Obstor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying Obstor with Erasure Coding. For extended development and production, deploy Obstor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
 for more complete documentation.
 
 ## Stable
@@ -37,77 +37,14 @@ see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view
 > NOTE: To deploy Obstor on Docker with persistent storage, you must map local persistent directories from the host OS to the container using the
   `docker -v` option. For example, `-v /mnt/data:/data` maps the host OS drive at `/mnt/data` to `/data` on the Docker container.
 
-## Edge
-
-Run the following command to run the bleeding-edge image of Obstor on a Docker container using an ephemeral data volume:
-
-```
-docker run -p 9000:9000 cloudment/obstor:edge server /data
-```
-
-The Obstor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the Obstor Browser, an embedded
-web-based object browser built into Obstor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
-root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the Obstor server.
-
-You can also connect using any S3-compatible tool, such as the Obstor Client `mc` commandline tool. See
-[Test using Obstor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view Obstor SDKs for supported languages.
-
-
-> NOTE: To deploy Obstor on Docker with persistent storage, you must map local persistent directories from the host OS to the container using the
-  `docker -v` option. For example, `-v /mnt/data:/data` maps the host OS drive at `/mnt/data` to `/data` on the Docker container.
-
 # macOS
 
 Use the following commands to run a standalone Obstor server on macOS.
 
 Standalone Obstor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying Obstor with Erasure Coding. For extended development and production, deploy Obstor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
 for more complete documentation.
-
-## Homebrew (recommended)
-
-Run the following command to install the latest stable Obstor package using [Homebrew](https://brew.sh/). Replace ``/data`` with the path to the drive or directory in which you want Obstor to store data.
-
-```sh
-brew install obstor/stable/obstor
-obstor server /data
-```
-
-> NOTE: If you previously installed obstor using `brew install obstor` then it is recommended that you reinstall obstor from `obstor/stable/obstor` official repo instead.
-
-```sh
-brew uninstall obstor
-brew install obstor/stable/obstor
-```
-
-The Obstor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the Obstor Browser, an embedded
-web-based object browser built into Obstor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
-root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the Obstor server.
-
-You can also connect using any S3-compatible tool, such as the Obstor Client `mc` commandline tool. See
-[Test using Obstor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view Obstor SDKs for supported languages.
-
-## Binary Download
-
-Use the following command to download and run a standalone Obstor server on macOS. Replace ``/data`` with the path to the drive or directory in which you want Obstor to store data.
-
-```sh
-wget https://dl.pgg.net/packages/obstor/release/darwin-amd64/obstor
-chmod +x obstor
-./obstor server /data
-```
-
-The Obstor deployment starts using default root credentials `obstoradmin:obstoradmin`. You can test the deployment using the Obstor Browser, an embedded
-web-based object browser built into Obstor Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the
-root credentials. You can use the Browser to create buckets, upload objects, and browse the contents of the Obstor server.
-
-You can also connect using any S3-compatible tool, such as the Obstor Client `mc` commandline tool. See
-[Test using Obstor Client `mc`](#test-using-obstor-client-mc) for more information on using the `mc` commandline tool. For application developers,
-see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view Obstor SDKs for supported languages.
-
 
 # GNU/Linux
 
@@ -141,7 +78,7 @@ see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view
 
 > NOTE: Standalone Obstor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying Obstor with Erasure Coding. For extended development and production, deploy Obstor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
 for more complete documentation.
 
 # Microsoft Windows
@@ -168,23 +105,12 @@ see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view
 
 > NOTE: Standalone Obstor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying Obstor with Erasure Coding. For extended development and production, deploy Obstor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
 for more complete documentation.
-
-# FreeBSD
-
-Obstor does not provide an official FreeBSD binary. However, FreeBSD maintains an [upstream release](https://www.freshports.org/www/obstor) using [pkg](https://github.com/freebsd/pkg):
-
-```sh
-pkg install obstor
-sysrc obstor_enable=yes
-sysrc obstor_disks=/home/user/Photos
-service obstor start
-```
 
 # Install from Source
 
-Use the following commands to compile and run a standalone Obstor server from source. Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). Minimum version required is [go1.16](https://golang.org/dl/#stable)
+Use the following commands to compile and run a standalone Obstor server from source. Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). Recommended version is [go1.26](https://golang.org/dl/#stable) or newer.
 
 ```sh
 GO111MODULE=on go get github.com/cloudment/obstor
@@ -201,7 +127,7 @@ see https://obstor.net/docs/ and click **OBSTOR SDKS** in the navigation to view
 
 > NOTE: Standalone Obstor servers are best suited for early development and evaluation. Certain features such as versioning, object locking, and bucket replication
 require distributed deploying Obstor with Erasure Coding. For extended development and production, deploy Obstor with Erasure Coding enabled - specifically,
-with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide.html)
+with a *minimum* of 4 drives per Obstor server. See [Obstor Erasure Code Quickstart Guide](https://obstor.net/docs/obstor-erasure-code-quickstart-guide)
 for more complete documentation.
 
 Obstor strongly recommends *against* using compiled-from-source Obstor servers for production environments.
@@ -279,7 +205,7 @@ Obstor Server comes with an embedded web based object browser. Point your web br
 `mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services. Follow the Obstor Client [Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide) for further instructions.
 
 # Upgrading Obstor
-Obstor server supports rolling upgrades, i.e. you can update one Obstor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://obstor.net/docs/obstor-admin-complete-guide.html#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the Obstor client (mc):
+Obstor server supports rolling upgrades, i.e. you can update one Obstor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://obstor.net/docs/obstor-admin-complete-guide#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the Obstor client (mc):
 
 ```
 mc admin update <obstor alias, e.g., myobstor>

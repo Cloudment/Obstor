@@ -20,14 +20,14 @@ package madmin
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/sha256"
 	"errors"
 	"io"
 
 	"github.com/cloudment/obstor/pkg/argon2"
 	"github.com/cloudment/obstor/pkg/fips"
-	"github.com/secure-io/sio-go"
-	"github.com/secure-io/sio-go/sioutil"
+	sio "github.com/minio/sio"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -39,49 +39,37 @@ import (
 //	salt | AEAD ID | nonce | encrypted data
 //	 32      1         8      ~ len(data)
 func EncryptData(password string, data []byte) ([]byte, error) {
-	salt := sioutil.MustRandom(32)
+	salt := mustRandom(32)
 
 	var (
-		id     byte
-		err    error
-		stream *sio.Stream
+		id  byte
+		key []byte
 	)
 	if fips.Enabled() {
-		key := pbkdf2.Key([]byte(password), salt, pbkdf2Cost, 32, sha256.New)
-		stream, err = sio.AES_256_GCM.Stream(key)
-		if err != nil {
-			return nil, err
-		}
+		key = pbkdf2.Key([]byte(password), salt, pbkdf2Cost, 32, sha256.New)
 		id = pbkdf2AESGCM
 	} else {
-		key := argon2.IDKey([]byte(password), salt, argon2idTime, argon2idMemory, argon2idThreads, 32)
-		if sioutil.NativeAES() {
-			stream, err = sio.AES_256_GCM.Stream(key)
-			if err != nil {
-				return nil, err
-			}
-			id = argon2idAESGCM
-		} else {
-			stream, err = sio.ChaCha20Poly1305.Stream(key)
-			if err != nil {
-				return nil, err
-			}
-			id = argon2idChaCHa20Poly1305
-		}
+		key = argon2.IDKey([]byte(password), salt, argon2idTime, argon2idMemory, argon2idThreads, 32)
+		id = argon2idAESGCM
 	}
 
-	nonce := sioutil.MustRandom(stream.NonceSize())
+	nonce := mustRandom(8)
+	var nonce12 [12]byte
+	copy(nonce12[:], nonce)
 
-	// Ciphertext = salt || AEAD ID | nonce | encrypted data
-	cLen := int64(len(salt)+1+len(nonce)+len(data)) + stream.Overhead(int64(len(data)))
-	ciphertext := bytes.NewBuffer(make([]byte, 0, cLen)) // pre-alloc correct length
-
-	// Prefix the ciphertext with salt, AEAD ID and nonce
+	var ciphertext bytes.Buffer
 	ciphertext.Write(salt)
 	ciphertext.WriteByte(id)
 	ciphertext.Write(nonce)
 
-	w := stream.EncryptWriter(ciphertext, nonce, nil)
+	w, err := sio.EncryptWriter(&ciphertext, sio.Config{
+		Key:          key,
+		CipherSuites: []byte{sio.AES_256_GCM},
+		Nonce:        &nonce12,
+	})
+	if err != nil {
+		return nil, err
+	}
 	if _, err = w.Write(data); err != nil {
 		return nil, err
 	}
@@ -93,7 +81,7 @@ func EncryptData(password string, data []byte) ([]byte, error) {
 
 // ErrMaliciousData indicates that the stream cannot be
 // decrypted by provided credentials.
-var ErrMaliciousData = sio.NotAuthentic
+var ErrMaliciousData = errors.New("madmin: data is not authentic")
 
 // DecryptData decrypts the data with the key derived
 // from the salt (part of data) and the password using
@@ -119,32 +107,41 @@ func DecryptData(password string, data io.Reader) ([]byte, error) {
 		return nil, err
 	}
 
-	var (
-		err    error
-		stream *sio.Stream
-	)
+	var key []byte
+	var cipher byte
 	switch id[0] {
 	case argon2idAESGCM:
-		key := argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
-		stream, err = sio.AES_256_GCM.Stream(key)
+		key = argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
+		cipher = sio.AES_256_GCM
 	case argon2idChaCHa20Poly1305:
-		key := argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
-		stream, err = sio.ChaCha20Poly1305.Stream(key)
+		key = argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
+		cipher = sio.CHACHA20_POLY1305
 	case pbkdf2AESGCM:
-		key := pbkdf2.Key([]byte(password), salt[:], pbkdf2Cost, 32, sha256.New)
-		stream, err = sio.AES_256_GCM.Stream(key)
+		key = pbkdf2.Key([]byte(password), salt[:], pbkdf2Cost, 32, sha256.New)
+		cipher = sio.AES_256_GCM
 	default:
-		err = errors.New("madmin: invalid encryption algorithm ID")
-	}
-	if err != nil {
-		return nil, err
+		return nil, errors.New("madmin: invalid encryption algorithm ID")
 	}
 
-	plaintext, err := io.ReadAll(stream.DecryptReader(data, nonce[:], nil))
+	var nonce12 [12]byte
+	copy(nonce12[:], nonce[:])
+	decReader, err := sio.DecryptReader(data, sio.Config{
+		Key:          key,
+		CipherSuites: []byte{cipher},
+		Nonce:        &nonce12,
+	})
 	if err != nil {
 		return nil, err
 	}
-	return plaintext, err
+	return io.ReadAll(decReader)
+}
+
+func mustRandom(n int) []byte {
+	b := make([]byte, n)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		panic(err)
+	}
+	return b
 }
 
 const (

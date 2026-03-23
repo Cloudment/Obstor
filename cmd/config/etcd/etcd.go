@@ -149,10 +149,7 @@ func LookupConfig(kvs config.KVS, rootCAs *x509.CertPool) (Config, error) {
 	// Disable etcd client SDK logging, etcd client
 	// incorrectly starts logging in unexpected data
 	// format.
-	cfg.LogConfig = &zap.Config{
-		Level:    zap.NewAtomicLevelAt(zap.FatalLevel),
-		Encoding: "console",
-	}
+	cfg.Logger = zap.NewNop()
 	cfg.Endpoints = etcdEndpoints
 	cfg.CoreDNSPath = env.Get(EnvEtcdCoreDNSPath, kvs.Get(CoreDNSPath))
 	// Default path prefix for all keys on etcd, other than CoreDNSPath.

@@ -25,8 +25,7 @@ import (
 	"io"
 
 	"github.com/cloudment/obstor/pkg/kms"
-	"github.com/secure-io/sio-go"
-	"github.com/secure-io/sio-go/sioutil"
+	sio "github.com/minio/sio"
 )
 
 // EncryptBytes encrypts the plaintext with a key managed by KMS.
@@ -59,21 +58,14 @@ func DecryptBytes(KMS kms.KMS, ciphertext []byte, context kms.Context) ([]byte, 
 // The same context must be provided when decrypting the
 // ciphertext.
 func Encrypt(KMS kms.KMS, plaintext io.Reader, context kms.Context) (io.Reader, error) {
-	var algorithm = sio.AES_256_GCM
-	if !sioutil.NativeAES() {
-		algorithm = sio.ChaCha20Poly1305
-	}
+	var cipherSuite = sio.AES_256_GCM
 
 	key, err := KMS.GenerateKey("", context)
 	if err != nil {
 		return nil, err
 	}
-	stream, err := algorithm.Stream(key.Plaintext)
-	if err != nil {
-		return nil, err
-	}
-	nonce := make([]byte, stream.NonceSize())
-	if _, err := rand.Read(nonce); err != nil {
+	var nonce [12]byte
+	if _, err := rand.Read(nonce[:]); err != nil {
 		return nil, err
 	}
 
@@ -88,8 +80,8 @@ func Encrypt(KMS kms.KMS, plaintext io.Reader, context kms.Context) (io.Reader, 
 	metadata, err := json.Marshal(encryptedObject{
 		KeyID:     key.KeyID,
 		KMSKey:    key.Ciphertext,
-		Algorithm: algorithm,
-		Nonce:     nonce,
+		Algorithm: cipherSuite,
+		Nonce:     nonce[:],
 	})
 	if err != nil {
 		return nil, err
@@ -102,10 +94,16 @@ func Encrypt(KMS kms.KMS, plaintext io.Reader, context kms.Context) (io.Reader, 
 	buffer.Write(header[:])
 	buffer.Write(metadata)
 
-	return io.MultiReader(
-		&buffer,
-		stream.EncryptReader(plaintext, nonce, nil),
-	), nil
+	noncePtr := nonce
+	encReader, err := sio.EncryptReader(plaintext, sio.Config{
+		Key:          key.Plaintext,
+		CipherSuites: []byte{cipherSuite},
+		Nonce:        &noncePtr,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return io.MultiReader(&buffer, encReader), nil
 }
 
 // Decrypt decrypts the ciphertext using a key managed by the KMS.
@@ -144,20 +142,22 @@ func Decrypt(KMS kms.KMS, ciphertext io.Reader, context kms.Context) (io.Reader,
 	if err != nil {
 		return nil, err
 	}
-	stream, err := metadata.Algorithm.Stream(key)
-	if err != nil {
-		return nil, err
+	if len(metadata.Nonce) != 12 {
+		return nil, errors.New("config: invalid nonce size")
 	}
-	if stream.NonceSize() != len(metadata.Nonce) {
-		return nil, sio.NotAuthentic
-	}
-	return stream.DecryptReader(ciphertext, metadata.Nonce, nil), nil
+	var nonce [12]byte
+	copy(nonce[:], metadata.Nonce)
+	return sio.DecryptReader(ciphertext, sio.Config{
+		Key:          key,
+		CipherSuites: []byte{metadata.Algorithm},
+		Nonce:        &nonce,
+	})
 }
 
 type encryptedObject struct {
 	KeyID  string `json:"keyid"`
 	KMSKey []byte `json:"kmskey"`
 
-	Algorithm sio.Algorithm `json:"algorithm"`
-	Nonce     []byte        `json:"nonce"`
+	Algorithm byte   `json:"algorithm"`
+	Nonce     []byte `json:"nonce"`
 }

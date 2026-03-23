@@ -27,7 +27,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/secure-io/sio-go/sioutil"
+	"crypto/rand"
+	"io"
+
 	"golang.org/x/crypto/chacha20"
 	"golang.org/x/crypto/chacha20poly1305"
 )
@@ -97,13 +99,11 @@ func (kms secretKey) GenerateKey(keyID string, context Context) (DEK, error) {
 	if keyID != kms.keyID {
 		return DEK{}, fmt.Errorf("kms: key %q does not exist", keyID)
 	}
-	iv, err := sioutil.Random(16)
-	if err != nil {
-		return DEK{}, err
-	}
+	iv := mustRandom(16)
+	var err error
 
 	var algorithm string
-	if sioutil.NativeAES() {
+	if true {
 		algorithm = algorithmAESGCM
 	} else {
 		algorithm = algorithmChaCha20Poly1305
@@ -139,15 +139,9 @@ func (kms secretKey) GenerateKey(keyID string, context Context) (DEK, error) {
 		return DEK{}, errors.New("invalid algorithm: " + algorithm)
 	}
 
-	nonce, err := sioutil.Random(aead.NonceSize())
-	if err != nil {
-		return DEK{}, err
-	}
+	nonce := mustRandom(aead.NonceSize())
 
-	plaintext, err := sioutil.Random(32)
-	if err != nil {
-		return DEK{}, err
-	}
+	plaintext := mustRandom(32)
 	associatedData, _ := context.MarshalText()
 	ciphertext := aead.Seal(nil, nonce, plaintext, associatedData)
 
@@ -225,4 +219,12 @@ type encryptedKey struct {
 	IV        []byte `json:"iv"`
 	Nonce     []byte `json:"nonce"`
 	Bytes     []byte `json:"bytes"`
+}
+
+func mustRandom(n int) []byte {
+	b := make([]byte, n)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		panic(err)
+	}
+	return b
 }

@@ -40,10 +40,6 @@ import (
 	xnet "github.com/cloudment/obstor/pkg/net"
 	"github.com/colinmarc/hdfs/v2"
 	"github.com/colinmarc/hdfs/v2/hadoopconf"
-	krb "github.com/jcmturner/gokrb5/v8/client"
-	"github.com/jcmturner/gokrb5/v8/config"
-	"github.com/jcmturner/gokrb5/v8/credentials"
-	"github.com/jcmturner/gokrb5/v8/keytab"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/urfave/cli"
 )
@@ -112,52 +108,6 @@ func (g *HDFS) Name() string {
 	return obstor.HDFSBackendGateway
 }
 
-func getKerberosClient() (*krb.Client, error) {
-	cfg, err := config.Load(env.Get("KRB5_CONFIG", "/etc/krb5.conf"))
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := user.Current()
-	if err != nil {
-		return nil, err
-	}
-
-	keytabPath := env.Get("KRB5KEYTAB", "")
-	if keytabPath != "" {
-		kt, err := keytab.Load(keytabPath)
-		if err != nil {
-			return nil, err
-		}
-
-		username := env.Get("KRB5USERNAME", "")
-		realm := env.Get("KRB5REALM", "")
-		if username == "" || realm == "" {
-			return nil, errors.New("empty KRB5USERNAME or KRB5REALM")
-
-		}
-
-		return krb.NewWithKeytab(username, realm, kt, cfg), nil
-	}
-
-	// Determine the ccache location from the environment, falling back to the default location.
-	ccachePath := env.Get("KRB5CCNAME", fmt.Sprintf("/tmp/krb5cc_%s", u.Uid))
-	if strings.Contains(ccachePath, ":") {
-		if strings.HasPrefix(ccachePath, "FILE:") {
-			ccachePath = strings.TrimPrefix(ccachePath, "FILE:")
-		} else {
-			return nil, fmt.Errorf("unable to use kerberos ccache: %s", ccachePath)
-		}
-	}
-
-	ccache, err := credentials.LoadCCache(ccachePath)
-	if err != nil {
-		return nil, err
-	}
-
-	return krb.NewFromCCache(ccache, cfg)
-}
-
 // NewGatewayLayer returns hdfs gatewaylayer.
 func (g *HDFS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	dialFunc := (&net.Dialer{
@@ -204,13 +154,9 @@ func (g *HDFS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, erro
 	}
 
 	if opts.KerberosClient != nil {
-		opts.KerberosClient, err = getKerberosClient()
-		if err != nil {
-			return nil, fmt.Errorf("unable to initialize kerberos client: %s", err)
-		}
-	} else {
-		opts.User = env.Get("HADOOP_USER_NAME", u.Username)
+		return nil, fmt.Errorf("kerberos authentication is not supported; use simple authentication instead")
 	}
+	opts.User = env.Get("HADOOP_USER_NAME", u.Username)
 
 	clnt, err := hdfs.NewClient(opts)
 	if err != nil {
