@@ -81,11 +81,20 @@ docker_switch_user() {
 start_frontend() {
     if [ -f /opt/frontend/server.js ]; then
         FRONTEND_PORT=9001
+        prev=""
         for arg in "$@"; do
             case "$arg" in
-                --frontend-address=*) FRONTEND_PORT="${arg#*=:}" ;;
+                --frontend-address=*) FRONTEND_PORT="${arg#--frontend-address=}" ;;
             esac
+            case "$prev" in
+                --frontend-address) FRONTEND_PORT="$arg" ;;
+            esac
+            prev="$arg"
         done
+        # Handle alternative port syntax
+        case "$FRONTEND_PORT" in
+            *:*) FRONTEND_PORT="${FRONTEND_PORT##*:}" ;;
+        esac
         PORT=$FRONTEND_PORT \
         OBSTOR_ENDPOINT=${OBSTOR_ENDPOINT:-http://127.0.0.1:9000} \
         OBSTOR_HOST=${OBSTOR_HOST:-127.0.0.1:9000} \
