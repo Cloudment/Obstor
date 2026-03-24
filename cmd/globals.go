@@ -114,6 +114,7 @@ var globalCLIContext = struct {
 	JSON, Quiet    bool
 	Anonymous      bool
 	Addr           string
+	FrontendAddr   string
 	StrictS3Compat bool
 }{}
 
@@ -148,6 +149,11 @@ var (
 	// Holds the possible host endpoint.
 	globalMinioEndpoint = ""
 
+	// Frontend address
+	globalFrontendAddr = ""
+	globalFrontendHost = ""
+	globalFrontendPort = "9001"
+
 	// globalConfigSys server config system.
 	globalConfigSys *ConfigSys
 
@@ -180,9 +186,11 @@ var (
 
 	globalTLSCerts *certs.Manager
 
-	globalHTTPServer        *xhttp.Server
-	globalHTTPServerErrorCh = make(chan error)
-	globalOSSignalCh        = make(chan os.Signal, 1)
+	globalHTTPServer                *xhttp.Server
+	globalHTTPServerErrorCh         = make(chan error)
+	globalFrontendHTTPServer        *xhttp.Server
+	globalFrontendHTTPServerErrorCh = make(chan error)
+	globalOSSignalCh                = make(chan os.Signal, 1)
 
 	// Global Trace system to send HTTP request/response
 	// and Storage/OS calls info to registered listeners.

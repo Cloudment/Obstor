@@ -173,6 +173,23 @@ func getAPIEndpoints() (apiEndpoints []string) {
 	return apiEndpoints
 }
 
+func getFrontendEndpoints() (endpoints []string) {
+	var ipList []string
+	if globalFrontendHost == "" {
+		ipList = sortIPs(mustGetLocalIP4().ToSlice())
+		ipList = append(ipList, mustGetLocalIP6().ToSlice()...)
+	} else {
+		ipList = []string{globalFrontendHost}
+	}
+
+	for _, ip := range ipList {
+		endpoint := fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(ip, globalFrontendPort))
+		endpoints = append(endpoints, endpoint)
+	}
+
+	return endpoints
+}
+
 // isHostIP - helper for validating if the provided arg is an ip address.
 func isHostIP(ipAddress string) bool {
 	host, _, err := net.SplitHostPort(ipAddress)

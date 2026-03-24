@@ -24,6 +24,9 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -146,6 +149,10 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	globalMinioAddr = globalCLIContext.Addr
 
 	globalMinioHost, globalMinioPort = mustSplitHostPort(globalMinioAddr)
+
+	globalFrontendAddr = globalCLIContext.FrontendAddr
+	globalFrontendHost, globalFrontendPort = mustSplitHostPort(globalFrontendAddr)
+
 	globalEndpoints, setupType, err = createServerEndpoints(globalCLIContext.Addr, serverCmdArgs(ctx)...)
 	logger.FatalIf(err, "Invalid command line arguments")
 
@@ -493,6 +500,23 @@ func serverMain(ctx *cli.Context) {
 	}()
 
 	setHTTPServer(httpServer)
+
+	// Reverse proxy if browser is enabled
+	if globalBrowserEnabled {
+		frontendTarget, _ := url.Parse("http://127.0.0.1:3000")
+		frontendProxy := httputil.NewSingleHostReverseProxy(frontendTarget)
+		frontendProxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+			w.WriteHeader(http.StatusBadGateway)
+		}
+		frontendServer := xhttp.NewServer([]string{globalFrontendAddr}, frontendProxy, getCert)
+		frontendServer.BaseContext = func(listener net.Listener) context.Context {
+			return GlobalContext
+		}
+		go func() {
+			globalFrontendHTTPServerErrorCh <- frontendServer.Start()
+		}()
+		globalFrontendHTTPServer = frontendServer
+	}
 
 	if globalIsDistErasure && globalEndpoints.FirstLocal() {
 		for {

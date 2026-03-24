@@ -218,6 +218,12 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 		globalCLIContext.Addr = ctx.String("api-address")
 	}
 
+	// Check frontend address arg
+	globalCLIContext.FrontendAddr = ctx.GlobalString("frontend-address")
+	if globalCLIContext.FrontendAddr == "" || globalCLIContext.FrontendAddr == ":9001" {
+		globalCLIContext.FrontendAddr = ctx.String("frontend-address")
+	}
+
 	// Check "no-compat" flag from command line argument.
 	globalCLIContext.StrictS3Compat = true
 	if ctx.IsSet("no-compat") || ctx.GlobalIsSet("no-compat") {

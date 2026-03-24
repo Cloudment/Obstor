@@ -61,6 +61,12 @@ func handleSignals() {
 			}
 		}
 
+		if globalFrontendHTTPServer != nil {
+			if ferr := globalFrontendHTTPServer.Shutdown(); ferr != nil && !errors.Is(ferr, http.ErrServerClosed) {
+				logger.LogIf(context.Background(), ferr)
+			}
+		}
+
 		if objAPI := newObjectLayerFn(); objAPI != nil {
 			oerr = objAPI.Shutdown(context.Background())
 			logger.LogIf(context.Background(), oerr)
@@ -72,6 +78,8 @@ func handleSignals() {
 	for {
 		select {
 		case <-globalHTTPServerErrorCh:
+			exit(stopProcess())
+		case <-globalFrontendHTTPServerErrorCh:
 			exit(stopProcess())
 		case osSignal := <-globalOSSignalCh:
 			logger.Info("Exiting on signal: %s", strings.ToUpper(osSignal.String()))

@@ -137,7 +137,12 @@ func printServerCommonMsg(apiEndpoints []string) {
 	apiEndpointStr := strings.Join(apiEndpoints, "  ")
 
 	// Colorize the message and print.
-	logStartupMessage(color.Blue("Endpoint: ") + color.Bold(fmt.Sprintf("%s ", apiEndpointStr)))
+	if globalBrowserEnabled {
+		frontendEndpoints := getFrontendEndpoints()
+		frontendEndpointStr := strings.Join(frontendEndpoints, "  ")
+		logStartupMessage(color.Blue("Frontend: ") + color.Bold(fmt.Sprintf("%s ", frontendEndpointStr)))
+	}
+	logStartupMessage(color.Blue("API: ") + color.Bold(fmt.Sprintf("%s ", apiEndpointStr)))
 	if color.IsTerminal() && !globalCLIContext.Anonymous {
 		logStartupMessage(color.Blue("RootUser: ") + color.Bold(fmt.Sprintf("%s ", cred.AccessKey)))
 		logStartupMessage(color.Blue("RootPass: ") + color.Bold(fmt.Sprintf("%s ", cred.SecretKey)))
@@ -146,11 +151,6 @@ func printServerCommonMsg(apiEndpoints []string) {
 		}
 	}
 	printEventNotifiers()
-
-	if globalBrowserEnabled {
-		logStartupMessage(color.Blue("\nBrowser Access:"))
-		logStartupMessage(fmt.Sprintf(getFormatStr(len(apiEndpointStr), 3), apiEndpointStr))
-	}
 }
 
 // Prints bucket notification configurations.
