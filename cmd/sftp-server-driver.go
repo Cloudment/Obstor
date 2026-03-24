@@ -23,6 +23,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/cloudment/obstor/pkg/hash"
@@ -84,47 +85,22 @@ func (d *sftpDriver) Fileread(r *xsftp.Request) (io.ReaderAt, error) {
 	if err != nil {
 		return nil, sftpErrorMap(err)
 	}
-
-	return &sftpFileReader{
-		bucket: bucket,
-		object: object,
-		size:   oi.Size,
-		objAPI: objAPI,
-	}, nil
-}
-
-// sftpFileReader implements io.ReaderAt by issuing ranged GetObject calls
-// instead of loading the entire object into memory.
-type sftpFileReader struct {
-	bucket string
-	object string
-	size   int64
-	objAPI ObjectLayer
-}
-
-func (fr *sftpFileReader) ReadAt(p []byte, off int64) (int, error) {
-	if off >= fr.size {
-		return 0, io.EOF
+	if oi.Size > sftpMaxFileSize {
+		return nil, fmt.Errorf("object size %d exceeds SFTP download limit (%d bytes)", oi.Size, sftpMaxFileSize)
 	}
 
-	end := off + int64(len(p)) - 1
-	if end >= fr.size {
-		end = fr.size - 1
-	}
-
-	ctx := context.Background()
-	reader, err := fr.objAPI.GetObjectNInfo(ctx, fr.bucket, fr.object,
-		&HTTPRangeSpec{Start: off, End: end}, nil, readLock, ObjectOptions{})
+	reader, err := objAPI.GetObjectNInfo(ctx, bucket, object, nil, nil, readLock, ObjectOptions{})
 	if err != nil {
-		return 0, sftpErrorMap(err)
+		return nil, sftpErrorMap(err)
 	}
-	defer reader.Close()
 
-	n, err := io.ReadFull(reader, p[:end-off+1])
-	if err == io.ErrUnexpectedEOF {
-		err = io.EOF
+	data, err := io.ReadAll(reader)
+	reader.Close()
+	if err != nil {
+		return nil, err
 	}
-	return n, err
+
+	return bytes.NewReader(data), nil
 }
 
 // Filewrite implements sftp.FileWriter.
@@ -138,7 +114,6 @@ func (d *sftpDriver) Filewrite(r *xsftp.Request) (io.WriterAt, error) {
 		bucket: bucket,
 		object: object,
 		driver: d,
-		buf:    &bytes.Buffer{},
 	}, nil
 }
 
@@ -161,11 +136,21 @@ func (d *sftpDriver) Filecmd(r *xsftp.Request) error {
 		if srcBucket == "" || srcObject == "" || dstBucket == "" || dstObject == "" {
 			return os.ErrInvalid
 		}
-		srcInfo, err := objAPI.GetObjectInfo(ctx, srcBucket, srcObject, ObjectOptions{})
+		// CopyObject requires PutObjReader which GetObjectInfo doesnt have
+		reader, err := objAPI.GetObjectNInfo(ctx, srcBucket, srcObject, nil, nil, readLock, ObjectOptions{})
 		if err != nil {
 			return sftpErrorMap(err)
 		}
-		if _, err := objAPI.CopyObject(ctx, srcBucket, srcObject, dstBucket, dstObject, srcInfo, ObjectOptions{}, ObjectOptions{}); err != nil {
+		data, err := io.ReadAll(reader)
+		reader.Close()
+		if err != nil {
+			return err
+		}
+		hashReader, err := hash.NewReader(bytes.NewReader(data), int64(len(data)), "", "", int64(len(data)))
+		if err != nil {
+			return err
+		}
+		if _, err := objAPI.PutObject(ctx, dstBucket, dstObject, NewPutObjReader(hashReader), ObjectOptions{}); err != nil {
 			return sftpErrorMap(err)
 		}
 		if _, err := objAPI.DeleteObject(ctx, srcBucket, srcObject, ObjectOptions{}); err != nil {
@@ -376,30 +361,28 @@ func (d *sftpDriver) Filelist(r *xsftp.Request) (xsftp.ListerAt, error) {
 
 // sftpFileWriter buffers writes and uploads on Close.
 type sftpFileWriter struct {
+	mu     sync.Mutex
 	bucket string
 	object string
 	driver *sftpDriver
-	buf    *bytes.Buffer
-	offset int64
+	buf    []byte
 }
 
 func (w *sftpFileWriter) WriteAt(p []byte, off int64) (n int, err error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
 	end := off + int64(len(p))
 	if end > sftpMaxFileSize {
 		return 0, fmt.Errorf("file size exceeds maximum allowed (%d bytes)", sftpMaxFileSize)
 	}
-	// Ensure buffer is large enough.
-	if end > int64(w.buf.Len()) {
-		w.buf.Grow(int(end) - w.buf.Len())
-		b := w.buf.Bytes()[:end]
-		// Zero-fill any gap between old length and write offset.
-		w.buf.Reset()
-		w.buf.Write(b)
+	// Grow buffer if needed
+	if end > int64(len(w.buf)) {
+		grown := make([]byte, end)
+		copy(grown, w.buf)
+		w.buf = grown
 	}
-	copy(w.buf.Bytes()[off:], p)
-	if end > w.offset {
-		w.offset = end
-	}
+	copy(w.buf[off:], p)
 	return len(p), nil
 }
 
@@ -409,9 +392,8 @@ func (w *sftpFileWriter) Close() error {
 		return err
 	}
 
-	data := w.buf.Bytes()[:w.offset]
-	reader := bytes.NewReader(data)
-	hashReader, err := hash.NewReader(reader, int64(len(data)), "", "", int64(len(data)))
+	reader := bytes.NewReader(w.buf)
+	hashReader, err := hash.NewReader(reader, int64(len(w.buf)), "", "", int64(len(w.buf)))
 	if err != nil {
 		return err
 	}
