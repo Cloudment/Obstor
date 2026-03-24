@@ -81,10 +81,44 @@ docker_switch_user() {
 start_frontend() {
     case "${OBSTOR_BROWSER}" in false|FALSE|0) return ;; esac
     if [ -f /opt/frontend/server.js ]; then
+        API_PORT=9000
+        CERTS_DIR=""
+        prev=""
+        for arg in "$@"; do
+            case "$arg" in
+                --api-address=*) API_PORT="${arg#--api-address=}" ;;
+                --certs-dir=*) CERTS_DIR="${arg#--certs-dir=}" ;;
+            esac
+            case "$prev" in
+                --api-address) API_PORT="$arg" ;;
+                --certs-dir) CERTS_DIR="$arg" ;;
+            esac
+            prev="$arg"
+        done
+        case "$API_PORT" in *:*) API_PORT="${API_PORT##*:}" ;; esac
+
+        # Enable TLS if certs exist
+        PROTO="http"
+        if [ -n "$CERTS_DIR" ] && [ -f "$CERTS_DIR/public.crt" ]; then
+            PROTO="https"
+        elif [ -f /etc/minio/certs/public.crt ]; then
+            PROTO="https"
+        fi
+
+        # OBSTOR_ENDPOINT is internal RPC
+        # OBSTOR_HOST is external presigned URLs
+        EXTERNAL_HOST=$(hostname)
+        if [ "$API_PORT" = "443" ] && [ "$PROTO" = "https" ]; then
+            DEFAULT_HOST="$EXTERNAL_HOST"
+        else
+            DEFAULT_HOST="$EXTERNAL_HOST:$API_PORT"
+        fi
+
         PORT=3000 \
         HOSTNAME=127.0.0.1 \
-        OBSTOR_ENDPOINT=${OBSTOR_ENDPOINT:-http://127.0.0.1:9000} \
-        OBSTOR_HOST=${OBSTOR_HOST:-127.0.0.1:9000} \
+        NODE_TLS_REJECT_UNAUTHORIZED=0 \
+        OBSTOR_ENDPOINT=${OBSTOR_ENDPOINT:-${PROTO}://127.0.0.1:${API_PORT}} \
+        OBSTOR_HOST=${OBSTOR_HOST:-${DEFAULT_HOST}} \
         node /opt/frontend/server.js > /dev/null &
     fi
 }

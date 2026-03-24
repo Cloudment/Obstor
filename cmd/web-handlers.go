@@ -2179,7 +2179,7 @@ func (web *webAPIHandlers) PresignedGet(r *http.Request, args *PresignedGetArgs,
 
 func ensureScheme(host string) string {
 	if host != "" && !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
-		return "http://" + host
+		return getURLScheme(globalIsTLS) + "://" + host
 	}
 	return host
 }
