@@ -29,6 +29,9 @@ import (
 	xsftp "github.com/pkg/sftp"
 )
 
+// 5GB file max for uploads
+const sftpMaxFileSize = 5 << 30
+
 // sftpDriver implements sftp.FileReader, sftp.FileWriter, sftp.FileCmder, sftp.FileLister.
 type sftpDriver struct {
 	accessKey string
@@ -77,19 +80,51 @@ func (d *sftpDriver) Fileread(r *xsftp.Request) (io.ReaderAt, error) {
 	}
 
 	ctx := context.Background()
-	reader, err := objAPI.GetObjectNInfo(ctx, bucket, object, nil, nil, readLock, ObjectOptions{})
+	oi, err := objAPI.GetObjectInfo(ctx, bucket, object, ObjectOptions{})
 	if err != nil {
 		return nil, sftpErrorMap(err)
 	}
 
-	// Read the entire object into memory for ReaderAt support.
-	data, err := io.ReadAll(reader)
-	reader.Close()
-	if err != nil {
-		return nil, err
+	return &sftpFileReader{
+		bucket: bucket,
+		object: object,
+		size:   oi.Size,
+		objAPI: objAPI,
+	}, nil
+}
+
+// sftpFileReader implements io.ReaderAt by issuing ranged GetObject calls
+// instead of loading the entire object into memory.
+type sftpFileReader struct {
+	bucket string
+	object string
+	size   int64
+	objAPI ObjectLayer
+}
+
+func (fr *sftpFileReader) ReadAt(p []byte, off int64) (int, error) {
+	if off >= fr.size {
+		return 0, io.EOF
 	}
 
-	return bytes.NewReader(data), nil
+	end := off + int64(len(p)) - 1
+	if end >= fr.size {
+		end = fr.size - 1
+	}
+
+	ctx := context.Background()
+	reader, err := fr.objAPI.GetObjectNInfo(ctx, fr.bucket, fr.object,
+		&HTTPRangeSpec{Start: off, End: end}, nil, readLock, ObjectOptions{})
+	if err != nil {
+		return 0, sftpErrorMap(err)
+	}
+	defer reader.Close()
+
+	n, err := io.ReadFull(reader, p[:end-off+1])
+	if err == io.ErrUnexpectedEOF {
+		err = io.EOF
+	}
+	return n, err
 }
 
 // Filewrite implements sftp.FileWriter.
@@ -349,8 +384,11 @@ type sftpFileWriter struct {
 }
 
 func (w *sftpFileWriter) WriteAt(p []byte, off int64) (n int, err error) {
-	// Ensure buffer is large enough.
 	end := off + int64(len(p))
+	if end > sftpMaxFileSize {
+		return 0, fmt.Errorf("file size exceeds maximum allowed (%d bytes)", sftpMaxFileSize)
+	}
+	// Ensure buffer is large enough.
 	if end > int64(w.buf.Len()) {
 		w.buf.Grow(int(end) - w.buf.Len())
 		b := w.buf.Bytes()[:end]

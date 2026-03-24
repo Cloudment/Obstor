@@ -19,6 +19,7 @@ package cmd
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/subtle"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
@@ -27,6 +28,8 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sync/atomic"
+	"time"
 
 	"github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/logger"
@@ -36,11 +39,38 @@ import (
 
 var globalSFTPConfig sftp.Config
 
+const (
+	sftpMaxConnections = 256
+	sftpIdleTimeout    = 10 * time.Minute
+)
+
+var sftpActiveConns int64
+
 func startSFTPServer(cfg sftp.Config) {
 	globalSFTPConfig = cfg
 
 	sshConfig := &ssh.ServerConfig{
-		PasswordCallback: sftpPasswordCallback,
+		PasswordCallback:  sftpPasswordCallback,
+		MaxAuthTries:      3,
+		ServerVersion:     "SSH-2.0-Obstor",
+		BannerCallback:    nil,
+	}
+
+	// Require modern SSH algorithms
+	sshConfig.KeyExchanges = []string{
+		"curve25519-sha256",
+		"curve25519-sha256@libssh.org",
+		"ecdh-sha2-nistp256",
+		"ecdh-sha2-nistp384",
+	}
+	sshConfig.Ciphers = []string{
+		"chacha20-poly1305@openssh.com",
+		"aes256-gcm@openssh.com",
+		"aes128-gcm@openssh.com",
+	}
+	sshConfig.MACs = []string{
+		"hmac-sha2-256-etm@openssh.com",
+		"hmac-sha2-256",
 	}
 
 	hostKey, err := loadOrGenerateHostKey(cfg.HostKeyPath)
@@ -66,7 +96,16 @@ func startSFTPServer(cfg sftp.Config) {
 				logger.LogIf(GlobalContext, fmt.Errorf("sftp accept error: %w", err))
 				continue
 			}
-			go handleSFTPConnection(conn, sshConfig)
+
+			if atomic.LoadInt64(&sftpActiveConns) >= sftpMaxConnections {
+				conn.Close()
+				continue
+			}
+			atomic.AddInt64(&sftpActiveConns, 1)
+			go func() {
+				defer atomic.AddInt64(&sftpActiveConns, -1)
+				handleSFTPConnection(conn, sshConfig)
+			}()
 		}
 	}()
 }
@@ -75,8 +114,10 @@ func sftpPasswordCallback(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, er
 	accessKey := c.User()
 	secretKey := string(pass)
 
-	// Check root credentials.
-	if accessKey == globalActiveCred.AccessKey && globalActiveCred.SecretKey == secretKey {
+	// Check root credentials
+	keyMatch := subtle.ConstantTimeCompare([]byte(accessKey), []byte(globalActiveCred.AccessKey)) == 1
+	passMatch := subtle.ConstantTimeCompare([]byte(secretKey), []byte(globalActiveCred.SecretKey)) == 1
+	if keyMatch && passMatch {
 		return &ssh.Permissions{
 			Extensions: map[string]string{
 				"accessKey": accessKey,
@@ -87,7 +128,8 @@ func sftpPasswordCallback(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, er
 	// Check IAM users.
 	if globalIAMSys != nil {
 		cred, ok := globalIAMSys.GetUser(accessKey)
-		if ok && cred.SecretKey == secretKey && cred.IsValid() {
+		if ok && cred.IsValid() &&
+			subtle.ConstantTimeCompare([]byte(secretKey), []byte(cred.SecretKey)) == 1 {
 			return &ssh.Permissions{
 				Extensions: map[string]string{
 					"accessKey": accessKey,
@@ -96,11 +138,15 @@ func sftpPasswordCallback(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, er
 		}
 	}
 
-	return nil, fmt.Errorf("authentication failed for user %s", accessKey)
+	// Generic error to prevent user enumeration.
+	return nil, fmt.Errorf("invalid credentials")
 }
 
 func handleSFTPConnection(conn net.Conn, config *ssh.ServerConfig) {
 	defer conn.Close()
+
+	// Handshake deadline
+	conn.SetDeadline(time.Now().Add(30 * time.Second))
 
 	sshConn, chans, reqs, err := ssh.NewServerConn(conn, config)
 	if err != nil {
@@ -109,7 +155,24 @@ func handleSFTPConnection(conn net.Conn, config *ssh.ServerConfig) {
 	}
 	defer sshConn.Close()
 
+	// Handshake idle timeout.
+	conn.SetDeadline(time.Time{})
+
 	logger.Info("SFTP connection from %s (user: %s)", conn.RemoteAddr(), sshConn.User())
+
+	// Close connection after idle timeout
+	done := make(chan struct{})
+	defer close(done)
+	go func() {
+		timer := time.NewTimer(sftpIdleTimeout)
+		defer timer.Stop()
+		select {
+		case <-timer.C:
+			logger.Info("SFTP idle timeout for user %s from %s", sshConn.User(), conn.RemoteAddr())
+			sshConn.Close()
+		case <-done:
+		}
+	}()
 
 	go ssh.DiscardRequests(reqs)
 
