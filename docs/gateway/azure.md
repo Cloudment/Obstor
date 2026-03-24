@@ -19,7 +19,7 @@ obstor gateway azure
 ## Test using Obstor Browser
 Obstor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
-![Screenshot](https://github.com/cloudment/obstor/blob/main/docs/screenshots/obstor-browser-gateway.png?raw=true)
+![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/dashboard.png)
 ## Test using Obstor Client `mc`
 `mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
 

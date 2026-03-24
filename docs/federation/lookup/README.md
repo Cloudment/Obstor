@@ -16,7 +16,7 @@ Bucket lookup from DNS federation requires two dependencies
 
 ## Architecture
 
-![bucket-lookup](https://github.com/cloudment/obstor/blob/main/docs/federation/lookup/bucket-lookup.png?raw=true)
+![bucket-lookup](https://raw.githubusercontent.com/cloudment/obstor/main/docs/federation/lookup/bucket-lookup.png)
 
 ### Environment variables
 
