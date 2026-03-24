@@ -14,7 +14,7 @@
 - [Sample Response](#sample-response)
 - [Using WebIdentity API](#using-webidentity-api)
 - [Authorization Flow](#authorization-flow)
-- [Using Obstor Browser](#using-obstor-browser)
+- [Using Browser Dashboard](#using-obstor-browser)
 - [Explore Further](#explore-further)
 
 ## Introduction
@@ -141,7 +141,7 @@ $ go run web-identity.go -cid 204367807228-ok7601k6gj1pgge7m09h7d79co8p35xx.apps
 - Once obtained the JWT id_token is further sent to STS endpoint i.e Obstor to retrive temporary credentials.
 - Temporary credentials are displayed on the browser upon successful retrieval.
 
-## Using Obstor Browser
+## Using Browser Dashboard
 To support WebIdentity login on Obstor Browser, set openid configuration and restart Obstor
 
 ```

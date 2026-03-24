@@ -50,10 +50,10 @@ func startSFTPServer(cfg sftp.Config) {
 	globalSFTPConfig = cfg
 
 	sshConfig := &ssh.ServerConfig{
-		PasswordCallback:  sftpPasswordCallback,
-		MaxAuthTries:      3,
-		ServerVersion:     "SSH-2.0-Obstor",
-		BannerCallback:    nil,
+		PasswordCallback: sftpPasswordCallback,
+		MaxAuthTries:     3,
+		ServerVersion:    "SSH-2.0-Obstor",
+		BannerCallback:   nil,
 	}
 
 	// Require modern SSH algorithms

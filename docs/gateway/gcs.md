@@ -3,7 +3,7 @@
 Obstor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S3-compatible APIs
 
 - [Run Obstor Gateway for GCS](#run-obstor-gateway-for-gcs)
-- [Test Using Obstor Browser](#test-using-obstor-browser)
+- [Test Using Browser Dashboard](#test-using-obstor-browser)
 - [Test Using Obstor Client](#test-using-obstor-client)
 
 ## <a name="run-obstor-gateway-for-gcs"></a>1. Run Obstor Gateway for GCS
@@ -38,7 +38,7 @@ export OBSTOR_ROOT_PASSWORD=obstorsecretkey
 obstor gateway gcs yourprojectid
 ```
 
-## <a name="test-using-obstor-browser"></a>2. Test Using Obstor Browser
+## <a name="test-using-obstor-browser"></a>2. Test Using Browser Dashboard
 
 Obstor Gateway comes with an embedded web-based object browser that outputs content to http://127.0.0.1:9000. To test that Obstor Gateway is running, open a web browser, navigate to http://127.0.0.1:9000, and ensure that the object browser is displayed.
 

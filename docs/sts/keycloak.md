@@ -114,7 +114,7 @@ This will open the login page of keycloak, upon successful login, STS credential
 
 These credentials can now be used to perform Obstor API operations.
 
-### Using Obstor Browser
+### Using Browser Dashboard
 
 - Open Obstor URL on the browser, lets say http://localhost:9000
 - Click on `Log in with OpenID`

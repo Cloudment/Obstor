@@ -1,7 +1,7 @@
 # :lobster: Obstor Quickstart Guide
 [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
 
-[![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://pgg.net)
+[![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://obster.net)
 
 Obstor is a high-performance object storage system supporting popular transfer protocols like S3, SFTP, and Hadoop making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
 
@@ -196,7 +196,7 @@ The above statement is also valid for all gateway backends.
 
 # Test Obstor Connectivity
 
-## Test using Obstor Browser
+## Test using Browser Dashboard
 Obstor Server comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure your server has started successfully.
 
 ![Dashboard](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/dashboard.png)
