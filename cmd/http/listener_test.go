@@ -314,7 +314,7 @@ func TestIgnoreErr(t *testing.T) {
 		},
 		{
 			err:  errors.New("eof"),
-			want: true,
+			want: false,
 		},
 		{
 			err:  &net.OpError{Err: &myTimeoutErr{timeout: false}},

@@ -332,7 +332,7 @@ func testDeleteBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 		{"", false, token, "Bucket Name  is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
-		{".", false, "auth", "Authentication failed"},
+		{".", false, "auth", "authentication failed"},
 		{".", false, token, "Bucket Name . is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
@@ -342,13 +342,13 @@ func testDeleteBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrH
 		{"ab", false, token, "Bucket Name ab is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
-		{"obstor", false, "false token", "Authentication failed"},
+		{"obstor", false, "false token", "authentication failed"},
 		{"obstor", false, token, "Bucket Name obstor is invalid. Lowercase letters, period, " +
 			"hyphen, numerals are the only allowed characters and should be minimum " +
 			"3 characters in length."},
 		{bucketName, false, token, ""},
 		{bucketName, true, token, "The bucket you tried to delete is not empty"},
-		{bucketName, false, "", "JWT token missing"},
+		{bucketName, false, "", "jwt token missing"},
 	}
 
 	for _, test := range testCases {
@@ -860,7 +860,7 @@ func testDownloadWebHandler(obj ObjectLayer, instanceType string, t TestErrHandl
 		t.Fatalf("Expected the response status to be 403, but instead found `%d`", code)
 	}
 
-	if !bytes.Equal(bodyContent, bytes.NewBufferString("Authentication failed, check your access credentials").Bytes()) {
+	if !bytes.Equal(bodyContent, bytes.NewBufferString("authentication failed, check your access credentials").Bytes()) {
 		t.Fatalf("Expected authentication error message, got %s", string(bodyContent))
 	}
 

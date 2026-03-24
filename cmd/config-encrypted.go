@@ -71,10 +71,8 @@ func decryptData(edata []byte, creds ...auth.Credentials) ([]byte, error) {
 	for _, cred := range creds {
 		data, err = madmin.DecryptData(cred.String(), bytes.NewReader(edata))
 		if err != nil {
-			if err == madmin.ErrMaliciousData {
-				continue
-			}
-			return nil, err
+			// Try next credential on any decryption failure
+			continue
 		}
 		break
 	}

@@ -258,3 +258,12 @@ func (args *GetObjectLocationsArgs) ToKeyValue() KeyValueMap {
 	km.SetPrefix(args.Prefix)
 	return km
 }
+
+// ToKeyValue implementation for PresignedPutArgs
+func (args *PresignedPutArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	km.SetPrefix(args.Prefix)
+	km.SetObject(args.ObjectName)
+	return km
+}

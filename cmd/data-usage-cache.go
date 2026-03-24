@@ -206,17 +206,6 @@ func (d *dataUsageCache) findChildrenCopy(h dataUsageHash) dataUsageHashMap {
 	return res
 }
 
-// Returns nil if not found.
-func (d *dataUsageCache) subCache(path string) dataUsageCache {
-	dst := dataUsageCache{Info: dataUsageCacheInfo{
-		Name:        path,
-		LastUpdate:  d.Info.LastUpdate,
-		BloomFilter: d.Info.BloomFilter,
-	}}
-	dst.copyWithChildren(d, dataUsageHash(hashPath(path).Key()), nil)
-	return dst
-}
-
 func (d *dataUsageCache) deleteRecursive(h dataUsageHash) {
 	if existing, ok := d.Cache[h.String()]; ok {
 		// Delete first if there should be a loop.
@@ -225,28 +214,6 @@ func (d *dataUsageCache) deleteRecursive(h dataUsageHash) {
 			d.deleteRecursive(dataUsageHash(child))
 		}
 	}
-}
-
-// replaceRootChild will replace the child of root in d with the root of 'other'.
-func (d *dataUsageCache) replaceRootChild(other dataUsageCache) {
-	otherRoot := other.root()
-	if otherRoot == nil {
-		logger.LogIf(GlobalContext, errors.New("replaceRootChild: Source has no root"))
-		return
-	}
-	thisRoot := d.root()
-	if thisRoot == nil {
-		logger.LogIf(GlobalContext, errors.New("replaceRootChild: Root of current not found"))
-		return
-	}
-	thisRootHash := d.rootHash()
-	otherRootHash := other.rootHash()
-	if thisRootHash == otherRootHash {
-		logger.LogIf(GlobalContext, errors.New("replaceRootChild: Root of child matches root of destination"))
-		return
-	}
-	d.deleteRecursive(other.rootHash())
-	d.copyWithChildren(&other, other.rootHash(), &thisRootHash)
 }
 
 // keepBuckets will keep only the buckets specified specified by delete all others.
@@ -455,16 +422,6 @@ func (d *dataUsageCache) bucketUsageInfo(bucket string) madmin.BucketUsageInfo {
 		ReplicaSize:             flat.ReplicationStats.ReplicaSize,
 		ObjectSizesHistogram:    flat.ObjSizes.toMap(),
 	}
-}
-
-// sizeRecursive returns the path as a flattened entry.
-func (d *dataUsageCache) sizeRecursive(path string) *dataUsageEntry {
-	root := d.find(path)
-	if root == nil || len(root.Children) == 0 {
-		return root
-	}
-	flat := d.flatten(*root)
-	return &flat
 }
 
 // root returns the root of the cache.

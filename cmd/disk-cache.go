@@ -393,7 +393,7 @@ func (c *cacheObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 	cachedObjInfo, _, cerr := dcache.Stat(ctx, bucket, object)
 	if cerr == nil {
 		cc = cacheControlOpts(cachedObjInfo)
-		if cc == nil || (cc != nil && !cc.isStale(cachedObjInfo.ModTime)) {
+		if cc == nil || !cc.isStale(cachedObjInfo.ModTime) {
 			// This is a cache hit, mark it so
 			c.cacheStats.incHit()
 			return cachedObjInfo, nil

@@ -63,7 +63,7 @@ func TestValidateBucketSSEConfig(t *testing.T) {
 		}
 
 		if !tc.shouldPass {
-			if err == nil || err != nil && err.Error() != tc.expectedErr.Error() {
+			if err == nil || err.Error() != tc.expectedErr.Error() {
 				t.Fatalf("Test case %d: Expected %s but got %s", i+1, tc.expectedErr, err)
 			}
 		}

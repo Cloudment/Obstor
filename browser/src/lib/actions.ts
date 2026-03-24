@@ -256,7 +256,7 @@ export async function getShareLink(bucketName: string, objectName: string, expir
 
 export async function getUploadURL(bucketName: string, prefix: string, objectName: string) {
   try {
-    const result = await rpc<{ url: string }>("PutObjectURL", {
+    const result = await rpc<{ url: string }>("PresignedPut", {
       host: process.env.OBSTOR_HOST || "localhost:9000",
       bucket: bucketName,
       prefix,
@@ -274,7 +274,7 @@ export async function getDownloadURL(bucketName: string, objectName: string) {
       host: process.env.OBSTOR_HOST || "localhost:9000",
       bucket: bucketName,
       object: objectName,
-      expiry: 3600,
+      expiry: 300,
     });
     return { url: result.url };
   } catch (err) {

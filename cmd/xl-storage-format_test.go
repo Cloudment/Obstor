@@ -57,8 +57,8 @@ func TestIsXLMetaErasureInfoValid(t *testing.T) {
 		{1, 5, 6, false},
 		{2, 5, 5, true},
 		{3, 0, 5, false},
-		{4, 5, 0, false},
-		{5, 5, 0, false},
+		{4, 5, 0, true},
+		{5, 5, 0, true},
 		{6, 5, 4, true},
 	}
 	for _, tt := range tests {

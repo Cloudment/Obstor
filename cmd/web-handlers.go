@@ -2168,8 +2168,20 @@ func (web *webAPIHandlers) PresignedGet(r *http.Request, args *PresignedGetArgs,
 	}
 
 	reply.UIVersion = Version
-	reply.URL = presignedGet(args.HostName, args.BucketName, args.ObjectName, args.Expiry, creds, region)
+	// Issue a one-time token (5-min TTL) appended to the presigned URL.
+	otp, otpErr := globalTokenStore.Issue(5 * time.Minute)
+	if otpErr != nil {
+		return toJSONError(ctx, otpErr)
+	}
+	reply.URL = presignedGet(args.HostName, args.BucketName, args.ObjectName, args.Expiry, creds, region) + "&x-obstor-otp=" + otp
 	return nil
+}
+
+func ensureScheme(host string) string {
+	if host != "" && !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
+		return "http://" + host
+	}
+	return host
 }
 
 // Returns presigned url for GET method.
@@ -2182,8 +2194,9 @@ func presignedGet(host, bucket, object string, expiry int64, creds auth.Credenti
 	dateStr := date.Format(iso8601Format)
 	credential := fmt.Sprintf("%s/%s", accessKey, getScope(date, region))
 
-	var expiryStr = "604800" // Default set to be expire in 7days.
-	if expiry < 604800 && expiry > 0 {
+	// Cap presigned URL expiry to 5 minutes for security.
+	var expiryStr = "300"
+	if expiry > 0 && expiry < 300 {
 		expiryStr = strconv.FormatInt(expiry, 10)
 	}
 
@@ -2210,7 +2223,7 @@ func presignedGet(host, bucket, object string, expiry int64, creds auth.Credenti
 	signingKey := getSigningKey(secretKey, date, region, serviceS3)
 	signature := getSignature(signingKey, stringToSign)
 
-	return host + s3utils.EncodePath(path) + "?" + queryStr + "&" + xhttp.AmzSignature + "=" + signature
+	return ensureScheme(host) + s3utils.EncodePath(path) + "?" + queryStr + "&" + xhttp.AmzSignature + "=" + signature
 }
 
 // DiscoveryDocResp - OpenID discovery document reply.
@@ -2478,11 +2491,6 @@ func (web *webAPIHandlers) GetObjectLocations(r *http.Request, args *GetObjectLo
 		return toJSONError(ctx, authErr)
 	}
 
-	// Try to get erasure placement; fall back to single-node endpoint.
-	type erasureGetter interface {
-		GetDisks() []StorageAPI
-	}
-
 	reply.Objects = []ObjectLocation{}
 
 	// List objects in the prefix
@@ -2531,4 +2539,103 @@ func (web *webAPIHandlers) GetObjectLocations(r *http.Request, args *GetObjectLo
 	}
 
 	return nil
+}
+
+// PresignedPutArgs - presigned-put API args.
+type PresignedPutArgs struct {
+	// Host header value.
+	HostName string `json:"host"`
+	// Bucket name of the object to be uploaded.
+	BucketName string `json:"bucket"`
+	// Prefix for the object path.
+	Prefix string `json:"prefix"`
+	// Object name to be uploaded.
+	ObjectName string `json:"object"`
+}
+
+// PresignedPutRep - presigned-put URL reply.
+type PresignedPutRep struct {
+	UIVersion string `json:"uiVersion"`
+	// Presigned URL for PUT.
+	URL string `json:"url"`
+}
+
+// PresignedPut returns a presigned URL for uploading an object.
+func (web *webAPIHandlers) PresignedPut(r *http.Request, args *PresignedPutArgs, reply *PresignedPutRep) error {
+	ctx := newWebContext(r, args, "WebPresignedPut")
+	claims, owner, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+	var creds auth.Credentials
+	if !owner {
+		var ok bool
+		creds, ok = globalIAMSys.GetUser(claims.AccessKey)
+		if !ok {
+			return toJSONError(ctx, errInvalidAccessKeyID)
+		}
+	} else {
+		creds = globalActiveCred
+	}
+
+	objectName := args.Prefix + args.ObjectName
+	if args.BucketName == "" || objectName == "" {
+		return &json2.Error{
+			Message: "Bucket and Object are mandatory arguments.",
+		}
+	}
+
+	if isReservedOrInvalidBucket(args.BucketName, false) {
+		return toJSONError(ctx, errInvalidBucketName, args.BucketName)
+	}
+
+	// Check if the user has PutObject access.
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName:     claims.AccessKey,
+		Action:          iampolicy.PutObjectAction,
+		BucketName:      args.BucketName,
+		ConditionValues: getConditionValues(r, "", claims.AccessKey, claims.Map()),
+		IsOwner:         owner,
+		ObjectName:      objectName,
+		Claims:          claims.Map(),
+	}) {
+		return toJSONError(ctx, errPresignedNotAllowed)
+	}
+
+	region := globalServerRegion
+	reply.UIVersion = Version
+	otp, otpErr := globalTokenStore.Issue(5 * time.Minute)
+	if otpErr != nil {
+		return toJSONError(ctx, otpErr)
+	}
+	reply.URL = presignedPut(args.HostName, args.BucketName, objectName, creds, region) + "&x-obstor-otp=" + otp
+	return nil
+}
+
+func presignedPut(host, bucket, object string, creds auth.Credentials, region string) string {
+	date := UTCNow()
+	dateStr := date.Format(iso8601Format)
+	credential := fmt.Sprintf("%s/%s", creds.AccessKey, getScope(date, region))
+
+	query := url.Values{}
+	query.Set(xhttp.AmzAlgorithm, signV4Algorithm)
+	query.Set(xhttp.AmzCredential, credential)
+	query.Set(xhttp.AmzDate, dateStr)
+	query.Set(xhttp.AmzExpires, "300")
+	if creds.SessionToken != "" {
+		query.Set(xhttp.AmzSecurityToken, creds.SessionToken)
+	}
+	query.Set(xhttp.AmzSignedHeaders, "host")
+	queryStr := s3utils.QueryEncode(query)
+
+	path := SlashSeparator + path.Join(bucket, object)
+
+	extractedSignedHeaders := make(http.Header)
+	extractedSignedHeaders.Set("host", host)
+	canonicalRequest := getCanonicalRequest(extractedSignedHeaders, unsignedPayload, queryStr, path, http.MethodPut)
+	stringToSign := getStringToSign(canonicalRequest, date, getScope(date, region))
+	signingKey := getSigningKey(creds.SecretKey, date, region, serviceS3)
+	signature := getSignature(signingKey, stringToSign)
+
+	return ensureScheme(host) + s3utils.EncodePath(path) + "?" + queryStr + "&" + xhttp.AmzSignature + "=" + signature
 }

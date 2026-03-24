@@ -27,9 +27,3 @@ var errErasureWriteQuorum = errors.New("write failed. Insufficient number of nod
 
 // errNoHealRequired - returned when healing is attempted on a previously healed object.
 var errNoHealRequired = errors.New("no healing is required")
-
-// errBlockNotFound - block hash not found on any node.
-var errBlockNotFound = errors.New("block not found")
-
-// errBlockCorrupt - block data does not match its hash.
-var errBlockCorrupt = errors.New("block data corrupt")

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useReducer, useRef } from "react";
-import { deleteObjectAction, getShareLink } from "@/lib/actions";
+import { deleteObjectAction, getDownloadURL, getShareLink, getUploadURL } from "@/lib/actions";
 
 interface FileEntry {
   name: string;
@@ -542,13 +542,16 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
 
       for (let i = 0; i < items.length; i++) {
         const { file, path: relativePath } = items[i];
-        const objectName = prefix + relativePath;
-        const uploadPath = `/api/upload/${encodeURIComponent(bucketName)}/${objectName.split("/").map(encodeURIComponent).join("/")}`;
+        const _objectName = prefix + relativePath;
 
         try {
+          // Get presigned PUT URL from backend
+          const urlResult = await getUploadURL(bucketName, prefix, relativePath);
+          if (!urlResult.url) throw new Error("Failed to get upload URL");
+
           await new Promise<void>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open("PUT", uploadPath);
+            xhr.open("PUT", urlResult.url);
             xhr.upload.onprogress = (e) => {
               if (e.lengthComputable) {
                 dispatch({
@@ -614,9 +617,11 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
   );
 
   // Actions
-  const handleDownload = (objectName: string) => {
-    const path = `/api/download/${encodeURIComponent(bucketName)}/${objectName.split("/").map(encodeURIComponent).join("/")}`;
-    window.open(path, "_blank");
+  const handleDownload = async (objectName: string) => {
+    const result = await getDownloadURL(bucketName, objectName);
+    if (result.url) {
+      window.open(result.url, "_blank");
+    }
   };
 
   const handleShare = async (objectName: string) => {

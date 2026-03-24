@@ -770,23 +770,6 @@ func waitForHTTPResponse(respBody io.Reader) (io.Reader, error) {
 	}
 }
 
-// drainCloser can be used for wrapping an http response.
-// It will drain the body before closing.
-type drainCloser struct {
-	rc io.ReadCloser
-}
-
-// Read forwards the read operation.
-func (f drainCloser) Read(p []byte) (n int, err error) {
-	return f.rc.Read(p)
-}
-
-// Close drains the body and closes the upstream.
-func (f drainCloser) Close() error {
-	xhttp.DrainBody(f.rc)
-	return nil
-}
-
 // httpStreamResponse allows streaming a response, but still send an error.
 type httpStreamResponse struct {
 	done  chan error

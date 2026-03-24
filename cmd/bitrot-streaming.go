@@ -29,14 +29,6 @@ import (
 	"github.com/cloudment/obstor/pkg/ioutil"
 )
 
-type errHashMismatch struct {
-	message string
-}
-
-func (err *errHashMismatch) Error() string {
-	return err.message
-}
-
 // Calculates bitrot in chunks and writes the hash into the stream.
 type streamingBitrotWriter struct {
 	iow          io.WriteCloser

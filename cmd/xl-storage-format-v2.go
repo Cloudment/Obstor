@@ -129,10 +129,6 @@ const (
 	lastVersionType    VersionType = 4
 )
 
-func (e VersionType) valid() bool {
-	return e > invalidVersionType && e < lastVersionType
-}
-
 // ErasureAlgo defines common type of different erasure algorithms
 type ErasureAlgo uint8
 

@@ -50,13 +50,11 @@ const (
 )
 
 var (
-	objectUpdatedCh      chan<- string
 	intDataUpdateTracker *dataUpdateTracker
 )
 
 func init() {
 	intDataUpdateTracker = newDataUpdateTracker()
-	objectUpdatedCh = intDataUpdateTracker.input
 }
 
 type dataUpdateTracker struct {

@@ -505,7 +505,7 @@ func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string
 	return resp.Body, nil
 }
 
-func doUpdate(u *url.URL, lrTime time.Time, sha256Sum []byte, releaseInfo string, mode string) (err error) {
+func doUpdate(u *url.URL, _ time.Time, sha256Sum []byte, releaseInfo string, mode string) (err error) {
 	transport := getUpdateTransport(30 * time.Second)
 	var reader io.ReadCloser
 	// CVE-2022-35919: Only allow HTTP(S) update URLs to prevent arbitrary file reads.
