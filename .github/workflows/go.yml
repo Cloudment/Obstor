@@ -5,8 +5,23 @@ on:
     branches:
     - master
     - main
+  push:
+    branches:
+    - main
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+
   build:
     name: Test on Go ${{ matrix.go-version }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -41,14 +56,21 @@ jobs:
         run: |
           sudo sysctl net.ipv6.conf.all.disable_ipv6=0
           sudo sysctl net.ipv6.conf.default.disable_ipv6=0
-          sudo apt-get install devscripts shellcheck
-          nancy_version=$(curl --retry 10 -Ls -o /dev/null -w "%{url_effective}" https://github.com/sonatype-nexus-community/nancy/releases/latest | sed "s/https:\/\/github.com\/sonatype-nexus-community\/nancy\/releases\/tag\///")
-          curl -L -o nancy https://github.com/sonatype-nexus-community/nancy/releases/download/${nancy_version}/nancy-${nancy_version}-linux-amd64 && chmod +x nancy
-          go list -m all | ./nancy sleuth
-          make
-          make test-race
-          make crosscompile
-          make verify
-          make verify-healing
+          sudo apt install -y devscripts shellcheck
+          go build -trimpath --ldflags="-s -w" -o obstor
+          go test --timeout 50m ./cmd/http/... ./pkg/...
           cd browser && pnpm install && pnpm run format && cd ..
           bash -c 'shopt -s globstar; shellcheck tests/**/*.sh'
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

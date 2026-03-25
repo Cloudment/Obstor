@@ -307,14 +307,14 @@ func checkRequestAuthTypeWithVID(ctx context.Context, r *http.Request, action po
 // Additionally returns the accessKey used in the request, and if this request is by an admin.
 func checkRequestAuthTypeCredential(ctx context.Context, r *http.Request, action policy.Action, bucketName, objectName string) (cred auth.Credentials, owner bool, s3Err APIErrorCode) {
 	switch getRequestAuthType(r) {
-	case authTypeUnknown, authTypeStreamingSigned:
+	case authTypeUnknown:
 		return cred, owner, ErrSignatureVersionNotSupported
 	case authTypePresignedV2, authTypeSignedV2:
 		if s3Err = isReqAuthenticatedV2(r); s3Err != ErrNone {
 			return cred, owner, s3Err
 		}
 		cred, owner, s3Err = getReqAccessKeyV2(r)
-	case authTypeSigned, authTypePresigned:
+	case authTypeStreamingSigned, authTypeSigned, authTypePresigned:
 		region := globalServerRegion
 		switch action {
 		case policy.GetBucketLocationAction, policy.ListAllMyBucketsAction:
@@ -536,14 +536,14 @@ func validateSignature(atype authType, r *http.Request) (auth.Credentials, bool,
 	var owner bool
 	var s3Err APIErrorCode
 	switch atype {
-	case authTypeUnknown, authTypeStreamingSigned:
+	case authTypeUnknown:
 		return cred, owner, nil, ErrSignatureVersionNotSupported
 	case authTypeSignedV2, authTypePresignedV2:
 		if s3Err = isReqAuthenticatedV2(r); s3Err != ErrNone {
 			return cred, owner, nil, s3Err
 		}
 		cred, owner, s3Err = getReqAccessKeyV2(r)
-	case authTypePresigned, authTypeSigned:
+	case authTypeStreamingSigned, authTypePresigned, authTypeSigned:
 		region := globalServerRegion
 		if s3Err = isReqAuthenticated(GlobalContext, r, region, serviceS3); s3Err != ErrNone {
 			return cred, owner, nil, s3Err
