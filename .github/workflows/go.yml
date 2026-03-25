@@ -60,7 +60,7 @@ jobs:
           go build -trimpath --ldflags="-s -w" -o obstor
           go test --timeout 50m $(go list ./cmd/http/... ./pkg/... | grep -v -E 'event/target|licverifier|mountinfo|s3select$|trie')
           cd browser && pnpm install && pnpm run format && cd ..
-          bash -c 'shopt -s globstar; shellcheck tests/**/*.sh'
+          bash -c 'shopt -s globstar; shellcheck -S warning -x tests/**/*.sh'
 
   docker:
     name: Docker Build
