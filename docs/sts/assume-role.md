@@ -1,4 +1,4 @@
-# AssumeRole [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# AssumeRole
 
 **Table of Contents**
 

@@ -1,4 +1,4 @@
-# Disk Caching Design [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Disk Caching Design
 
 This document explains some basic assumptions and design approach, limits of the disk caching feature. If you're looking to get started with disk cache, we suggest you go through the [getting started document](https://github.com/cloudment/obstor/blob/main/docs/disk-caching/README.md) first.
 

@@ -1,4 +1,4 @@
-# KMS Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# KMS Guide
 
 Obstor uses a key-management-system (KMS) to support SSE-S3. If a client requests SSE-S3, or auto-encryption is enabled, the Obstor server encrypts each object with an unique object key which is protected by a master key managed by the KMS.
 
@@ -44,7 +44,7 @@ A typical Obstor deployment that uses a KMS for SSE-S3 looks like this:
     │ ┌──────────┴─┬─────╮          ┌────────────┐
     └─┤ ┌──────────┴─┬───┴──────────┤ ┌──────────┴─┬─────────────────╮
       └─┤ ┌──────────┴─┬─────┬──────┴─┤ KES Server ├─────────────────┤
-        └─┤   Obstor    ├─────╯        └────────────┘            ┌────┴────┐
+        └─┤   Obstor   ├─────╯        └────────────┘            ┌────┴────┐
           └────────────┘                                        │   KMS   │
                                                                 └─────────┘
 ```

@@ -1,4 +1,4 @@
-# Obstor Storage Class Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Storage Class Quickstart Guide
 
 Obstor server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
 

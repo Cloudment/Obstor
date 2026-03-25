@@ -1,6 +1,6 @@
-# **Disaggregated HDP Spark and Hive with Obstor**
+# Disaggregated HDP Spark and Hive with Obstor
 
-## **1. Cloud-native Architecture**
+## 1. Cloud-native Architecture
 
 ![cloud-native](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bigdata/images/image1.png "cloud native architecture")
 
@@ -10,7 +10,7 @@ All access to Obstor object storage is via S3/SQL SELECT API. In addition to the
 
 Obstor also supports multi-cluster, multi-site federation similar to AWS regions and tiers. Using Obstor Information Lifecycle Management (ILM), you can configure data to be tiered between NVMe based hot storage, and HDD based warm storage. All data is encrypted with per-object key. Access Control and Identity Management between the tenants are managed by Obstor using OpenID Connect or Kerberos/LDAP/AD.
 
-## **2. Prerequisites**
+## 2. Prerequisites
 
 *  Install Hortonworks Distribution using this [guide.](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/ch_Installing_Ambari.html)
    *   [Setup Ambari](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/set_up_the_ambari_server.html) which automatically sets up YARN
@@ -19,13 +19,13 @@ Obstor also supports multi-cluster, multi-site federation similar to AWS regions
    *   [Deployment based on Kubernetes](https://obstor.net/docs/deploy-obstor-on-kubernetes.html#obstor-distributed-server-deployment)
    *   [Deployment based on Obstor Helm Chart](https://github.com/helm/charts/tree/master/stable/obstor)
 
-## **3. Configure Hadoop, Spark, Hive to use Obstor**
+## 3. Configure Hadoop, Spark, Hive to use Obstor
 
 After successful installation navigate to the Ambari UI `http://<ambari-server>:8080/` and login using the default credentials: [**_username: admin, password: admin_**]
 
 ![ambari-login](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bigdata/images/image3.png "ambari login")
 
-### **3.1 Configure Hadoop**
+### 3.1 Configure Hadoop
 
 Navigate to **Services** -> **HDFS** -> **CONFIGS** -> **ADVANCED** as shown below
 
@@ -102,7 +102,7 @@ Once the config changes are applied, proceed to restart **Hadoop** services.
 
 ![hdfs-services](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bigdata/images/image7.png "hdfs restart services")
 
-### **3.2 Configure Spark2**
+### 3.2 Configure Spark2
 
 Navigate to **Services** -> **Spark2** -> **CONFIGS** as shown below
 
@@ -148,7 +148,7 @@ Once the config changes are applied, proceed to restart **Spark** services.
 
 ![spark-config](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bigdata/images/image12.png "spark restart services")
 
-### **3.3 Configure Hive**
+### 3.3 Configure Hive
 
 Navigate to **Services** -> **Hive** -> **CONFIGS**-> **ADVANCED** as shown below
 
@@ -177,11 +177,11 @@ Once the config changes are applied, proceed to restart all Hive services.
 
 ![hive-config](https://raw.githubusercontent.com/cloudment/obstor/main/docs/bigdata/images/image14.png "restart hive services")
 
-## **4. Run Sample Applications**
+## 4. Run Sample Applications
 
 After installing Hive, Hadoop and Spark successfully, we can now proceed to run some sample applications to see if they are configured appropriately.  We can use Spark Pi and Spark WordCount programs to validate our Spark installation. We can also explore how to run Spark jobs from the command line and Spark shell.
 
-### **4.1 Spark Pi**
+### 4.1 Spark Pi
 
 Test the Spark installation by running the following compute intensive example, which calculates pi by “throwing darts” at a circle. The program generates points in the unit square ((0,0) to (1,1)) and counts how many points fall within the unit circle within the square. The result approximates pi.
 
@@ -217,7 +217,7 @@ Pi is roughly 3.1445191445191445
 
 Job status can also be viewed in a browser by navigating to the YARN ResourceManager Web UI and clicking on job history server information.
 
-### **4.2 WordCount**
+### 4.2 WordCount
 
 WordCount is a simple program that counts how often a word occurs in a text file. The code builds a dataset of (String, Int) pairs called counts, and saves the dataset to a file.
 
@@ -234,14 +234,14 @@ su spark
 
 The following example uses _log4j.properties_ as the input file:
 
-#### **4.2.1 Upload the input file to HDFS:**
+#### 4.2.1 Upload the input file to HDFS:
 
 ```
 hadoop fs -copyFromLocal /etc/hadoop/conf/log4j.properties
           s3a://testbucket/testdata
 ```
 
-#### **4.2.2  Run the Spark shell:**
+#### 4.2.2  Run the Spark shell:
 
 ```
 ./bin/spark-shell --master yarn-client --driver-memory 512m --executor-memory 512m

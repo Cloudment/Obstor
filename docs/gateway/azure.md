@@ -1,4 +1,4 @@
-# Obstor Azure Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Azure Gateway
 Obstor Gateway adds Amazon S3 compatibility to Microsoft Azure Blob Storage.
 
 ## Run Obstor Gateway for Microsoft Azure Blob Storage

@@ -1,4 +1,4 @@
-# Obstor Admin Multi-user Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Admin Multi-user Quickstart Guide
 Obstor supports multiple admin users in addition to default operator credential created during server startup. New admins can be added after server starts up, and server can be configured to deny or allow access to different admin operations for these users. This document explains how to add/remove admin users and modify their access rights.
 
 ## Get started

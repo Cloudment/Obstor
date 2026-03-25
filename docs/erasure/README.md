@@ -1,4 +1,4 @@
-# Obstor Erasure Code Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Erasure Code Quickstart Guide
 
 Obstor protects data against hardware failures and silent data corruption using erasure code and checksums. With the highest level of redundancy, you may lose up to half (N/2) of the total drives and still be able to recover the data.
 

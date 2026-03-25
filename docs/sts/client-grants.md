@@ -1,4 +1,4 @@
-# AssumeRoleWithClientGrants [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# AssumeRoleWithClientGrants
 
 **Table of Contents**
 

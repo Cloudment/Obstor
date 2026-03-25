@@ -1,4 +1,4 @@
-# Deploy Obstor on Kubernetes [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Deploy Obstor on Kubernetes
 
 Obstor is a high performance distributed object storage server, designed for large-scale private cloud infrastructure. Obstor is designed in a cloud-native manner to scale sustainably in multi-tenant environments. Orchestration platforms like Kubernetes provide perfect cloud-native environment to deploy and scale Obstor.
 

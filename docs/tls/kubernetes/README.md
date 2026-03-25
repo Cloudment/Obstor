@@ -1,4 +1,4 @@
-# How to secure access to Obstor on Kubernetes with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to secure access to Obstor on Kubernetes with TLS
 
 This document explains how to configure Obstor server with TLS certificates on Kubernetes.
 

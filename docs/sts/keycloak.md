@@ -1,4 +1,4 @@
-# Keycloak Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Keycloak Quickstart Guide
 
 Keycloak is an open source Identity and Access Management solution aimed at modern applications and services, this document covers configuring Keycloak identity provider support with Obstor.
 

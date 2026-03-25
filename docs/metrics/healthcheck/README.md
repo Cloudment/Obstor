@@ -1,4 +1,4 @@
-## Obstor Healthcheck
+# Obstor Healthcheck
 
 Obstor server exposes three un-authenticated, healthcheck endpoints liveness probe and a cluster probe at `/obstor/health/live` and `/obstor/health/cluster` respectively.
 

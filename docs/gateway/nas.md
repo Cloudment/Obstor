@@ -1,4 +1,4 @@
-# Obstor NAS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor NAS Gateway
 
 Obstor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object gateway.
 

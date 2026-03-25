@@ -1,4 +1,4 @@
-# Distributed Obstor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Distributed Obstor Quickstart Guide
 
 Obstor in distributed mode lets you pool multiple drives (even on different machines) into a single object storage server. As drives are distributed across several nodes, distributed Obstor can withstand multiple node failures and yet ensure full data protection.
 

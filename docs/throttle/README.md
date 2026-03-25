@@ -1,4 +1,4 @@
-# Obstor Server Throttling Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Obstor Server Throttling Guide
 
 Obstor server allows to throttle incoming requests:
 

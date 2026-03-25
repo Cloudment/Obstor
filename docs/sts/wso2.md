@@ -1,4 +1,4 @@
-# WSO2 Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# WSO2 Quickstart Guide
 WSO2 is an Identity Server open source and is released under Apache Software License Version 2.0, this document covers configuring WSO2 to be used as an identity provider for Obstor server STS API.
 
 ## Get started

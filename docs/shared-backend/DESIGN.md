@@ -1,5 +1,5 @@
-Introduction [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
-------------
+# Shared Backend Design
+
 
 This feature allows Obstor to serve a shared NAS drive across multiple Obstor instances. There are no special configuration changes required to enable this feature. Access to files stored on NAS volume are locked and synchronized by default.
 

@@ -1,4 +1,4 @@
-# Obstor HDFS Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor HDFS Gateway
 Obstor HDFS gateway adds Amazon S3 API support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the gateway is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
 
 > NOTE: Intention of this gateway implementation it to make it easy to migrate your existing data on HDFS clusters to Obstor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.

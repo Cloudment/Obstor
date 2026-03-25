@@ -1,4 +1,4 @@
-# AssumeRoleWithWebIdentity [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# AssumeRoleWithWebIdentity
 
 **Table of Contents**
 

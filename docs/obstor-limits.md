@@ -1,4 +1,4 @@
-## Obstor Server Limits Per Tenant
+# Obstor Server Limits Per Tenant
 
 ### Erasure Code (Multiple Drives / Servers)
 

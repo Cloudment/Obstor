@@ -1,4 +1,4 @@
-# Obstor Bucket Notification Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Bucket Notification Guide
 
 Events occurring on objects in a bucket can be monitored using bucket event notifications.
 

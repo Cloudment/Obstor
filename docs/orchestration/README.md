@@ -1,4 +1,4 @@
-# Obstor Deployment Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Obstor Deployment Quickstart Guide
 
 Obstor is a cloud-native application designed to scale in a sustainable manner in multi-tenant environments. Orchestration platforms provide perfect launchpad for Obstor to scale. Below is the list of Obstor deployment documents for various orchestration platforms:
 

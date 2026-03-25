@@ -1,4 +1,4 @@
-# Shared Backend Obstor Quickstart Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)  [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Shared Backend Obstor Quickstart Guide
 
 Obstor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple Obstor servers. Synchronization among Obstor servers is taken care by design.

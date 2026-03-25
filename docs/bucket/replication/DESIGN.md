@@ -1,4 +1,4 @@
-# Bucket Replication Design [![slack](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Bucket Replication Design
 
 This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/cloudment/obstor/blob/main/docs/bucket/replication/README.md) first.
 

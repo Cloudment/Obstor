@@ -1,4 +1,4 @@
-# Obstor Server Config Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+# Obstor Server Config Guide
 
 ## Configuration Directory
 
@@ -337,17 +337,17 @@ obstor server /data
 
 ### Domain
 
-By default, Obstor supports path-style requests that are of the format http://mydomain.com/bucket/object. `OBSTOR_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).mydomain.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
+By default, Obstor supports path-style requests that are of the format http://example.com/bucket/object. `OBSTOR_DOMAIN` environment variable is used to enable virtual-host-style requests. If the request `Host` header matches with `(.+).example.com` then the matched pattern `$1` is used as bucket and the path is used as object. More information on path-style and virtual-host-style [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAPI.html)
 Example:
 
 ```sh
-export OBSTOR_DOMAIN=mydomain.com
+export OBSTOR_DOMAIN=example.com
 obstor server /data
 ```
 
 For advanced use cases `OBSTOR_DOMAIN` environment variable supports multiple-domains with comma separated values.
 ```sh
-export OBSTOR_DOMAIN=sub1.mydomain.com,sub2.mydomain.com
+export OBSTOR_DOMAIN=sub1.example.com,sub2.example.com
 obstor server /data
 ```
 

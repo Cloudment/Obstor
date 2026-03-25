@@ -1,4 +1,4 @@
-# Obstor Cluster Deployment Guide [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/obstor/obstor.svg?maxAge=604800)](https://hub.docker.com/r/obstor/obstor/)
+# Obstor Cluster Deployment Guide
 
 This guide covers deploying Obstor in a multi-node cluster configuration with block-level replication, node quotas, geo-distribution, and failure recovery.
 

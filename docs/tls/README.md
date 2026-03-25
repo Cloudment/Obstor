@@ -1,4 +1,4 @@
-# How to secure access to Obstor server with TLS [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# How to secure access to Obstor server with TLS
 
 This guide explains how to configure Obstor Server with TLS certificates on Linux and Windows platforms.
 

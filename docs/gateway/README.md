@@ -1,4 +1,4 @@
-# Obstor Gateway [![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
+# Obstor Gateway
 Obstor Gateway adds Amazon S3 compatibility to third party cloud storage providers.
 - [NAS](https://github.com/cloudment/obstor/blob/main/docs/gateway/nas.md)
 - [Microsoft Azure Blob Storage](https://github.com/cloudment/obstor/blob/main/docs/gateway/azure.md)
