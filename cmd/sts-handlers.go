@@ -150,25 +150,21 @@ func checkAssumeRoleAuth(ctx context.Context, r *http.Request) (user auth.Creden
 func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AssumeRole")
 
+	// Authenticate r.ParseForm before r.Form
 	user, isErrCodeSTS, stsErr := checkAssumeRoleAuth(ctx, r)
-	if stsErr != ErrSTSNone {
-		writeSTSErrorResponse(ctx, w, isErrCodeSTS, stsErr, nil)
-		return
-	}
 	if err := r.ParseForm(); err != nil {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, err)
 		return
 	}
 
+	// Verify the API version
 	if r.Form.Get(stsVersion) != stsAPIVersion {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSMissingParameter, fmt.Errorf("invalid STS API version %s, expecting %s", r.Form.Get(stsVersion), stsAPIVersion))
 		return
 	}
 
 	action := r.Form.Get(stsAction)
-	switch action {
-	case assumeRole:
-	default:
+	if action != assumeRole {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, fmt.Errorf("unsupported action %s", action))
 		return
 	}
@@ -176,12 +172,16 @@ func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 	ctx = newContext(r, w, action)
 	defer logger.AuditLog(ctx, w, r, nil)
 
+	// After audit setup, check for earlier authentication failure
+	if stsErr != ErrSTSNone {
+		writeSTSErrorResponse(ctx, w, isErrCodeSTS, stsErr, nil)
+		return
+	}
+
+	// Enforce the 2048-character cap on inline/managed session policies.
 	sessionPolicyStr := r.Form.Get(stsPolicy)
-	// https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
-	// The plain text that you use for both inline and managed session
-	// policies shouldn't exceed 2048 characters.
 	if len(sessionPolicyStr) > 2048 {
-		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, fmt.Errorf("session policy shouldn't exceed 2048 characters"))
+		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, fmt.Errorf("session policy exceeds 2048-character limit"))
 		return
 	}
 
@@ -191,22 +191,22 @@ func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 			writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, err)
 			return
 		}
-
-		// Version in policy must not be empty
 		if sessionPolicy.Version == "" {
-			writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, fmt.Errorf("version cannot be empty expecting '2012-10-17'"))
+			writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, fmt.Errorf("policy version is required (expected '2012-10-17')"))
 			return
 		}
 	}
 
 	var err error
-	m := make(map[string]interface{})
-	m[expClaim], err = openid.GetDefaultExpiration(r.Form.Get(stsDurationSeconds))
+	claims := make(map[string]interface{})
+	claims[expClaim], err = openid.GetDefaultExpiration(r.Form.Get(stsDurationSeconds))
 	if err != nil {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, err)
 		return
 	}
 
+	// Look up the policies associated to the user so the temp
+	// credentials inherit the same permissions
 	policies, err := globalIAMSys.PolicyDBGet(user.AccessKey, false)
 	if err != nil {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSInvalidParameterValue, err)
@@ -214,18 +214,13 @@ func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 	}
 
 	policyName := strings.Join(policies, ",")
-
-	// This policy is the policy associated with the user
-	// requesting for temporary credentials. The temporary
-	// credentials will inherit the same policy requirements.
-	m[iamPolicyClaimNameOpenID()] = policyName
+	claims[iamPolicyClaimNameOpenID()] = policyName
 
 	if len(sessionPolicyStr) > 0 {
-		m[iampolicy.SessionPolicyName] = base64.StdEncoding.EncodeToString([]byte(sessionPolicyStr))
+		claims[iampolicy.SessionPolicyName] = base64.StdEncoding.EncodeToString([]byte(sessionPolicyStr))
 	}
 
-	secret := globalActiveCred.SecretKey
-	cred, err := auth.GetNewCredentialsWithMetadata(m, secret)
+	cred, err := auth.GetNewCredentialsWithMetadata(claims, globalActiveCred.SecretKey)
 	if err != nil {
 		writeSTSErrorResponse(ctx, w, true, ErrSTSInternalError, err)
 		return
@@ -249,14 +244,13 @@ func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	assumeRoleResponse := &AssumeRoleResponse{
+	resp := &AssumeRoleResponse{
 		Result: AssumeRoleResult{
 			Credentials: cred,
 		},
 	}
-
-	assumeRoleResponse.ResponseMetadata.RequestID = w.Header().Get(xhttp.AmzRequestID)
-	writeSuccessResponseXML(w, encodeResponse(assumeRoleResponse))
+	resp.ResponseMetadata.RequestID = w.Header().Get(xhttp.AmzRequestID)
+	writeSuccessResponseXML(w, encodeResponse(resp))
 }
 
 func (sts *stsAPIHandlers) AssumeRoleWithSSO(w http.ResponseWriter, r *http.Request) {

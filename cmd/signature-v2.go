@@ -82,9 +82,10 @@ func doesPolicySignatureV2Match(formValues http.Header) (auth.Credentials, APIEr
 	if s3Err != ErrNone {
 		return cred, s3Err
 	}
-	policy := formValues.Get("Policy")
-	signature := formValues.Get(xhttp.AmzSignatureV2)
-	if !compareSignatureV2(signature, calculateSignatureV2(policy, cred.SecretKey)) {
+
+	submittedSig := formValues.Get(xhttp.AmzSignatureV2)
+	expectedSig := calculateSignatureV2(formValues.Get("Policy"), cred.SecretKey)
+	if !compareSignatureV2(submittedSig, expectedSig) {
 		return cred, ErrSignatureDoesNotMatch
 	}
 	return cred, ErrNone

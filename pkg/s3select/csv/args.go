@@ -19,7 +19,6 @@ package csv
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -27,8 +26,9 @@ import (
 )
 
 const (
-	none = "none"
-	use  = "use"
+	none   = "none"
+	use    = "use"
+	ignore = "ignore"
 
 	defaultRecordDelimiter      = "\n"
 	defaultFieldDelimiter       = ","
@@ -56,6 +56,17 @@ func (args *ReaderArgs) IsEmpty() bool {
 	return !args.unmarshaled
 }
 
+func requireSingleRune(s, fieldName string) error {
+	if utf8.RuneCountInString(s) > 1 {
+		return fmt.Errorf("%s must be a single character, got %q", fieldName, s)
+	}
+	return nil
+}
+
+func validFileHeaderInfo(s string) bool {
+	return s == none || s == use || s == ignore
+}
+
 // UnmarshalXML - decodes XML data.
 func (args *ReaderArgs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	args.FileHeaderInfo = none
@@ -76,52 +87,75 @@ func (args *ReaderArgs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (er
 			return err
 		}
 
-		switch se := t.(type) {
-		case xml.StartElement:
-			tagName := se.Name.Local
-			switch tagName {
-			case "AllowQuotedRecordDelimiter":
-				var b bool
-				if err = d.DecodeElement(&b, &se); err != nil {
-					return err
-				}
-				args.AllowQuotedRecordDelimiter = b
-			default:
-				var s string
-				if err = d.DecodeElement(&s, &se); err != nil {
-					return err
-				}
-				switch tagName {
-				case "FileHeaderInfo":
-					args.FileHeaderInfo = strings.ToLower(s)
-				case "RecordDelimiter":
-					args.RecordDelimiter = s
-				case "FieldDelimiter":
-					args.FieldDelimiter = s
-				case "QuoteCharacter":
-					if utf8.RuneCountInString(s) > 1 {
-						return fmt.Errorf("unsupported QuoteCharacter '%v'", s)
-					}
-					args.QuoteCharacter = s
-				case "QuoteEscapeCharacter":
-					switch utf8.RuneCountInString(s) {
-					case 0:
-						args.QuoteEscapeCharacter = defaultQuoteEscapeCharacter
-					case 1:
-						args.QuoteEscapeCharacter = s
-					default:
-						return fmt.Errorf("unsupported QuoteEscapeCharacter '%v'", s)
-					}
-				case "Comments":
-					args.CommentCharacter = s
-				default:
-					return errors.New("unrecognized option")
-				}
+		se, ok := t.(xml.StartElement)
+		if !ok {
+			continue
+		}
+
+		tagName := se.Name.Local
+		if tagName == "AllowQuotedRecordDelimiter" {
+			var b bool
+			if err = d.DecodeElement(&b, &se); err != nil {
+				return err
 			}
+			args.AllowQuotedRecordDelimiter = b
+			continue
+		}
+
+		var s string
+		if err = d.DecodeElement(&s, &se); err != nil {
+			return err
+		}
+
+		if err := args.setReaderField(tagName, s); err != nil {
+			return err
 		}
 	}
 
 	args.unmarshaled = true
+	return nil
+}
+
+func (args *ReaderArgs) setReaderField(tagName, value string) error {
+	switch tagName {
+	case "FileHeaderInfo":
+		v := strings.ToLower(value)
+		if v != "" && !validFileHeaderInfo(v) {
+			return fmt.Errorf("FileHeaderInfo %q is not recognized", value)
+		}
+		if v != "" {
+			args.FileHeaderInfo = v
+		}
+	case "RecordDelimiter":
+		if value != "" {
+			args.RecordDelimiter = value
+		}
+	case "FieldDelimiter":
+		if value != "" {
+			args.FieldDelimiter = value
+		}
+	case "QuoteCharacter":
+		if err := requireSingleRune(value, "QuoteCharacter"); err != nil {
+			return err
+		}
+		args.QuoteCharacter = value
+	case "QuoteEscapeCharacter":
+		runeCount := utf8.RuneCountInString(value)
+		if runeCount > 1 {
+			return fmt.Errorf("QuoteEscapeCharacter must be a single character, got %q", value)
+		}
+		if runeCount == 0 {
+			args.QuoteEscapeCharacter = defaultQuoteEscapeCharacter
+		} else {
+			args.QuoteEscapeCharacter = value
+		}
+	case "Comments":
+		if value != "" {
+			args.CommentCharacter = value
+		}
+	default:
+		return fmt.Errorf("unknown CSV input element %q", tagName)
+	}
 	return nil
 }
 
@@ -142,7 +176,6 @@ func (args *WriterArgs) IsEmpty() bool {
 
 // UnmarshalXML - decodes XML data.
 func (args *WriterArgs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-
 	args.QuoteFields = asneeded
 	args.RecordDelimiter = defaultRecordDelimiter
 	args.FieldDelimiter = defaultFieldDelimiter
@@ -159,43 +192,55 @@ func (args *WriterArgs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 			return err
 		}
 
-		switch se := t.(type) {
-		case xml.StartElement:
-			var s string
-			if err = d.DecodeElement(&s, &se); err != nil {
-				return err
-			}
-			switch se.Name.Local {
-			case "QuoteFields":
-				args.QuoteFields = strings.ToLower(s)
-			case "RecordDelimiter":
-				args.RecordDelimiter = s
-			case "FieldDelimiter":
-				args.FieldDelimiter = s
-			case "QuoteCharacter":
-				switch utf8.RuneCountInString(s) {
-				case 0:
-					args.QuoteCharacter = "\x00"
-				case 1:
-					args.QuoteCharacter = s
-				default:
-					return fmt.Errorf("unsupported QuoteCharacter '%v'", s)
-				}
-			case "QuoteEscapeCharacter":
-				switch utf8.RuneCountInString(s) {
-				case 0:
-					args.QuoteEscapeCharacter = defaultQuoteEscapeCharacter
-				case 1:
-					args.QuoteEscapeCharacter = s
-				default:
-					return fmt.Errorf("unsupported QuoteCharacter '%v'", s)
-				}
-			default:
-				return errors.New("unrecognized option")
-			}
+		se, ok := t.(xml.StartElement)
+		if !ok {
+			continue
+		}
+
+		var s string
+		if err = d.DecodeElement(&s, &se); err != nil {
+			return err
+		}
+
+		if err := args.setWriterField(se.Name.Local, s); err != nil {
+			return err
 		}
 	}
 
 	args.unmarshaled = true
+	return nil
+}
+
+func (args *WriterArgs) setWriterField(tagName, value string) error {
+	switch tagName {
+	case "QuoteFields":
+		args.QuoteFields = strings.ToLower(value)
+	case "RecordDelimiter":
+		args.RecordDelimiter = value
+	case "FieldDelimiter":
+		args.FieldDelimiter = value
+	case "QuoteCharacter":
+		runeCount := utf8.RuneCountInString(value)
+		if runeCount > 1 {
+			return fmt.Errorf("QuoteCharacter must be a single character, got %q", value)
+		}
+		if runeCount == 0 {
+			args.QuoteCharacter = "\x00"
+		} else {
+			args.QuoteCharacter = value
+		}
+	case "QuoteEscapeCharacter":
+		runeCount := utf8.RuneCountInString(value)
+		if runeCount > 1 {
+			return fmt.Errorf("QuoteEscapeCharacter must be a single character, got %q", value)
+		}
+		if runeCount == 0 {
+			args.QuoteEscapeCharacter = defaultQuoteEscapeCharacter
+		} else {
+			args.QuoteEscapeCharacter = value
+		}
+	default:
+		return fmt.Errorf("unknown CSV output element %q", tagName)
+	}
 	return nil
 }

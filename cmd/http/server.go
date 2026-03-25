@@ -38,13 +38,19 @@ import (
 )
 
 const (
-	serverShutdownPoll = 500 * time.Millisecond
+	shutdownPollInterval = 500 * time.Millisecond
 
-	// DefaultShutdownTimeout - default shutdown timeout used for graceful http server shutdown.
-	DefaultShutdownTimeout = 5 * time.Second
+	// Close established sessions gracefully before shitting down
+	GracefulShutdownTimeout = 5 * time.Second
 
-	// DefaultMaxHeaderBytes - default maximum HTTP header size in bytes.
-	DefaultMaxHeaderBytes = 1 * humanize.MiByte
+	// Close keep-alive past this duration
+	ConnIdleTimeout = 30 * time.Second
+
+	// How long we wait to transit requests (block slowloris attacks)
+	HeaderReadTimeout = 30 * time.Second
+
+	// Max byte size of HTTP headers (block memory abuse)
+	MaxRequestHeaderBytes = 1 * humanize.MiByte
 )
 
 // Server - extended http.Server supports multiple addresses to serve and enhanced connection handling.
@@ -140,7 +146,7 @@ func (srv *Server) Shutdown() error {
 	// Wait for opened connection to be closed up to Shutdown timeout.
 	shutdownTimeout := srv.ShutdownTimeout
 	shutdownTimer := time.NewTimer(shutdownTimeout)
-	ticker := time.NewTicker(serverShutdownPoll)
+	ticker := time.NewTicker(shutdownPollInterval)
 	defer ticker.Stop()
 	for {
 		select {
@@ -176,16 +182,31 @@ func NewServer(addrs []string, handler http.Handler, getCert certs.GetCertificat
 		if secureCiphers || fips.Enabled() {
 			tlsConfig.CipherSuites = fips.CipherSuitesTLS()
 			tlsConfig.CurvePreferences = fips.EllipticCurvesTLS()
+		} else {
+			// Reject deprecated algorithms such as 3DES/RC4.
+			rejected := make(map[uint16]struct{})
+			for _, weak := range tls.InsecureCipherSuites() {
+				rejected[weak.ID] = struct{}{}
+			}
+			allowed := make([]uint16, 0, len(tls.CipherSuites()))
+			for _, cs := range tls.CipherSuites() {
+				if _, blocked := rejected[cs.ID]; !blocked {
+					allowed = append(allowed, cs.ID)
+				}
+			}
+			tlsConfig.CipherSuites = allowed
 		}
 	}
 
 	httpServer := &Server{
 		Addrs:           addrs,
-		ShutdownTimeout: DefaultShutdownTimeout,
+		ShutdownTimeout: GracefulShutdownTimeout,
 	}
 	httpServer.Handler = handler
 	httpServer.TLSConfig = tlsConfig
-	httpServer.MaxHeaderBytes = DefaultMaxHeaderBytes
+	httpServer.MaxHeaderBytes = MaxRequestHeaderBytes
+	httpServer.IdleTimeout = ConnIdleTimeout
+	httpServer.ReadHeaderTimeout = HeaderReadTimeout
 
 	return httpServer
 }

@@ -97,6 +97,28 @@ const (
 	statusDisabled = "disabled"
 )
 
+// Checks secret key length when non-empty
+func validateSecretKeyIfPresent(secretKey string) error {
+	if secretKey == "" {
+		return nil
+	}
+	if !auth.IsSecretKeyValid(secretKey) {
+		return auth.ErrInvalidSecretKeyLength
+	}
+	return nil
+}
+
+// validateAccessAndSecretKeys checks access and secret key lengths
+func validateAccessAndSecretKeys(accessKey, secretKey string) error {
+	if !auth.IsAccessKeyValid(accessKey) {
+		return auth.ErrInvalidAccessKeyLength
+	}
+	if !auth.IsSecretKeyValid(secretKey) {
+		return auth.ErrInvalidSecretKeyLength
+	}
+	return nil
+}
+
 type iamFormat struct {
 	Version int `json:"version"`
 }
@@ -1172,6 +1194,10 @@ func (sys *IAMSys) UpdateServiceAccount(ctx context.Context, accessKey string, o
 		return errNoSuchServiceAccount
 	}
 
+	if err := validateSecretKeyIfPresent(opts.secretKey); err != nil {
+		return err
+	}
+
 	if opts.secretKey != "" {
 		cr.SecretKey = opts.secretKey
 	}
@@ -1315,6 +1341,10 @@ func (sys *IAMSys) CreateUser(accessKey string, uinfo madmin.UserInfo) error {
 		return errIAMActionNotAllowed
 	}
 
+	if err := validateAccessAndSecretKeys(accessKey, uinfo.SecretKey); err != nil {
+		return err
+	}
+
 	sys.store.lock()
 	defer sys.store.unlock()
 
@@ -1351,6 +1381,10 @@ func (sys *IAMSys) SetUserSecretKey(accessKey string, secretKey string) error {
 
 	if sys.usersSysType != ObstorUsersSysType {
 		return errIAMActionNotAllowed
+	}
+
+	if err := validateAccessAndSecretKeys(accessKey, secretKey); err != nil {
+		return err
 	}
 
 	sys.store.lock()
@@ -1939,7 +1973,7 @@ func (sys *IAMSys) IsAllowedServiceAccount(args iampolicy.Args, parent string) b
 	}
 
 	// Now check if we have a sessionPolicy.
-	spolicy, ok := args.Claims[iampolicy.SessionPolicyName]
+	spolicy, ok := args.Claims[iampolicy.DecodedSessionPolicyKey]
 	if !ok {
 		return false
 	}
@@ -2019,6 +2053,29 @@ func (sys *IAMSys) IsAllowedLDAPSTS(args iampolicy.Args, parentUser string) bool
 				availablePolicies[i].Statements...)
 	}
 
+	// Check session policy if present
+	spolicy, ok := args.Claims[iampolicy.DecodedSessionPolicyKey]
+	if ok {
+		spolicyStr, ok := spolicy.(string)
+		if !ok {
+			// Reject malformed session policy
+			return false
+		}
+
+		subPolicy, err := iampolicy.ParseConfig(bytes.NewReader([]byte(spolicyStr)))
+		if err != nil {
+			logger.LogIf(GlobalContext, err)
+			return false
+		}
+
+		// Reject policy without version
+		if subPolicy.Version == "" {
+			return false
+		}
+
+		return combinedPolicy.IsAllowed(args) && subPolicy.IsAllowed(args)
+	}
+
 	return combinedPolicy.IsAllowed(args)
 }
 
@@ -2079,7 +2136,7 @@ func (sys *IAMSys) IsAllowedSTS(args iampolicy.Args, parentUser string) bool {
 	}
 
 	// Now check if we have a sessionPolicy.
-	spolicy, ok := args.Claims[iampolicy.SessionPolicyName]
+	spolicy, ok := args.Claims[iampolicy.DecodedSessionPolicyKey]
 	if ok {
 		spolicyStr, ok := spolicy.(string)
 		if !ok {

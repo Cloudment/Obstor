@@ -310,6 +310,12 @@ var (
 
 var errSelfTestFailure = errors.New("self test failed. unsafe to start server")
 
+// isRootCredAccessKey checks if a key is the admin access key
+// This is so callers dont need reference globalActiveCred directly
+func isRootCredAccessKey(accessKey string) bool {
+	return accessKey != "" && accessKey == globalActiveCred.AccessKey
+}
+
 // Returns obstor global information, as a key value map.
 // returned list of global values is not an exhaustive
 // list. Feel free to add new relevant fields.

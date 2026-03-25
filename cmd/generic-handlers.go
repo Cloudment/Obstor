@@ -19,6 +19,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -32,6 +33,7 @@ import (
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/http/stats"
 	"github.com/cloudment/obstor/cmd/logger"
+	xnet "github.com/cloudment/obstor/pkg/net"
 	humanize "github.com/dustin/go-humanize"
 )
 
@@ -426,6 +428,18 @@ const (
 	dotComponent    = "."
 )
 
+// Check if the Host header is parsable
+func validateHostHeader(host string) error {
+	trimmed := strings.TrimSpace(host)
+	if len(trimmed) == 0 {
+		return fmt.Errorf("host header must not be empty")
+	}
+	if _, err := xnet.ParseHost(trimmed); err != nil {
+		return fmt.Errorf("malformed host header: %w", err)
+	}
+	return nil
+}
+
 // Check if the incoming path has bad path components,
 // such as ".." and "."
 func hasBadPathComponent(path string) bool {
@@ -444,7 +458,11 @@ func hasBadPathComponent(path string) bool {
 // Check if client is sending a malicious request.
 func hasMultipleAuth(r *http.Request) bool {
 	authTypeCount := 0
-	for _, hasValidAuth := range []func(*http.Request) bool{isRequestSignatureV2, isRequestPresignedSignatureV2, isRequestSignatureV4, isRequestPresignedSignatureV4, isRequestJWT, isRequestPostPolicySignatureV4} {
+	for _, hasValidAuth := range []func(*http.Request) bool{
+		isRequestSignatureV2, isRequestPresignedSignatureV2,
+		isRequestSignatureV4, isRequestPresignedSignatureV4,
+		isRequestJWT, isRequestPostPolicySignatureV4,
+	} {
 		if hasValidAuth(r) {
 			authTypeCount++
 		}
@@ -456,6 +474,14 @@ func hasMultipleAuth(r *http.Request) bool {
 // any malicious requests.
 func setRequestValidityHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := validateHostHeader(r.Host); err != nil {
+			invalidReq := errorCodes.ToAPIErr(ErrInvalidRequest)
+			invalidReq.Description = fmt.Sprintf("%s (%s)", invalidReq.Description, err)
+			writeErrorResponse(r.Context(), w, invalidReq, r.URL, guessIsBrowserReq(r))
+			atomic.AddUint64(&globalHTTPStats.rejectedRequestsInvalid, 1)
+			return
+		}
+
 		// Check for bad components in URL path.
 		if hasBadPathComponent(r.URL.Path) {
 			drainBody(r.Body)
@@ -476,7 +502,9 @@ func setRequestValidityHandler(h http.Handler) http.Handler {
 		}
 		if hasMultipleAuth(r) {
 			drainBody(r.Body)
-			writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrInvalidRequest), r.URL, guessIsBrowserReq(r))
+			invalidReq := errorCodes.ToAPIErr(ErrInvalidRequest)
+			invalidReq.Description = fmt.Sprintf("%s (request has multiple authentication types, please use one)", invalidReq.Description)
+			writeErrorResponse(r.Context(), w, invalidReq, r.URL, guessIsBrowserReq(r))
 			atomic.AddUint64(&globalHTTPStats.rejectedRequestsInvalid, 1)
 			return
 		}
@@ -613,11 +641,21 @@ func addCustomHeaders(h http.Handler) http.Handler {
 	})
 }
 
+// Append standard security headers
+var securityResponseHeaders = [][2]string{
+	{"X-XSS-Protection", "1; mode=block"},
+	{"Content-Security-Policy", "block-all-mixed-content"},
+	{"X-Content-Type-Options", "nosniff"},
+	{"X-Frame-Options", "deny"},
+	{"Strict-Transport-Security", "max-age=31536000; includeSubDomains"},
+}
+
 func addSecurityHeaders(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		header := w.Header()
-		header.Set("X-XSS-Protection", "1; mode=block")                  // Prevents against XSS attacks
-		header.Set("Content-Security-Policy", "block-all-mixed-content") // prevent mixed (HTTP / HTTPS content)
+		hdr := w.Header()
+		for _, pair := range securityResponseHeaders {
+			hdr.Set(pair[0], pair[1])
+		}
 		h.ServeHTTP(w, r)
 	})
 }

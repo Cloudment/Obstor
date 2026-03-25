@@ -70,12 +70,12 @@ func TestNewServer(t *testing.T) {
 			}
 		}
 
-		if server.ShutdownTimeout != DefaultShutdownTimeout {
-			t.Fatalf("Case %v: server.ShutdownTimeout: expected: %v, got: %v", (i + 1), DefaultShutdownTimeout, server.ShutdownTimeout)
+		if server.ShutdownTimeout != GracefulShutdownTimeout {
+			t.Fatalf("Case %v: server.ShutdownTimeout: expected: %v, got: %v", (i + 1), GracefulShutdownTimeout, server.ShutdownTimeout)
 		}
 
-		if server.MaxHeaderBytes != DefaultMaxHeaderBytes {
-			t.Fatalf("Case %v: server.MaxHeaderBytes: expected: %v, got: %v", (i + 1), DefaultMaxHeaderBytes, server.MaxHeaderBytes)
+		if server.MaxHeaderBytes != MaxRequestHeaderBytes {
+			t.Fatalf("Case %v: server.MaxHeaderBytes: expected: %v, got: %v", (i + 1), MaxRequestHeaderBytes, server.MaxHeaderBytes)
 		}
 	}
 }

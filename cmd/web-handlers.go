@@ -2454,6 +2454,7 @@ func writeWebErrorResponse(w http.ResponseWriter, err error) {
 	}
 	ctx := logger.SetReqInfo(GlobalContext, reqInfo)
 	apiErr := toWebAPIError(ctx, err)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(apiErr.HTTPStatusCode)
 	w.Write([]byte(apiErr.Description))
 }

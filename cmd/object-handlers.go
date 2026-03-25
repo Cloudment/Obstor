@@ -379,11 +379,17 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		getObjectNInfo = api.CacheAPI().GetObjectNInfo
 	}
 
-	// Get request range.
+	// Optional range header for byte-range
 	var rs *HTTPRangeSpec
 	var rangeErr error
 	rangeHeader := r.Header.Get(xhttp.Range)
 	if rangeHeader != "" {
+		// The S3 spec forbids combining a Range header with a partNumber
+		if opts.PartNumber > 0 {
+			writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidRangePartNumber), r.URL, guessIsBrowserReq(r))
+			return
+		}
+
 		rs, rangeErr = parseRequestRangeSpec(rangeHeader)
 		// Handle only errInvalidRange. Ignore other
 		// parse error and treat it as regular Get
@@ -395,12 +401,6 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		if rangeErr != nil {
 			logger.LogIf(ctx, rangeErr, logger.Application)
 		}
-	}
-
-	// Both 'bytes' and 'partNumber' cannot be specified at the same time
-	if rs != nil && opts.PartNumber > 0 {
-		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidRangePartNumber), r.URL, guessIsBrowserReq(r))
-		return
 	}
 
 	// Validate pre-conditions if any.
@@ -674,10 +674,16 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// Get request range.
+	// Optional range header for byte-range HEAD request
 	var rs *HTTPRangeSpec
 	rangeHeader := r.Header.Get(xhttp.Range)
 	if rangeHeader != "" {
+		// Range and partNumber are mutually exclusive per S3 spec.
+		if opts.PartNumber > 0 {
+			writeErrorResponseHeadersOnly(w, errorCodes.ToAPIErr(ErrInvalidRangePartNumber))
+			return
+		}
+
 		if rs, err = parseRequestRangeSpec(rangeHeader); err != nil {
 			// Handle only errInvalidRange. Ignore other
 			// parse error and treat it as regular Get
@@ -689,12 +695,6 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 
 			logger.LogIf(ctx, err)
 		}
-	}
-
-	// Both 'bytes' and 'partNumber' cannot be specified at the same time
-	if rs != nil && opts.PartNumber > 0 {
-		writeErrorResponseHeadersOnly(w, errorCodes.ToAPIErr(ErrInvalidRangePartNumber))
-		return
 	}
 
 	// Set encryption response headers
@@ -3464,6 +3464,12 @@ func (api objectAPIHandlers) PutObjectRetentionHandler(w http.ResponseWriter, r 
 	objectAPI := api.ObjectAPI()
 	if objectAPI == nil {
 		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrServerNotInitialized), r.URL, guessIsBrowserReq(r))
+		return
+	}
+
+	// Check if the caller is authorized to change retention
+	if s3Err := checkRequestAuthType(ctx, r, policy.PutObjectRetentionAction, bucket, object); s3Err != ErrNone {
+		writeErrorResponse(ctx, w, errorCodes.ToAPIErr(s3Err), r.URL, guessIsBrowserReq(r))
 		return
 	}
 

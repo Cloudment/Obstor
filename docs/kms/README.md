@@ -57,7 +57,7 @@ The main difference between various Obstor-KMS deployments is the KMS implementa
 |:---------------------------------------------------------------------------------------------|:------------------------------------------------------------------|
 | [Hashicorp Vault](https://github.com/minio/kes/wiki/Hashicorp-Vault-Keystore)                | Local KMS. Obstor and KMS on-prem (**Recommended**)                |
 | [AWS-KMS + SecretsManager](https://github.com/minio/kes/wiki/AWS-SecretsManager)             | Cloud KMS. Obstor in combination with a managed KMS installation   |
-| [Gemalto KeySecure /Thales CipherTrust](https://github.com/minio/kes/wiki/Gemalto-KeySecure) | Local KMS. Obstor and KMS On-Premises.                             |
+| [Gemalto KeySecure /Thales CipherTrust](https://github.com/minio/kes/wiki/Gemalto-KeySecure) | Local KMS. Obstor and KMS On-Premise.                             |
 | [Google Cloud Platform SecretManager](https://github.com/minio/kes/wiki/GCP-SecretManager)   | Cloud KMS. Obstor in combination with a managed KMS installation   |
 | [FS](https://github.com/minio/kes/wiki/Filesystem-Keystore)                                  | Local testing or development (**Not recommended for production**) |
 

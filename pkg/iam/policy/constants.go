@@ -24,8 +24,9 @@ import (
 
 // Policy claim constants
 const (
-	PolicyName        = "policy"
-	SessionPolicyName = "sessionPolicy"
+	PolicyName              = "policy"
+	SessionPolicyName       = "sessionPolicy"
+	DecodedSessionPolicyKey = "sessionPolicy~decoded"
 )
 
 // ReadWrite - provides full access to all buckets and all objects

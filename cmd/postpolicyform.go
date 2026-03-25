@@ -29,6 +29,7 @@ import (
 	"strings"
 	"time"
 
+	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/s3select/jstream"
 	"github.com/minio/minio-go/v7/pkg/set"
 )
@@ -49,6 +50,7 @@ var startsWithConds = map[string]bool{
 	"$x-amz-algorithm":         false,
 	"$x-amz-credential":        false,
 	"$x-amz-date":              false,
+	"$tagging":                 false,
 }
 
 // Add policy conditionals.
@@ -258,6 +260,29 @@ func checkPolicyCond(op string, input1, input2 string) bool {
 	return false
 }
 
+// Fields exempt from needing policy condition match
+var policyExemptFields = map[string]struct{}{
+	xhttp.AmzSignature: {},
+	"File":             {},
+	"Policy":           {},
+
+	// SSE fields
+	xhttp.AmzServerSideEncryptionKmsID:             {},
+	xhttp.AmzServerSideEncryptionKmsContext:        {},
+	xhttp.AmzServerSideEncryptionCustomerAlgorithm: {},
+	xhttp.AmzServerSideEncryptionCustomerKey:       {},
+	xhttp.AmzServerSideEncryptionCustomerKeyMD5:    {},
+}
+
+// Check if field is exempt from policy conditions
+func isFieldExemptFromPolicy(canonicalName string) bool {
+	if _, found := policyExemptFields[canonicalName]; found {
+		return true
+	}
+	// X-Ignore- prefixed fields are user-designated non-policy fields
+	return strings.HasPrefix(canonicalName, "X-Ignore-")
+}
+
 // checkPostPolicy - apply policy conditions and validate input values.
 // (http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html)
 func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) error {
@@ -265,54 +290,64 @@ func checkPostPolicy(formValues http.Header, postPolicyForm PostPolicyForm) erro
 	if !postPolicyForm.Expiration.After(UTCNow()) {
 		return fmt.Errorf("invalid according to Policy: Policy expired")
 	}
-	// map to store the metadata
-	metaMap := make(map[string]string)
-	for _, policy := range postPolicyForm.Conditions.Policies {
-		if strings.HasPrefix(policy.Key, "$x-amz-meta-") {
-			formCanonicalName := http.CanonicalHeaderKey(strings.TrimPrefix(policy.Key, "$"))
-			metaMap[formCanonicalName] = policy.Value
+
+	// Track which form fields need a matching condition
+	uncoveredFields := make(map[string][]string, len(formValues))
+	for fieldName, fieldVals := range formValues {
+		if isFieldExemptFromPolicy(fieldName) {
+			continue
 		}
+		uncoveredFields[fieldName] = fieldVals
 	}
-	// Check if any extra metadata field is passed as input
-	for key := range formValues {
-		if strings.HasPrefix(key, "X-Amz-Meta-") {
-			if _, ok := metaMap[key]; !ok {
-				return fmt.Errorf("invalid according to Policy: Extra input fields: %s", key)
+
+	// Validate z condition against form values
+	for _, cond := range postPolicyForm.Conditions.Policies {
+		canonicalField := http.CanonicalHeaderKey(strings.TrimPrefix(cond.Key, "$"))
+		condOp := cond.Operator
+
+		// Reject multi-valued fields
+		if vals := uncoveredFields[canonicalField]; len(vals) > 1 {
+			return fmt.Errorf("policy condition [%s, %s, %s] cannot be satisfied: field has multiple values: [%s]",
+				condOp, cond.Key, cond.Value, strings.Join(vals, ", "))
+		}
+
+		submittedVal := formValues.Get(canonicalField)
+		if supportsSW, known := startsWithConds[cond.Key]; known {
+			if condOp == policyCondStartsWith && !supportsSW {
+				return fmt.Errorf("condition operator starts-with is not supported for field %s", cond.Key)
+			}
+			if !checkPolicyCond(condOp, submittedVal, cond.Value) {
+				return fmt.Errorf("condition not met for field %s", cond.Key)
+			}
+		} else if strings.HasPrefix(cond.Key, "$x-amz-meta-") || strings.HasPrefix(cond.Key, "$x-amz-") {
+			if !checkPolicyCond(condOp, submittedVal, cond.Value) {
+				return fmt.Errorf("condition [%s, %s, %s] not satisfied by submitted value",
+					condOp, cond.Key, cond.Value)
+			}
+		}
+
+		// Mark field as covered
+		delete(uncoveredFields, canonicalField)
+	}
+
+	// Strip V2 signing fields for coverage check
+	if _, hasV2Sig := formValues[xhttp.AmzSignatureV2]; hasV2Sig {
+		delete(uncoveredFields, xhttp.AmzSignatureV2)
+		for name := range uncoveredFields {
+			if strings.EqualFold(name, xhttp.AmzAccessKeyID) {
+				delete(uncoveredFields, name)
+				break
 			}
 		}
 	}
 
-	// Flag to indicate if all policies conditions are satisfied
-	var condPassed bool
-
-	// Iterate over policy conditions and check them against received form fields
-	for _, policy := range postPolicyForm.Conditions.Policies {
-		// Form fields names are in canonical format, convert conditions names
-		// to canonical for simplification purpose, so `$key` will become `Key`
-		formCanonicalName := http.CanonicalHeaderKey(strings.TrimPrefix(policy.Key, "$"))
-		// Operator for the current policy condition
-		op := policy.Operator
-		// If the current policy condition is known
-		if startsWithSupported, condFound := startsWithConds[policy.Key]; condFound {
-			// Check if the current condition supports starts-with operator
-			if op == policyCondStartsWith && !startsWithSupported {
-				return fmt.Errorf("invalid according to Policy: Policy Condition failed")
-			}
-			// Check if current policy condition is satisfied
-			condPassed = checkPolicyCond(op, formValues.Get(formCanonicalName), policy.Value)
-			if !condPassed {
-				return fmt.Errorf("invalid according to Policy: Policy Condition failed")
-			}
-		} else {
-			// This covers all conditions X-Amz-Meta-* and X-Amz-*
-			if strings.HasPrefix(policy.Key, "$x-amz-meta-") || strings.HasPrefix(policy.Key, "$x-amz-") {
-				// Check if policy condition is satisfied
-				condPassed = checkPolicyCond(op, formValues.Get(formCanonicalName), policy.Value)
-				if !condPassed {
-					return fmt.Errorf("invalid according to Policy: Policy Condition failed: [%s, %s, %s]", op, policy.Key, policy.Value)
-				}
-			}
+	// All non-exempt fields must be covered by a condition
+	if len(uncoveredFields) > 0 {
+		missing := make([]string, 0, len(uncoveredFields))
+		for name := range uncoveredFields {
+			missing = append(missing, name)
 		}
+		return fmt.Errorf("form fields not covered by policy conditions: %s", strings.Join(missing, ", "))
 	}
 
 	return nil

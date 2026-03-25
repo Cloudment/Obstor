@@ -49,10 +49,11 @@ func GenerateKey(extKey []byte, random io.Reader) (key ObjectKey) {
 	if _, err := io.ReadFull(random, nonce[:]); err != nil {
 		logger.CriticalIf(context.Background(), errOutOfEntropy)
 	}
-	sha := sha256.New()
-	sha.Write(extKey)
-	sha.Write(nonce[:])
-	sha.Sum(key[:0])
+
+	mac := hmac.New(sha256.New, extKey)
+	mac.Write([]byte("obstor-oek-derivation-v1"))
+	mac.Write(nonce[:])
+	mac.Sum(key[:0])
 	return key
 }
 

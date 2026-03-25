@@ -25,6 +25,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"mime"
 	"net/http"
 	"strconv"
 	"strings"
@@ -72,8 +73,8 @@ func isRequestPresignedSignatureV2(r *http.Request) bool {
 
 // Verify if request has AWS Post policy Signature Version '4'.
 func isRequestPostPolicySignatureV4(r *http.Request) bool {
-	return strings.Contains(r.Header.Get(xhttp.ContentType), "multipart/form-data") &&
-		r.Method == http.MethodPost
+	mediaType, _, _ := mime.ParseMediaType(r.Header.Get(xhttp.ContentType))
+	return mediaType == "multipart/form-data" && r.Method == http.MethodPost
 }
 
 // Verify if the request has AWS Streaming Signature Version '4'. This is only valid for 'PUT' operation.
@@ -240,7 +241,7 @@ func getClaimsFromToken(token string) (map[string]interface{}, error) {
 			logger.LogIf(GlobalContext, err, logger.Application)
 			return nil, errAuthentication
 		}
-		claims.MapClaims[iampolicy.SessionPolicyName] = string(spBytes)
+		claims.MapClaims[iampolicy.DecodedSessionPolicyKey] = string(spBytes)
 	}
 
 	return claims.Map(), nil
@@ -272,6 +273,27 @@ func checkClaimsFromToken(r *http.Request, cred auth.Credentials) (map[string]in
 //
 // returns APIErrorCode if any to be replied to the client.
 func checkRequestAuthType(ctx context.Context, r *http.Request, action policy.Action, bucketName, objectName string) (s3Err APIErrorCode) {
+	_, _, s3Err = checkRequestAuthTypeCredential(ctx, r, action, bucketName, objectName)
+	return s3Err
+}
+
+// Policy evaluation with versionID
+func checkRequestAuthTypeWithVID(ctx context.Context, r *http.Request, action policy.Action, bucketName, objectName, versionID string) (s3Err APIErrorCode) {
+	if versionID != "" {
+		q := r.URL.Query()
+		origVersionID := q.Get("versionId")
+		q.Set("versionId", versionID)
+		r.URL.RawQuery = q.Encode()
+		defer func() {
+			q := r.URL.Query()
+			if origVersionID == "" {
+				q.Del("versionId")
+			} else {
+				q.Set("versionId", origVersionID)
+			}
+			r.URL.RawQuery = q.Encode()
+		}()
+	}
 	_, _, s3Err = checkRequestAuthTypeCredential(ctx, r, action, bucketName, objectName)
 	return s3Err
 }

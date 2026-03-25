@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from defusedxml.ElementTree import fromstring as _safe_fromstring
 from xml.etree import ElementTree
 
 _ETREE_EXCEPTIONS = (ElementTree.ParseError, AttributeError, ValueError, TypeError)
@@ -38,7 +39,7 @@ class STSElement(object):
         :return: Returns an STSElement.
         """
         try:
-            return cls(root_name, ElementTree.fromstring(data))
+            return cls(root_name, _safe_fromstring(data))
         except _ETREE_EXCEPTIONS as error:
             raise InvalidXMLError(
                 '"{}" XML is not parsable. Message: {}'.format(

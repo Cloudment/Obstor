@@ -129,8 +129,8 @@ func (s *peerRESTServer) LoadPolicyMappingHandler(w http.ResponseWriter, r *http
 		s.writeErrorResponse(w, errors.New("user-or-group is missing"))
 		return
 	}
-	_, isGroup := vars[peerRESTIsGroup]
 
+	_, isGroup := r.URL.Query()[peerRESTIsGroup]
 	if err := globalIAMSys.LoadPolicyMapping(objAPI, userOrGroup, isGroup); err != nil {
 		s.writeErrorResponse(w, err)
 		return
@@ -275,8 +275,7 @@ func (s *peerRESTServer) LoadGroupHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	vars := mux.Vars(r)
-	group := vars[peerRESTGroup]
+	group := r.URL.Query().Get(peerRESTGroup)
 	err := globalIAMSys.LoadGroup(objAPI, group)
 	if err != nil {
 		s.writeErrorResponse(w, err)

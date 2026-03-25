@@ -20,7 +20,6 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"sort"
@@ -337,8 +336,8 @@ func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) 
 	status := vars["status"]
 
 	// This API is not allowed to lookup accessKey user status
-	if accessKey == globalActiveCred.AccessKey {
-		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrInvalidRequest), r.URL)
+	if isRootCredAccessKey(accessKey) {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
 		return
 	}
 
@@ -380,8 +379,8 @@ func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	// CVE-2023-27589: Never allow creating a user with the same access key
 	// as root credentials, regardless of who the caller is.
-	if accessKey == globalActiveCred.AccessKey {
-		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAddUserInvalidArgument), r.URL)
+	if isRootCredAccessKey(accessKey) {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
 		return
 	}
 
@@ -494,8 +493,14 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Block root access key
+	if isRootCredAccessKey(createReq.AccessKey) {
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
+		return
+	}
+
 	// Disallow creating service accounts by root user.
-	if createReq.TargetUser == globalActiveCred.AccessKey {
+	if isRootCredAccessKey(createReq.TargetUser) {
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAdminAccountNotEligible), r.URL)
 		return
 	}
@@ -626,8 +631,7 @@ func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	svcAccount, _, err := globalIAMSys.GetServiceAccount(ctx, accessKey)
-	if err != nil {
+	if _, _, err := globalIAMSys.GetServiceAccount(ctx, accessKey); err != nil {
 		writeErrorResponseJSON(ctx, w, toAdminAPIErr(ctx, err), r.URL)
 		return
 	}
@@ -647,15 +651,8 @@ func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Re
 		IsOwner:         owner,
 		Claims:          claims,
 	}) {
-		requestUser := cred.AccessKey
-		if cred.ParentUser != "" {
-			requestUser = cred.ParentUser
-		}
-
-		if requestUser != svcAccount.ParentUser {
-			writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
-			return
-		}
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrAccessDenied), r.URL)
+		return
 	}
 
 	password := cred.SecretKey
@@ -1037,7 +1034,8 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 		}
 		policies, err = globalIAMSys.PolicyDBGet(parentUser, false, cred.Groups...)
 	default:
-		err = errors.New("should not happen")
+		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(ErrInternalError), r.URL)
+		return
 	}
 	if err != nil {
 		logger.LogIf(ctx, err)

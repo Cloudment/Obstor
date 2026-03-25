@@ -21,8 +21,6 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
-	"path"
-	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -45,17 +43,6 @@ type indexHandler struct {
 }
 
 func (h indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// If the path looks like an S3 object request (has a file extension
-	// in a sub-path), return an error instead of the SPA shell.
-	trimmed := strings.TrimPrefix(r.URL.Path, minioReservedBucketPath+SlashSeparator)
-	if strings.Contains(trimmed, SlashSeparator) && path.Ext(trimmed) != "" {
-		w.Header().Set("Content-Type", "application/xml")
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, `<?xml version="1.0" encoding="UTF-8"?>
-<Error><Code>NoSuchKey</Code><Message>The /obstor/ path is the web console. Use the S3 API path instead: /%s</Message><Resource>%s</Resource></Error>`,
-			trimmed, r.URL.Path)
-		return
-	}
 	r.URL.Path = minioReservedBucketPath + SlashSeparator
 	h.handler.ServeHTTP(w, r)
 }

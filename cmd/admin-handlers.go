@@ -1291,7 +1291,7 @@ func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// 2. Verify that we can indeed decrypt the (encrypted) key
-	decryptedKey, err := GlobalKMS.DecryptKey(key.KeyID, key.Plaintext, kmsContext)
+	decryptedKey, err := GlobalKMS.DecryptKey(key.KeyID, key.Ciphertext, kmsContext)
 	if err != nil {
 		response.DecryptionErr = err.Error()
 		resp, err := json.Marshal(response)
@@ -1757,10 +1757,6 @@ func fetchKMSStatus() madmin.KMS {
 	}
 	if len(stat.Endpoints) == 0 {
 		kmsStat.Status = stat.Name
-		return kmsStat
-	}
-	if err := checkConnection(stat.Endpoints[0], 15*time.Second); err != nil {
-		kmsStat.Status = string(madmin.ItemOffline)
 		return kmsStat
 	}
 	kmsStat.Status = string(madmin.ItemOnline)
