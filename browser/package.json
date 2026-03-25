@@ -16,7 +16,7 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8",
+    "@biomejs/biome": "^2.4.9",
     "@iconify/json": "^2.2.454",
     "@iconify/tailwind4": "^1.2.3",
     "@types/node": "^25.5.0",
