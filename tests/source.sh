@@ -18,7 +18,7 @@
 
 export MINT_RUN_CORE_DIR="$MINT_ROOT_DIR/run/core"
 export MINT_RUN_BUILD_DIR="$MINT_ROOT_DIR/build"
-export APT="apt --quiet --yes"
+export APT="apt --quiet -y"
 export WGET="wget --quiet --no-check-certificate"
 export WGET="wget --quiet --no-check-certificate"
 

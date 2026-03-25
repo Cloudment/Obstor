@@ -16,10 +16,10 @@
 #  limitations under the License.
 #
 
-export APT="apt --quiet --yes"
+export APT="apt --quiet -y"
 
 # remove all packages listed in remove-packages.list
-xargs --arg-file="${MINT_ROOT_DIR}/remove-packages.list" apt --quiet --yes purge
+xargs --arg-file="${MINT_ROOT_DIR}/remove-packages.list" apt --quiet -y purge
 ${APT} autoremove
 
 # flush to disk

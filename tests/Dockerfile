@@ -7,8 +7,8 @@ ENV GOPATH /usr/local/gopath
 ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
 ENV MINT_ROOT_DIR /testing
 
-RUN apt-get --yes update && apt-get --yes upgrade && \
-    apt-get --yes --quiet install wget jq curl git dnsmasq
+RUN apt -y update && apt -y upgrade && \
+    apt -y --quiet install wget jq curl git dnsmasq
 
 COPY . /testing
 

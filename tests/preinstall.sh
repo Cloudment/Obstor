@@ -39,7 +39,7 @@ if ! $WGET --output-document=- "$download_url" | tar -C "${GO_INSTALL_PATH}" -zx
 	exit 1
 fi
 
-xargs --arg-file="${MINT_ROOT_DIR}/install-packages.list" apt --quiet --yes install
+xargs --arg-file="${MINT_ROOT_DIR}/install-packages.list" apt --quiet -y install
 
 # set python 3.12 as default (Ubuntu 24.04)
 update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
