@@ -139,14 +139,14 @@ dockers:
   -
     goos: linux
     goarch: ppc64le
-    dockerfile: Dockerfile.ppc64le.release
+    dockerfile: Dockerfile.release
     image_templates:
       - ghcr.io/cloudment/obstor:{{ .Tag }}-ppc64le
 
   -
     goos: linux
     goarch: s390x
-    dockerfile: Dockerfile.s390x.release
+    dockerfile: Dockerfile.release
     image_templates:
       - ghcr.io/cloudment/obstor:{{ .Tag }}-s390x
 
@@ -154,7 +154,7 @@ dockers:
     goos: linux
     goarch: arm64
     goarm: ''
-    dockerfile: Dockerfile.arm64.release
+    dockerfile: Dockerfile.release
     image_templates:
       - ghcr.io/cloudment/obstor:{{ .Tag }}-arm64
 
@@ -162,6 +162,6 @@ dockers:
     goos: linux
     goarch: arm
     goarm: '7'
-    dockerfile: Dockerfile.arm.release
+    dockerfile: Dockerfile.release
     image_templates:
       - ghcr.io/cloudment/obstor:{{ .Tag }}-arm

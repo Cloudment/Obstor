@@ -13,7 +13,39 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '25'
+
+      - name: Build
+        run: go build -trimpath --ldflags="-s -w" -o obstor
+
+      - name: Test
+        run: |
+          sudo sysctl net.ipv6.conf.all.disable_ipv6=0
+          sudo sysctl net.ipv6.conf.default.disable_ipv6=0
+          go test --timeout 50m ./cmd/http/... ./cmd/backend/... ./cmd/config/... ./cmd/crypto/... ./cmd/jwt/... ./cmd/rest/... ./pkg/...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+
   build:
+    needs: test
     strategy:
       matrix:
         include:
