@@ -254,7 +254,3 @@ func readDirN(dirPath string, count int) (entries []string, err error) {
 
 	return
 }
-
-func globalSync() {
-	_ = syscall.Sync()
-}
