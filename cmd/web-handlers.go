@@ -19,7 +19,12 @@ package cmd
 
 import (
 	"context"
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/sha512"
 	"crypto/subtle"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -207,7 +212,7 @@ func (web *webAPIHandlers) MakeBucket(r *http.Request, args *MakeBucketArgs, rep
 				}
 
 				if err = globalDNSConfig.Put(args.BucketName); err != nil {
-					objectAPI.DeleteBucket(ctx, args.BucketName, false)
+					_ = objectAPI.DeleteBucket(ctx, args.BucketName, false)
 					return toJSONError(ctx, err)
 				}
 
@@ -275,7 +280,7 @@ func (web *webAPIHandlers) DeleteBucket(r *http.Request, args *RemoveBucketArgs,
 
 	reply.UIVersion = Version
 
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -285,7 +290,7 @@ func (web *webAPIHandlers) DeleteBucket(r *http.Request, args *RemoveBucketArgs,
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		core, err := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		core, err := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if err != nil {
 			return toJSONError(ctx, err, args.BucketName)
 		}
@@ -433,6 +438,8 @@ type WebObjectInfo struct {
 	Size int64 `json:"size"`
 	// ContentType is mime type of the object.
 	ContentType string `json:"contentType"`
+	// ETag (Usually MD5 for non-multipart uploads)
+	ETag string `json:"etag,omitempty"`
 }
 
 // ListObjects - list objects api.
@@ -446,7 +453,7 @@ func (web *webAPIHandlers) ListObjects(r *http.Request, args *ListObjectsArgs, r
 
 	listObjects := objectAPI.ListObjects
 
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -456,7 +463,7 @@ func (web *webAPIHandlers) ListObjects(r *http.Request, args *ListObjectsArgs, r
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		core, err := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		core, err := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if err != nil {
 			return toJSONError(ctx, err, args.BucketName)
 		}
@@ -476,6 +483,7 @@ func (web *webAPIHandlers) ListObjects(r *http.Request, args *ListObjectsArgs, r
 					LastModified: obj.LastModified,
 					Size:         obj.Size,
 					ContentType:  obj.ContentType,
+					ETag:         strings.Trim(obj.ETag, "\""),
 				})
 			}
 			for _, p := range result.CommonPrefixes {
@@ -601,6 +609,7 @@ func (web *webAPIHandlers) ListObjects(r *http.Request, args *ListObjectsArgs, r
 				LastModified: obj.ModTime,
 				Size:         obj.Size,
 				ContentType:  obj.ContentType,
+				ETag:         strings.Trim(obj.ETag, "\""),
 			})
 		}
 		for _, prefix := range lo.Prefixes {
@@ -678,7 +687,7 @@ func (web *webAPIHandlers) RemoveObject(r *http.Request, args *RemoveObjectArgs,
 	}
 
 	reply.UIVersion = Version
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -688,7 +697,7 @@ func (web *webAPIHandlers) RemoveObject(r *http.Request, args *RemoveObjectArgs,
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		core, err := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		core, err := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if err != nil {
 			return toJSONError(ctx, err, args.BucketName)
 		}
@@ -1267,7 +1276,7 @@ func (web *webAPIHandlers) Upload(w http.ResponseWriter, r *http.Request) {
 		metadata[xhttp.AmzBucketReplicationStatus] = string(replication.Pending)
 	}
 	pReader = NewPutObjReader(hashReader)
-	// Get gateway encryption options
+	// Get backend encryption options
 	opts, err := putOpts(ctx, r, bucket, object, metadata)
 	if err != nil {
 		writeErrorResponseHeadersOnly(w, toAPIError(ctx, err))
@@ -1471,7 +1480,7 @@ func (web *webAPIHandlers) Download(w http.ResponseWriter, r *http.Request) {
 		writeWebErrorResponse(w, err)
 		return
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 
 	objInfo := gr.ObjInfo
 
@@ -1509,7 +1518,7 @@ func (web *webAPIHandlers) Download(w http.ResponseWriter, r *http.Request) {
 	// Add content disposition.
 	w.Header().Set(xhttp.ContentDisposition, fmt.Sprintf("attachment; filename=\"%s\"", path.Base(objInfo.Name)))
 
-	setHeadGetRespHeaders(w, r.URL.Query())
+	SetHeadGetRespHeaders(w, r.URL.Query())
 
 	httpWriter := ioutil.WriteOnClose(w)
 
@@ -1681,7 +1690,7 @@ func (web *webAPIHandlers) DownloadZip(w http.ResponseWriter, r *http.Request) {
 	}
 
 	archive := zip.NewWriter(w)
-	defer archive.Close()
+	defer func() { _ = archive.Close() }()
 
 	reqParams := extractReqParams(r)
 	reqParams["accessKey"] = claims.GetAccessKey()
@@ -1698,7 +1707,7 @@ func (web *webAPIHandlers) DownloadZip(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return err
 			}
-			defer gr.Close()
+			defer func() { _ = gr.Close() }()
 
 			info := gr.ObjInfo
 			// Filter object lock metadata if permission does not permit
@@ -1814,7 +1823,7 @@ func (web *webAPIHandlers) GetBucketPolicy(r *http.Request, args *GetBucketPolic
 	}
 
 	var policyInfo = &miniogopolicy.BucketAccessPolicy{Version: "2012-10-17"}
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -1824,7 +1833,7 @@ func (web *webAPIHandlers) GetBucketPolicy(r *http.Request, args *GetBucketPolic
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		client, rerr := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		client, rerr := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if rerr != nil {
 			return toJSONError(ctx, rerr, args.BucketName)
 		}
@@ -1911,7 +1920,7 @@ func (web *webAPIHandlers) ListAllBucketPolicies(r *http.Request, args *ListAllB
 	}
 
 	var policyInfo = new(miniogopolicy.BucketAccessPolicy)
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -1921,7 +1930,7 @@ func (web *webAPIHandlers) ListAllBucketPolicies(r *http.Request, args *ListAllB
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		core, rerr := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		core, rerr := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if rerr != nil {
 			return toJSONError(ctx, rerr, args.BucketName)
 		}
@@ -2008,7 +2017,7 @@ func (web *webAPIHandlers) SetBucketPolicy(r *http.Request, args *SetBucketPolic
 		}
 	}
 
-	if isRemoteCallRequired(ctx, args.BucketName, objectAPI) {
+	if IsRemoteCallRequired(ctx, args.BucketName, objectAPI) {
 		sr, err := globalDNSConfig.Get(args.BucketName)
 		if err != nil {
 			if err == dns.ErrNoEntriesFound {
@@ -2018,7 +2027,7 @@ func (web *webAPIHandlers) SetBucketPolicy(r *http.Request, args *SetBucketPolic
 			}
 			return toJSONError(ctx, err, args.BucketName)
 		}
-		core, rerr := getRemoteInstanceClient(r, getHostFromSrv(sr))
+		core, rerr := GetRemoteInstanceClient(r, getHostFromSrv(sr))
 		if rerr != nil {
 			return toJSONError(ctx, rerr, args.BucketName)
 		}
@@ -2361,7 +2370,7 @@ func toWebAPIError(ctx context.Context, err error) APIError {
 		return APIError(stsErrCodes.ToSTSErr(ErrSTSNotInitialized))
 	case errServerNotInitialized:
 		return APIError{
-			Code:           "XMinioServerNotInitialized",
+			Code:           "XObstorServerNotInitialized",
 			HTTPStatusCode: http.StatusServiceUnavailable,
 			Description:    err.Error(),
 		}
@@ -2539,6 +2548,59 @@ func (web *webAPIHandlers) GetObjectLocations(r *http.Request, args *GetObjectLo
 		reply.Objects = append(reply.Objects, loc)
 	}
 
+	return nil
+}
+
+// Get object checksums args.
+type GetObjectChecksumsArgs struct {
+	BucketName string `json:"bucketName"`
+	ObjectName string `json:"objectName"`
+}
+
+// Reply with computed checksums.
+type GetObjectChecksumsRep struct {
+	MD5       string `json:"md5"`
+	SHA1      string `json:"sha1"`
+	SHA256    string `json:"sha256"`
+	SHA512    string `json:"sha512"`
+	UIVersion string `json:"uiVersion"`
+}
+
+// Read an object and get MD5, SHA-1, SHA-256, and SHA-512 hashes.
+func (web *webAPIHandlers) GetObjectChecksums(r *http.Request, args *GetObjectChecksumsArgs, reply *GetObjectChecksumsRep) error {
+	ctx := newWebContext(r, args, "WebGetObjectChecksums")
+	objectAPI := web.ObjectAPI()
+	reply.UIVersion = Version
+
+	if objectAPI == nil {
+		return toJSONError(ctx, errServerNotInitialized)
+	}
+
+	_, _, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+
+	gr, err := objectAPI.GetObjectNInfo(ctx, args.BucketName, args.ObjectName, nil, r.Header, readLock, ObjectOptions{})
+	if err != nil {
+		return toJSONError(ctx, err, args.BucketName, args.ObjectName)
+	}
+	defer gr.Close()
+
+	hMD5 := md5.New()
+	hSHA1 := sha1.New()
+	hSHA256 := sha256.New()
+	hSHA512 := sha512.New()
+	w := io.MultiWriter(hMD5, hSHA1, hSHA256, hSHA512)
+
+	if _, err := io.Copy(w, gr); err != nil {
+		return toJSONError(ctx, err, args.BucketName, args.ObjectName)
+	}
+
+	reply.MD5 = hex.EncodeToString(hMD5.Sum(nil))
+	reply.SHA1 = hex.EncodeToString(hSHA1.Sum(nil))
+	reply.SHA256 = hex.EncodeToString(hSHA256.Sum(nil))
+	reply.SHA512 = hex.EncodeToString(hSHA512.Sum(nil))
 	return nil
 }
 

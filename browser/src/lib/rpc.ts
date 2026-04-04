@@ -13,7 +13,7 @@ export async function rpc<T = unknown>(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "User-Agent": "Mozilla/5.0 Obstor Console",
+      "User-Agent": "Mozilla/5.0 Obstor Dashboard",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({

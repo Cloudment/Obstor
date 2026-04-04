@@ -12,7 +12,7 @@ export default async function BucketPage({ params, searchParams }: Props) {
   const { prefix = "" } = await searchParams;
   const bucketName = decodeURIComponent(bucket);
 
-  let objects: { name: string; size: number; lastModified: string; contentType: string }[] = [];
+  let objects: { name: string; size: number; lastModified: string; contentType: string; etag: string }[] = [];
   let error = "";
   let creationDate = "";
   let policyType = "none";
@@ -20,7 +20,7 @@ export default async function BucketPage({ params, searchParams }: Props) {
 
   try {
     const result = await rpc<{
-      objects: { name: string; size: number; lastModified: string; contentType: string }[] | null;
+      objects: { name: string; size: number; lastModified: string; contentType: string; etag: string }[] | null;
     }>("ListObjects", { bucketName, prefix, marker: "" });
     objects = result.objects || [];
   } catch (err) {
@@ -141,6 +141,7 @@ export default async function BucketPage({ params, searchParams }: Props) {
             sizeBytes: f.size,
             lastModified: formatDate(f.lastModified),
             contentType: f.contentType || "",
+            etag: f.etag || "",
             locations: objectLocations[f.name] || [],
           }))}
         />

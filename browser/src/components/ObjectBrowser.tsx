@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useReducer, useRef } from "react";
-import { deleteObjectAction, getDownloadURL, getShareLink, getUploadURL } from "@/lib/actions";
+import { deleteObjectAction, getDownloadURL, getObjectChecksums, getShareLink, getUploadURL } from "@/lib/actions";
 
 interface FileEntry {
   name: string;
@@ -11,7 +11,15 @@ interface FileEntry {
   sizeBytes: number;
   lastModified: string;
   contentType: string;
+  etag: string;
   locations: string[];
+}
+
+interface Checksums {
+  md5: string;
+  sha1: string;
+  sha256: string;
+  sha512: string;
 }
 
 interface Props {
@@ -32,6 +40,9 @@ interface BrowserState {
   shareModal: { name: string; url: string } | null;
   deleteConfirm: string | null;
   filter: string;
+  hashDetails: string | null;
+  checksums: Record<string, Checksums>;
+  checksumsLoading: string | null;
 }
 
 type BrowserAction =
@@ -42,7 +53,10 @@ type BrowserAction =
   | { type: "SET_UPLOADING"; uploading: { name: string; progress: number }[] }
   | { type: "SET_SHARE_MODAL"; modal: { name: string; url: string } | null }
   | { type: "SET_DELETE_CONFIRM"; name: string | null }
-  | { type: "RESET_UPLOAD" };
+  | { type: "RESET_UPLOAD" }
+  | { type: "TOGGLE_HASH"; name: string }
+  | { type: "SET_CHECKSUMS_LOADING"; name: string | null }
+  | { type: "SET_CHECKSUMS"; name: string; checksums: Checksums };
 
 const initialState: BrowserState = {
   sortField: "name",
@@ -53,6 +67,9 @@ const initialState: BrowserState = {
   shareModal: null,
   deleteConfirm: null,
   filter: "",
+  hashDetails: null,
+  checksums: {},
+  checksumsLoading: null,
 };
 
 function browserReducer(state: BrowserState, action: BrowserAction): BrowserState {
@@ -76,6 +93,16 @@ function browserReducer(state: BrowserState, action: BrowserAction): BrowserStat
       return { ...state, deleteConfirm: action.name };
     case "RESET_UPLOAD":
       return { ...state, uploading: [] };
+    case "TOGGLE_HASH":
+      return { ...state, hashDetails: state.hashDetails === action.name ? null : action.name };
+    case "SET_CHECKSUMS_LOADING":
+      return { ...state, checksumsLoading: action.name };
+    case "SET_CHECKSUMS":
+      return {
+        ...state,
+        checksums: { ...state.checksums, [action.name]: action.checksums },
+        checksumsLoading: null,
+      };
   }
 }
 
@@ -182,12 +209,16 @@ function ObjectTable({
   filteredFolders,
   sortedFiles,
   filesCount,
+  hashDetails,
+  checksums,
+  checksumsLoading,
   onToggleSort,
   onSelectAll,
   onToggleSelect,
   onDownload,
   onShare,
   onDeleteConfirm,
+  onToggleHash,
   displayName,
 }: {
   bucketName: string;
@@ -198,18 +229,22 @@ function ObjectTable({
   filteredFolders: string[];
   sortedFiles: FileEntry[];
   filesCount: number;
+  hashDetails: string | null;
+  checksums: Record<string, Checksums>;
+  checksumsLoading: string | null;
   onToggleSort: (field: SortField) => void;
   onSelectAll: () => void;
   onToggleSelect: (name: string) => void;
   onDownload: (name: string) => void;
   onShare: (name: string) => void;
   onDeleteConfirm: (name: string) => void;
+  onToggleHash: (name: string) => void;
   displayName: (name: string) => string;
 }) {
   return (
     <>
       {/* Column headers */}
-      <div className="grid grid-cols-[auto_1fr_100px_160px_140px_80px] items-center gap-4 border-border border-b px-4 py-2">
+      <div className="grid grid-cols-[auto_1fr_100px_160px_140px_100px] items-center gap-4 border-border border-b px-4 py-2">
         <input
           type="checkbox"
           checked={selected.size === filesCount && filesCount > 0}
@@ -268,7 +303,7 @@ function ObjectTable({
                 ? `?prefix=${encodeURIComponent(`${prefix.split("/").slice(0, -2).join("/")}/`)}`
                 : ""
             }`}
-            className="grid grid-cols-[auto_1fr_100px_160px_140px_80px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
+            className="grid grid-cols-[auto_1fr_100px_160px_140px_100px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
           >
             <span className="h-3.5 w-3.5" />
             <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
@@ -287,7 +322,7 @@ function ObjectTable({
           <Link
             key={folder}
             href={`/${encodeURIComponent(bucketName)}?prefix=${encodeURIComponent(folder)}`}
-            className="grid grid-cols-[auto_1fr_100px_160px_140px_80px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
+            className="grid grid-cols-[auto_1fr_100px_160px_140px_100px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
           >
             <span className="h-3.5 w-3.5" />
             <span className="flex items-center gap-2 truncate font-mono text-sm text-text-primary">
@@ -303,58 +338,97 @@ function ObjectTable({
 
         {/* Files */}
         {sortedFiles.map((file) => (
-          <div
-            key={file.name}
-            className="grid grid-cols-[auto_1fr_100px_160px_140px_80px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
-          >
-            <input
-              type="checkbox"
-              checked={selected.has(file.name)}
-              onChange={() => onToggleSelect(file.name)}
-              className="h-3.5 w-3.5 accent-accent"
-            />
-            <span className="flex items-center gap-2 truncate font-mono text-sm text-text-primary">
-              <span className="icon-[lucide--file] text-sm text-text-muted" />
-              {displayName(file.name)}
-            </span>
-            <span className="font-mono text-text-secondary text-xs">{file.size}</span>
-            <span className="font-mono text-text-muted text-xs">{file.lastModified}</span>
-            <div className="flex flex-col gap-0.5">
-              {(file.locations || []).map((loc) => (
-                <span
-                  key={loc}
-                  className="w-fit rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-[9px] text-text-muted leading-tight"
+          <div key={file.name}>
+            <div className="grid grid-cols-[auto_1fr_100px_160px_140px_100px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface">
+              <input
+                type="checkbox"
+                checked={selected.has(file.name)}
+                onChange={() => onToggleSelect(file.name)}
+                className="h-3.5 w-3.5 accent-accent"
+              />
+              <span className="flex items-center gap-2 truncate font-mono text-sm text-text-primary">
+                <span className="icon-[lucide--file] text-sm text-text-muted" />
+                {displayName(file.name)}
+              </span>
+              <span className="font-mono text-text-secondary text-xs">{file.size}</span>
+              <span className="font-mono text-text-muted text-xs">{file.lastModified}</span>
+              <div className="flex flex-col gap-0.5">
+                {(file.locations || []).map((loc) => (
+                  <span
+                    key={loc}
+                    className="w-fit rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-[9px] text-text-muted leading-tight"
+                  >
+                    {loc}
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => onToggleHash(file.name)}
+                  className={`flex h-7 w-7 items-center justify-center rounded-md transition-colors ${
+                    hashDetails === file.name
+                      ? "bg-accent/10 text-accent"
+                      : "text-text-muted hover:bg-surface-overlay hover:text-text-secondary"
+                  }`}
+                  title="Checksums"
                 >
-                  {loc}
-                </span>
-              ))}
+                  <span className="icon-[lucide--hash] text-xs" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDownload(file.name)}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-overlay hover:text-text-secondary"
+                  title="Download"
+                >
+                  <span className="icon-[lucide--download] text-xs" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onShare(file.name)}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-overlay hover:text-text-secondary"
+                  title="Share"
+                >
+                  <span className="icon-[lucide--link] text-xs" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDeleteConfirm(file.name)}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+                  title="Delete"
+                >
+                  <span className="icon-[lucide--trash-2] text-xs" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => onDownload(file.name)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-overlay hover:text-text-secondary"
-                title="Download"
-              >
-                <span className="icon-[lucide--download] text-xs" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onShare(file.name)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-overlay hover:text-text-secondary"
-                title="Share"
-              >
-                <span className="icon-[lucide--link] text-xs" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onDeleteConfirm(file.name)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                title="Delete"
-              >
-                <span className="icon-[lucide--trash-2] text-xs" />
-              </button>
-            </div>
+
+            {/* Hash details */}
+            {hashDetails === file.name && (
+              <div className="border-border border-t bg-surface px-4 py-3 pl-12">
+                {checksumsLoading === file.name ? (
+                  <span className="font-mono text-[11px] text-text-muted">Computing checksums...</span>
+                ) : checksums[file.name] ? (
+                  <div className="grid grid-cols-[60px_1fr] gap-x-3 gap-y-1.5">
+                    {file.etag && (
+                      <>
+                        <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">ETag</span>
+                        <span className="truncate font-mono text-[11px] text-text-secondary">{file.etag}</span>
+                      </>
+                    )}
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">MD5</span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].md5}</span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-1</span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha1}</span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-256</span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha256}</span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-512</span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha512}</span>
+                  </div>
+                ) : (
+                  <span className="font-mono text-[11px] text-text-muted">Loading...</span>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -463,8 +537,10 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
 
   const [state, dispatch] = useReducer(browserReducer, initialState);
 
-  const { sortField, sortAsc, selected, dragging, uploading, shareModal, deleteConfirm, filter } =
-    state;
+  const {
+    sortField, sortAsc, selected, dragging, uploading, shareModal, deleteConfirm, filter,
+    hashDetails, checksums, checksumsLoading,
+  } = state;
 
   // Sorting
   const sortedFiles = [...files]
@@ -617,6 +693,17 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
   );
 
   // Actions
+  const handleToggleHash = async (objectName: string) => {
+    dispatch({ type: "TOGGLE_HASH", name: objectName });
+    if (hashDetails === objectName) return;
+    if (checksums[objectName]) return;
+    dispatch({ type: "SET_CHECKSUMS_LOADING", name: objectName });
+    const result = await getObjectChecksums(bucketName, objectName);
+    if ("md5" in result) {
+      dispatch({ type: "SET_CHECKSUMS", name: objectName, checksums: result });
+    }
+  };
+
   const handleDownload = async (objectName: string) => {
     const result = await getDownloadURL(bucketName, objectName);
     if (result.url) {
@@ -698,12 +785,16 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
         filteredFolders={filteredFolders}
         sortedFiles={sortedFiles}
         filesCount={files.length}
+        hashDetails={hashDetails}
+        checksums={checksums}
+        checksumsLoading={checksumsLoading}
         onToggleSort={toggleSort}
         onSelectAll={selectAll}
         onToggleSelect={toggleSelect}
         onDownload={handleDownload}
         onShare={handleShare}
         onDeleteConfirm={(name) => dispatch({ type: "SET_DELETE_CONFIRM", name })}
+        onToggleHash={handleToggleHash}
         displayName={getDisplayName}
       />
 

@@ -22,8 +22,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Obstor Console",
-  description: "Obstor object storage management console",
+  title: "Obstor Dashboard",
+  description: "Obstor object storage management dashboard",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

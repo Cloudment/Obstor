@@ -9,13 +9,13 @@ export default function LoginPage() {
             <span className="icon-[fluent-emoji-high-contrast--lobster] text-2xl text-black" />
           </div>
           <h1 className="font-display font-semibold text-2xl text-text-primary">Obstor</h1>
-          <p className="mt-1 font-body text-sm text-text-muted">Sign in to your storage console</p>
+          <p className="mt-1 font-body text-sm text-text-muted">Sign in to your storage dashboard</p>
         </div>
 
         <LoginForm />
 
         <p className="mt-8 text-center font-mono text-[10px] text-text-muted">
-          Obstor Console &middot; Apache 2.0 Licensed
+          Obstor Dashboard &middot; Apache 2.0 Licensed
         </p>
       </div>
     </div>

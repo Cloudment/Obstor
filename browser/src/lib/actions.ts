@@ -55,7 +55,7 @@ async function rpcUnauthed<T>(method: string, params: Record<string, unknown> = 
   const endpoint = process.env.OBSTOR_ENDPOINT || "http://localhost:9000";
   const res = await fetch(`${endpoint}/obstor/webrpc`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "User-Agent": "Mozilla/5.0 Obstor Console" },
+    headers: { "Content-Type": "application/json", "User-Agent": "Mozilla/5.0 Obstor Dashboard" },
     body: JSON.stringify({ id: 1, jsonrpc: "2.0", method: `web.${method}`, params }),
     cache: "no-store",
   });
@@ -265,6 +265,18 @@ export async function getUploadURL(bucketName: string, prefix: string, objectNam
     return { url: result.url };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Failed to get upload URL" };
+  }
+}
+
+export async function getObjectChecksums(bucketName: string, objectName: string) {
+  try {
+    const result = await rpc<{ md5: string; sha1: string; sha256: string; sha512: string }>(
+      "GetObjectChecksums",
+      { bucketName, objectName },
+    );
+    return result;
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Failed to compute checksums" };
   }
 }
 
