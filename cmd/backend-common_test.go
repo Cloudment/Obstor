@@ -22,10 +22,10 @@ import (
 )
 
 // Tests cache exclude parsing.
-func TestParseGatewaySSE(t *testing.T) {
+func TestParseBackendSSE(t *testing.T) {
 	testCases := []struct {
 		gwSSEStr string
-		expected gatewaySSE
+		expected backendSSE
 		success  bool
 	}{
 		// valid input
@@ -37,7 +37,7 @@ func TestParseGatewaySSE(t *testing.T) {
 	}
 
 	for i, testCase := range testCases {
-		gwSSE, err := parseGatewaySSE(testCase.gwSSEStr)
+		gwSSE, err := parseBackendSSE(testCase.gwSSEStr)
 		if err != nil && testCase.success {
 			t.Errorf("Test %d: Expected success but failed instead %s", i+1, err)
 		}

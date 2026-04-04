@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package gateway
+package backend
 
 import (
-	// Import all gateways please keep the order
+	// Import all backends
 
 	// NAS
-	_ "github.com/cloudment/obstor/cmd/gateway/nas"
+	_ "github.com/cloudment/obstor/cmd/backend/nas"
 
 	// Azure
-	_ "github.com/cloudment/obstor/cmd/gateway/azure"
+	_ "github.com/cloudment/obstor/cmd/backend/azure"
 
 	// S3
-	_ "github.com/cloudment/obstor/cmd/gateway/s3"
+	_ "github.com/cloudment/obstor/cmd/backend/s3"
 
 	// HDFS
-	_ "github.com/cloudment/obstor/cmd/gateway/hdfs"
+	_ "github.com/cloudment/obstor/cmd/backend/hdfs"
 
 	// GCS (use only if you must, GCS already supports S3 API)
-	_ "github.com/cloudment/obstor/cmd/gateway/gcs"
-	// Gateway functionality is frozen, no new gateways are being implemented
-	// or considered for upstream inclusion at this point in time. if needed
-	// please keep a fork of the project.
+	_ "github.com/cloudment/obstor/cmd/backend/gcs"
+
+	// SFTP
+	_ "github.com/cloudment/obstor/cmd/backend/sftp"
 )

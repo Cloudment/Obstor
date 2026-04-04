@@ -48,15 +48,15 @@ type gwMetaV1 struct {
 	Parts []obstor.ObjectPartInfo `json:"parts,omitempty"`
 }
 
-// Gateway metadata constants.
+// Backend metadata constants.
 const (
-	// Gateway meta version.
+	// Backend meta version.
 	gwMetaVersion = "1.0.0"
 
-	// Gateway meta version.
+	// Backend meta version.
 	gwMetaVersion100 = "1.0.0"
 
-	// Gateway meta format string.
+	// Backend meta format string.
 	gwMetaFormat = "gw"
 
 	// Add new constants here.
@@ -95,7 +95,7 @@ func (m gwMetaV1) ToObjectInfo(bucket, object string) obstor.ObjectInfo {
 		ContentType:     m.Meta["content-type"],
 		ContentEncoding: m.Meta["content-encoding"],
 		ETag:            obstor.CanonicalizeETag(m.ETag),
-		UserDefined:     obstor.CleanMinioInternalMetadataKeys(obstor.CleanMetadataKeys(m.Meta, filterKeys...)),
+		UserDefined:     obstor.CleanObstorInternalMetadataKeys(obstor.CleanMetadataKeys(m.Meta, filterKeys...)),
 		Parts:           m.Parts,
 	}
 

@@ -35,30 +35,18 @@ import (
 )
 
 var (
-	// CanonicalizeETag provides canonicalizeETag function alias.
-	CanonicalizeETag = canonicalizeETag
-
-	// MustGetUUID function alias.
-	MustGetUUID = mustGetUUID
-
 	// CleanMetadataKeys provides cleanMetadataKeys function alias.
 	CleanMetadataKeys = cleanMetadataKeys
-
-	// PathJoin function alias.
-	PathJoin = pathJoin
 
 	// ListObjects function alias.
 	ListObjects = listObjects
 
 	// FilterListEntries function alias.
 	FilterListEntries = filterListEntries
-
-	// IsStringEqual is string equal.
-	IsStringEqual = isStringEqual
 )
 
-// FromMinioClientMetadata converts obstor metadata to map[string]string
-func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
+// FromObstorClientMetadata converts obstor metadata to map[string]string
+func FromObstorClientMetadata(metadata map[string][]string) map[string]string {
 	mm := make(map[string]string, len(metadata))
 	for k, v := range metadata {
 		mm[http.CanonicalHeaderKey(k)] = v[0]
@@ -66,23 +54,23 @@ func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
 	return mm
 }
 
-// FromMinioClientObjectPart converts obstor ObjectPart to PartInfo
-func FromMinioClientObjectPart(op obstor.ObjectPart) PartInfo {
+// FromObstorClientObjectPart converts obstor ObjectPart to PartInfo
+func FromObstorClientObjectPart(op obstor.ObjectPart) PartInfo {
 	return PartInfo{
 		Size:         op.Size,
-		ETag:         canonicalizeETag(op.ETag),
+		ETag:         CanonicalizeETag(op.ETag),
 		LastModified: op.LastModified,
 		PartNumber:   op.PartNumber,
 	}
 }
 
-// FromMinioClientListPartsInfo converts obstor ListObjectPartsResult to ListPartsInfo
-func FromMinioClientListPartsInfo(lopr obstor.ListObjectPartsResult) ListPartsInfo {
+// FromObstorClientListPartsInfo converts obstor ListObjectPartsResult to ListPartsInfo
+func FromObstorClientListPartsInfo(lopr obstor.ListObjectPartsResult) ListPartsInfo {
 	// Convert obstor ObjectPart to PartInfo
-	fromMinioClientObjectParts := func(parts []obstor.ObjectPart) []PartInfo {
+	fromObstorClientObjectParts := func(parts []obstor.ObjectPart) []PartInfo {
 		toParts := make([]PartInfo, len(parts))
 		for i, part := range parts {
-			toParts[i] = FromMinioClientObjectPart(part)
+			toParts[i] = FromObstorClientObjectPart(part)
 		}
 		return toParts
 	}
@@ -96,12 +84,12 @@ func FromMinioClientListPartsInfo(lopr obstor.ListObjectPartsResult) ListPartsIn
 		NextPartNumberMarker: lopr.NextPartNumberMarker,
 		MaxParts:             lopr.MaxParts,
 		IsTruncated:          lopr.IsTruncated,
-		Parts:                fromMinioClientObjectParts(lopr.ObjectParts),
+		Parts:                fromObstorClientObjectParts(lopr.ObjectParts),
 	}
 }
 
-// FromMinioClientListMultipartsInfo converts obstor ListMultipartUploadsResult to ListMultipartsInfo
-func FromMinioClientListMultipartsInfo(lmur obstor.ListMultipartUploadsResult) ListMultipartsInfo {
+// FromObstorClientListMultipartsInfo converts obstor ListMultipartUploadsResult to ListMultipartsInfo
+func FromObstorClientListMultipartsInfo(lmur obstor.ListMultipartUploadsResult) ListMultipartsInfo {
 	uploads := make([]MultipartInfo, len(lmur.Uploads))
 
 	for i, um := range lmur.Uploads {
@@ -133,9 +121,9 @@ func FromMinioClientListMultipartsInfo(lmur obstor.ListMultipartUploadsResult) L
 
 }
 
-// FromMinioClientObjectInfo converts obstor ObjectInfo to gateway ObjectInfo
-func FromMinioClientObjectInfo(bucket string, oi obstor.ObjectInfo) ObjectInfo {
-	userDefined := FromMinioClientMetadata(oi.Metadata)
+// FromObstorClientObjectInfo converts obstor ObjectInfo to backend ObjectInfo
+func FromObstorClientObjectInfo(bucket string, oi obstor.ObjectInfo) ObjectInfo {
+	userDefined := FromObstorClientMetadata(oi.Metadata)
 	userDefined[xhttp.ContentType] = oi.ContentType
 
 	return ObjectInfo{
@@ -143,7 +131,7 @@ func FromMinioClientObjectInfo(bucket string, oi obstor.ObjectInfo) ObjectInfo {
 		Name:            oi.Key,
 		ModTime:         oi.LastModified,
 		Size:            oi.Size,
-		ETag:            canonicalizeETag(oi.ETag),
+		ETag:            CanonicalizeETag(oi.ETag),
 		UserDefined:     userDefined,
 		ContentType:     oi.ContentType,
 		ContentEncoding: oi.Metadata.Get(xhttp.ContentEncoding),
@@ -152,12 +140,12 @@ func FromMinioClientObjectInfo(bucket string, oi obstor.ObjectInfo) ObjectInfo {
 	}
 }
 
-// FromMinioClientListBucketV2Result converts obstor ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketV2Result(bucket string, result obstor.ListBucketV2Result) ListObjectsV2Info {
+// FromObstorClientListBucketV2Result converts obstor ListBucketResult to ListObjectsInfo
+func FromObstorClientListBucketV2Result(bucket string, result obstor.ListBucketV2Result) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
-		objects[i] = FromMinioClientObjectInfo(bucket, oi)
+		objects[i] = FromObstorClientObjectInfo(bucket, oi)
 	}
 
 	prefixes := make([]string, len(result.CommonPrefixes))
@@ -175,12 +163,12 @@ func FromMinioClientListBucketV2Result(bucket string, result obstor.ListBucketV2
 	}
 }
 
-// FromMinioClientListBucketResult converts obstor ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketResult(bucket string, result obstor.ListBucketResult) ListObjectsInfo {
+// FromObstorClientListBucketResult converts obstor ListBucketResult to ListObjectsInfo
+func FromObstorClientListBucketResult(bucket string, result obstor.ListBucketResult) ListObjectsInfo {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
-		objects[i] = FromMinioClientObjectInfo(bucket, oi)
+		objects[i] = FromObstorClientObjectInfo(bucket, oi)
 	}
 
 	prefixes := make([]string, len(result.CommonPrefixes))
@@ -196,12 +184,12 @@ func FromMinioClientListBucketResult(bucket string, result obstor.ListBucketResu
 	}
 }
 
-// FromMinioClientListBucketResultToV2Info converts obstor ListBucketResult to ListObjectsV2Info
-func FromMinioClientListBucketResultToV2Info(bucket string, result obstor.ListBucketResult) ListObjectsV2Info {
+// FromObstorClientListBucketResultToV2Info converts obstor ListBucketResult to ListObjectsV2Info
+func FromObstorClientListBucketResultToV2Info(bucket string, result obstor.ListBucketResult) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
-		objects[i] = FromMinioClientObjectInfo(bucket, oi)
+		objects[i] = FromObstorClientObjectInfo(bucket, oi)
 	}
 
 	prefixes := make([]string, len(result.CommonPrefixes))
@@ -218,8 +206,8 @@ func FromMinioClientListBucketResultToV2Info(bucket string, result obstor.ListBu
 	}
 }
 
-// ToMinioClientObjectInfoMetadata convertes metadata to map[string][]string
-func ToMinioClientObjectInfoMetadata(metadata map[string]string) map[string][]string {
+// ToObstorClientObjectInfoMetadata convertes metadata to map[string][]string
+func ToObstorClientObjectInfoMetadata(metadata map[string]string) map[string][]string {
 	mm := make(map[string][]string, len(metadata))
 	for k, v := range metadata {
 		mm[http.CanonicalHeaderKey(k)] = []string{v}
@@ -227,8 +215,8 @@ func ToMinioClientObjectInfoMetadata(metadata map[string]string) map[string][]st
 	return mm
 }
 
-// ToMinioClientMetadata converts metadata to map[string]string
-func ToMinioClientMetadata(metadata map[string]string) map[string]string {
+// ToObstorClientMetadata converts metadata to map[string]string
+func ToObstorClientMetadata(metadata map[string]string) map[string]string {
 	mm := make(map[string]string, len(metadata))
 	for k, v := range metadata {
 		mm[http.CanonicalHeaderKey(k)] = v
@@ -236,19 +224,19 @@ func ToMinioClientMetadata(metadata map[string]string) map[string]string {
 	return mm
 }
 
-// ToMinioClientCompletePart converts CompletePart to obstor CompletePart
-func ToMinioClientCompletePart(part CompletePart) obstor.CompletePart {
+// ToObstorClientCompletePart converts CompletePart to obstor CompletePart
+func ToObstorClientCompletePart(part CompletePart) obstor.CompletePart {
 	return obstor.CompletePart{
 		ETag:       part.ETag,
 		PartNumber: part.PartNumber,
 	}
 }
 
-// ToMinioClientCompleteParts converts []CompletePart to obstor []CompletePart
-func ToMinioClientCompleteParts(parts []CompletePart) []obstor.CompletePart {
+// ToObstorClientCompleteParts converts []CompletePart to obstor []CompletePart
+func ToObstorClientCompleteParts(parts []CompletePart) []obstor.CompletePart {
 	mparts := make([]obstor.CompletePart, len(parts))
 	for i, part := range parts {
-		mparts[i] = ToMinioClientCompletePart(part)
+		mparts[i] = ToObstorClientCompletePart(part)
 	}
 	return mparts
 }
@@ -267,7 +255,7 @@ func IsBackendOnline(ctx context.Context, host string) bool {
 		return false
 	}
 
-	conn.Close()
+	_ = conn.Close()
 	return true
 }
 
@@ -290,14 +278,14 @@ func ErrorRespToObjectError(err error, params ...string) error {
 		return BackendDown{}
 	}
 
-	minioErr, ok := err.(obstor.ErrorResponse)
+	obstorErr, ok := err.(obstor.ErrorResponse)
 	if !ok {
 		// We don't interpret non Obstor errors. As obstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}
 
-	switch minioErr.Code {
+	switch obstorErr.Code {
 	case "BucketAlreadyOwnedByYou":
 		err = BucketAlreadyOwnedByYou{}
 	case "BucketNotEmpty":
@@ -318,7 +306,7 @@ func ErrorRespToObjectError(err error, params ...string) error {
 		} else {
 			err = BucketNotFound{Bucket: bucket}
 		}
-	case "XMinioInvalidObjectName":
+	case "XObstorInvalidObjectName":
 		err = ObjectNameInvalid{}
 	case "AccessDenied":
 		err = PrefixAccessDenied{
@@ -341,29 +329,29 @@ func ComputeCompleteMultipartMD5(parts []CompletePart) string {
 	return getCompleteMultipartMD5(parts)
 }
 
-// Parse gateway sse env variable
-func parseGatewaySSE(s string) (gatewaySSE, error) {
+// Parse backend sse env variable
+func parseBackendSSE(s string) (backendSSE, error) {
 	l := strings.Split(s, ";")
-	var gwSlice gatewaySSE
+	var gwSlice backendSSE
 	for _, val := range l {
 		v := strings.ToUpper(val)
 		switch v {
 		case "":
 			continue
-		case gatewaySSES3:
+		case backendSSES3:
 			fallthrough
-		case gatewaySSEC:
+		case backendSSEC:
 			gwSlice = append(gwSlice, v)
 			continue
 		default:
-			return nil, config.ErrInvalidGWSSEValue(nil).Msg("gateway SSE cannot be (%s) ", v)
+			return nil, config.ErrInvalidGWSSEValue(nil).Msg("backend SSE cannot be (%s) ", v)
 		}
 	}
 	return gwSlice, nil
 }
 
-// Handle gateway env vars
-func gatewayHandleEnvVars() {
+// Handle backend env vars
+func backendHandleEnvVars() {
 	// Handle common env vars.
 	handleCommonEnvVars()
 
@@ -372,17 +360,17 @@ func gatewayHandleEnvVars() {
 			"Unable to validate credentials inherited from the shell environment")
 	}
 
-	gwsseVal := env.Get("OBSTOR_GATEWAY_SSE", "")
+	gwsseVal := env.Get("OBSTOR_BACKEND_SSE", "")
 	if gwsseVal != "" {
 		var err error
-		GlobalGatewaySSE, err = parseGatewaySSE(gwsseVal)
+		GlobalBackendSSE, err = parseBackendSSE(gwsseVal)
 		if err != nil {
-			logger.Fatal(err, "Unable to parse OBSTOR_GATEWAY_SSE value (`%s`)", gwsseVal)
+			logger.Fatal(err, "Unable to parse OBSTOR_BACKEND_SSE value (`%s`)", gwsseVal)
 		}
 	}
 }
 
-// shouldMeterRequest checks whether incoming request should be added to prometheus gateway metrics
+// shouldMeterRequest checks whether incoming request should be added to prometheus backend metrics
 func shouldMeterRequest(req *http.Request) bool {
 	return !guessIsBrowserReq(req) && !guessIsHealthCheckReq(req) && !guessIsMetricsReq(req)
 }

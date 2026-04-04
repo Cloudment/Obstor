@@ -21,24 +21,25 @@ import (
 	"github.com/cloudment/obstor/pkg/auth"
 )
 
-// GatewayObstorSysTmp prefix is used in Azure/GCS gateway for save metadata sent by Initialize Multipart Upload API.
+// BackendObstorSysTmp prefix is used in Azure/GCS backend for save metadata sent by Initialize Multipart Upload API.
 const (
-	GatewayObstorSysTmp = "obstor.sys.tmp/"
-	AzureBackendGateway = "azure"
-	GCSBackendGateway   = "gcs"
-	HDFSBackendGateway  = "hdfs"
-	NASBackendGateway   = "nas"
-	S3BackendGateway    = "s3"
+	BackendObstorSysTmp = "obstor.sys.tmp/"
+	AzureBackend        = "azure"
+	GCSBackend          = "gcs"
+	HDFSBackend         = "hdfs"
+	NASBackend          = "nas"
+	S3Backend           = "s3"
+	SFTPBackend         = "sftp"
 )
 
-// Gateway represents a gateway backend.
-type Gateway interface {
-	// Name returns the unique name of the gateway.
+// Backend represents a storage backend.
+type Backend interface {
+	// Name returns the unique name of the backend.
 	Name() string
 
-	// NewGatewayLayer returns a new  ObjectLayer.
-	NewGatewayLayer(creds auth.Credentials) (ObjectLayer, error)
+	// NewBackendLayer returns a new ObjectLayer.
+	NewBackendLayer(creds auth.Credentials) (ObjectLayer, error)
 
-	// Returns true if gateway is ready for production.
+	// Returns true if backend is ready for production.
 	Production() bool
 }

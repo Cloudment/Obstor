@@ -74,7 +74,7 @@ func TestS3ToObjectError(t *testing.T) {
 			expectedErr: obstor.InvalidUploadID{},
 		},
 		{
-			inputErr:    errResponse("XMinioInvalidObjectName"),
+			inputErr:    errResponse("XObstorInvalidObjectName"),
 			expectedErr: obstor.ObjectNameInvalid{},
 		},
 		{

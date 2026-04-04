@@ -25,19 +25,19 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Test RegisterGatewayCommand
-func TestRegisterGatewayCommand(t *testing.T) {
+// Test RegisterBackendCommand
+func TestRegisterBackendCommand(t *testing.T) {
 	var err error
 
 	cmd := cli.Command{Name: "test"}
-	err = RegisterGatewayCommand(cmd)
+	err = RegisterBackendCommand(cmd)
 	if err != nil {
-		t.Errorf("RegisterGatewayCommand got unexpected error: %s", err)
+		t.Errorf("RegisterBackendCommand got unexpected error: %s", err)
 	}
 }
 
-// Test running a registered gateway command with a flag
-func TestRunRegisteredGatewayCommand(t *testing.T) {
+// Test running a registered backend command with a flag
+func TestRunRegisteredBackendCommand(t *testing.T) {
 	var err error
 
 	flagName := "test-flag"
@@ -55,19 +55,19 @@ func TestRunRegisteredGatewayCommand(t *testing.T) {
 		},
 	}
 
-	err = RegisterGatewayCommand(cmd)
+	err = RegisterBackendCommand(cmd)
 	if err != nil {
-		t.Errorf("RegisterGatewayCommand got unexpected error: %s", err)
+		t.Errorf("RegisterBackendCommand got unexpected error: %s", err)
 	}
 
 	if err = newApp("obstor").Run(
-		[]string{"obstor", "gateway", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
-		t.Errorf("running registered gateway command got unexpected error: %s", err)
+		[]string{"obstor", "backend", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
+		t.Errorf("running registered backend command got unexpected error: %s", err)
 	}
 }
 
-// Test parseGatewayEndpoint
-func TestParseGatewayEndpoint(t *testing.T) {
+// Test parseBackendEndpoint
+func TestParseBackendEndpoint(t *testing.T) {
 	testCases := []struct {
 		arg         string
 		endPoint    string
@@ -84,7 +84,7 @@ func TestParseGatewayEndpoint(t *testing.T) {
 	}
 
 	for i, test := range testCases {
-		endPoint, secure, err := ParseGatewayEndpoint(test.arg)
+		endPoint, secure, err := ParseBackendEndpoint(test.arg)
 		errReturned := err != nil
 
 		if endPoint != test.endPoint ||
@@ -97,8 +97,8 @@ func TestParseGatewayEndpoint(t *testing.T) {
 	}
 }
 
-// Test validateGatewayArguments
-func TestValidateGatewayArguments(t *testing.T) {
+// Test validateBackendArguments
+func TestValidateBackendArguments(t *testing.T) {
 	nonLoopBackIPs := localIP4.FuncMatch(func(ip string, matchString string) bool {
 		return !strings.HasPrefix(ip, "127.")
 	}, "")
@@ -119,7 +119,7 @@ func TestValidateGatewayArguments(t *testing.T) {
 		{":9000", nonLoopBackIP + ":9000", false},
 	}
 	for i, test := range testCases {
-		err := ValidateGatewayArguments(test.serverAddr, test.endpointAddr)
+		err := ValidateBackendArguments(test.serverAddr, test.endpointAddr)
 		if test.valid && err != nil {
 			t.Errorf("Test %d expected not to return error but got %s", i+1, err)
 		}

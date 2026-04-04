@@ -49,7 +49,7 @@ const (
 )
 
 func init() {
-	const hdfsGatewayTemplate = `NAME:
+	const hdfsBackendTemplate = `NAME:
   {{.HelpName}} - {{.Usage}}
 
 USAGE:
@@ -62,12 +62,12 @@ HDFS-NAMENODE:
   HDFS namenode URI
 
 EXAMPLES:
-  1. Start obstor gateway server for HDFS backend
+  1. Start obstor backend server for HDFS backend
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}} hdfs://namenode:8200
 
-  2. Start obstor gateway server for HDFS with edge caching enabled
+  2. Start obstor backend server for HDFS with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -79,37 +79,37 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} hdfs://namenode:8200
 `
 
-	obstor.RegisterGatewayCommand(cli.Command{
-		Name:               obstor.HDFSBackendGateway,
+	_ = obstor.RegisterBackendCommand(cli.Command{
+		Name:               obstor.HDFSBackend,
 		Usage:              "Hadoop Distributed File System (HDFS)",
-		Action:             hdfsGatewayMain,
-		CustomHelpTemplate: hdfsGatewayTemplate,
+		Action:             hdfsBackendMain,
+		CustomHelpTemplate: hdfsBackendTemplate,
 		HideHelp:           true,
 	})
 }
 
-// Handler for 'obstor gateway hdfs' command line.
-func hdfsGatewayMain(ctx *cli.Context) {
-	// Validate gateway arguments.
+// Handler for 'obstor backend hdfs' command line.
+func hdfsBackendMain(ctx *cli.Context) {
+	// Validate backend arguments.
 	if ctx.Args().First() == "help" {
-		cli.ShowCommandHelpAndExit(ctx, obstor.HDFSBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, obstor.HDFSBackend, 1)
 	}
 
-	obstor.StartGateway(ctx, &HDFS{args: ctx.Args()})
+	obstor.StartBackend(ctx, &HDFS{args: ctx.Args()})
 }
 
-// HDFS implements Gateway.
+// HDFS implements Backend.
 type HDFS struct {
 	args []string
 }
 
-// Name implements Gateway interface.
+// Name implements Backend interface.
 func (g *HDFS) Name() string {
-	return obstor.HDFSBackendGateway
+	return obstor.HDFSBackend
 }
 
-// NewGatewayLayer returns hdfs gatewaylayer.
-func (g *HDFS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
+// NewBackendLayer returns hdfs backendlayer.
+func (g *HDFS) NewBackendLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	dialFunc := (&net.Dialer{
 		Timeout:   30 * time.Second,
 		KeepAlive: 30 * time.Second,
@@ -163,14 +163,14 @@ func (g *HDFS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, erro
 		return nil, fmt.Errorf("unable to initialize hdfsClient: %v", err)
 	}
 
-	if err = clnt.MkdirAll(obstor.PathJoin(commonPath, hdfsSeparator, minioMetaTmpBucket), os.FileMode(0755)); err != nil {
+	if err = clnt.MkdirAll(obstor.PathJoin(commonPath, hdfsSeparator, obstorMetaTmpBucket), os.FileMode(0755)); err != nil {
 		return nil, err
 	}
 
 	return &hdfsObjects{clnt: clnt, subPath: commonPath, listPool: obstor.NewTreeWalkPool(time.Minute * 30)}, nil
 }
 
-// Production - hdfs gateway is production ready.
+// HDFS backend is production-ready
 func (g *HDFS) Production() bool {
 	return true
 }
@@ -196,9 +196,9 @@ func (n *hdfsObjects) StorageInfo(ctx context.Context) (si obstor.StorageInfo, e
 	return si, nil
 }
 
-// hdfsObjects implements gateway for Minio and S3 compatible object storage servers.
+// hdfsObjects implements backend for Obstor and S3 compatible object storage servers.
 type hdfsObjects struct {
-	obstor.GatewayUnsupported
+	obstor.BackendUnsupported
 	clnt     *hdfs.Client
 	subPath  string
 	listPool *obstor.TreeWalkPool
@@ -334,7 +334,7 @@ func (n *hdfsObjects) listDirFactory() obstor.ListDirFunc {
 			logger.LogIf(obstor.GlobalContext, err)
 			return
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		fis, err := f.Readdir(0)
 		if err != nil {
 			logger.LogIf(obstor.GlobalContext, err)
@@ -480,7 +480,7 @@ func (n *hdfsObjects) deleteObject(basePath, deletePath string) error {
 	deletePath = path.Dir(deletePath)
 
 	// Delete parent directory. Errors for parent directories shouldn't trickle down.
-	n.deleteObject(basePath, deletePath)
+	_ = n.deleteObject(basePath, deletePath)
 
 	return nil
 }
@@ -548,7 +548,7 @@ func (n *hdfsObjects) GetObjectNInfo(ctx context.Context, bucket, object string,
 
 	// Setup cleanup function to cause the above go-routine to
 	// exit in case of partial read
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 	return obstor.NewGetObjectReaderFromReader(pr, objInfo, opts, pipeCloser)
 
 }
@@ -573,7 +573,7 @@ func (n *hdfsObjects) getObject(ctx context.Context, bucket, key string, startOf
 	if err != nil {
 		return hdfsToObjectErr(ctx, err, bucket, key)
 	}
-	defer rd.Close()
+	defer func() { _ = rd.Close() }()
 	_, err = io.Copy(writer, io.NewSectionReader(rd, startOffset, length))
 	if err == io.ErrClosedPipe {
 		// Hdfs library doesn't send EOF correctly, so io.Copy attempts
@@ -593,7 +593,7 @@ func (n *hdfsObjects) isObjectDir(ctx context.Context, bucket, object string) bo
 		logger.LogIf(ctx, err)
 		return false
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	fis, err := f.Readdir(1)
 	if err != nil && err != io.EOF {
 		logger.LogIf(ctx, err)
@@ -638,30 +638,30 @@ func (n *hdfsObjects) PutObject(ctx context.Context, bucket string, object strin
 	// If its a directory create a prefix {
 	if strings.HasSuffix(object, hdfsSeparator) && r.Size() == 0 {
 		if err = n.clnt.MkdirAll(name, os.FileMode(0755)); err != nil {
-			n.deleteObject(n.hdfsPathJoin(bucket), name)
+			_ = n.deleteObject(n.hdfsPathJoin(bucket), name)
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
 	} else {
-		tmpname := n.hdfsPathJoin(minioMetaTmpBucket, obstor.MustGetUUID())
+		tmpname := n.hdfsPathJoin(obstorMetaTmpBucket, obstor.MustGetUUID())
 		var w *hdfs.FileWriter
 		w, err = n.clnt.Create(tmpname)
 		if err != nil {
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
-		defer n.deleteObject(n.hdfsPathJoin(minioMetaTmpBucket), tmpname)
+		defer func() { _ = n.deleteObject(n.hdfsPathJoin(obstorMetaTmpBucket), tmpname) }()
 		if _, err = io.Copy(w, r); err != nil {
-			w.Close()
+			_ = w.Close()
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
 		dir := path.Dir(name)
 		if dir != "" {
 			if err = n.clnt.MkdirAll(dir, os.FileMode(0755)); err != nil {
-				w.Close()
-				n.deleteObject(n.hdfsPathJoin(bucket), dir)
+				_ = w.Close()
+				_ = n.deleteObject(n.hdfsPathJoin(bucket), dir)
 				return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 			}
 		}
-		w.Close()
+		_ = w.Close()
 		if err = n.clnt.Rename(tmpname, name); err != nil {
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
@@ -688,7 +688,7 @@ func (n *hdfsObjects) NewMultipartUpload(ctx context.Context, bucket string, obj
 	}
 
 	uploadID = obstor.MustGetUUID()
-	if err = n.clnt.CreateEmptyFile(n.hdfsPathJoin(minioMetaTmpBucket, uploadID)); err != nil {
+	if err = n.clnt.CreateEmptyFile(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID)); err != nil {
 		return uploadID, hdfsToObjectErr(ctx, err, bucket)
 	}
 
@@ -706,7 +706,7 @@ func (n *hdfsObjects) ListMultipartUploads(ctx context.Context, bucket string, p
 }
 
 func (n *hdfsObjects) checkUploadIDExists(ctx context.Context, bucket, object, uploadID string) (err error) {
-	_, err = n.clnt.Stat(n.hdfsPathJoin(minioMetaTmpBucket, uploadID))
+	_, err = n.clnt.Stat(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID))
 	if err != nil {
 		return hdfsToObjectErr(ctx, err, bucket, object, uploadID)
 	}
@@ -756,11 +756,11 @@ func (n *hdfsObjects) PutObjectPart(ctx context.Context, bucket, object, uploadI
 	}
 
 	var w *hdfs.FileWriter
-	w, err = n.clnt.Append(n.hdfsPathJoin(minioMetaTmpBucket, uploadID))
+	w, err = n.clnt.Append(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID))
 	if err != nil {
 		return info, hdfsToObjectErr(ctx, err, bucket, object, uploadID)
 	}
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 	_, err = io.Copy(w, r.Reader)
 	if err != nil {
 		return info, hdfsToObjectErr(ctx, err, bucket, object, uploadID)
@@ -792,19 +792,19 @@ func (n *hdfsObjects) CompleteMultipartUpload(ctx context.Context, bucket, objec
 		}
 	}
 
-	err = n.clnt.Rename(n.hdfsPathJoin(minioMetaTmpBucket, uploadID), name)
+	err = n.clnt.Rename(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID), name)
 	// Object already exists is an error on HDFS
 	// remove it and then create it again.
 	if os.IsExist(err) {
 		if err = n.clnt.Remove(name); err != nil {
 			if dir != "" {
-				n.deleteObject(n.hdfsPathJoin(bucket), dir)
+				_ = n.deleteObject(n.hdfsPathJoin(bucket), dir)
 			}
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
-		if err = n.clnt.Rename(n.hdfsPathJoin(minioMetaTmpBucket, uploadID), name); err != nil {
+		if err = n.clnt.Rename(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID), name); err != nil {
 			if dir != "" {
-				n.deleteObject(n.hdfsPathJoin(bucket), dir)
+				_ = n.deleteObject(n.hdfsPathJoin(bucket), dir)
 			}
 			return objInfo, hdfsToObjectErr(ctx, err, bucket, object)
 		}
@@ -833,5 +833,5 @@ func (n *hdfsObjects) AbortMultipartUpload(ctx context.Context, bucket, object, 
 	if err != nil {
 		return hdfsToObjectErr(ctx, err, bucket)
 	}
-	return hdfsToObjectErr(ctx, n.clnt.Remove(n.hdfsPathJoin(minioMetaTmpBucket, uploadID)), bucket, object, uploadID)
+	return hdfsToObjectErr(ctx, n.clnt.Remove(n.hdfsPathJoin(obstorMetaTmpBucket, uploadID)), bucket, object, uploadID)
 }

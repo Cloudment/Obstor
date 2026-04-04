@@ -37,27 +37,27 @@ import (
 )
 
 var (
-	gatewayCmd = cli.Command{
-		Name:     "gateway",
-		Usage:    "start object storage gateway",
+	backendCmd = cli.Command{
+		Name:     "backend",
+		Usage:    "start object storage backend",
 		Flags:    append(ServerFlags, GlobalFlags...),
 		HideHelp: true,
 	}
 )
 
-// GatewayLocker implements custom NewNSLock implementation
-type GatewayLocker struct {
+// BackendLocker implements custom NewNSLock implementation
+type BackendLocker struct {
 	ObjectLayer
 	nsMutex *nsLockMap
 }
 
-// NewNSLock - implements gateway level locker
-func (l *GatewayLocker) NewNSLock(bucket string, objects ...string) RWLocker {
+// NewNSLock - implements backend level locker
+func (l *BackendLocker) NewNSLock(bucket string, objects ...string) RWLocker {
 	return l.nsMutex.NewNSLock(nil, bucket, objects...)
 }
 
-// Walk - implements common gateway level Walker, to walk on all objects recursively at a prefix
-func (l *GatewayLocker) Walk(ctx context.Context, bucket, prefix string, results chan<- ObjectInfo, opts ObjectOptions) error {
+// Walk - implements common backend level Walker, to walk on all objects recursively at a prefix
+func (l *BackendLocker) Walk(ctx context.Context, bucket, prefix string, results chan<- ObjectInfo, opts ObjectOptions) error {
 	walk := func(ctx context.Context, bucket, prefix string, results chan<- ObjectInfo) error {
 		go func() {
 			// Make sure the results channel is ready to be read when we're done.
@@ -98,20 +98,20 @@ func (l *GatewayLocker) Walk(ctx context.Context, bucket, prefix string, results
 	return nil
 }
 
-// NewGatewayLayerWithLocker - initialize gateway with locker.
-func NewGatewayLayerWithLocker(gwLayer ObjectLayer) ObjectLayer {
-	return &GatewayLocker{ObjectLayer: gwLayer, nsMutex: newNSLock(false)}
+// NewBackendLayerWithLocker - initialize backend with locker.
+func NewBackendLayerWithLocker(gwLayer ObjectLayer) ObjectLayer {
+	return &BackendLocker{ObjectLayer: gwLayer, nsMutex: newNSLock(false)}
 }
 
-// RegisterGatewayCommand registers a new command for gateway.
-func RegisterGatewayCommand(cmd cli.Command) error {
+// RegisterBackendCommand registers a new command for backend.
+func RegisterBackendCommand(cmd cli.Command) error {
 	cmd.Flags = append(append(cmd.Flags, ServerFlags...), GlobalFlags...)
-	gatewayCmd.Subcommands = append(gatewayCmd.Subcommands, cmd)
+	backendCmd.Subcommands = append(backendCmd.Subcommands, cmd)
 	return nil
 }
 
-// ParseGatewayEndpoint - Return endpoint.
-func ParseGatewayEndpoint(arg string) (endPoint string, secure bool, err error) {
+// ParseBackendEndpoint - Return endpoint.
+func ParseBackendEndpoint(arg string) (endPoint string, secure bool, err error) {
 	schemeSpecified := len(strings.Split(arg, "://")) > 1
 	if !schemeSpecified {
 		// Default connection will be "secure".
@@ -133,47 +133,47 @@ func ParseGatewayEndpoint(arg string) (endPoint string, secure bool, err error) 
 	}
 }
 
-// ValidateGatewayArguments - Validate gateway arguments.
-func ValidateGatewayArguments(serverAddr, endpointAddr string) error {
+// ValidateBackendArguments - Validate backend arguments.
+func ValidateBackendArguments(serverAddr, endpointAddr string) error {
 	if err := CheckLocalServerAddr(serverAddr); err != nil {
 		return err
 	}
 
 	if endpointAddr != "" {
-		// Reject the endpoint if it points to the gateway handler itself.
+		// Reject the endpoint if it points to the backend handler itself.
 		sameTarget, err := sameLocalAddrs(endpointAddr, serverAddr)
 		if err != nil {
 			return err
 		}
 		if sameTarget {
-			return fmt.Errorf("endpoint points to the local gateway")
+			return fmt.Errorf("endpoint points to the local backend")
 		}
 	}
 	return nil
 }
 
-// StartGateway - handler for 'obstor gateway <name>'.
-func StartGateway(ctx *cli.Context, gw Gateway) {
+// StartBackend - handler for 'obstor backend <name>'.
+func StartBackend(ctx *cli.Context, gw Backend) {
 	defer globalDNSCache.Stop()
 
-	// This is only to uniquely identify each gateway deployments.
-	globalDeploymentID = env.Get("OBSTOR_GATEWAY_DEPLOYMENT_ID", mustGetUUID())
+	// This is only to uniquely identify each backend deployments.
+	globalDeploymentID = env.Get("OBSTOR_BACKEND_DEPLOYMENT_ID", mustGetUUID())
 	logger.SetDeploymentID(globalDeploymentID)
 
 	if gw == nil {
-		logger.FatalIf(errUnexpected, "Gateway implementation not initialized")
+		logger.FatalIf(errUnexpected, "Backend implementation not initialized")
 	}
 
 	// Validate if we have access, secret set through environment.
-	globalGatewayName = gw.Name()
-	gatewayName := gw.Name()
+	globalBackendName = gw.Name()
+	backendName := gw.Name()
 	if ctx.Args().First() == "help" {
-		cli.ShowCommandHelpAndExit(ctx, gatewayName, 1)
+		cli.ShowCommandHelpAndExit(ctx, backendName, 1)
 	}
 
 	// Initialize globalConsoleSys system
 	globalConsoleSys = NewConsoleLogger(GlobalContext)
-	logger.AddTarget(globalConsoleSys)
+	_ = logger.AddTarget(globalConsoleSys)
 
 	// Handle common command args.
 	handleCommonCmdArgs(ctx)
@@ -198,36 +198,36 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	// Initialize all help
 	initHelp()
 
-	// Get port to listen on from gateway address
-	globalMinioHost, globalMinioPort = mustSplitHostPort(globalCLIContext.Addr)
+	// Get port to listen on from backend address
+	globalObstorHost, globalObstorPort = mustSplitHostPort(globalCLIContext.Addr)
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
 	// to IPv6 address ie obstor will start listening on IPv6 address whereas another
 	// (non-)obstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
-	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the gateway")
+	logger.FatalIf(checkPortAvailability(globalObstorHost, globalObstorPort), "Unable to start the backend")
 
-	globalMinioEndpoint = func() string {
-		host := globalMinioHost
+	globalObstorEndpoint = func() string {
+		host := globalObstorHost
 		if host == "" {
 			host = sortIPs(localIP4.ToSlice())[0]
 		}
-		return fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(host, globalMinioPort))
+		return fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(host, globalObstorPort))
 	}()
 
-	// Handle gateway specific env
-	gatewayHandleEnvVars()
+	// Handle backend specific env
+	backendHandleEnvVars()
 
 	// Set system resources to maximum.
 	setMaxResources()
 
-	// Set when gateway is enabled
-	globalIsGateway = true
+	// Set when backend is enabled
+	globalIsBackend = true
 
 	enableConfigOps := false
 
 	// TODO: We need to move this code with globalConfigSys.Init()
-	// for now keep it here such that "s3" gateway layer initializes
+	// for now keep it here such that "s3" backend layer initializes
 	// itself properly when KMS is set.
 
 	// Initialize server config.
@@ -294,12 +294,12 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 
 	signal.Notify(globalOSSignalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 
-	newObject, err := gw.NewGatewayLayer(globalActiveCred)
+	newObject, err := gw.NewBackendLayer(globalActiveCred)
 	if err != nil {
-		globalHTTPServer.Shutdown()
-		logger.FatalIf(err, "Unable to initialize gateway backend")
+		_ = globalHTTPServer.Shutdown()
+		logger.FatalIf(err, "Unable to initialize backend storage")
 	}
-	newObject = NewGatewayLayerWithLocker(newObject)
+	newObject = NewBackendLayerWithLocker(newObject)
 
 	// Calls all New() for all sub-systems.
 	newAllSubsystems()
@@ -309,7 +309,7 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	globalObjectAPI = newObject
 	globalObjLayerMutex.Unlock()
 
-	if gatewayName == NASBackendGateway {
+	if backendName == NASBackend {
 		buckets, err := newObject.ListBuckets(GlobalContext)
 		if err != nil {
 			logger.Fatal(err, "Unable to list buckets")
@@ -355,21 +355,21 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	// Verify if object layer supports
 	// - encryption
 	// - compression
-	verifyObjectLayerFeatures("gateway "+gatewayName, newObject)
+	verifyObjectLayerFeatures("backend "+backendName, newObject)
 
 	// Prints the formatted startup message once object layer is initialized.
 	if !globalCLIContext.Quiet {
-		mode := globalMinioModeGatewayPrefix + gatewayName
+		mode := globalObstorModeBackendPrefix + backendName
 		// Check update mode.
 		checkUpdate(mode)
 
-		// Print a warning message if gateway is not ready for production before the startup banner.
+		// Print a warning message if backend is not ready for production before the startup banner.
 		if !gw.Production() {
 			logStartupMessage(color.Yellow("               *** Warning: Not Ready for Production ***"))
 		}
 
-		// Print gateway startup message.
-		printGatewayStartupMessage(getAPIEndpoints(), gatewayName)
+		// Print backend startup message.
+		printBackendStartupMessage(getAPIEndpoints(), backendName)
 	}
 
 	handleSignals()

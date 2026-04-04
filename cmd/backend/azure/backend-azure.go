@@ -54,9 +54,9 @@ const (
 	azureDefaultUploadChunkSizeMB = 25
 	azureDownloadRetryAttempts    = 5
 	azureS3MinPartSize            = 5 * humanize.MiByte
-	metadataObjectNameTemplate    = obstor.GatewayObstorSysTmp + "multipart/v1/%s.%x/azure.json"
+	metadataObjectNameTemplate    = obstor.BackendObstorSysTmp + "multipart/v1/%s.%x/azure.json"
 	azureMarkerPrefix             = "{obstor}"
-	metadataPartNamePrefix        = obstor.GatewayObstorSysTmp + "multipart/v1/%s.%x"
+	metadataPartNamePrefix        = obstor.BackendObstorSysTmp + "multipart/v1/%s.%x"
 	maxPartsCount                 = 10000
 )
 
@@ -66,7 +66,7 @@ var (
 )
 
 func init() {
-	const azureGatewayTemplate = `NAME:
+	const azureBackendTemplate = `NAME:
   {{.HelpName}} - {{.Usage}}
 
 USAGE:
@@ -79,12 +79,12 @@ ENDPOINT:
   Azure server endpoint. Default ENDPOINT is https://core.windows.net
 
 EXAMPLES:
-  1. Start obstor gateway server for Azure Blob Storage backend on custom endpoint.
+  1. Start obstor backend server for Azure Blob Storage backend on custom endpoint.
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}azureaccountname
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
      {{.Prompt}} {{.HelpName}} https://azureaccountname.blob.custom.azure.endpoint
 
-  2. Start obstor gateway server for Azure Blob Storage backend with edge caching enabled.
+  2. Start obstor backend server for Azure Blob Storage backend with edge caching enabled.
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}azureaccountname
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}azureaccountkey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -97,11 +97,11 @@ EXAMPLES:
 
 `
 
-	obstor.RegisterGatewayCommand(cli.Command{
-		Name:               obstor.AzureBackendGateway,
+	_ = obstor.RegisterBackendCommand(cli.Command{
+		Name:               obstor.AzureBackend,
 		Usage:              "Microsoft Azure Blob Storage",
-		Action:             azureGatewayMain,
-		CustomHelpTemplate: azureGatewayTemplate,
+		Action:             azureBackendMain,
+		CustomHelpTemplate: azureBackendTemplate,
 		HideHelp:           true,
 	})
 }
@@ -112,33 +112,33 @@ func isAzureMarker(marker string) bool {
 	return strings.HasPrefix(marker, azureMarkerPrefix)
 }
 
-// Handler for 'obstor gateway azure' command line.
-func azureGatewayMain(ctx *cli.Context) {
-	// Validate gateway arguments.
+// Handler for 'obstor backend azure' command line.
+func azureBackendMain(ctx *cli.Context) {
+	// Validate backend arguments.
 	host := ctx.Args().First()
 
 	serverAddr := ctx.GlobalString("address")
-	if serverAddr == "" || serverAddr == ":"+obstor.GlobalMinioDefaultPort {
+	if serverAddr == "" || serverAddr == ":"+obstor.GlobalObstorDefaultPort {
 		serverAddr = ctx.String("address")
 	}
-	// Validate gateway arguments.
-	logger.FatalIf(obstor.ValidateGatewayArguments(serverAddr, host), "Invalid argument")
+	// Validate backend arguments.
+	logger.FatalIf(obstor.ValidateBackendArguments(serverAddr, host), "Invalid argument")
 
-	obstor.StartGateway(ctx, &Azure{host})
+	obstor.StartBackend(ctx, &Azure{host})
 }
 
-// Azure implements Gateway.
+// Azure implements Backend.
 type Azure struct {
 	host string
 }
 
-// Name implements Gateway interface.
+// Name implements Backend interface.
 func (g *Azure) Name() string {
-	return obstor.AzureBackendGateway
+	return obstor.AzureBackend
 }
 
-// NewGatewayLayer initializes azure blob storage client and returns AzureObjects.
-func (g *Azure) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
+// NewBackendLayer initializes azure blob storage client and returns AzureObjects.
+func (g *Azure) NewBackendLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	var err error
 
 	// Override credentials from the Azure storage environment variables if specified
@@ -179,7 +179,7 @@ func (g *Azure) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, err
 	metrics := obstor.NewMetrics()
 
 	t := &obstor.MetricsTransport{
-		Transport: obstor.NewGatewayHTTPTransport(),
+		Transport: obstor.NewBackendHTTPTransport(),
 		Metrics:   metrics,
 	}
 
@@ -216,7 +216,7 @@ func parseStorageEndpoint(host string, accountName string) (*url.URL, error) {
 
 	// Load the endpoint url if supplied by the user.
 	if host != "" {
-		host, secure, err := obstor.ParseGatewayEndpoint(host)
+		host, secure, err := obstor.ParseBackendEndpoint(host)
 		if err != nil {
 			return nil, err
 		}
@@ -244,7 +244,7 @@ func parseStorageEndpoint(host string, accountName string) (*url.URL, error) {
 	return url.Parse(endpoint)
 }
 
-// Production - Azure gateway is production ready.
+// Azure backend is production-ready
 func (g *Azure) Production() bool {
 	return true
 }
@@ -415,7 +415,7 @@ func azurePropertiesToS3Meta(meta azblob.Metadata, props azblob.BlobHTTPHeaders,
 
 // azureObjects - Implements Object layer for Azure blob storage.
 type azureObjects struct {
-	obstor.GatewayUnsupported
+	obstor.BackendUnsupported
 	endpoint   *url.URL
 	httpClient *http.Client
 	metrics    *obstor.BackendMetrics
@@ -531,12 +531,12 @@ func parseAzurePart(metaPartFileName, prefix string) (partID int, err error) {
 	return
 }
 
-// GetMetrics returns this gateway's metrics
+// GetMetrics returns this backend's metrics
 func (a *azureObjects) GetMetrics(ctx context.Context) (*obstor.BackendMetrics, error) {
 	return a.metrics, nil
 }
 
-// Shutdown - save any gateway metadata to disk
+// Shutdown - save any backend metadata to disk
 // if necessary and reload upon next restart.
 func (a *azureObjects) Shutdown(ctx context.Context) error {
 	return nil
@@ -683,8 +683,8 @@ func (a *azureObjects) ListObjects(ctx context.Context, bucket, prefix, marker, 
 		}
 
 		for _, blob := range resp.Segment.BlobItems {
-			if delimiter == "" && strings.HasPrefix(blob.Name, obstor.GatewayObstorSysTmp) {
-				// We filter out obstor.GatewayObstorSysTmp entries in the recursive listing.
+			if delimiter == "" && strings.HasPrefix(blob.Name, obstor.BackendObstorSysTmp) {
+				// We filter out obstor.BackendObstorSysTmp entries in the recursive listing.
 				continue
 			}
 			if !isAzureMarker(marker) && blob.Name <= marker {
@@ -725,8 +725,8 @@ func (a *azureObjects) ListObjects(ctx context.Context, bucket, prefix, marker, 
 		}
 
 		for _, blobPrefix := range resp.Segment.BlobPrefixes {
-			if blobPrefix.Name == obstor.GatewayObstorSysTmp {
-				// We don't do strings.HasPrefix(blob.Name, obstor.GatewayObstorSysTmp) here so that
+			if blobPrefix.Name == obstor.BackendObstorSysTmp {
+				// We don't do strings.HasPrefix(blob.Name, obstor.BackendObstorSysTmp) here so that
 				// we can use tools like mc to inspect the contents of obstor.sys.tmp/
 				// It is OK to allow listing of obstor.sys.tmp/ in non-recursive mode as it aids in debugging.
 				continue
@@ -803,7 +803,7 @@ func (a *azureObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 	}()
 	// Setup cleanup function to cause the above go-routine to
 	// exit in case of partial read
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 	return obstor.NewGetObjectReaderFromReader(pr, objInfo, opts, pipeCloser)
 }
 
@@ -833,7 +833,7 @@ func (a *azureObjects) getObject(ctx context.Context, bucket, object string, sta
 	rc := blob.Body(azblob.RetryReaderOptions{MaxRetryRequests: azureDownloadRetryAttempts})
 
 	_, err = io.Copy(writer, rc)
-	rc.Close()
+	_ = rc.Close()
 	return err
 }
 
@@ -1185,8 +1185,8 @@ func (a *azureObjects) ListObjectParts(ctx context.Context, bucket, object, uplo
 	}
 
 	for _, blob := range resp.Segment.BlobItems {
-		if delimiter == "" && !strings.HasPrefix(blob.Name, obstor.GatewayObstorSysTmp) {
-			// We filter out non obstor.GatewayObstorSysTmp entries in the recursive listing.
+		if delimiter == "" && !strings.HasPrefix(blob.Name, obstor.BackendObstorSysTmp) {
+			// We filter out non obstor.BackendObstorSysTmp entries in the recursive listing.
 			continue
 		}
 		// Filter temporary metadata file for blob
@@ -1265,7 +1265,7 @@ func (a *azureObjects) AbortMultipartUpload(ctx context.Context, bucket, object,
 		for _, part := range lpi.Parts {
 			pblob := a.client.NewContainerURL(bucket).NewBlobURL(
 				getAzureMetadataPartName(object, uploadID, part.PartNumber))
-			pblob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
+			_, _ = pblob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
 		}
 		partNumberMarker = lpi.NextPartNumberMarker
 		if !lpi.IsTruncated {
@@ -1353,7 +1353,7 @@ func (a *azureObjects) CompleteMultipartUpload(ctx context.Context, bucket, obje
 		for _, part := range lpi.Parts {
 			pblob := a.client.NewContainerURL(bucket).NewBlobURL(
 				getAzureMetadataPartName(object, uploadID, part.PartNumber))
-			pblob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
+			_, _ = pblob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
 		}
 		partNumberMarker = lpi.NextPartNumberMarker
 		if !lpi.IsTruncated {

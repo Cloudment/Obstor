@@ -42,7 +42,7 @@ import (
 )
 
 func init() {
-	const s3GatewayTemplate = `NAME:
+	const s3BackendTemplate = `NAME:
   {{.HelpName}} - {{.Usage}}
 
 USAGE:
@@ -55,12 +55,12 @@ ENDPOINT:
   s3 server endpoint. Default ENDPOINT is https://s3.amazonaws.com
 
 EXAMPLES:
-  1. Start obstor gateway server for AWS S3 backend
+  1. Start obstor backend server for AWS S3 backend
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}}
 
-  2. Start obstor gateway server for AWS S3 backend with edge caching enabled
+  2. Start obstor backend server for AWS S3 backend with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -72,41 +72,41 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}}
 `
 
-	obstor.RegisterGatewayCommand(cli.Command{
-		Name:               obstor.S3BackendGateway,
+	_ = obstor.RegisterBackendCommand(cli.Command{
+		Name:               obstor.S3Backend,
 		Usage:              "Amazon Simple Storage Service (S3)",
-		Action:             s3GatewayMain,
-		CustomHelpTemplate: s3GatewayTemplate,
+		Action:             s3BackendMain,
+		CustomHelpTemplate: s3BackendTemplate,
 		HideHelp:           true,
 	})
 }
 
-// Handler for 'obstor gateway s3' command line.
-func s3GatewayMain(ctx *cli.Context) {
+// Handler for 'obstor backend s3' command line.
+func s3BackendMain(ctx *cli.Context) {
 	args := ctx.Args()
 	if !ctx.Args().Present() {
 		args = cli.Args{"https://s3.amazonaws.com"}
 	}
 
 	serverAddr := ctx.GlobalString("address")
-	if serverAddr == "" || serverAddr == ":"+obstor.GlobalMinioDefaultPort {
+	if serverAddr == "" || serverAddr == ":"+obstor.GlobalObstorDefaultPort {
 		serverAddr = ctx.String("address")
 	}
-	// Validate gateway arguments.
-	logger.FatalIf(obstor.ValidateGatewayArguments(serverAddr, args.First()), "Invalid argument")
+	// Validate backend arguments.
+	logger.FatalIf(obstor.ValidateBackendArguments(serverAddr, args.First()), "Invalid argument")
 
-	// Start the gateway..
-	obstor.StartGateway(ctx, &S3{args.First()})
+	// Start the backend..
+	obstor.StartBackend(ctx, &S3{args.First()})
 }
 
-// S3 implements Gateway.
+// S3 implements Backend.
 type S3 struct {
 	host string
 }
 
-// Name implements Gateway interface.
+// Name implements Backend interface.
 func (g *S3) Name() string {
-	return obstor.S3BackendGateway
+	return obstor.S3Backend
 }
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz01234569"
@@ -156,7 +156,7 @@ var defaultAWSCredProviders = []credentials.Provider{
 	&credentials.FileAWSCredentials{},
 	&credentials.IAM{
 		Client: &http.Client{
-			Transport: obstor.NewGatewayHTTPTransport(),
+			Transport: obstor.NewBackendHTTPTransport(),
 		},
 	},
 	&credentials.EnvMinio{},
@@ -174,7 +174,7 @@ func newS3(urlStr string, tripper http.RoundTripper) (*miniogo.Core, error) {
 	}
 
 	// Override default params if the host is provided
-	endpoint, secure, err := obstor.ParseGatewayEndpoint(urlStr)
+	endpoint, secure, err := obstor.ParseBackendEndpoint(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -205,16 +205,16 @@ func newS3(urlStr string, tripper http.RoundTripper) (*miniogo.Core, error) {
 	return &miniogo.Core{Client: clnt}, nil
 }
 
-// NewGatewayLayer returns s3 ObjectLayer.
-func (g *S3) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
+// NewBackendLayer returns s3 ObjectLayer.
+func (g *S3) NewBackendLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	metrics := obstor.NewMetrics()
 
 	t := &obstor.MetricsTransport{
-		Transport: obstor.NewGatewayHTTPTransport(),
+		Transport: obstor.NewBackendHTTPTransport(),
 		Metrics:   metrics,
 	}
 
-	// Creds are ignored here, since S3 gateway implements chaining
+	// Creds are ignored here, since S3 backend implements chaining
 	// all credentials.
 	clnt, err := newS3(g.host, t)
 	if err != nil {
@@ -251,25 +251,25 @@ func (g *S3) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error)
 	return &s, nil
 }
 
-// Production - s3 gateway is production ready.
+// S3 backend is production-ready
 func (g *S3) Production() bool {
 	return true
 }
 
-// s3Objects implements gateway for Obstor and S3 compatible object storage servers.
+// s3Objects implements backend for Obstor and S3 compatible object storage servers.
 type s3Objects struct {
-	obstor.GatewayUnsupported
+	obstor.BackendUnsupported
 	Client     *miniogo.Core
 	HTTPClient *http.Client
 	Metrics    *obstor.BackendMetrics
 }
 
-// GetMetrics returns this gateway's metrics
+// GetMetrics returns this backend's metrics
 func (l *s3Objects) GetMetrics(ctx context.Context) (*obstor.BackendMetrics, error) {
 	return l.Metrics, nil
 }
 
-// Shutdown saves any gateway metadata to disk
+// Shutdown saves any backend metadata to disk
 // if necessary and reload upon next restart.
 func (l *s3Objects) Shutdown(ctx context.Context) error {
 	return nil
@@ -376,7 +376,7 @@ func (l *s3Objects) ListObjects(ctx context.Context, bucket string, prefix strin
 		return loi, obstor.ErrorRespToObjectError(err, bucket)
 	}
 
-	return obstor.FromMinioClientListBucketResult(bucket, result), nil
+	return obstor.FromObstorClientListBucketResult(bucket, result), nil
 }
 
 // ListObjectsV2 lists all blobs in S3 bucket filtered by prefix
@@ -386,7 +386,7 @@ func (l *s3Objects) ListObjectsV2(ctx context.Context, bucket, prefix, continuat
 		return loi, obstor.ErrorRespToObjectError(err, bucket)
 	}
 
-	return obstor.FromMinioClientListBucketV2Result(bucket, result), nil
+	return obstor.FromObstorClientListBucketV2Result(bucket, result), nil
 }
 
 // GetObjectNInfo - returns object info and locked object ReadCloser
@@ -410,7 +410,7 @@ func (l *s3Objects) GetObjectNInfo(ctx context.Context, bucket, object string, r
 
 	// Setup cleanup function to cause the above go-routine to
 	// exit in case of partial read
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 	return fn(pr, h, opts.CheckPrecondFn, pipeCloser)
 }
 
@@ -435,7 +435,7 @@ func (l *s3Objects) getObject(ctx context.Context, bucket string, key string, st
 	}
 
 	if etag != "" {
-		opts.SetMatchETag(etag)
+		_ = opts.SetMatchETag(etag)
 	}
 
 	object, _, _, err := l.Client.GetObject(ctx, bucket, key, opts)
@@ -458,7 +458,7 @@ func (l *s3Objects) GetObjectInfo(ctx context.Context, bucket string, object str
 		return obstor.ObjectInfo{}, obstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return obstor.FromMinioClientObjectInfo(bucket, oi), nil
+	return obstor.FromObstorClientObjectInfo(bucket, oi), nil
 }
 
 // PutObject creates a new object with the incoming data,
@@ -473,12 +473,12 @@ func (l *s3Objects) PutObject(ctx context.Context, bucket string, object string,
 		tagMap = tagObj.ToMap()
 		delete(opts.UserDefined, xhttp.AmzObjectTagging)
 	}
-	putOpts := miniogo.PutObjectOptions{
+	PutOpts := miniogo.PutObjectOptions{
 		UserMetadata:         opts.UserDefined,
 		ServerSideEncryption: opts.ServerSideEncryption,
 		UserTags:             tagMap,
 	}
-	ui, err := l.Client.PutObject(ctx, bucket, object, data, data.Size(), data.MD5Base64String(), data.SHA256HexString(), putOpts)
+	ui, err := l.Client.PutObject(ctx, bucket, object, data, data.Size(), data.MD5Base64String(), data.SHA256HexString(), PutOpts)
 	if err != nil {
 		return objInfo, obstor.ErrorRespToObjectError(err, bucket, object)
 	}
@@ -487,10 +487,10 @@ func (l *s3Objects) PutObject(ctx context.Context, bucket string, object string,
 		ETag:     ui.ETag,
 		Size:     ui.Size,
 		Key:      object,
-		Metadata: obstor.ToMinioClientObjectInfoMetadata(opts.UserDefined),
+		Metadata: obstor.ToObstorClientObjectInfoMetadata(opts.UserDefined),
 	}
 
-	return obstor.FromMinioClientObjectInfo(bucket, oi), nil
+	return obstor.FromObstorClientObjectInfo(bucket, oi), nil
 }
 
 // CopyObject copies an object from source bucket to a destination bucket.
@@ -557,7 +557,7 @@ func (l *s3Objects) ListMultipartUploads(ctx context.Context, bucket string, pre
 		return lmi, err
 	}
 
-	return obstor.FromMinioClientListMultipartsInfo(result), nil
+	return obstor.FromObstorClientListMultipartsInfo(result), nil
 }
 
 // NewMultipartUpload upload object in multiple parts
@@ -596,7 +596,7 @@ func (l *s3Objects) PutObjectPart(ctx context.Context, bucket string, object str
 		return pi, obstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return obstor.FromMinioClientObjectPart(info), nil
+	return obstor.FromObstorClientObjectPart(info), nil
 }
 
 // CopyObjectPart creates a part in a multipart upload by copying
@@ -645,7 +645,7 @@ func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object s
 	if err != nil {
 		return lpi, err
 	}
-	lpi = obstor.FromMinioClientListPartsInfo(result)
+	lpi = obstor.FromObstorClientListPartsInfo(result)
 	if lpi.IsTruncated && maxParts > len(lpi.Parts) {
 		partNumberMarker = lpi.NextPartNumberMarker
 		for {
@@ -654,7 +654,7 @@ func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object s
 				return lpi, err
 			}
 
-			nlpi := obstor.FromMinioClientListPartsInfo(result)
+			nlpi := obstor.FromObstorClientListPartsInfo(result)
 
 			partNumberMarker = nlpi.NextPartNumberMarker
 
@@ -675,7 +675,7 @@ func (l *s3Objects) AbortMultipartUpload(ctx context.Context, bucket string, obj
 
 // CompleteMultipartUpload completes ongoing multipart upload and finalizes object
 func (l *s3Objects) CompleteMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, uploadedParts []obstor.CompletePart, opts obstor.ObjectOptions) (oi obstor.ObjectInfo, e error) {
-	uploadInfo, err := l.Client.CompleteMultipartUpload(ctx, bucket, object, uploadID, obstor.ToMinioClientCompleteParts(uploadedParts), miniogo.PutObjectOptions{})
+	uploadInfo, err := l.Client.CompleteMultipartUpload(ctx, bucket, object, uploadID, obstor.ToObstorClientCompleteParts(uploadedParts), miniogo.PutObjectOptions{})
 	if err != nil {
 		return oi, obstor.ErrorRespToObjectError(err, bucket, object)
 	}
@@ -771,7 +771,7 @@ func (l *s3Objects) IsCompressionSupported() bool {
 
 // IsEncryptionSupported returns whether server side encryption is implemented for this layer.
 func (l *s3Objects) IsEncryptionSupported() bool {
-	return obstor.GlobalKMS != nil || obstor.GlobalGatewaySSE.IsSet()
+	return obstor.GlobalKMS != nil || obstor.GlobalBackendSSE.IsSet()
 }
 
 func (l *s3Objects) IsTaggingSupported() bool {

@@ -1,5 +1,4 @@
 /*
- * Minio Cloud Storage, (C) 2019 Minio, Inc.
  * PGG Obstor, (C) 2021-2026 PGG, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +14,25 @@
  * limitations under the License.
  */
 
-package hdfs
+package sftp
 
 import (
 	"strings"
 
 	obstor "github.com/cloudment/obstor/cmd"
+	obstorpkg "github.com/cloudment/obstor/pkg/obstor"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
 const (
-	// Minio meta bucket.
-	minioMetaBucket = ".obstor.sys"
+	// Obstor meta bucket.
+	obstorMetaBucket = obstorpkg.MetaBucket
 
-	// Minio Tmp meta prefix.
-	minioMetaTmpBucket = minioMetaBucket + "/tmp"
+	// Obstor tmp meta prefix.
+	obstorMetaTmpBucket = obstorpkg.MetaTmpBucket
 
-	// Minio reserved bucket name.
-	minioReservedBucket = "obstor"
+	// Obstor reserved bucket name.
+	ObstorReservedBucket = obstorpkg.ReservedBucket
 )
 
 // Ignores all reserved bucket names or invalid bucket names.
@@ -47,17 +47,17 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 			return true
 		}
 	}
-	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
+	return isObstorMetaBucket(bucketEntry) || isObstorReservedBucket(bucketEntry)
 }
 
 // Returns true if input bucket is a reserved obstor meta bucket '.obstor.sys'.
-func isMinioMetaBucket(bucketName string) bool {
-	return bucketName == minioMetaBucket
+func isObstorMetaBucket(bucketName string) bool {
+	return bucketName == obstorMetaBucket
 }
 
 // Returns true if input bucket is a reserved obstor bucket 'obstor'.
-func isMinioReservedBucket(bucketName string) bool {
-	return bucketName == minioReservedBucket
+func isObstorReservedBucket(bucketName string) bool {
+	return bucketName == ObstorReservedBucket
 }
 
 // byBucketName is a collection satisfying sort.Interface.

@@ -39,8 +39,8 @@ var defaultFilterKeys = []string{
 	// Add new headers to be ignored.
 }
 
-// FromGatewayObjectPart converts ObjectInfo for custom part stored as object to PartInfo
-func FromGatewayObjectPart(partID int, oi obstor.ObjectInfo) (pi obstor.PartInfo) {
+// FromBackendObjectPart converts ObjectInfo for custom part stored as object to PartInfo
+func FromBackendObjectPart(partID int, oi obstor.ObjectInfo) (pi obstor.PartInfo) {
 	return obstor.PartInfo{
 		Size:         oi.Size,
 		ETag:         obstor.CanonicalizeETag(oi.ETag),

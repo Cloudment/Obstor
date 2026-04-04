@@ -30,27 +30,27 @@ type RequestStats struct {
 	Post uint64 `json:"Post"`
 }
 
-// IncBytesReceived - Increase total bytes received from gateway backend
+// IncBytesReceived - Increase total bytes received from backend storage
 func (s *BackendMetrics) IncBytesReceived(n uint64) {
 	atomic.AddUint64(&s.bytesReceived, n)
 }
 
-// GetBytesReceived - Get total bytes received from gateway backend
+// GetBytesReceived - Get total bytes received from backend storage
 func (s *BackendMetrics) GetBytesReceived() uint64 {
 	return atomic.LoadUint64(&s.bytesReceived)
 }
 
-// IncBytesSent - Increase total bytes sent to gateway backend
+// IncBytesSent - Increase total bytes sent to backend storage
 func (s *BackendMetrics) IncBytesSent(n uint64) {
 	atomic.AddUint64(&s.bytesSent, n)
 }
 
-// GetBytesSent - Get total bytes received from gateway backend
+// GetBytesSent - Get total bytes received from backend storage
 func (s *BackendMetrics) GetBytesSent() uint64 {
 	return atomic.LoadUint64(&s.bytesSent)
 }
 
-// IncRequests - Increase request count sent to gateway backend by 1
+// IncRequests - Increase request count sent to backend storage by 1
 func (s *BackendMetrics) IncRequests(method string) {
 	// Only increment for Head & Get requests, else no op
 	switch method {
@@ -65,7 +65,7 @@ func (s *BackendMetrics) IncRequests(method string) {
 	}
 }
 
-// GetRequests - Get total number of Get & Headrequests sent to gateway backend
+// GetRequests - Get total number of Get & Headrequests sent to backend storage
 func (s *BackendMetrics) GetRequests() RequestStats {
 	return s.requestStats
 }

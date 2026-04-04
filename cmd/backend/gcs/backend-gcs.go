@@ -65,13 +65,13 @@ const (
 	// Path where multipart objects are saved.
 	// If we change the backend format we will use a different url path like /multipart/v2
 	// but we will not migrate old data.
-	gcsMinioMultipartPathV1 = obstor.GatewayObstorSysTmp + "multipart/v1"
+	gcsObstorMultipartPathV1 = obstor.BackendObstorSysTmp + "multipart/v1"
 
 	// Multipart meta file.
-	gcsMinioMultipartMeta = "gcs.json"
+	gcsObstorMultipartMeta = "gcs.json"
 
 	// gcs.json version number
-	gcsMinioMultipartMetaCurrentVersion = "1"
+	gcsObstorMultipartMetaCurrentVersion = "1"
 
 	// Token prefixed with GCS returned marker to differentiate
 	// from user supplied marker.
@@ -92,7 +92,7 @@ const (
 )
 
 func init() {
-	const gcsGatewayTemplate = `NAME:
+	const gcsBackendTemplate = `NAME:
   {{.HelpName}} - {{.Usage}}
 
 USAGE:
@@ -108,13 +108,13 @@ GOOGLE_APPLICATION_CREDENTIALS:
   path to credentials.json, generated it from here https://developers.google.com/identity/protocols/application-default-credentials
 
 EXAMPLES:
-  1. Start obstor gateway server for GCS backend
+  1. Start obstor backend server for GCS backend
      {{.Prompt}} {{.EnvVarSetCommand}} GOOGLE_APPLICATION_CREDENTIALS{{.AssignmentOperator}}/path/to/credentials.json
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}} mygcsprojectid
 
-  2. Start obstor gateway server for GCS backend with edge caching enabled
+  2. Start obstor backend server for GCS backend with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} GOOGLE_APPLICATION_CREDENTIALS{{.AssignmentOperator}}/path/to/credentials.json
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
@@ -127,30 +127,30 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} mygcsprojectid
 `
 
-	obstor.RegisterGatewayCommand(cli.Command{
-		Name:               obstor.GCSBackendGateway,
+	_ = obstor.RegisterBackendCommand(cli.Command{
+		Name:               obstor.GCSBackend,
 		Usage:              "Google Cloud Storage",
-		Action:             gcsGatewayMain,
-		CustomHelpTemplate: gcsGatewayTemplate,
+		Action:             gcsBackendMain,
+		CustomHelpTemplate: gcsBackendTemplate,
 		HideHelp:           true,
 	})
 }
 
-// Handler for 'obstor gateway gcs' command line.
-func gcsGatewayMain(ctx *cli.Context) {
+// Handler for 'obstor backend gcs' command line.
+func gcsBackendMain(ctx *cli.Context) {
 	projectID := ctx.Args().First()
 	if projectID == "" && os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		logger.LogIf(obstor.GlobalContext, errGCSProjectIDNotFound, logger.Application)
-		cli.ShowCommandHelpAndExit(ctx, obstor.GCSBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, obstor.GCSBackend, 1)
 	}
 	if projectID != "" && !isValidGCSProjectIDFormat(projectID) {
 		reqInfo := (&logger.ReqInfo{}).AppendTags("projectID", ctx.Args().First())
 		contxt := logger.SetReqInfo(obstor.GlobalContext, reqInfo)
 		logger.LogIf(contxt, errGCSInvalidProjectID, logger.Application)
-		cli.ShowCommandHelpAndExit(ctx, obstor.GCSBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, obstor.GCSBackend, 1)
 	}
 
-	obstor.StartGateway(ctx, &GCS{projectID})
+	obstor.StartBackend(ctx, &GCS{projectID})
 }
 
 // GCS implements Azure.
@@ -160,11 +160,11 @@ type GCS struct {
 
 // Name returns the name of gcs ObjectLayer.
 func (g *GCS) Name() string {
-	return obstor.GCSBackendGateway
+	return obstor.GCSBackend
 }
 
-// NewGatewayLayer returns gcs ObjectLayer.
-func (g *GCS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
+// NewBackendLayer returns gcs ObjectLayer.
+func (g *GCS) NewBackendLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	ctx := obstor.GlobalContext
 
 	var err error
@@ -180,7 +180,7 @@ func (g *GCS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error
 	metrics := obstor.NewMetrics()
 
 	t := &obstor.MetricsTransport{
-		Transport: obstor.NewGatewayHTTPTransport(),
+		Transport: obstor.NewBackendHTTPTransport(),
 		Metrics:   metrics,
 	}
 
@@ -192,7 +192,7 @@ func (g *GCS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error
 		return nil, err
 	}
 
-	gcs := &gcsGateway{
+	gcs := &gcsBackendStorage{
 		client:    client,
 		projectID: g.projectID,
 		metrics:   metrics,
@@ -202,11 +202,11 @@ func (g *GCS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error
 	}
 
 	// Start background process to cleanup old files in obstor.sys.tmp
-	go gcs.CleanupGCSMinioSysTmp(ctx)
+	go gcs.CleanupGCSObstorSysTmp(ctx)
 	return gcs, nil
 }
 
-// Production - GCS gateway is production ready.
+// GCS backend is production-ready
 func (g *GCS) Production() bool {
 	return true
 }
@@ -221,12 +221,12 @@ type gcsMultipartMetaV1 struct {
 
 // Returns name of the multipart meta object.
 func gcsMultipartMetaName(uploadID string) string {
-	return fmt.Sprintf("%s/%s/%s", gcsMinioMultipartPathV1, uploadID, gcsMinioMultipartMeta)
+	return fmt.Sprintf("%s/%s/%s", gcsObstorMultipartPathV1, uploadID, gcsObstorMultipartMeta)
 }
 
 // Returns name of the part object.
 func gcsMultipartDataName(uploadID string, partNumber int, etag string) string {
-	return fmt.Sprintf("%s/%s/%05d.%s", gcsMinioMultipartPathV1, uploadID, partNumber, etag)
+	return fmt.Sprintf("%s/%s/%05d.%s", gcsObstorMultipartPathV1, uploadID, partNumber, etag)
 }
 
 // Convert Obstor errors to obstor object layer errors.
@@ -334,9 +334,9 @@ func isValidGCSProjectIDFormat(projectID string) bool {
 	return gcsProjectIDRegex.MatchString(projectID)
 }
 
-// gcsGateway - Implements gateway for Obstor and GCS compatible object storage servers.
-type gcsGateway struct {
-	obstor.GatewayUnsupported
+// gcsBackendStorage - Implements backend for Obstor and GCS compatible object storage servers.
+type gcsBackendStorage struct {
+	obstor.BackendUnsupported
 	client     *storage.Client
 	httpClient *http.Client
 	metrics    *obstor.BackendMetrics
@@ -356,14 +356,14 @@ func gcsParseProjectID(credsFile string) (projectID string, err error) {
 	return googleCreds[gcsProjectIDKey], err
 }
 
-// GetMetrics returns this gateway's metrics
-func (l *gcsGateway) GetMetrics(ctx context.Context) (*obstor.BackendMetrics, error) {
+// GetMetrics returns this backend's metrics
+func (l *gcsBackendStorage) GetMetrics(ctx context.Context) (*obstor.BackendMetrics, error) {
 	return l.metrics, nil
 }
 
 // Cleanup old files in obstor.sys.tmp of the given bucket.
-func (l *gcsGateway) CleanupGCSMinioSysTmpBucket(ctx context.Context, bucket string) {
-	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{Prefix: obstor.GatewayObstorSysTmp, Versions: false})
+func (l *gcsBackendStorage) CleanupGCSObstorSysTmpBucket(ctx context.Context, bucket string) {
+	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{Prefix: obstor.BackendObstorSysTmp, Versions: false})
 	for {
 		attrs, err := it.Next()
 		if err != nil {
@@ -388,7 +388,7 @@ func (l *gcsGateway) CleanupGCSMinioSysTmpBucket(ctx context.Context, bucket str
 }
 
 // Cleanup old files in obstor.sys.tmp of all buckets.
-func (l *gcsGateway) CleanupGCSMinioSysTmp(ctx context.Context) {
+func (l *gcsBackendStorage) CleanupGCSObstorSysTmp(ctx context.Context) {
 	for {
 		it := l.client.Buckets(ctx, l.projectID)
 		for {
@@ -396,28 +396,28 @@ func (l *gcsGateway) CleanupGCSMinioSysTmp(ctx context.Context) {
 			if err != nil {
 				break
 			}
-			l.CleanupGCSMinioSysTmpBucket(ctx, attrs.Name)
+			l.CleanupGCSObstorSysTmpBucket(ctx, attrs.Name)
 		}
 		// Run the cleanup loop every 1 day.
 		time.Sleep(gcsCleanupInterval)
 	}
 }
 
-// Shutdown - save any gateway metadata to disk
+// Shutdown - save any backend metadata to disk
 // if necessary and reload upon next restart.
-func (l *gcsGateway) Shutdown(ctx context.Context) error {
+func (l *gcsBackendStorage) Shutdown(ctx context.Context) error {
 	return nil
 }
 
 // StorageInfo - Not relevant to GCS backend.
-func (l *gcsGateway) StorageInfo(ctx context.Context) (si obstor.StorageInfo, _ []error) {
+func (l *gcsBackendStorage) StorageInfo(ctx context.Context) (si obstor.StorageInfo, _ []error) {
 	si.Backend.Type = madmin.Gateway
 	si.Backend.GatewayOnline = obstor.IsBackendOnline(ctx, "storage.googleapis.com:443")
 	return si, nil
 }
 
 // MakeBucketWithLocation - Create a new container on GCS backend.
-func (l *gcsGateway) MakeBucketWithLocation(ctx context.Context, bucket string, opts obstor.BucketOptions) error {
+func (l *gcsBackendStorage) MakeBucketWithLocation(ctx context.Context, bucket string, opts obstor.BucketOptions) error {
 	if opts.LockEnabled || opts.VersioningEnabled {
 		return obstor.NotImplemented{}
 	}
@@ -438,7 +438,7 @@ func (l *gcsGateway) MakeBucketWithLocation(ctx context.Context, bucket string, 
 }
 
 // GetBucketInfo - Get bucket metadata..
-func (l *gcsGateway) GetBucketInfo(ctx context.Context, bucket string) (obstor.BucketInfo, error) {
+func (l *gcsBackendStorage) GetBucketInfo(ctx context.Context, bucket string) (obstor.BucketInfo, error) {
 	attrs, err := l.client.Bucket(bucket).Attrs(ctx)
 	if err != nil {
 		logger.LogIf(ctx, err)
@@ -452,7 +452,7 @@ func (l *gcsGateway) GetBucketInfo(ctx context.Context, bucket string) (obstor.B
 }
 
 // ListBuckets lists all buckets under your project-id on GCS.
-func (l *gcsGateway) ListBuckets(ctx context.Context) (buckets []obstor.BucketInfo, err error) {
+func (l *gcsBackendStorage) ListBuckets(ctx context.Context) (buckets []obstor.BucketInfo, err error) {
 	it := l.client.Buckets(ctx, l.projectID)
 
 	// Iterate and capture all the buckets.
@@ -476,15 +476,15 @@ func (l *gcsGateway) ListBuckets(ctx context.Context) (buckets []obstor.BucketIn
 }
 
 // DeleteBucket delete a bucket on GCS.
-func (l *gcsGateway) DeleteBucket(ctx context.Context, bucket string, forceDelete bool) error {
+func (l *gcsBackendStorage) DeleteBucket(ctx context.Context, bucket string, forceDelete bool) error {
 	itObject := l.client.Bucket(bucket).Objects(ctx, &storage.Query{
 		Delimiter: obstor.SlashSeparator,
 		Versions:  false,
 	})
 	// We list the bucket and if we find any objects we return BucketNotEmpty error. If we
 	// find only "obstor.sys.tmp/" then we remove it before deleting the bucket.
-	gcsMinioPathFound := false
-	nonGCSMinioPathFound := false
+	gcsObstorPathFound := false
+	nonGCSObstorPathFound := false
 	for {
 		objAttrs, err := itObject.Next()
 		if err == iterator.Done {
@@ -494,20 +494,20 @@ func (l *gcsGateway) DeleteBucket(ctx context.Context, bucket string, forceDelet
 			logger.LogIf(ctx, err)
 			return gcsToObjectError(err)
 		}
-		if objAttrs.Prefix == obstor.GatewayObstorSysTmp {
-			gcsMinioPathFound = true
+		if objAttrs.Prefix == obstor.BackendObstorSysTmp {
+			gcsObstorPathFound = true
 			continue
 		}
-		nonGCSMinioPathFound = true
+		nonGCSObstorPathFound = true
 		break
 	}
-	if nonGCSMinioPathFound {
+	if nonGCSObstorPathFound {
 		logger.LogIf(ctx, obstor.BucketNotEmpty{})
 		return gcsToObjectError(obstor.BucketNotEmpty{})
 	}
-	if gcsMinioPathFound {
+	if gcsObstorPathFound {
 		// Remove obstor.sys.tmp before deleting the bucket.
-		itObject = l.client.Bucket(bucket).Objects(ctx, &storage.Query{Versions: false, Prefix: obstor.GatewayObstorSysTmp})
+		itObject = l.client.Bucket(bucket).Objects(ctx, &storage.Query{Versions: false, Prefix: obstor.BackendObstorSysTmp})
 		for {
 			objAttrs, err := itObject.Next()
 			if err == iterator.Done {
@@ -554,7 +554,7 @@ func isGCSMarker(marker string) bool {
 }
 
 // ListObjects - lists all blobs in GCS bucket filtered by prefix
-func (l *gcsGateway) ListObjects(ctx context.Context, bucket string, prefix string, marker string, delimiter string, maxKeys int) (obstor.ListObjectsInfo, error) {
+func (l *gcsBackendStorage) ListObjects(ctx context.Context, bucket string, prefix string, marker string, delimiter string, maxKeys int) (obstor.ListObjectsInfo, error) {
 	if maxKeys == 0 {
 		return obstor.ListObjectsInfo{}, nil
 	}
@@ -606,19 +606,19 @@ func (l *gcsGateway) ListObjects(ctx context.Context, bucket string, prefix stri
 
 		for _, attrs := range gcsObjects {
 
-			// Due to obstor.GatewayObstorSysTmp keys being skipped, the number of objects + prefixes
+			// Due to obstor.BackendObstorSysTmp keys being skipped, the number of objects + prefixes
 			// returned may not total maxKeys. This behavior is compatible with the S3 spec which
 			// allows the response to include less keys than maxKeys.
-			if attrs.Prefix == obstor.GatewayObstorSysTmp {
+			if attrs.Prefix == obstor.BackendObstorSysTmp {
 				// We don't return our metadata prefix.
 				continue
 			}
-			if !strings.HasPrefix(prefix, obstor.GatewayObstorSysTmp) {
-				// If client lists outside gcsMinioPath then we filter out gcsMinioPath/* entries.
-				// But if the client lists inside gcsMinioPath then we return the entries in gcsMinioPath/
+			if !strings.HasPrefix(prefix, obstor.BackendObstorSysTmp) {
+				// If client lists outside gcsObstorPath then we filter out gcsObstorPath/* entries.
+				// But if the client lists inside gcsObstorPath then we return the entries in gcsObstorPath/
 				// which will be helpful to observe the "directory structure" for debugging purposes.
-				if strings.HasPrefix(attrs.Prefix, obstor.GatewayObstorSysTmp) ||
-					strings.HasPrefix(attrs.Name, obstor.GatewayObstorSysTmp) {
+				if strings.HasPrefix(attrs.Prefix, obstor.BackendObstorSysTmp) ||
+					strings.HasPrefix(attrs.Name, obstor.BackendObstorSysTmp) {
 					continue
 				}
 			}
@@ -661,7 +661,7 @@ func (l *gcsGateway) ListObjects(ctx context.Context, bucket string, prefix stri
 }
 
 // ListObjectsV2 - lists all blobs in GCS bucket filtered by prefix
-func (l *gcsGateway) ListObjectsV2(ctx context.Context, bucket, prefix, continuationToken, delimiter string, maxKeys int, fetchOwner bool, startAfter string) (obstor.ListObjectsV2Info, error) {
+func (l *gcsBackendStorage) ListObjectsV2(ctx context.Context, bucket, prefix, continuationToken, delimiter string, maxKeys int, fetchOwner bool, startAfter string) (obstor.ListObjectsV2Info, error) {
 	if maxKeys == 0 {
 		return obstor.ListObjectsV2Info{ContinuationToken: continuationToken}, nil
 	}
@@ -693,19 +693,19 @@ func (l *gcsGateway) ListObjectsV2(ctx context.Context, bucket, prefix, continua
 
 		for _, attrs := range gcsObjects {
 
-			// Due to obstor.GatewayObstorSysTmp keys being skipped, the number of objects + prefixes
+			// Due to obstor.BackendObstorSysTmp keys being skipped, the number of objects + prefixes
 			// returned may not total maxKeys. This behavior is compatible with the S3 spec which
 			// allows the response to include less keys than maxKeys.
-			if attrs.Prefix == obstor.GatewayObstorSysTmp {
+			if attrs.Prefix == obstor.BackendObstorSysTmp {
 				// We don't return our metadata prefix.
 				continue
 			}
-			if !strings.HasPrefix(prefix, obstor.GatewayObstorSysTmp) {
-				// If client lists outside gcsMinioPath then we filter out gcsMinioPath/* entries.
-				// But if the client lists inside gcsMinioPath then we return the entries in gcsMinioPath/
+			if !strings.HasPrefix(prefix, obstor.BackendObstorSysTmp) {
+				// If client lists outside gcsObstorPath then we filter out gcsObstorPath/* entries.
+				// But if the client lists inside gcsObstorPath then we return the entries in gcsObstorPath/
 				// which will be helpful to observe the "directory structure" for debugging purposes.
-				if strings.HasPrefix(attrs.Prefix, obstor.GatewayObstorSysTmp) ||
-					strings.HasPrefix(attrs.Name, obstor.GatewayObstorSysTmp) {
+				if strings.HasPrefix(attrs.Prefix, obstor.BackendObstorSysTmp) ||
+					strings.HasPrefix(attrs.Name, obstor.BackendObstorSysTmp) {
 					continue
 				}
 			}
@@ -734,7 +734,7 @@ func (l *gcsGateway) ListObjectsV2(ctx context.Context, bucket, prefix, continua
 }
 
 // GetObjectNInfo - returns object info and locked object ReadCloser
-func (l *gcsGateway) GetObjectNInfo(ctx context.Context, bucket, object string, rs *obstor.HTTPRangeSpec, h http.Header, lockType obstor.LockType, opts obstor.ObjectOptions) (gr *obstor.GetObjectReader, err error) {
+func (l *gcsBackendStorage) GetObjectNInfo(ctx context.Context, bucket, object string, rs *obstor.HTTPRangeSpec, h http.Header, lockType obstor.LockType, opts obstor.ObjectOptions) (gr *obstor.GetObjectReader, err error) {
 	var objInfo obstor.ObjectInfo
 	objInfo, err = l.GetObjectInfo(ctx, bucket, object, opts)
 	if err != nil {
@@ -754,7 +754,7 @@ func (l *gcsGateway) GetObjectNInfo(ctx context.Context, bucket, object string, 
 	}()
 	// Setup cleanup function to cause the above go-routine to
 	// exit in case of partial read
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 	return obstor.NewGetObjectReaderFromReader(pr, objInfo, opts, pipeCloser)
 }
 
@@ -764,7 +764,7 @@ func (l *gcsGateway) GetObjectNInfo(ctx context.Context, bucket, object string, 
 //
 // startOffset indicates the starting read location of the object.
 // length indicates the total length of the object.
-func (l *gcsGateway) getObject(ctx context.Context, bucket string, key string, startOffset int64, length int64, writer io.Writer, etag string, opts obstor.ObjectOptions) error {
+func (l *gcsBackendStorage) getObject(ctx context.Context, bucket string, key string, startOffset int64, length int64, writer io.Writer, etag string, opts obstor.ObjectOptions) error {
 	// if we want to mimic S3 behavior exactly, we need to verify if bucket exists first,
 	// otherwise gcs will just return object not exist in case of non-existing bucket
 	if _, err := l.client.Bucket(bucket).Attrs(ctx); err != nil {
@@ -784,7 +784,7 @@ func (l *gcsGateway) getObject(ctx context.Context, bucket string, key string, s
 		logger.LogIf(ctx, err, logger.Application)
 		return gcsToObjectError(err, bucket, key)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	if _, err := io.Copy(writer, r); err != nil {
 		logger.LogIf(ctx, err)
@@ -794,7 +794,7 @@ func (l *gcsGateway) getObject(ctx context.Context, bucket string, key string, s
 	return nil
 }
 
-// fromGCSAttrsToObjectInfo converts GCS BucketAttrs to gateway ObjectInfo
+// fromGCSAttrsToObjectInfo converts GCS BucketAttrs to backend ObjectInfo
 func fromGCSAttrsToObjectInfo(attrs *storage.ObjectAttrs) obstor.ObjectInfo {
 	// All google cloud storage objects have a CRC32c hash, whereas composite objects may not have a MD5 hash
 	// Refer https://cloud.google.com/storage/docs/hashes-etags. Use CRC32C for ETag
@@ -875,7 +875,7 @@ func applyMetadataToGCSAttrs(metadata map[string]string, attrs *storage.ObjectAt
 }
 
 // GetObjectInfo - reads object info and replies back ObjectInfo
-func (l *gcsGateway) GetObjectInfo(ctx context.Context, bucket string, object string, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
+func (l *gcsBackendStorage) GetObjectInfo(ctx context.Context, bucket string, object string, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	// if we want to mimic S3 behavior exactly, we need to verify if bucket exists first,
 	// otherwise gcs will just return object not exist in case of non-existing bucket
 	if _, err := l.client.Bucket(bucket).Attrs(ctx); err != nil {
@@ -893,7 +893,7 @@ func (l *gcsGateway) GetObjectInfo(ctx context.Context, bucket string, object st
 }
 
 // PutObject - Create a new object with the incoming data,
-func (l *gcsGateway) PutObject(ctx context.Context, bucket string, key string, r *obstor.PutObjReader, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
+func (l *gcsBackendStorage) PutObject(ctx context.Context, bucket string, key string, r *obstor.PutObjReader, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	data := r.Reader
 
 	nctx, cancel := context.WithCancel(ctx)
@@ -934,7 +934,7 @@ func (l *gcsGateway) PutObject(ctx context.Context, bucket string, key string, r
 }
 
 // CopyObject - Copies a blob from source container to destination container.
-func (l *gcsGateway) CopyObject(ctx context.Context, srcBucket string, srcObject string, destBucket string, destObject string,
+func (l *gcsBackendStorage) CopyObject(ctx context.Context, srcBucket string, srcObject string, destBucket string, destObject string,
 	srcInfo obstor.ObjectInfo, srcOpts, dstOpts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	if srcOpts.CheckPrecondFn != nil && srcOpts.CheckPrecondFn(srcInfo) {
 		return obstor.ObjectInfo{}, obstor.PreConditionFailed{}
@@ -955,7 +955,7 @@ func (l *gcsGateway) CopyObject(ctx context.Context, srcBucket string, srcObject
 }
 
 // DeleteObject - Deletes a blob in bucket
-func (l *gcsGateway) DeleteObject(ctx context.Context, bucket string, object string, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
+func (l *gcsBackendStorage) DeleteObject(ctx context.Context, bucket string, object string, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	err := l.client.Bucket(bucket).Object(object).Delete(ctx)
 	if err != nil {
 		logger.LogIf(ctx, err)
@@ -968,7 +968,7 @@ func (l *gcsGateway) DeleteObject(ctx context.Context, bucket string, object str
 	}, nil
 }
 
-func (l *gcsGateway) DeleteObjects(ctx context.Context, bucket string, objects []obstor.ObjectToDelete, opts obstor.ObjectOptions) ([]obstor.DeletedObject, []error) {
+func (l *gcsBackendStorage) DeleteObjects(ctx context.Context, bucket string, objects []obstor.ObjectToDelete, opts obstor.ObjectOptions) ([]obstor.DeletedObject, []error) {
 	errs := make([]error, len(objects))
 	dobjects := make([]obstor.DeletedObject, len(objects))
 	for idx, object := range objects {
@@ -983,7 +983,7 @@ func (l *gcsGateway) DeleteObjects(ctx context.Context, bucket string, objects [
 }
 
 // NewMultipartUpload - upload object in multiple parts
-func (l *gcsGateway) NewMultipartUpload(ctx context.Context, bucket string, key string, o obstor.ObjectOptions) (uploadID string, err error) {
+func (l *gcsBackendStorage) NewMultipartUpload(ctx context.Context, bucket string, key string, o obstor.ObjectOptions) (uploadID string, err error) {
 	// Generate new uploadid
 	uploadID = obstor.MustGetUUID()
 
@@ -991,12 +991,12 @@ func (l *gcsGateway) NewMultipartUpload(ctx context.Context, bucket string, key 
 	meta := gcsMultipartMetaName(uploadID)
 
 	w := l.client.Bucket(bucket).Object(meta).NewWriter(ctx)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
 	applyMetadataToGCSAttrs(o.UserDefined, &w.ObjectAttrs)
 
 	if err = json.NewEncoder(w).Encode(gcsMultipartMetaV1{
-		gcsMinioMultipartMetaCurrentVersion,
+		gcsObstorMultipartMetaCurrentVersion,
 		bucket,
 		key,
 	}); err != nil {
@@ -1008,10 +1008,10 @@ func (l *gcsGateway) NewMultipartUpload(ctx context.Context, bucket string, key 
 
 // ListMultipartUploads - lists the (first) multipart upload for an object
 // matched _exactly_ by the prefix
-func (l *gcsGateway) ListMultipartUploads(ctx context.Context, bucket string, prefix string, keyMarker string, uploadIDMarker string, delimiter string, maxUploads int) (obstor.ListMultipartsInfo, error) {
-	// List objects under <bucket>/gcsMinioMultipartPathV1
+func (l *gcsBackendStorage) ListMultipartUploads(ctx context.Context, bucket string, prefix string, keyMarker string, uploadIDMarker string, delimiter string, maxUploads int) (obstor.ListMultipartsInfo, error) {
+	// List objects under <bucket>/gcsObstorMultipartPathV1
 	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{
-		Prefix: gcsMinioMultipartPathV1,
+		Prefix: gcsObstorMultipartPathV1,
 	})
 
 	var uploads []obstor.MultipartInfo
@@ -1034,7 +1034,7 @@ func (l *gcsGateway) ListMultipartUploads(ctx context.Context, bucket string, pr
 		}
 
 		// Skip entries other than gcs.json
-		if !strings.HasSuffix(attrs.Name, gcsMinioMultipartMeta) {
+		if !strings.HasSuffix(attrs.Name, gcsObstorMultipartMeta) {
 			continue
 		}
 
@@ -1045,7 +1045,7 @@ func (l *gcsGateway) ListMultipartUploads(ctx context.Context, bucket string, pr
 			logger.LogIf(ctx, rErr)
 			return obstor.ListMultipartsInfo{}, rErr
 		}
-		defer objReader.Close()
+		defer func() { _ = objReader.Close() }()
 
 		var mpMeta gcsMultipartMetaV1
 		dec := json.NewDecoder(objReader)
@@ -1088,14 +1088,14 @@ func (l *gcsGateway) ListMultipartUploads(ctx context.Context, bucket string, pr
 
 // Checks if obstor.sys.tmp/multipart/v1/<upload-id>/gcs.json exists, returns
 // an object layer compatible error upon any error.
-func (l *gcsGateway) checkUploadIDExists(ctx context.Context, bucket string, key string, uploadID string) error {
+func (l *gcsBackendStorage) checkUploadIDExists(ctx context.Context, bucket string, key string, uploadID string) error {
 	_, err := l.client.Bucket(bucket).Object(gcsMultipartMetaName(uploadID)).Attrs(ctx)
 	logger.LogIf(ctx, err)
 	return gcsToObjectError(err, bucket, key, uploadID)
 }
 
 // PutObjectPart puts a part of object in bucket
-func (l *gcsGateway) PutObjectPart(ctx context.Context, bucket string, key string, uploadID string, partNumber int, r *obstor.PutObjReader, opts obstor.ObjectOptions) (obstor.PartInfo, error) {
+func (l *gcsBackendStorage) PutObjectPart(ctx context.Context, bucket string, key string, uploadID string, partNumber int, r *obstor.PutObjReader, opts obstor.ObjectOptions) (obstor.PartInfo, error) {
 	data := r.Reader
 	if err := l.checkUploadIDExists(ctx, bucket, key, uploadID); err != nil {
 		return obstor.PartInfo{}, err
@@ -1112,7 +1112,7 @@ func (l *gcsGateway) PutObjectPart(ctx context.Context, bucket string, key strin
 	w.ChunkSize = 0
 	if _, err := io.Copy(w, data); err != nil {
 		// Make sure to close object writer upon error.
-		w.Close()
+		_ = w.Close()
 		logger.LogIf(ctx, err)
 		return obstor.PartInfo{}, gcsToObjectError(err, bucket, key)
 	}
@@ -1159,7 +1159,7 @@ func gcsGetPartInfo(ctx context.Context, attrs *storage.ObjectAttrs) (obstor.Par
 }
 
 // GetMultipartInfo returns multipart info of the uploadId of the object
-func (l *gcsGateway) GetMultipartInfo(ctx context.Context, bucket, object, uploadID string, opts obstor.ObjectOptions) (result obstor.MultipartInfo, err error) {
+func (l *gcsBackendStorage) GetMultipartInfo(ctx context.Context, bucket, object, uploadID string, opts obstor.ObjectOptions) (result obstor.MultipartInfo, err error) {
 	result.Bucket = bucket
 	result.Object = object
 	result.UploadID = uploadID
@@ -1167,9 +1167,9 @@ func (l *gcsGateway) GetMultipartInfo(ctx context.Context, bucket, object, uploa
 }
 
 // ListObjectParts returns all object parts for specified object in specified bucket
-func (l *gcsGateway) ListObjectParts(ctx context.Context, bucket string, key string, uploadID string, partNumberMarker int, maxParts int, opts obstor.ObjectOptions) (obstor.ListPartsInfo, error) {
+func (l *gcsBackendStorage) ListObjectParts(ctx context.Context, bucket string, key string, uploadID string, partNumberMarker int, maxParts int, opts obstor.ObjectOptions) (obstor.ListPartsInfo, error) {
 	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{
-		Prefix: path.Join(gcsMinioMultipartPathV1, uploadID),
+		Prefix: path.Join(gcsObstorMultipartPathV1, uploadID),
 	})
 
 	var (
@@ -1190,7 +1190,7 @@ func (l *gcsGateway) ListObjectParts(ctx context.Context, bucket string, key str
 			return obstor.ListPartsInfo{}, gcsToObjectError(err)
 		}
 
-		if strings.HasSuffix(attrs.Name, gcsMinioMultipartMeta) {
+		if strings.HasSuffix(attrs.Name, gcsObstorMultipartMeta) {
 			continue
 		}
 
@@ -1226,8 +1226,8 @@ func (l *gcsGateway) ListObjectParts(ctx context.Context, bucket string, key str
 }
 
 // Called by AbortMultipartUpload and CompleteMultipartUpload for cleaning up.
-func (l *gcsGateway) cleanupMultipartUpload(ctx context.Context, bucket, key, uploadID string) error {
-	prefix := fmt.Sprintf("%s/%s/", gcsMinioMultipartPathV1, uploadID)
+func (l *gcsBackendStorage) cleanupMultipartUpload(ctx context.Context, bucket, key, uploadID string) error {
+	prefix := fmt.Sprintf("%s/%s/", gcsObstorMultipartPathV1, uploadID)
 
 	// Iterate through all parts and delete them
 	it := l.client.Bucket(bucket).Objects(ctx, &storage.Query{Prefix: prefix, Versions: false})
@@ -1244,14 +1244,14 @@ func (l *gcsGateway) cleanupMultipartUpload(ctx context.Context, bucket, key, up
 
 		object := l.client.Bucket(bucket).Object(attrs.Name)
 		// Ignore the error as parallel AbortMultipartUpload might have deleted it.
-		object.Delete(ctx)
+		_ = object.Delete(ctx)
 	}
 
 	return nil
 }
 
 // AbortMultipartUpload aborts a ongoing multipart upload
-func (l *gcsGateway) AbortMultipartUpload(ctx context.Context, bucket string, key string, uploadID string, opts obstor.ObjectOptions) error {
+func (l *gcsBackendStorage) AbortMultipartUpload(ctx context.Context, bucket string, key string, uploadID string, opts obstor.ObjectOptions) error {
 	if err := l.checkUploadIDExists(ctx, bucket, key, uploadID); err != nil {
 		return err
 	}
@@ -1262,7 +1262,7 @@ func (l *gcsGateway) AbortMultipartUpload(ctx context.Context, bucket string, ke
 // Note that there is a limit (currently 32) to the number of components that can
 // be composed in a single operation. There is a per-project rate limit (currently 200)
 // to the number of source objects you can compose per second.
-func (l *gcsGateway) CompleteMultipartUpload(ctx context.Context, bucket string, key string, uploadID string, uploadedParts []obstor.CompletePart, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
+func (l *gcsBackendStorage) CompleteMultipartUpload(ctx context.Context, bucket string, key string, uploadID string, uploadedParts []obstor.CompletePart, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	meta := gcsMultipartMetaName(uploadID)
 	object := l.client.Bucket(bucket).Object(meta)
 
@@ -1277,7 +1277,7 @@ func (l *gcsGateway) CompleteMultipartUpload(ctx context.Context, bucket string,
 		logger.LogIf(ctx, err)
 		return obstor.ObjectInfo{}, gcsToObjectError(err, bucket, key)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	// Check version compatibility of the meta file before compose()
 	multipartMeta := gcsMultipartMetaV1{}
@@ -1286,7 +1286,7 @@ func (l *gcsGateway) CompleteMultipartUpload(ctx context.Context, bucket string,
 		return obstor.ObjectInfo{}, gcsToObjectError(err, bucket, key)
 	}
 
-	if multipartMeta.Version != gcsMinioMultipartMetaCurrentVersion {
+	if multipartMeta.Version != gcsObstorMultipartMetaCurrentVersion {
 		logger.LogIf(ctx, errGCSFormat)
 		return obstor.ObjectInfo{}, gcsToObjectError(errGCSFormat, bucket, key)
 	}
@@ -1329,7 +1329,7 @@ func (l *gcsGateway) CompleteMultipartUpload(ctx context.Context, bucket string,
 
 	// Returns name of the composed object.
 	gcsMultipartComposeName := func(uploadID string, composeNumber int) string {
-		return fmt.Sprintf("%s/tmp/%s/composed-object-%05d", obstor.GatewayObstorSysTmp, uploadID, composeNumber)
+		return fmt.Sprintf("%s/tmp/%s/composed-object-%05d", obstor.BackendObstorSysTmp, uploadID, composeNumber)
 	}
 
 	composeCount := int(math.Ceil(float64(len(parts)) / float64(gcsMaxComponents)))
@@ -1378,7 +1378,7 @@ func (l *gcsGateway) CompleteMultipartUpload(ctx context.Context, bucket string,
 }
 
 // SetBucketPolicy - Set policy on bucket
-func (l *gcsGateway) SetBucketPolicy(ctx context.Context, bucket string, bucketPolicy *policy.Policy) error {
+func (l *gcsBackendStorage) SetBucketPolicy(ctx context.Context, bucket string, bucketPolicy *policy.Policy) error {
 	policyInfo, err := obstor.PolicyToBucketAccessPolicy(bucketPolicy)
 	if err != nil {
 		logger.LogIf(ctx, err)
@@ -1433,7 +1433,7 @@ func (l *gcsGateway) SetBucketPolicy(ctx context.Context, bucket string, bucketP
 }
 
 // GetBucketPolicy - Get policy on bucket
-func (l *gcsGateway) GetBucketPolicy(ctx context.Context, bucket string) (*policy.Policy, error) {
+func (l *gcsBackendStorage) GetBucketPolicy(ctx context.Context, bucket string) (*policy.Policy, error) {
 	rules, err := l.client.Bucket(bucket).ACL().List(ctx)
 	if err != nil {
 		return nil, gcsToObjectError(err, bucket)
@@ -1491,7 +1491,7 @@ func (l *gcsGateway) GetBucketPolicy(ctx context.Context, bucket string) (*polic
 }
 
 // DeleteBucketPolicy - Delete all policies on bucket
-func (l *gcsGateway) DeleteBucketPolicy(ctx context.Context, bucket string) error {
+func (l *gcsBackendStorage) DeleteBucketPolicy(ctx context.Context, bucket string) error {
 	// This only removes the storage.AllUsers policies
 	if err := l.client.Bucket(bucket).ACL().Delete(ctx, storage.AllUsers); err != nil {
 		return gcsToObjectError(err, bucket)
@@ -1501,6 +1501,6 @@ func (l *gcsGateway) DeleteBucketPolicy(ctx context.Context, bucket string) erro
 }
 
 // IsCompressionSupported returns whether compression is applicable for this layer.
-func (l *gcsGateway) IsCompressionSupported() bool {
+func (l *gcsBackendStorage) IsCompressionSupported() bool {
 	return false
 }

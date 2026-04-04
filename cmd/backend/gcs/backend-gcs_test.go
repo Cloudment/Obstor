@@ -144,7 +144,7 @@ func TestIsGCSMarker(t *testing.T) {
 // Test for gcsMultipartMetaName.
 func TestGCSMultipartMetaName(t *testing.T) {
 	uploadID := "a"
-	expected := path.Join(gcsMinioMultipartPathV1, uploadID, gcsMinioMultipartMeta)
+	expected := path.Join(gcsObstorMultipartPathV1, uploadID, gcsObstorMultipartMeta)
 	got := gcsMultipartMetaName(uploadID)
 	if expected != got {
 		t.Errorf("expected: %s, got: %s", expected, got)
@@ -158,14 +158,14 @@ func TestGCSMultipartDataName(t *testing.T) {
 		etag       = "b"
 		partNumber = 1
 	)
-	expected := path.Join(gcsMinioMultipartPathV1, uploadID, fmt.Sprintf("%05d.%s", partNumber, etag))
+	expected := path.Join(gcsObstorMultipartPathV1, uploadID, fmt.Sprintf("%05d.%s", partNumber, etag))
 	got := gcsMultipartDataName(uploadID, partNumber, etag)
 	if expected != got {
 		t.Errorf("expected: %s, got: %s", expected, got)
 	}
 }
 
-func TestFromMinioClientListBucketResultToV2Info(t *testing.T) {
+func TestFromObstorClientListBucketResultToV2Info(t *testing.T) {
 
 	listBucketResult := miniogo.ListBucketResult{
 		IsTruncated:    false,
@@ -183,8 +183,8 @@ func TestFromMinioClientListBucketResultToV2Info(t *testing.T) {
 		NextContinuationToken: "testMarker2",
 	}
 
-	if got := obstor.FromMinioClientListBucketResultToV2Info("testbucket", listBucketResult); !reflect.DeepEqual(got, listBucketV2Info) {
-		t.Errorf("fromMinioClientListBucketResultToV2Info() = %v, want %v", got, listBucketV2Info)
+	if got := obstor.FromObstorClientListBucketResultToV2Info("testbucket", listBucketResult); !reflect.DeepEqual(got, listBucketV2Info) {
+		t.Errorf("fromObstorClientListBucketResultToV2Info() = %v, want %v", got, listBucketV2Info)
 	}
 }
 
@@ -195,8 +195,8 @@ func TestGCSParseProjectID(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	defer os.Remove(f.Name())
-	defer f.Close()
+	defer func() { _ = os.Remove(f.Name()) }()
+	defer func() { _ = f.Close() }()
 
 	contents := `
 {
@@ -204,7 +204,7 @@ func TestGCSParseProjectID(t *testing.T) {
   "project_id": "miniotesting"
 }
 `
-	f.WriteString(contents)
+	_, _ = f.WriteString(contents)
 	projectID, err := gcsParseProjectID(f.Name())
 	if err != nil {
 		t.Fatal(err)
@@ -217,7 +217,7 @@ func TestGCSParseProjectID(t *testing.T) {
 		t.Errorf(`Expected to fail but succeeded reading "non-existent"`)
 	}
 
-	f.WriteString(`,}`)
+	_, _ = f.WriteString(`,}`)
 
 	if _, err := gcsParseProjectID(f.Name()); err == nil {
 		t.Errorf(`Expected to fail reading corrupted credentials file`)

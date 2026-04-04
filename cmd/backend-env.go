@@ -17,33 +17,33 @@
 
 package cmd
 
-type gatewaySSE []string
+type backendSSE []string
 
 const (
-	// GatewaySSES3 is set when SSE-S3 encryption needed on both gateway and backend
-	gatewaySSES3 = "S3"
-	// GatewaySSEC is set when SSE-C encryption needed on both gateway and backend
-	gatewaySSEC = "C"
+	// BackendSSES3 is set when SSE-S3 encryption needed on both backend and remote storage
+	backendSSES3 = "S3"
+	// BackendSSEC is set when SSE-C encryption needed on both backend and remote storage
+	backendSSEC = "C"
 )
 
-func (sse gatewaySSE) SSES3() bool {
+func (sse backendSSE) SSES3() bool {
 	for _, v := range sse {
-		if v == gatewaySSES3 {
+		if v == backendSSES3 {
 			return true
 		}
 	}
 	return false
 }
 
-func (sse gatewaySSE) SSEC() bool {
+func (sse backendSSE) SSEC() bool {
 	for _, v := range sse {
-		if v == gatewaySSEC {
+		if v == backendSSEC {
 			return true
 		}
 	}
 	return false
 }
 
-func (sse gatewaySSE) IsSet() bool {
+func (sse backendSSE) IsSet() bool {
 	return sse.SSES3() || sse.SSEC()
 }

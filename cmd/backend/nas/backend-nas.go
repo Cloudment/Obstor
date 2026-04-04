@@ -27,7 +27,7 @@ import (
 )
 
 func init() {
-	const nasGatewayTemplate = `NAME:
+	const nasBackendTemplate = `NAME:
   {{.HelpName}} - {{.Usage}}
 
 USAGE:
@@ -40,12 +40,12 @@ PATH:
   path to NAS mount point
 
 EXAMPLES:
-  1. Start obstor gateway server for NAS backend
+  1. Start obstor backend server for NAS backend
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 
-  2. Start obstor gateway server for NAS with edge caching enabled
+  2. Start obstor backend server for NAS with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -57,37 +57,37 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 `
 
-	obstor.RegisterGatewayCommand(cli.Command{
-		Name:               obstor.NASBackendGateway,
+	_ = obstor.RegisterBackendCommand(cli.Command{
+		Name:               obstor.NASBackend,
 		Usage:              "Network-attached storage (NAS)",
-		Action:             nasGatewayMain,
-		CustomHelpTemplate: nasGatewayTemplate,
+		Action:             nasBackendMain,
+		CustomHelpTemplate: nasBackendTemplate,
 		HideHelp:           true,
 	})
 }
 
-// Handler for 'obstor gateway nas' command line.
-func nasGatewayMain(ctx *cli.Context) {
-	// Validate gateway arguments.
+// Handler for 'obstor backend nas' command line.
+func nasBackendMain(ctx *cli.Context) {
+	// Validate backend arguments.
 	if !ctx.Args().Present() || ctx.Args().First() == "help" {
-		cli.ShowCommandHelpAndExit(ctx, obstor.NASBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, obstor.NASBackend, 1)
 	}
 
-	obstor.StartGateway(ctx, &NAS{ctx.Args().First()})
+	obstor.StartBackend(ctx, &NAS{ctx.Args().First()})
 }
 
-// NAS implements Gateway.
+// NAS implements Backend.
 type NAS struct {
 	path string
 }
 
-// Name implements Gateway interface.
+// Name implements Backend interface.
 func (g *NAS) Name() string {
-	return obstor.NASBackendGateway
+	return obstor.NASBackend
 }
 
-// NewGatewayLayer returns nas gatewaylayer.
-func (g *NAS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
+// NewBackendLayer returns nas backendlayer.
+func (g *NAS) NewBackendLayer(creds auth.Credentials) (obstor.ObjectLayer, error) {
 	var err error
 	newObject, err := obstor.NewFSObjectLayer(g.path)
 	if err != nil {
@@ -96,12 +96,12 @@ func (g *NAS) NewGatewayLayer(creds auth.Credentials) (obstor.ObjectLayer, error
 	return &nasObjects{newObject}, nil
 }
 
-// Production - nas gateway is production ready.
+// NAS backend is production-ready
 func (g *NAS) Production() bool {
 	return true
 }
 
-// IsListenSupported returns whether listen bucket notification is applicable for this gateway.
+// IsListenSupported returns whether listen bucket notification is applicable for this backend.
 func (n *nasObjects) IsListenSupported() bool {
 	return false
 }
@@ -113,7 +113,7 @@ func (n *nasObjects) StorageInfo(ctx context.Context) (si obstor.StorageInfo, _ 
 	return si, errs
 }
 
-// nasObjects implements gateway for Obstor and S3 compatible object storage servers.
+// nasObjects implements backend for Obstor and S3 compatible object storage servers.
 type nasObjects struct {
 	obstor.ObjectLayer
 }

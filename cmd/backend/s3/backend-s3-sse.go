@@ -39,20 +39,20 @@ const (
 
 	// Name of temporary per part metadata file
 	gwpartMetaJSON string = "part.meta"
-	// Custom multipart files are stored under the defaultMinioGWPrefix
-	defaultMinioGWPrefix     = ".obstor"
+	// Custom multipart files are stored under the defaultObstorGWPrefix
+	defaultObstorGWPrefix    = ".obstor"
 	defaultGWContentFileName = "data"
 )
 
-// s3EncObjects is a wrapper around s3Objects and implements gateway calls for
-// custom large objects encrypted at the gateway
+// s3EncObjects is a wrapper around s3Objects and implements backend calls for
+// custom large objects encrypted at the backend
 type s3EncObjects struct {
 	s3Objects
 }
 
 /*
  NOTE:
- Custom gateway encrypted objects are stored on backend as follows:
+ Custom backend encrypted objects are stored on backend as follows:
 	 obj/.obstor/data   <= encrypted content
 	 obj/.obstor/dare.meta  <= metadata
 
@@ -104,7 +104,7 @@ func (l *s3EncObjects) ListObjectsV2(ctx context.Context, bucket, prefix, contin
 			}
 			// Get objectname and ObjectInfo from the custom metadata file
 			if strings.HasSuffix(obj.Name, gwdareMetaJSON) {
-				objSlice := strings.Split(obj.Name, obstor.SlashSeparator+defaultMinioGWPrefix)
+				objSlice := strings.Split(obj.Name, obstor.SlashSeparator+defaultObstorGWPrefix)
 				gwMeta, e := l.getGWMetadata(ctx, bucket, getDareMetaPath(objSlice[0]))
 				if e != nil {
 					continue
@@ -158,7 +158,7 @@ func (l *s3EncObjects) ListObjectsV2(ctx context.Context, bucket, prefix, contin
 
 // isGWObject returns true if it is a custom object
 func isGWObject(objName string) bool {
-	isEncrypted := strings.Contains(objName, defaultMinioGWPrefix)
+	isEncrypted := strings.Contains(objName, defaultObstorGWPrefix)
 	if !isEncrypted {
 		return true
 	}
@@ -171,7 +171,7 @@ func isGWObject(objName string) bool {
 	var i1, i2 int
 	for i := len(pfxSlice) - 1; i >= 0; i-- {
 		p := pfxSlice[i]
-		if p == defaultMinioGWPrefix {
+		if p == defaultObstorGWPrefix {
 			i1 = i
 		}
 		if p == gwdareMetaJSON {
@@ -181,7 +181,7 @@ func isGWObject(objName string) bool {
 			break
 		}
 	}
-	// Incomplete uploads would have a uploadID between defaultMinioGWPrefix and gwdareMetaJSON
+	// Incomplete uploads would have a uploadID between defaultObstorGWPrefix and gwdareMetaJSON
 	return i2 > 0 && i1 > 0 && i2-i1 == 1
 }
 
@@ -257,7 +257,7 @@ func getDareMetaPath(object string) string {
 
 // Returns path of temporary part metadata file for multipart uploads
 func getPartMetaPath(object, uploadID string, partID int) string {
-	return path.Join(object, defaultMinioGWPrefix, uploadID, strconv.Itoa(partID), gwpartMetaJSON)
+	return path.Join(object, defaultObstorGWPrefix, uploadID, strconv.Itoa(partID), gwpartMetaJSON)
 }
 
 // Deletes the custom dare metadata file saved at the backend
@@ -267,7 +267,7 @@ func (l *s3EncObjects) deleteGWMetadata(ctx context.Context, bucket, metaFileNam
 
 func (l *s3EncObjects) getObject(ctx context.Context, bucket string, key string, startOffset int64, length int64, writer io.Writer, etag string, opts obstor.ObjectOptions) error {
 	var o obstor.ObjectOptions
-	if obstor.GlobalGatewaySSE.SSEC() {
+	if obstor.GlobalBackendSSE.SSEC() {
 		o = opts
 	}
 	dmeta, err := l.getGWMetadata(ctx, bucket, getDareMetaPath(key))
@@ -310,7 +310,7 @@ func (l *s3EncObjects) getObject(ctx context.Context, bucket string, key string,
 // GetObjectNInfo - returns object info and locked object ReadCloser
 func (l *s3EncObjects) GetObjectNInfo(ctx context.Context, bucket, object string, rs *obstor.HTTPRangeSpec, h http.Header, lockType obstor.LockType, o obstor.ObjectOptions) (gr *obstor.GetObjectReader, err error) {
 	var opts obstor.ObjectOptions
-	if obstor.GlobalGatewaySSE.SSEC() {
+	if obstor.GlobalBackendSSE.SSEC() {
 		opts = o
 	}
 	objInfo, err := l.GetObjectInfo(ctx, bucket, object, opts)
@@ -332,7 +332,7 @@ func (l *s3EncObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		// no way to make two consecutive S3 calls safe for concurrent
 		// access.
 		// However,  the encrypted object changes concurrently then the
-		// gateway will not be able to decrypt it since the key (obtained
+		// backend will not be able to decrypt it since the key (obtained
 		// from dare.meta) will not work for any new created object. Therefore,
 		// we will in any case not return invalid data to the client.
 		etag := objInfo.ETag
@@ -345,15 +345,15 @@ func (l *s3EncObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 
 	// Setup cleanup function to cause the above go-routine to
 	// exit in case of partial read
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 	return fn(pr, h, o.CheckPrecondFn, pipeCloser)
 }
 
 // GetObjectInfo reads object info and replies back ObjectInfo
-// For custom gateway encrypted large objects, the ObjectInfo is retrieved from the dare.meta file.
+// For custom backend encrypted large objects, the ObjectInfo is retrieved from the dare.meta file.
 func (l *s3EncObjects) GetObjectInfo(ctx context.Context, bucket string, object string, o obstor.ObjectOptions) (objInfo obstor.ObjectInfo, err error) {
 	var opts obstor.ObjectOptions
-	if obstor.GlobalGatewaySSE.SSEC() {
+	if obstor.GlobalBackendSSE.SSEC() {
 		opts = o
 	}
 
@@ -395,7 +395,7 @@ func (l *s3EncObjects) CopyObject(ctx context.Context, srcBucket string, srcObje
 }
 
 // DeleteObject deletes a blob in bucket
-// For custom gateway encrypted large objects, cleans up encrypted content and metadata files
+// For custom backend encrypted large objects, cleans up encrypted content and metadata files
 // from the backend.
 func (l *s3EncObjects) DeleteObject(ctx context.Context, bucket string, object string, opts obstor.ObjectOptions) (obstor.ObjectInfo, error) {
 	// Get dare meta json
@@ -404,7 +404,7 @@ func (l *s3EncObjects) DeleteObject(ctx context.Context, bucket string, object s
 		return l.s3Objects.DeleteObject(ctx, bucket, object, opts)
 	}
 	// delete encrypted object
-	l.s3Objects.DeleteObject(ctx, bucket, getGWContentPath(object), opts)
+	_, _ = l.s3Objects.DeleteObject(ctx, bucket, getGWContentPath(object), opts)
 	return l.deleteGWMetadata(ctx, bucket, getDareMetaPath(object))
 }
 
@@ -444,8 +444,8 @@ func (l *s3EncObjects) NewMultipartUpload(ctx context.Context, bucket string, ob
 		return l.s3Objects.NewMultipartUpload(ctx, bucket, object, obstor.ObjectOptions{UserDefined: o.UserDefined})
 	}
 	// Decide if sse options needed to be passed to backend
-	if (obstor.GlobalGatewaySSE.SSEC() && o.ServerSideEncryption.Type() == encrypt.SSEC) ||
-		(obstor.GlobalGatewaySSE.SSES3() && o.ServerSideEncryption.Type() == encrypt.S3) {
+	if (obstor.GlobalBackendSSE.SSEC() && o.ServerSideEncryption.Type() == encrypt.SSEC) ||
+		(obstor.GlobalBackendSSE.SSES3() && o.ServerSideEncryption.Type() == encrypt.S3) {
 		sseOpts = o.ServerSideEncryption
 	}
 
@@ -469,14 +469,14 @@ func (l *s3EncObjects) PutObject(ctx context.Context, bucket string, object stri
 	var sseOpts encrypt.ServerSide
 	// Decide if sse options needed to be passed to backend
 	if opts.ServerSideEncryption != nil &&
-		((obstor.GlobalGatewaySSE.SSEC() && opts.ServerSideEncryption.Type() == encrypt.SSEC) ||
-			(obstor.GlobalGatewaySSE.SSES3() && opts.ServerSideEncryption.Type() == encrypt.S3) ||
+		((obstor.GlobalBackendSSE.SSEC() && opts.ServerSideEncryption.Type() == encrypt.SSEC) ||
+			(obstor.GlobalBackendSSE.SSES3() && opts.ServerSideEncryption.Type() == encrypt.S3) ||
 			opts.ServerSideEncryption.Type() == encrypt.KMS) {
 		sseOpts = opts.ServerSideEncryption
 	}
 	if opts.ServerSideEncryption == nil {
-		defer l.deleteGWMetadata(ctx, bucket, getDareMetaPath(object))
-		defer l.DeleteObject(ctx, bucket, getGWContentPath(object), opts)
+		defer func() { _, _ = l.deleteGWMetadata(ctx, bucket, getDareMetaPath(object)) }()
+		defer func() { _, _ = l.DeleteObject(ctx, bucket, getGWContentPath(object), opts) }()
 		return l.s3Objects.PutObject(ctx, bucket, object, data, obstor.ObjectOptions{UserDefined: opts.UserDefined})
 	}
 
@@ -500,7 +500,7 @@ func (l *s3EncObjects) PutObject(ctx context.Context, bucket string, object stri
 	}
 	objInfo = gwMeta.ToObjectInfo(bucket, object)
 	// delete any unencrypted content of the same name created previously
-	l.s3Objects.DeleteObject(ctx, bucket, object, opts)
+	_, _ = l.s3Objects.DeleteObject(ctx, bucket, object, opts)
 	return objInfo, nil
 }
 
@@ -513,7 +513,7 @@ func (l *s3EncObjects) PutObjectPart(ctx context.Context, bucket string, object 
 
 	var s3Opts obstor.ObjectOptions
 	// for sse-s3 encryption options should not be passed to backend
-	if opts.ServerSideEncryption != nil && opts.ServerSideEncryption.Type() == encrypt.SSEC && obstor.GlobalGatewaySSE.SSEC() {
+	if opts.ServerSideEncryption != nil && opts.ServerSideEncryption.Type() == encrypt.SSEC && obstor.GlobalBackendSSE.SSEC() {
 		s3Opts = opts
 	}
 
@@ -637,8 +637,8 @@ func (l *s3EncObjects) CompleteMultipartUpload(ctx context.Context, bucket, obje
 		oi, e = l.s3Objects.CompleteMultipartUpload(ctx, bucket, object, uploadID, uploadedParts, opts)
 		if e == nil {
 			// delete any encrypted version of object that might exist
-			defer l.deleteGWMetadata(ctx, bucket, getDareMetaPath(object))
-			defer l.DeleteObject(ctx, bucket, getGWContentPath(object), opts)
+			defer func() { _, _ = l.deleteGWMetadata(ctx, bucket, getDareMetaPath(object)) }()
+			defer func() { _, _ = l.DeleteObject(ctx, bucket, getGWContentPath(object), opts) }()
 		}
 		return oi, e
 	}
@@ -670,7 +670,7 @@ func (l *s3EncObjects) CompleteMultipartUpload(ctx context.Context, bucket, obje
 	}
 
 	//delete any unencrypted version of object that might be on the backend
-	defer l.s3Objects.DeleteObject(ctx, bucket, object, opts)
+	defer func() { _, _ = l.s3Objects.DeleteObject(ctx, bucket, object, opts) }()
 
 	// Save the final object size and modtime.
 	gwMeta.Stat.Size = objectSize
@@ -695,7 +695,7 @@ func (l *s3EncObjects) CompleteMultipartUpload(ctx context.Context, bucket, obje
 				break
 			}
 			startAfter = obj.Name
-			l.s3Objects.DeleteObject(ctx, bucket, obj.Name, opts)
+			_, _ = l.s3Objects.DeleteObject(ctx, bucket, obj.Name, opts)
 		}
 		continuationToken = loi.NextContinuationToken
 		if !loi.IsTruncated || done {
@@ -708,17 +708,17 @@ func (l *s3EncObjects) CompleteMultipartUpload(ctx context.Context, bucket, obje
 
 // getTmpGWMetaPath returns the prefix under which uploads in progress are stored on backend
 func getTmpGWMetaPath(object, uploadID string) string {
-	return path.Join(object, defaultMinioGWPrefix, uploadID)
+	return path.Join(object, defaultObstorGWPrefix, uploadID)
 }
 
 // getGWMetaPath returns the prefix under which custom object metadata and object are stored on backend after upload completes
 func getGWMetaPath(object string) string {
-	return path.Join(object, defaultMinioGWPrefix)
+	return path.Join(object, defaultObstorGWPrefix)
 }
 
 // getGWContentPath returns the prefix under which custom object is stored on backend after upload completes
 func getGWContentPath(object string) string {
-	return path.Join(object, defaultMinioGWPrefix, defaultGWContentFileName)
+	return path.Join(object, defaultObstorGWPrefix, defaultGWContentFileName)
 }
 
 // Clean-up the stale incomplete encrypted multipart uploads. Should be run in a Go routine.
@@ -746,7 +746,7 @@ func (l *s3EncObjects) cleanupStaleUploads(ctx context.Context, expiry time.Dura
 	for _, b := range buckets {
 		expParts := l.getStalePartsForBucket(ctx, b.Name, expiry)
 		for k := range expParts {
-			l.s3Objects.DeleteObject(ctx, b.Name, k, obstor.ObjectOptions{})
+			_, _ = l.s3Objects.DeleteObject(ctx, b.Name, k, obstor.ObjectOptions{})
 		}
 	}
 }
@@ -763,7 +763,7 @@ func (l *s3EncObjects) getStalePartsForBucket(ctx context.Context, bucket string
 		}
 		for _, obj := range loi.Objects {
 			startAfter = obj.Name
-			if !strings.Contains(obj.Name, defaultMinioGWPrefix) {
+			if !strings.Contains(obj.Name, defaultObstorGWPrefix) {
 				continue
 			}
 
@@ -796,7 +796,7 @@ func (l *s3EncObjects) DeleteBucket(ctx context.Context, bucket string, forceDel
 		}
 		for _, obj := range loi.Objects {
 			startAfter = obj.Name
-			if !strings.Contains(obj.Name, defaultMinioGWPrefix) {
+			if !strings.Contains(obj.Name, defaultObstorGWPrefix) {
 				return obstor.BucketNotEmpty{}
 			}
 			if isGWObject(obj.Name) {
@@ -813,7 +813,7 @@ func (l *s3EncObjects) DeleteBucket(ctx context.Context, bucket string, forceDel
 		}
 	}
 	for k := range expParts {
-		l.s3Objects.DeleteObject(ctx, bucket, k, obstor.ObjectOptions{})
+		_, _ = l.s3Objects.DeleteObject(ctx, bucket, k, obstor.ObjectOptions{})
 	}
 	err := l.Client.RemoveBucket(ctx, bucket)
 	if err != nil {

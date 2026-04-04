@@ -25,7 +25,7 @@ import (
 )
 
 // Prints the formatted startup message.
-func printGatewayStartupMessage(apiEndPoints []string, backendType string) {
+func printBackendStartupMessage(apiEndPoints []string, backendType string) {
 	strippedAPIEndpoints := stripStandardPorts(apiEndPoints)
 	// If cache layer is enabled, print cache capacity.
 	cacheAPI := newCachedObjectLayerFn()
@@ -33,7 +33,7 @@ func printGatewayStartupMessage(apiEndPoints []string, backendType string) {
 		printCacheStorageInfo(cacheAPI.StorageInfo(GlobalContext))
 	}
 	// Prints credential.
-	printGatewayCommonMsg(strippedAPIEndpoints)
+	printBackendCommonMsg(strippedAPIEndpoints)
 
 	// Prints `mc` cli configuration message chooses
 	// first endpoint as default.
@@ -52,7 +52,7 @@ func printGatewayStartupMessage(apiEndPoints []string, backendType string) {
 }
 
 // Prints common server startup message. Prints credential, region and browser access.
-func printGatewayCommonMsg(apiEndpoints []string) {
+func printBackendCommonMsg(apiEndpoints []string) {
 	// Get saved credentials.
 	cred := globalActiveCred
 
