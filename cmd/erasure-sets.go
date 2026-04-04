@@ -19,6 +19,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -37,7 +38,8 @@ import (
 	"github.com/cloudment/obstor/pkg/sync/errgroup"
 	"github.com/dustin/go-humanize"
 	"github.com/google/uuid"
-	"github.com/minio/highwayhash"
+
+	"github.com/dchest/siphash"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio-go/v7/pkg/tags"
 )
@@ -45,13 +47,13 @@ import (
 // setsDsyncLockers is encapsulated type for Close()
 type setsDsyncLockers [][]dsync.NetLocker
 
-const envMinioDeleteCleanupInterval = "OBSTOR_DELETE_CLEANUP_INTERVAL"
+const envObstorDeleteCleanupInterval = "OBSTOR_DELETE_CLEANUP_INTERVAL"
 
 // erasureSets implements ObjectLayer combining a static list of erasure coded
 // object sets. NOTE: There is no dynamic scaling allowed or intended in
 // current design.
 type erasureSets struct {
-	GatewayUnsupported
+	BackendUnsupported
 
 	sets []*erasureObjects
 
@@ -233,7 +235,7 @@ func (s *erasureSets) connectDisks() {
 
 			s.erasureDisksMu.Lock()
 			if s.erasureDisks[setIndex][diskIndex] != nil {
-				s.erasureDisks[setIndex][diskIndex].Close()
+				_ = s.erasureDisks[setIndex][diskIndex].Close()
 			}
 			if disk.IsLocal() {
 				disk.SetDiskID(format.Erasure.This)
@@ -434,7 +436,7 @@ func newErasureSets(ctx context.Context, endpoints Endpoints, storageDisks []Sto
 	// Cleanup ".trash/" folder every 5m minutes with sufficient sleep cycles, between each
 	// deletes a dynamic sleeper is used with a factor of 10 ratio with max delay between
 	// deletes to be 2 seconds.
-	deletedObjectsCleanupInterval, err := time.ParseDuration(env.Get(envMinioDeleteCleanupInterval, "5m"))
+	deletedObjectsCleanupInterval, err := time.ParseDuration(env.Get(envObstorDeleteCleanupInterval, "5m"))
 	if err != nil {
 		return nil, err
 	}
@@ -714,12 +716,10 @@ func sipHashMod(key string, cardinality int, id [16]byte) int {
 	if cardinality <= 0 {
 		return -1
 	}
-	// Use HighwayHash as a keyed hash replacement for SipHash.
-	// Pad the 16-byte id to the required 32-byte HighwayHash key.
-	var hhKey [32]byte
-	copy(hhKey[:16], id[:])
-	copy(hhKey[16:], id[:])
-	sum64 := highwayhash.Sum64([]byte(key), hhKey[:])
+	// use the faster version as per siphash docs
+	// https://github.com/dchest/siphash#usage
+	k0, k1 := binary.LittleEndian.Uint64(id[0:8]), binary.LittleEndian.Uint64(id[8:16])
+	sum64 := siphash.Hash(k0, k1, []byte(key))
 	return int(sum64 % uint64(cardinality))
 }
 
@@ -1270,7 +1270,7 @@ func (s *erasureSets) HealFormat(ctx context.Context, dryRun bool) (res madmin.H
 			}
 
 			if s.erasureDisks[m][n] != nil {
-				s.erasureDisks[m][n].Close()
+				_ = s.erasureDisks[m][n].Close()
 			}
 			storageDisks[index].SetDiskLoc(s.poolIndex, m, n)
 			s.erasureDisks[m][n] = storageDisks[index]

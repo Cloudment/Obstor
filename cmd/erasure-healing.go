@@ -446,13 +446,21 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 					inlineBuffers[i] = bytes.NewBuffer(make([]byte, 0, erasure.ShardFileSize(latestMeta.Size)))
 					writers[i] = newStreamingBitrotWriterBuffer(inlineBuffers[i], DefaultBitrotAlgorithm, erasure.ShardSize())
 				} else {
-					writers[i] = newBitrotWriter(disk, minioMetaTmpBucket, partPath,
+					writers[i] = newBitrotWriter(disk, obstorMetaTmpBucket, partPath,
 						tillOffset, DefaultBitrotAlgorithm, erasure.ShardSize(), true)
 				}
 			}
 			err = erasure.Heal(ctx, readers, writers, partSize)
-			closeBitrotReaders(readers)
-			closeBitrotWriters(writers)
+			for _, cerr := range closeBitrotReaders(readers) {
+				if cerr != nil {
+					logger.LogIf(ctx, cerr)
+				}
+			}
+			for _, cerr := range closeBitrotWriters(writers) {
+				if cerr != nil {
+					logger.LogIf(ctx, cerr)
+				}
+			}
 			if err != nil {
 				return result, toObjectErr(err, bucket, object)
 			}
@@ -492,7 +500,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		}
 	}
 
-	defer er.deleteObject(context.Background(), minioMetaTmpBucket, tmpID, len(storageDisks)/2+1)
+	defer func() { _ = er.deleteObject(context.Background(), obstorMetaTmpBucket, tmpID, len(storageDisks)/2+1) }()
 
 	// Rename from tmp location to the actual location.
 	for i, disk := range outDatedDisks {
@@ -504,7 +512,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		partsMetadata[i].Erasure.Index = i + 1
 
 		// Attempt a rename now from healed data to final location.
-		if err = disk.RenameData(ctx, minioMetaTmpBucket, tmpID, partsMetadata[i], bucket, object); err != nil {
+		if err = disk.RenameData(ctx, obstorMetaTmpBucket, tmpID, partsMetadata[i], bucket, object); err != nil {
 			logger.LogIf(ctx, err)
 			return result, toObjectErr(err, bucket, object)
 		}

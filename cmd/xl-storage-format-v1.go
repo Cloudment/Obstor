@@ -63,7 +63,7 @@ type xlMetaV1Object struct {
 	// Erasure coded info for the current object `xl.meta`.
 	Erasure ErasureInfo `json:"erasure"`
 	// Obstor release tag for current object `xl.meta`.
-	Minio struct {
+	Obstor struct {
 		Release string `json:"release"`
 	} `json:"obstor"`
 	// Metadata map for current object `xl.meta`.

@@ -19,8 +19,83 @@ package cmd
 
 import (
 	"context"
+	"io"
 	"sync"
+
+	"github.com/cloudment/obstor/cmd/logger"
 )
+
+// Write erasure-coded data to multiple disks in parallel.
+type parallelWriter struct {
+	writers     []io.Writer
+	writeQuorum int
+	errs        []error
+}
+
+// Writes data to writers in parallel.
+func (p *parallelWriter) Write(ctx context.Context, blocks [][]byte) error {
+	var wg sync.WaitGroup
+
+	for i := range p.writers {
+		if p.writers[i] == nil {
+			p.errs[i] = errDiskNotFound
+			continue
+		}
+		if p.errs[i] != nil {
+			continue
+		}
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			_, p.errs[i] = p.writers[i].Write(blocks[i])
+			if p.errs[i] != nil {
+				if wc, ok := p.writers[i].(io.Closer); ok {
+					_ = wc.Close()
+				}
+				p.writers[i] = nil
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	return reduceWriteQuorumErrs(ctx, p.errs, objectOpIgnoredErrs, p.writeQuorum)
+}
+
+// Read from src, erasure encode and write to writers
+func (e *Erasure) Encode(ctx context.Context, src io.Reader, writers []io.Writer, buf []byte, quorum int) (total int64, err error) {
+	writer := &parallelWriter{
+		writers:     writers,
+		writeQuorum: quorum,
+		errs:        make([]error, len(writers)),
+	}
+
+	for {
+		var blocks [][]byte
+		n, rerr := io.ReadFull(src, buf)
+		if n > 0 {
+			blocks, err = e.EncodeData(ctx, buf[:n])
+			if err != nil {
+				logger.LogIf(ctx, err)
+				return 0, err
+			}
+
+			if err = writer.Write(ctx, blocks); err != nil {
+				logger.LogIf(ctx, err)
+				return 0, err
+			}
+
+			total += int64(n)
+		}
+		if rerr == io.EOF || rerr == io.ErrUnexpectedEOF {
+			break
+		}
+		if rerr != nil {
+			logger.LogIf(ctx, rerr)
+			return 0, rerr
+		}
+	}
+	return total, nil
+}
 
 // WriteBlock writes the same block data to multiple target storage nodes
 // in parallel. It returns nil if at least writeQuorum targets succeed.

@@ -168,7 +168,7 @@ func (fi FileInfo) ToObjectInfo(bucket, object string) ObjectInfo {
 	if sc, ok := fi.Metadata[xhttp.AmzStorageClass]; ok {
 		objInfo.StorageClass = sc
 	} else {
-		objInfo.StorageClass = globalMinioDefaultStorageClass
+		objInfo.StorageClass = globalObstorDefaultStorageClass
 	}
 	objInfo.VersionPurgeStatus = fi.VersionPurgeStatus
 	// Set restore status for transitioned object

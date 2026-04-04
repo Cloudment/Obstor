@@ -19,29 +19,32 @@ package cmd
 
 import (
 	"context"
+	"io"
+
+	"github.com/cloudment/obstor/cmd/logger"
 )
 
 // HealBlock copies a block from any source that has it to all targets
 // that are missing it. Returns the number of copies repaired.
-func (br *BlockReplicator) HealBlock(ctx context.Context, blockHash string, sources []StorageAPI, targets []StorageAPI) (int, error) {
-	// Read the block from any available source.
-	data, err := br.ReadBlock(ctx, blockHash, sources)
+func (e Erasure) Heal(ctx context.Context, readers []io.ReaderAt, writers []io.Writer, size int64) error {
+	r, w := io.Pipe()
+	defer func() { _ = r.Close() }()
+	go func() {
+		if _, err := e.Decode(ctx, w, readers, 0, size, size, nil); err != nil {
+			w.CloseWithError(err)
+			return
+		}
+		_ = w.Close()
+	}()
+	buf := make([]byte, e.blockSize)
+	// quorum is 1 because CreateFile should continue writing as long as we are writing to even 1 disk.
+	n, err := e.Encode(ctx, r, writers, buf, 1)
 	if err != nil {
-		return 0, err
+		return err
 	}
-
-	repaired := 0
-	for _, disk := range targets {
-		if disk == nil {
-			continue
-		}
-		has, _ := disk.HasBlock(ctx, blockHash)
-		if has {
-			continue
-		}
-		if err := disk.WriteBlock(ctx, blockHash, data); err == nil {
-			repaired++
-		}
+	if n != size {
+		logger.LogIf(ctx, errLessData)
+		return errLessData
 	}
-	return repaired, nil
+	return nil
 }

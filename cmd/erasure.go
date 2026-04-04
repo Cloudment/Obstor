@@ -49,7 +49,7 @@ type partialOperation struct {
 
 // erasureObjects - Implements ER object layer.
 type erasureObjects struct {
-	GatewayUnsupported
+	BackendUnsupported
 
 	setDriveCount      int
 	defaultParityCount int
@@ -317,9 +317,9 @@ func (er erasureObjects) cleanupDeletedObjects(ctx context.Context) {
 			go func(disk StorageAPI) {
 				defer wg.Done()
 				diskPath := disk.Endpoint().Path
-				readDirFn(pathJoin(diskPath, minioMetaTmpDeletedBucket), func(ddir string, typ os.FileMode) error {
+				readDirFn(pathJoin(diskPath, obstorMetaTmpDeletedBucket), func(ddir string, typ os.FileMode) error {
 					wait := er.deletedCleanupSleeper.Timer(ctx)
-					removeAll(pathJoin(diskPath, minioMetaTmpDeletedBucket, ddir))
+					removeAll(pathJoin(diskPath, obstorMetaTmpDeletedBucket, ddir))
 					wait()
 					return nil
 				})

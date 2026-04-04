@@ -222,9 +222,23 @@ func disksWithAllParts(ctx context.Context, onlineDisks []StorageAPI, partsMetad
 				dataErrs[i] = errDiskNotFound
 				continue
 			}
-			if partsMetadata[i].IsValid() {
-				availableDisks[i] = onlineDisk
+			if !partsMetadata[i].IsValid() {
+				continue
 			}
+			// Verify the first block hash
+			if len(partsMetadata[i].Blocks) > 0 {
+				blk := partsMetadata[i].Blocks[0]
+				data, err := onlineDisk.ReadBlock(GlobalContext, blk.Hash)
+				if err != nil {
+					dataErrs[i] = errFileCorrupt
+					continue
+				}
+				if verifyBlockHash(data, blk.Hash) != nil {
+					dataErrs[i] = errFileCorrupt
+					continue
+				}
+			}
+			availableDisks[i] = onlineDisk
 		}
 		return availableDisks, dataErrs
 	}

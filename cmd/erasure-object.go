@@ -199,7 +199,7 @@ func (er erasureObjects) GetObjectNInfo(ctx context.Context, bucket, object stri
 
 	// Cleanup function to cause the go routine above to exit, in
 	// case of incomplete read.
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 
 	return fn(pr, h, opts.CheckPrecondFn, pipeCloser)
 }
@@ -451,7 +451,7 @@ func (er erasureObjects) getObjectFileInfo(ctx context.Context, bucket, object s
 	}
 
 	if reducedErr := reduceReadQuorumErrs(ctx, errs, objectOpIgnoredErrs, readQuorum); reducedErr != nil {
-		if reducedErr == errErasureReadQuorum && bucket != minioMetaBucket {
+		if reducedErr == errErasureReadQuorum && bucket != obstorMetaBucket {
 			if _, ok := isObjectDangling(metaArr, errs, nil); ok {
 				reducedErr = errFileNotFound
 				if opts.VersionID != "" {
@@ -462,7 +462,7 @@ func (er erasureObjects) getObjectFileInfo(ctx context.Context, bucket, object s
 				//  - This is a versioned bucket and the version ID is passed, the reason
 				//    is that we cannot fetch the ID of the latest version when we don't trust xl.meta
 				if !opts.Versioned || opts.VersionID != "" {
-					er.deleteObjectVersion(ctx, bucket, object, 1, FileInfo{
+					_ = er.deleteObjectVersion(ctx, bucket, object, 1, FileInfo{
 						Name:      object,
 						VersionID: opts.VersionID,
 					}, false)
@@ -875,7 +875,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	var online int
 	defer func() {
 		if online != len(onlineDisks) {
-			er.deleteObject(context.Background(), minioMetaTmpBucket, tempObj, writeQuorum)
+			_ = er.deleteObject(context.Background(), obstorMetaTmpBucket, tempObj, writeQuorum)
 		}
 	}()
 
@@ -899,14 +899,14 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 			writers[i] = newStreamingBitrotWriterBuffer(inlineBuffers[i], DefaultBitrotAlgorithm, erasure.ShardSize())
 			continue
 		}
-		writers[i] = newBitrotWriter(disk, minioMetaTmpBucket, tempErasureObj,
+		writers[i] = newBitrotWriter(disk, obstorMetaTmpBucket, tempErasureObj,
 			shardFileSize, DefaultBitrotAlgorithm, erasure.ShardSize(), false)
 	}
 
 	n, erasureErr := erasure.Encode(ctx, data, writers, buffer, writeQuorum)
 	closeBitrotWriters(writers)
 	if erasureErr != nil {
-		return ObjectInfo{}, toObjectErr(erasureErr, minioMetaTmpBucket, tempErasureObj)
+		return ObjectInfo{}, toObjectErr(erasureErr, obstorMetaTmpBucket, tempErasureObj)
 	}
 
 	// Should return IncompleteBody{} error when reader has fewer bytes
@@ -965,7 +965,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	}
 
 	// Rename the successfully written temporary object to final location.
-	if onlineDisks, err = renameData(ctx, onlineDisks, minioMetaTmpBucket, tempObj, partsMetadata, bucket, object, writeQuorum); err != nil {
+	if onlineDisks, err = renameData(ctx, onlineDisks, obstorMetaTmpBucket, tempObj, partsMetadata, bucket, object, writeQuorum); err != nil {
 		logger.LogIf(ctx, err)
 		return ObjectInfo{}, toObjectErr(err, bucket, object)
 	}
@@ -1019,13 +1019,13 @@ func (er erasureObjects) deleteObject(ctx context.Context, bucket, object string
 
 	disks := er.getDisks()
 	tmpObj := mustGetUUID()
-	if bucket == minioMetaTmpBucket {
+	if bucket == obstorMetaTmpBucket {
 		tmpObj = object
 	} else {
 		// Rename the current object while requiring write quorum, but also consider
 		// that a non found object in a given disk as a success since it already
 		// confirms that the object doesn't have a part in that disk (already removed)
-		disks, err = rename(ctx, disks, bucket, object, minioMetaTmpBucket, tmpObj, true, writeQuorum,
+		disks, err = rename(ctx, disks, bucket, object, obstorMetaTmpBucket, tmpObj, true, writeQuorum,
 			[]error{errFileNotFound})
 		if err != nil {
 			return toObjectErr(err, bucket, object)
@@ -1039,7 +1039,7 @@ func (er erasureObjects) deleteObject(ctx context.Context, bucket, object string
 			if disks[index] == nil {
 				return errDiskNotFound
 			}
-			return disks[index].Delete(ctx, minioMetaTmpBucket, tmpObj, true)
+			return disks[index].Delete(ctx, obstorMetaTmpBucket, tmpObj, true)
 		}, index)
 	}
 

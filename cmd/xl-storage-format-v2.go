@@ -154,6 +154,16 @@ func (e ErasureAlgo) String() string {
 	return ""
 }
 
+// erasureAlgoFromString converts algorithm strings to ErasureAlgo.
+func erasureAlgoFromString(s string) ErasureAlgo {
+	switch s {
+	case BlockReplication.String():
+		return BlockReplication
+	default:
+		return ReedSolomon
+	}
+}
+
 // ChecksumAlgo defines common type of different checksum algorithms
 type ChecksumAlgo uint8
 
@@ -801,7 +811,7 @@ func (z *xlMetaV2) AddVersion(fi FileInfo) error {
 			DataDir:            dd,
 			Size:               fi.Size,
 			ModTime:            fi.ModTime.UnixNano(),
-			ErasureAlgorithm:   ReedSolomon,
+			ErasureAlgorithm:   erasureAlgoFromString(fi.Erasure.Algorithm),
 			ErasureM:           fi.Erasure.DataBlocks,
 			ErasureN:           fi.Erasure.ParityBlocks,
 			ErasureBlockSize:   fi.Erasure.BlockSize,
