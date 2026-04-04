@@ -86,7 +86,7 @@ func (sys *BucketTargetSys) ListBucketTargets(ctx context.Context, bucket string
 
 // SetTarget - sets a new minio-go client target for this bucket.
 func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *madmin.BucketTarget, update bool) error {
-	if globalIsGateway {
+	if globalIsBackend {
 		return nil
 	}
 	if !tgt.Type.IsValid() && !update {
@@ -105,7 +105,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 	}
 	if tgt.Type == madmin.ReplicationService {
 		if !globalIsErasure {
-			return NotImplemented{Message: "Replication is not implemented in " + getMinioMode()}
+			return NotImplemented{Message: "Replication is not implemented in " + getObstorMode()}
 		}
 		if !globalBucketVersioningSys.Enabled(bucket) {
 			return BucketReplicationSourceNotVersioned{Bucket: bucket}
@@ -171,7 +171,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 
 // RemoveTarget - removes a remote bucket target for this source bucket.
 func (sys *BucketTargetSys) RemoveTarget(ctx context.Context, bucket, arnStr string) error {
-	if globalIsGateway {
+	if globalIsBackend {
 		return nil
 	}
 	if arnStr == "" {
@@ -183,7 +183,7 @@ func (sys *BucketTargetSys) RemoveTarget(ctx context.Context, bucket, arnStr str
 	}
 	if arn.Type == madmin.ReplicationService {
 		if !globalIsErasure {
-			return NotImplemented{Message: "Replication is not implemented in " + getMinioMode()}
+			return NotImplemented{Message: "Replication is not implemented in " + getObstorMode()}
 		}
 		// Reject removal of remote target if replication configuration is present
 		rcfg, err := getReplicationConfig(ctx, bucket)
@@ -286,8 +286,8 @@ func (sys *BucketTargetSys) Init(ctx context.Context, buckets []BucketInfo, objA
 		return errServerNotInitialized
 	}
 
-	// In gateway mode, bucket targets is not supported.
-	if globalIsGateway {
+	// In backend mode, bucket targets is not supported.
+	if globalIsBackend {
 		return nil
 	}
 

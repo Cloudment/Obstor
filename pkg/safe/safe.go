@@ -94,7 +94,7 @@ func (file *File) Abort() (err error) {
 		return
 	}
 
-	file.tmpfile.Close()
+	_ = file.tmpfile.Close()
 	err = os.Remove(file.tmpfile.Name())
 	file.aborted = true
 	return

@@ -155,11 +155,11 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <DEBUG> ")
-			c.Print(a...)
+			_, _ = c.Print(ProgramName() + ": <DEBUG> ")
+			_, _ = c.Print(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
-			fmt.Fprint(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
+			_, _ = fmt.Fprint(color.Output, a...)
 		}
 		color.Output = output
 	case "Fatal":
@@ -172,11 +172,11 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <ERROR> ")
-			c.Print(a...)
+			_, _ = c.Print(ProgramName() + ": <ERROR> ")
+			_, _ = c.Print(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
-			fmt.Fprint(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
+			_, _ = fmt.Fprint(color.Output, a...)
 		}
 		color.Output = output
 	case "Info":
@@ -185,17 +185,17 @@ func consolePrint(tag string, c *color.Color, a ...interface{}) {
 			return
 		}
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Print(ProgramName() + ": ")
-			c.Print(a...)
+			_, _ = c.Print(ProgramName() + ": ")
+			_, _ = c.Print(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": ")
-			fmt.Fprint(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": ")
+			_, _ = fmt.Fprint(color.Output, a...)
 		}
 	default:
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Print(a...)
+			_, _ = c.Print(a...)
 		} else {
-			fmt.Fprint(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, a...)
 		}
 	}
 }
@@ -214,11 +214,11 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <DEBUG> ")
-			c.Printf(format, a...)
+			_, _ = c.Print(ProgramName() + ": <DEBUG> ")
+			_, _ = c.Printf(format, a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
-			fmt.Fprintf(color.Output, format, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
+			_, _ = fmt.Fprintf(color.Output, format, a...)
 		}
 		color.Output = output
 	case "Fatal":
@@ -231,11 +231,11 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <ERROR> ")
-			c.Printf(format, a...)
+			_, _ = c.Print(ProgramName() + ": <ERROR> ")
+			_, _ = c.Printf(format, a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
-			fmt.Fprintf(color.Output, format, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
+			_, _ = fmt.Fprintf(color.Output, format, a...)
 		}
 		color.Output = output
 	case "Info":
@@ -244,17 +244,17 @@ func consolePrintf(tag string, c *color.Color, format string, a ...interface{}) 
 			return
 		}
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Print(ProgramName() + ": ")
-			c.Printf(format, a...)
+			_, _ = c.Print(ProgramName() + ": ")
+			_, _ = c.Printf(format, a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": ")
-			fmt.Fprintf(color.Output, format, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": ")
+			_, _ = fmt.Fprintf(color.Output, format, a...)
 		}
 	default:
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Printf(format, a...)
+			_, _ = c.Printf(format, a...)
 		} else {
-			fmt.Fprintf(color.Output, format, a...)
+			_, _ = fmt.Fprintf(color.Output, format, a...)
 		}
 	}
 }
@@ -273,11 +273,11 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <DEBUG> ")
-			c.Println(a...)
+			_, _ = c.Print(ProgramName() + ": <DEBUG> ")
+			_, _ = c.Println(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
-			fmt.Fprintln(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <DEBUG> ")
+			_, _ = fmt.Fprintln(color.Output, a...)
 		}
 		color.Output = output
 	case "Fatal":
@@ -290,11 +290,11 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 		output := color.Output
 		color.Output = stderrColoredOutput
 		if term.IsTerminal(int(os.Stderr.Fd())) {
-			c.Print(ProgramName() + ": <ERROR> ")
-			c.Println(a...)
+			_, _ = c.Print(ProgramName() + ": <ERROR> ")
+			_, _ = c.Println(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
-			fmt.Fprintln(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": <ERROR> ")
+			_, _ = fmt.Fprintln(color.Output, a...)
 		}
 		color.Output = output
 	case "Info":
@@ -303,17 +303,17 @@ func consolePrintln(tag string, c *color.Color, a ...interface{}) {
 			return
 		}
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Print(ProgramName() + ": ")
-			c.Println(a...)
+			_, _ = c.Print(ProgramName() + ": ")
+			_, _ = c.Println(a...)
 		} else {
-			fmt.Fprint(color.Output, ProgramName()+": ")
-			fmt.Fprintln(color.Output, a...)
+			_, _ = fmt.Fprint(color.Output, ProgramName()+": ")
+			_, _ = fmt.Fprintln(color.Output, a...)
 		}
 	default:
 		if term.IsTerminal(int(os.Stdout.Fd())) {
-			c.Println(a...)
+			_, _ = c.Println(a...)
 		} else {
-			fmt.Fprintln(color.Output, a...)
+			_, _ = fmt.Fprintln(color.Output, a...)
 		}
 	}
 }
@@ -411,7 +411,7 @@ func (t *Table) DisplayTable(rows [][]string) error {
 		}
 		fmt.Print(indentText + "│ ")
 		for c, text := range row {
-			t.RowColors[r].Print(text)
+			_, _ = t.RowColors[r].Print(text)
 			if c != numCols-1 {
 				fmt.Print(" │ ")
 			}

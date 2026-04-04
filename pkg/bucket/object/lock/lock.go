@@ -133,9 +133,9 @@ func ntpTime(server string) (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
-	conn.SetDeadline(time.Now().Add(5 * time.Second))
+	_ = conn.SetDeadline(time.Now().Add(5 * time.Second))
 
 	// NTP request packet: 48 bytes, first byte = 0x1B (LI=0, VN=3, Mode=3 client)
 	req := make([]byte, 48)

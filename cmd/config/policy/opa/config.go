@@ -216,7 +216,7 @@ func (o *Opa) IsAllowed(args iampolicy.Args) (bool, error) {
 
 	var result opaResult
 	if err = json.NewDecoder(respBody).Decode(&result); err != nil {
-		respBody.Seek(0, 0)
+		_, _ = respBody.Seek(0, 0)
 		var resultAllow opaResultAllow
 		if err = json.NewDecoder(respBody).Decode(&resultAllow); err != nil {
 			return false, err

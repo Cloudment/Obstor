@@ -30,7 +30,7 @@ import (
 
 const (
 	dataUsageRoot   = SlashSeparator
-	dataUsageBucket = minioMetaBucket + SlashSeparator + bucketMetaPrefix
+	dataUsageBucket = obstorMetaBucket + SlashSeparator + bucketMetaPrefix
 
 	dataUsageObjName   = ".usage.json"
 	dataUsageCacheName = ".usage-cache.bin"
@@ -66,7 +66,7 @@ func loadDataUsageFromBackend(ctx context.Context, objAPI ObjectLayer) (madmin.D
 		}
 		return madmin.DataUsageInfo{}, toObjectErr(err, dataUsageBucket, dataUsageObjName)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	var dataUsageInfo madmin.DataUsageInfo
 

@@ -59,7 +59,7 @@ func prepareAdminErasureTestBed(ctx context.Context) (*adminErasureTestBed, erro
 	}
 
 	// Initialize obstor server config.
-	if err := newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err := newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		return nil, err
 	}
 
@@ -70,7 +70,7 @@ func prepareAdminErasureTestBed(ctx context.Context) (*adminErasureTestBed, erro
 
 	newAllSubsystems()
 
-	initAllSubsystems(ctx, objLayer)
+	_ = initAllSubsystems(ctx, objLayer)
 
 	// Setup admin mgmt REST API handlers.
 	adminRouter := mux.NewRouter()
@@ -186,7 +186,7 @@ func testServicesCmdHandler(cmd cmdType, t *testing.T) {
 	// Initialize admin peers to make admin RPC calls. Note: In a
 	// single node setup, this degenerates to a simple function
 	// call under the hood.
-	globalMinioAddr = "127.0.0.1:9000"
+	globalObstorAddr = "127.0.0.1:9000"
 
 	var wg sync.WaitGroup
 
@@ -256,7 +256,7 @@ func TestAdminServerInfo(t *testing.T) {
 	defer adminTestBed.TearDown()
 
 	// Initialize admin peers to make admin RPC calls.
-	globalMinioAddr = "127.0.0.1:9000"
+	globalObstorAddr = "127.0.0.1:9000"
 
 	// Prepare query params for set-config mgmt REST API.
 	queryVal := url.Values{}
@@ -279,8 +279,8 @@ func TestAdminServerInfo(t *testing.T) {
 		t.Fatalf("Failed to decode set config result json %v", err)
 	}
 
-	if results.Region != globalMinioDefaultRegion {
-		t.Errorf("Expected %s, got %s", globalMinioDefaultRegion, results.Region)
+	if results.Region != globalObstorDefaultRegion {
+		t.Errorf("Expected %s, got %s", globalObstorDefaultRegion, results.Region)
 	}
 }
 

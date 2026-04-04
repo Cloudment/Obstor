@@ -92,7 +92,7 @@ func (endpoint Endpoint) HTTPS() bool {
 // UpdateIsLocal - resolves the host and updates if it is local or not.
 func (endpoint *Endpoint) UpdateIsLocal() (err error) {
 	if !endpoint.IsLocal {
-		endpoint.IsLocal, err = isLocalHost(endpoint.Hostname(), endpoint.Port(), globalMinioPort)
+		endpoint.IsLocal, err = isLocalHost(endpoint.Hostname(), endpoint.Port(), globalObstorPort)
 		if err != nil {
 			return err
 		}
@@ -323,7 +323,7 @@ func (l EndpointServerPools) peers() (peers []string, local string) {
 
 			peer := endpoint.Host
 			if endpoint.IsLocal {
-				if _, port := mustSplitHostPort(peer); port == globalMinioPort {
+				if _, port := mustSplitHostPort(peer); port == globalObstorPort {
 					local = peer
 				}
 			}
@@ -445,7 +445,7 @@ func (endpoints Endpoints) UpdateIsLocal(foundPrevLocal bool) error {
 				// We use IsKubernetes() to check for Kubernetes environment
 				isLocal, err := isLocalHost(endpoints[i].Hostname(),
 					endpoints[i].Port(),
-					globalMinioPort,
+					globalObstorPort,
 				)
 				if err != nil && !orchestrated {
 					return err
@@ -753,7 +753,7 @@ func CreateEndpoints(serverAddr string, foundLocal bool, args ...[]string) (Endp
 	return endpoints, setupType, nil
 }
 
-// GetLocalPeer - returns local peer value, returns globalMinioAddr
+// GetLocalPeer - returns local peer value, returns globalObstorAddr
 // for FS and Erasure mode. In case of distributed server return
 // the first element from the set of peers which indicate that
 // they are local. There is always one entry that is local
@@ -772,7 +772,7 @@ func GetLocalPeer(endpointServerPools EndpointServerPools, host, port string) (l
 	}
 	if peerSet.IsEmpty() {
 		// Local peer can be empty in FS or Erasure coded mode.
-		// If so, return globalMinioHost + globalMinioPort value.
+		// If so, return globalObstorHost + globalObstorPort value.
 		if host != "" {
 			return net.JoinHostPort(host, port)
 		}
@@ -892,7 +892,7 @@ func updateDomainIPs(endPoints set.StringSet) {
 		if err != nil {
 			if strings.Contains(err.Error(), "missing port in address") {
 				host = e
-				port = globalMinioPort
+				port = globalObstorPort
 			} else {
 				continue
 			}

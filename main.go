@@ -28,8 +28,12 @@ import (
 
 	obstor "github.com/cloudment/obstor/cmd"
 
-	// Import gateway
-	_ "github.com/cloudment/obstor/cmd/gateway"
+	// Import backends
+	_ "github.com/cloudment/obstor/cmd/backend"
+
+	// Import protocols
+	_ "github.com/cloudment/obstor/cmd/protocols/s3"
+	_ "github.com/cloudment/obstor/cmd/protocols/sftp"
 )
 
 func main() {

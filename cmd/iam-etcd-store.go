@@ -96,7 +96,7 @@ func (ies *IAMEtcdStore) saveIAMConfig(ctx context.Context, item interface{}, it
 	}
 	if GlobalKMS != nil {
 		data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, itemPath),
+			obstorMetaBucket: path.Join(obstorMetaBucket, itemPath),
 		})
 		if err != nil {
 			return err
@@ -110,7 +110,7 @@ func getIAMConfig(item interface{}, data []byte, itemPath string) error {
 	if !utf8.Valid(data) {
 		if GlobalKMS != nil {
 			data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: path.Join(minioMetaBucket, itemPath),
+				obstorMetaBucket: path.Join(obstorMetaBucket, itemPath),
 			})
 			if err != nil {
 				data, err = madmin.DecryptData(globalActiveCred.String(), bytes.NewReader(data))
@@ -608,41 +608,41 @@ func (ies *IAMEtcdStore) reloadFromEvent(sys *IAMSys, event *etcd.Event) {
 		case usersPrefix:
 			accessKey := path.Dir(strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigUsersPrefix))
-			ies.loadUser(ctx, accessKey, regularUser, sys.iamUsersMap)
+			_ = ies.loadUser(ctx, accessKey, regularUser, sys.iamUsersMap)
 		case stsPrefix:
 			accessKey := path.Dir(strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigSTSPrefix))
-			ies.loadUser(ctx, accessKey, stsUser, sys.iamUsersMap)
+			_ = ies.loadUser(ctx, accessKey, stsUser, sys.iamUsersMap)
 		case svcPrefix:
 			accessKey := path.Dir(strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigServiceAccountsPrefix))
-			ies.loadUser(ctx, accessKey, srvAccUser, sys.iamUsersMap)
+			_ = ies.loadUser(ctx, accessKey, srvAccUser, sys.iamUsersMap)
 		case groupsPrefix:
 			group := path.Dir(strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigGroupsPrefix))
-			ies.loadGroup(ctx, group, sys.iamGroupsMap)
+			_ = ies.loadGroup(ctx, group, sys.iamGroupsMap)
 			gi := sys.iamGroupsMap[group]
 			sys.removeGroupFromMembershipsMap(group)
 			sys.updateGroupMembershipsMap(group, &gi)
 		case policyPrefix:
 			policyName := path.Dir(strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigPoliciesPrefix))
-			ies.loadPolicyDoc(ctx, policyName, sys.iamPolicyDocsMap)
+			_ = ies.loadPolicyDoc(ctx, policyName, sys.iamPolicyDocsMap)
 		case policyDBUsersPrefix:
 			policyMapFile := strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigPolicyDBUsersPrefix)
 			user := strings.TrimSuffix(policyMapFile, ".json")
-			ies.loadMappedPolicy(ctx, user, regularUser, false, sys.iamUserPolicyMap)
+			_ = ies.loadMappedPolicy(ctx, user, regularUser, false, sys.iamUserPolicyMap)
 		case policyDBSTSUsersPrefix:
 			policyMapFile := strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigPolicyDBSTSUsersPrefix)
 			user := strings.TrimSuffix(policyMapFile, ".json")
-			ies.loadMappedPolicy(ctx, user, stsUser, false, sys.iamUserPolicyMap)
+			_ = ies.loadMappedPolicy(ctx, user, stsUser, false, sys.iamUserPolicyMap)
 		case policyDBGroupsPrefix:
 			policyMapFile := strings.TrimPrefix(string(event.Kv.Key),
 				iamConfigPolicyDBGroupsPrefix)
 			user := strings.TrimSuffix(policyMapFile, ".json")
-			ies.loadMappedPolicy(ctx, user, regularUser, true, sys.iamGroupPolicyMap)
+			_ = ies.loadMappedPolicy(ctx, user, regularUser, true, sys.iamGroupPolicyMap)
 		}
 	case eventDelete:
 		switch {

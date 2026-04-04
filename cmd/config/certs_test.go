@@ -48,7 +48,7 @@ func TestParsePublicCertFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create temporary file. %v", err)
 	}
-	defer os.Remove(tempFile1)
+	defer func() { _ = os.Remove(tempFile1) }()
 
 	tempFile2, err := createTempFile("public-cert-file",
 		`-----BEGIN CERTIFICATE-----
@@ -70,7 +70,7 @@ M9ofSEt/bdRD
 	if err != nil {
 		t.Fatalf("Unable to create temporary file. %v", err)
 	}
-	defer os.Remove(tempFile2)
+	defer func() { _ = os.Remove(tempFile2) }()
 
 	tempFile3, err := createTempFile("public-cert-file",
 		`-----BEGIN CERTIFICATE-----
@@ -92,7 +92,7 @@ M9ofSEt/bdRD
 	if err != nil {
 		t.Fatalf("Unable to create temporary file. %v", err)
 	}
-	defer os.Remove(tempFile3)
+	defer func() { _ = os.Remove(tempFile3) }()
 
 	tempFile4, err := createTempFile("public-cert-file",
 		`-----BEGIN CERTIFICATE-----
@@ -114,7 +114,7 @@ M9ofSEt/bdRD
 	if err != nil {
 		t.Fatalf("Unable to create temporary file. %v", err)
 	}
-	defer os.Remove(tempFile4)
+	defer func() { _ = os.Remove(tempFile4) }()
 
 	tempFile5, err := createTempFile("public-cert-file",
 		`-----BEGIN CERTIFICATE-----
@@ -169,7 +169,7 @@ M9ofSEt/bdRD
 		{"nonexistent-file", 0, nonexistentErr},
 		{tempFile1, 0, fmt.Errorf("empty public certificate file %s", tempFile1)},
 		{tempFile2, 0, fmt.Errorf("could not read PEM block from file %s", tempFile2)},
-		{tempFile3, 0, fmt.Errorf("asn1: structure error: sequence tag mismatch")},
+		{tempFile3, 0, fmt.Errorf("x509: invalid RDNSequence: invalid attribute value")},
 		{tempFile4, 1, nil},
 		{tempFile5, 2, nil},
 	}
@@ -205,9 +205,9 @@ func TestLoadX509KeyPair(t *testing.T) {
 			t.Fatalf("Test %d: failed to create tmp certificate file: %v", i, err)
 		}
 
-		os.Unsetenv(EnvCertPassword)
+		_ = os.Unsetenv(EnvCertPassword)
 		if testCase.password != "" {
-			os.Setenv(EnvCertPassword, testCase.password)
+			_ = os.Setenv(EnvCertPassword, testCase.password)
 		}
 		_, err = LoadX509KeyPair(certificate, privateKey)
 		if err != nil && !testCase.shouldFail {

@@ -42,13 +42,13 @@ function start_minio_3_node() {
         args="$args http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/1/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/2/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/3/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/4/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/5/ http://127.0.0.1:$[$start_port+$i]${WORK_DIR}/$i/6/"
     done
 
-    "${OBSTOR[@]}" --address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-obstor-server1.log" 2>&1 &
+    "${OBSTOR[@]}" --web-address ":$[$start_port+1]" $args > "${WORK_DIR}/dist-obstor-server1.log" 2>&1 &
     disown $!
 
-    "${OBSTOR[@]}" --address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-obstor-server2.log" 2>&1 &
+    "${OBSTOR[@]}" --web-address ":$[$start_port+2]" $args > "${WORK_DIR}/dist-obstor-server2.log" 2>&1 &
     disown $!
 
-    "${OBSTOR[@]}" --address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-obstor-server3.log" 2>&1 &
+    "${OBSTOR[@]}" --web-address ":$[$start_port+3]" $args > "${WORK_DIR}/dist-obstor-server3.log" 2>&1 &
     disown $!
 
     sleep "$1"

@@ -121,7 +121,7 @@ func (iamOS *IAMObjectStore) migrateUsersConfigToV1(ctx context.Context, isSTS b
 
 			// 3. delete policy file from old
 			// location. Ignore error.
-			iamOS.deleteIAMConfig(ctx, oldPolicyPath)
+			_ = iamOS.deleteIAMConfig(ctx, oldPolicyPath)
 		}
 	next:
 		// 4. check if user identity has old format.
@@ -212,7 +212,7 @@ func (iamOS *IAMObjectStore) saveIAMConfig(ctx context.Context, item interface{}
 	}
 	if GlobalKMS != nil {
 		data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, objPath),
+			obstorMetaBucket: path.Join(obstorMetaBucket, objPath),
 		})
 		if err != nil {
 			return err
@@ -229,7 +229,7 @@ func (iamOS *IAMObjectStore) loadIAMConfig(ctx context.Context, item interface{}
 	if !utf8.Valid(data) {
 		if GlobalKMS != nil {
 			data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: path.Join(minioMetaBucket, objPath),
+				obstorMetaBucket: path.Join(obstorMetaBucket, objPath),
 			})
 			if err != nil {
 				data, err = madmin.DecryptData(globalActiveCred.String(), bytes.NewReader(data))
@@ -290,8 +290,8 @@ func (iamOS *IAMObjectStore) loadUser(ctx context.Context, user string, userType
 
 	if u.Credentials.IsExpired() {
 		// Delete expired identity - ignoring errors here.
-		iamOS.deleteIAMConfig(ctx, getUserIdentityPath(user, userType))
-		iamOS.deleteIAMConfig(ctx, getMappedPolicyPath(user, userType, false))
+		_ = iamOS.deleteIAMConfig(ctx, getUserIdentityPath(user, userType))
+		_ = iamOS.deleteIAMConfig(ctx, getMappedPolicyPath(user, userType, false))
 		return nil
 	}
 
@@ -456,7 +456,7 @@ type itemOrErr struct {
 	Err  error
 }
 
-// Lists files or dirs in the minioMetaBucket at the given path
+// Lists files or dirs in the obstorMetaBucket at the given path
 // prefix. If dirs is true, only directories are listed, otherwise
 // only objects are listed. All returned items have the pathPrefix
 // removed from their names.
@@ -469,7 +469,7 @@ func listIAMConfigItems(ctx context.Context, objAPI ObjectLayer, pathPrefix stri
 		// Allocate new results channel to receive ObjectInfo.
 		objInfoCh := make(chan ObjectInfo)
 
-		if err := objAPI.Walk(ctx, minioMetaBucket, pathPrefix, objInfoCh, ObjectOptions{}); err != nil {
+		if err := objAPI.Walk(ctx, obstorMetaBucket, pathPrefix, objInfoCh, ObjectOptions{}); err != nil {
 			select {
 			case ch <- itemOrErr{Err: err}:
 			case <-ctx.Done():

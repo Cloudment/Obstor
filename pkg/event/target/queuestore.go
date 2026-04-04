@@ -128,7 +128,7 @@ func (store *QueueStore) Get(key string) (event event.Event, err error) {
 		store.RUnlock()
 		if err != nil {
 			// Upon error we remove the entry.
-			store.Del(key)
+			_ = store.Del(key)
 		}
 	}(store)
 

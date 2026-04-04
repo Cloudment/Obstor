@@ -58,6 +58,14 @@ type NotificationSys struct {
 	allPeerClients             []*peerRESTClient // Includes nil client for self
 }
 
+// TargetList returns the notification target list.
+func (sys *NotificationSys) TargetList() *event.TargetList {
+	if sys == nil {
+		return nil
+	}
+	return sys.targetList
+}
+
 // GetARNList - returns available ARNs.
 func (sys *NotificationSys) GetARNList(onlyActive bool) []string {
 	arns := []string{}
@@ -306,7 +314,7 @@ func (sys *NotificationSys) DownloadProfilingData(ctx context.Context, writer io
 	// Initialize a zip writer which will provide a zipped content
 	// of profiling data of all nodes
 	zipWriter := zip.NewWriter(writer)
-	defer zipWriter.Close()
+	defer func() { _ = zipWriter.Close() }()
 
 	for _, client := range sys.peerClients {
 		if client == nil {
@@ -687,8 +695,8 @@ func (sys *NotificationSys) Init(ctx context.Context, buckets []BucketInfo, objA
 		return errServerNotInitialized
 	}
 
-	// In gateway mode, notifications are not supported - except NAS gateway.
-	if globalIsGateway && !objAPI.IsNotificationSupported() {
+	// In backend mode, notifications are not supported - except NAS backend.
+	if globalIsBackend && !objAPI.IsNotificationSupported() {
 		return nil
 	}
 
@@ -1316,7 +1324,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 
 	respElements := map[string]string{
 		"x-amz-request-id":         args.RespElements["requestId"],
-		"x-obstor-origin-endpoint": globalMinioEndpoint, // Obstor specific custom elements.
+		"x-obstor-origin-endpoint": globalObstorEndpoint, // Obstor specific custom elements.
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
@@ -1379,7 +1387,7 @@ func sendEvent(args eventArgs) {
 	crypto.RemoveSensitiveEntries(args.Object.UserDefined)
 	crypto.RemoveInternalEntries(args.Object.UserDefined)
 
-	// globalNotificationSys is not initialized in gateway mode.
+	// GlobalNotificationSys is not initialized in backend mode.
 	if globalNotificationSys == nil {
 		return
 	}

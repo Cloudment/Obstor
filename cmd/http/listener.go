@@ -74,7 +74,7 @@ func (listener *httpListener) start() {
 		case <-doneCh:
 			// As stop signal is received, close accepted connection.
 			if result.conn != nil {
-				result.conn.Close()
+				_ = result.conn.Close()
 			}
 			return false
 		}
@@ -82,7 +82,7 @@ func (listener *httpListener) start() {
 
 	// Closure to handle single connection.
 	handleConn := func(tcpConn *net.TCPConn, doneCh <-chan struct{}) {
-		tcpConn.SetKeepAlive(true)
+		_ = tcpConn.SetKeepAlive(true)
 		send(acceptResult{tcpConn, nil}, doneCh)
 	}
 
@@ -126,7 +126,7 @@ func (listener *httpListener) Close() (err error) {
 	}
 
 	for i := range listener.tcpListeners {
-		listener.tcpListeners[i].Close()
+		_ = listener.tcpListeners[i].Close()
 	}
 	close(listener.doneCh)
 
@@ -175,7 +175,7 @@ func newHTTPListener(serverAddrs []string) (listener *httpListener, err error) {
 
 		for _, tcpListener := range tcpListeners {
 			// Ignore error on close.
-			tcpListener.Close()
+			_ = tcpListener.Close()
 		}
 	}()
 

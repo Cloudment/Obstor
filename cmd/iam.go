@@ -53,7 +53,7 @@ const (
 
 const (
 	// IAM configuration directory.
-	iamConfigPrefix = minioConfigPrefix + "/iam"
+	iamConfigPrefix = obstorConfigPrefix + "/iam"
 
 	// IAM users directory.
 	iamConfigUsersPrefix = iamConfigPrefix + "/users/"
@@ -597,7 +597,7 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer) {
 	defer cancel()
 
 	// Hold the lock for migration only.
-	txnLk := objAPI.NewNSLock(minioMetaBucket, minioConfigPrefix+"/iam.lock")
+	txnLk := objAPI.NewNSLock(obstorMetaBucket, obstorConfigPrefix+"/iam.lock")
 
 	// Allocate dynamic timeout once before the loop
 	iamLockTimeout := newDynamicTimeout(5*time.Second, 3*time.Second)
@@ -703,9 +703,9 @@ func (sys *IAMSys) DeletePolicy(policyName string) error {
 			pset.Remove(policyName)
 			// User is from STS if the cred are temporary
 			if cr.IsTemp() {
-				sys.policyDBSet(u, strings.Join(pset.ToSlice(), ","), stsUser, false)
+				_ = sys.policyDBSet(u, strings.Join(pset.ToSlice(), ","), stsUser, false)
 			} else {
-				sys.policyDBSet(u, strings.Join(pset.ToSlice(), ","), regularUser, false)
+				_ = sys.policyDBSet(u, strings.Join(pset.ToSlice(), ","), regularUser, false)
 			}
 		}
 	}
@@ -715,7 +715,7 @@ func (sys *IAMSys) DeletePolicy(policyName string) error {
 		pset := mp.policySet()
 		if pset.Contains(policyName) {
 			pset.Remove(policyName)
-			sys.policyDBSet(g, strings.Join(pset.ToSlice(), ","), regularUser, true)
+			_ = sys.policyDBSet(g, strings.Join(pset.ToSlice(), ","), regularUser, true)
 		}
 	}
 
@@ -824,7 +824,7 @@ func (sys *IAMSys) DeleteUser(accessKey string) error {
 	}
 
 	// It is ok to ignore deletion error on the mapped policy
-	sys.store.deleteMappedPolicy(context.Background(), accessKey, regularUser, false)
+	_ = sys.store.deleteMappedPolicy(context.Background(), accessKey, regularUser, false)
 	err := sys.store.deleteUserIdentity(context.Background(), accessKey, regularUser)
 	if err == errNoSuchUser {
 		// Ignore if user is already deleted.
@@ -1409,24 +1409,24 @@ func (sys *IAMSys) loadUserFromStore(accessKey string) {
 	sys.store.lock()
 	// If user is already found proceed.
 	if _, found := sys.iamUsersMap[accessKey]; !found {
-		sys.store.loadUser(context.Background(), accessKey, regularUser, sys.iamUsersMap)
+		_ = sys.store.loadUser(context.Background(), accessKey, regularUser, sys.iamUsersMap)
 		if _, found = sys.iamUsersMap[accessKey]; found {
 			// Found user, load its mapped policies
-			sys.store.loadMappedPolicy(context.Background(), accessKey, regularUser, false, sys.iamUserPolicyMap)
+			_ = sys.store.loadMappedPolicy(context.Background(), accessKey, regularUser, false, sys.iamUserPolicyMap)
 		} else {
-			sys.store.loadUser(context.Background(), accessKey, srvAccUser, sys.iamUsersMap)
+			_ = sys.store.loadUser(context.Background(), accessKey, srvAccUser, sys.iamUsersMap)
 			if svc, found := sys.iamUsersMap[accessKey]; found {
 				// Found service account, load its parent user and its mapped policies.
 				if sys.usersSysType == ObstorUsersSysType {
-					sys.store.loadUser(context.Background(), svc.ParentUser, regularUser, sys.iamUsersMap)
+					_ = sys.store.loadUser(context.Background(), svc.ParentUser, regularUser, sys.iamUsersMap)
 				}
-				sys.store.loadMappedPolicy(context.Background(), svc.ParentUser, regularUser, false, sys.iamUserPolicyMap)
+				_ = sys.store.loadMappedPolicy(context.Background(), svc.ParentUser, regularUser, false, sys.iamUserPolicyMap)
 			} else {
 				// None found fall back to STS users.
-				sys.store.loadUser(context.Background(), accessKey, stsUser, sys.iamUsersMap)
+				_ = sys.store.loadUser(context.Background(), accessKey, stsUser, sys.iamUsersMap)
 				if _, found = sys.iamUsersMap[accessKey]; found {
 					// STS user found, load its mapped policy.
-					sys.store.loadMappedPolicy(context.Background(), accessKey, stsUser, false, sys.iamUserPolicyMap)
+					_ = sys.store.loadMappedPolicy(context.Background(), accessKey, stsUser, false, sys.iamUserPolicyMap)
 				}
 			}
 		}
@@ -1435,7 +1435,7 @@ func (sys *IAMSys) loadUserFromStore(accessKey string) {
 	// Load associated policies if any.
 	for _, policy := range sys.iamUserPolicyMap[accessKey].toSlice() {
 		if _, found := sys.iamPolicyDocsMap[policy]; !found {
-			sys.store.loadPolicyDoc(context.Background(), policy, sys.iamPolicyDocsMap)
+			_ = sys.store.loadPolicyDoc(context.Background(), policy, sys.iamPolicyDocsMap)
 		}
 	}
 
@@ -1764,7 +1764,7 @@ func (sys *IAMSys) policyDBSet(name, policyName string, userType IAMUserType, is
 			// Add a fallback removal towards previous content that may come back
 			// as a ghost user due to lack of delete, this change occurred
 			// introduced in PR #11840
-			sys.store.deleteMappedPolicy(context.Background(), name, regularUser, false)
+			_ = sys.store.deleteMappedPolicy(context.Background(), name, regularUser, false)
 		}
 		err := sys.store.deleteMappedPolicy(context.Background(), name, userType, isGroup)
 		if err != nil && err != errNoSuchPolicy {

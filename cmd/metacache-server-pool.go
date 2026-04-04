@@ -34,13 +34,13 @@ import (
 func renameAllBucketMetacache(epPath string) error {
 	// Rename all previous `.obstor.sys/buckets/<bucketname>/.metacache` to
 	// to `.obstor.sys/tmp/` for deletion.
-	return readDirFn(pathJoin(epPath, minioMetaBucket, bucketMetaPrefix), func(name string, typ os.FileMode) error {
+	return readDirFn(pathJoin(epPath, obstorMetaBucket, bucketMetaPrefix), func(name string, typ os.FileMode) error {
 		if typ == os.ModeDir {
-			tmpMetacacheOld := path.Join(epPath, minioMetaTmpDeletedBucket, mustGetUUID())
-			if err := renameAll(pathJoin(epPath, minioMetaBucket, metacachePrefixForID(name, slashSeparator)),
+			tmpMetacacheOld := path.Join(epPath, obstorMetaTmpDeletedBucket, mustGetUUID())
+			if err := renameAll(pathJoin(epPath, obstorMetaBucket, metacachePrefixForID(name, slashSeparator)),
 				tmpMetacacheOld); err != nil && err != errFileNotFound {
 				return fmt.Errorf("unable to rename (%s -> %s) %w",
-					pathJoin(epPath, minioMetaBucket+metacachePrefixForID(minioMetaBucket, slashSeparator)),
+					pathJoin(epPath, obstorMetaBucket+metacachePrefixForID(obstorMetaBucket, slashSeparator)),
 					tmpMetacacheOld,
 					osErrToFileErr(err))
 			}
@@ -211,7 +211,7 @@ func (z *erasureServerPools) listPath(ctx context.Context, o listPathOptions) (e
 			// Update master cache with that information.
 			cache.status = scanStateSuccess
 			cache.fileNotFound = true
-			o.updateMetacacheListing(cache, globalNotificationSys.restClientFromHash(o.Bucket))
+			_, _ = o.updateMetacacheListing(cache, globalNotificationSys.restClientFromHash(o.Bucket))
 		}()
 		// Cache returned not found, entries truncated.
 		return entries, io.EOF

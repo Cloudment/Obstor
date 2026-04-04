@@ -55,15 +55,15 @@ import (
 
 const (
 	// Obstor meta bucket.
-	minioMetaBucket = ".obstor.sys"
+	obstorMetaBucket = ".obstor.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
 	// Obstor Multipart meta prefix.
-	minioMetaMultipartBucket = minioMetaBucket + SlashSeparator + mpartMetaPrefix
+	obstorMetaMultipartBucket = obstorMetaBucket + SlashSeparator + mpartMetaPrefix
 	// Obstor tmp meta prefix.
-	minioMetaTmpBucket = minioMetaBucket + "/tmp"
+	obstorMetaTmpBucket = obstorMetaBucket + "/tmp"
 	// Obstor tmp meta prefix for deleted objects.
-	minioMetaTmpDeletedBucket = minioMetaTmpBucket + "/.trash"
+	obstorMetaTmpDeletedBucket = obstorMetaTmpBucket + "/.trash"
 
 	// DNS separator (period), used for bucket name validation.
 	dnsDelimiter = "."
@@ -75,12 +75,12 @@ const (
 	compReadAheadBufSize = 1 << 20
 )
 
-// isMinioBucket returns true if given bucket is a Obstor internal
+// isObstorBucket returns true if given bucket is a Obstor internal
 // bucket and false otherwise.
-func isMinioMetaBucketName(bucket string) bool {
-	return bucket == minioMetaBucket ||
-		bucket == minioMetaMultipartBucket ||
-		bucket == minioMetaTmpBucket ||
+func isObstorMetaBucketName(bucket string) bool {
+	return bucket == obstorMetaBucket ||
+		bucket == obstorMetaMultipartBucket ||
+		bucket == obstorMetaTmpBucket ||
 		bucket == dataUsageBucket
 }
 
@@ -93,7 +93,7 @@ func isMinioMetaBucketName(bucket string) bool {
 // http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
 func IsValidBucketName(bucket string) bool {
 	// Special case when bucket is equal to one of the meta buckets.
-	if isMinioMetaBucketName(bucket) {
+	if isObstorMetaBucketName(bucket) {
 		return true
 	}
 	if len(bucket) < 3 || len(bucket) > 63 {
@@ -346,17 +346,17 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 			return true
 		}
 	}
-	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
+	return isObstorMetaBucket(bucketEntry) || isObstorReservedBucket(bucketEntry)
 }
 
 // Returns true if input bucket is a reserved obstor meta bucket '.obstor.sys'.
-func isMinioMetaBucket(bucketName string) bool {
-	return bucketName == minioMetaBucket
+func isObstorMetaBucket(bucketName string) bool {
+	return bucketName == obstorMetaBucket
 }
 
 // Returns true if input bucket is a reserved obstor bucket 'obstor'.
-func isMinioReservedBucket(bucketName string) bool {
-	return bucketName == minioReservedBucket
+func isObstorReservedBucket(bucketName string) bool {
+	return bucketName == ObstorReservedBucket
 }
 
 // Returns a slice of hosts by reading a slice of DNS records
@@ -384,7 +384,7 @@ func getHostFromSrv(records []dns.SrvRecord) (host string) {
 			retry++
 			continue
 		}
-		conn.Close()
+		_ = conn.Close()
 		break
 	}
 
@@ -902,9 +902,9 @@ func sealETagFn(key crypto.ObjectKey) SealMD5CurrFn {
 	return fn
 }
 
-// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from obstor internal
-// encryption metadata that was sent by obstor gateway
-func CleanMinioInternalMetadataKeys(metadata map[string]string) map[string]string {
+// CleanObstorInternalMetadataKeys removes X-Amz-Meta- prefix from obstor internal
+// encryption metadata that was sent by obstor backend
+func CleanObstorInternalMetadataKeys(metadata map[string]string) map[string]string {
 	var newMeta = make(map[string]string, len(metadata))
 	for k, v := range metadata {
 		if strings.HasPrefix(k, "X-Amz-Meta-X-Obstor-Internal-") {
@@ -929,14 +929,14 @@ func newS2CompressReader(r io.Reader, on int64) io.ReadCloser {
 	go func() {
 		cn, err := io.Copy(comp, r)
 		if err != nil {
-			comp.Close()
+			_ = comp.Close()
 			pw.CloseWithError(err)
 			return
 		}
 		if on > 0 && on != cn {
 			// if client didn't sent all data
 			// from the client verify here.
-			comp.Close()
+			_ = comp.Close()
 			pw.CloseWithError(IncompleteBody{})
 			return
 		}
@@ -946,7 +946,7 @@ func newS2CompressReader(r io.Reader, on int64) io.ReadCloser {
 			return
 		}
 		// Everything ok, do regular close.
-		pw.Close()
+		_ = pw.Close()
 	}()
 	return pr
 }

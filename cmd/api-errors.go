@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
@@ -850,42 +849,42 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrRemoteTargetNotFoundError: {
-		Code:           "XMinioAdminRemoteTargetNotFoundError",
+		Code:           "XObstorAdminRemoteTargetNotFoundError",
 		Description:    "The remote target does not exist",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrReplicationRemoteConnectionError: {
-		Code:           "XMinioAdminReplicationRemoteConnectionError",
+		Code:           "XObstorAdminReplicationRemoteConnectionError",
 		Description:    "Remote service connection error - please check remote service credentials and target bucket",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrBucketRemoteIdenticalToSource: {
-		Code:           "XMinioAdminRemoteIdenticalToSource",
+		Code:           "XObstorAdminRemoteIdenticalToSource",
 		Description:    "The remote target cannot be identical to source",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBucketRemoteAlreadyExists: {
-		Code:           "XMinioAdminBucketRemoteAlreadyExists",
+		Code:           "XObstorAdminBucketRemoteAlreadyExists",
 		Description:    "The remote target already exists",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBucketRemoteLabelInUse: {
-		Code:           "XMinioAdminBucketRemoteLabelInUse",
+		Code:           "XObstorAdminBucketRemoteLabelInUse",
 		Description:    "The remote target with this label already exists",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBucketRemoteRemoveDisallowed: {
-		Code:           "XMinioAdminRemoteRemoveDisallowed",
+		Code:           "XObstorAdminRemoteRemoveDisallowed",
 		Description:    "This ARN is in use by an existing configuration",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBucketRemoteArnTypeInvalid: {
-		Code:           "XMinioAdminRemoteARNTypeInvalid",
+		Code:           "XObstorAdminRemoteARNTypeInvalid",
 		Description:    "The bucket remote ARN type is not valid",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBucketRemoteArnInvalid: {
-		Code:           "XMinioAdminRemoteArnInvalid",
+		Code:           "XObstorAdminRemoteArnInvalid",
 		Description:    "The bucket remote ARN does not have correct format",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
@@ -1100,133 +1099,133 @@ var errorCodes = errorCodeMap{
 
 	/// Obstor extensions.
 	ErrStorageFull: {
-		Code:           "XMinioStorageFull",
+		Code:           "XObstorStorageFull",
 		Description:    "Storage backend has reached its minimum free disk threshold. Please delete a few objects to proceed.",
 		HTTPStatusCode: http.StatusInsufficientStorage,
 	},
 	ErrParentIsObject: {
-		Code:           "XMinioParentIsObject",
+		Code:           "XObstorParentIsObject",
 		Description:    "Object-prefix is already an object, please choose a different object-prefix name.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrRequestBodyParse: {
-		Code:           "XMinioRequestBodyParse",
+		Code:           "XObstorRequestBodyParse",
 		Description:    "The request body failed to parse.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrObjectExistsAsDirectory: {
-		Code:           "XMinioObjectExistsAsDirectory",
+		Code:           "XObstorObjectExistsAsDirectory",
 		Description:    "Object name already exists as a directory.",
 		HTTPStatusCode: http.StatusConflict,
 	},
 	ErrInvalidObjectName: {
-		Code:           "XMinioInvalidObjectName",
+		Code:           "XObstorInvalidObjectName",
 		Description:    "Object name contains unsupported characters.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrInvalidObjectNamePrefixSlash: {
-		Code:           "XMinioInvalidObjectName",
+		Code:           "XObstorInvalidObjectName",
 		Description:    "Object name contains a leading slash.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrInvalidResourceName: {
-		Code:           "XMinioInvalidResourceName",
+		Code:           "XObstorInvalidResourceName",
 		Description:    "Resource name contains bad components such as \"..\" or \".\".",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrServerNotInitialized: {
-		Code:           "XMinioServerNotInitialized",
+		Code:           "XObstorServerNotInitialized",
 		Description:    "Server not initialized, please try again.",
 		HTTPStatusCode: http.StatusServiceUnavailable,
 	},
 	ErrMalformedJSON: {
-		Code:           "XMinioMalformedJSON",
+		Code:           "XObstorMalformedJSON",
 		Description:    "The JSON you provided was not well-formed or did not validate against our published format.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminNoSuchUser: {
-		Code:           "XMinioAdminNoSuchUser",
+		Code:           "XObstorAdminNoSuchUser",
 		Description:    "The specified user does not exist.",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrAdminNoSuchGroup: {
-		Code:           "XMinioAdminNoSuchGroup",
+		Code:           "XObstorAdminNoSuchGroup",
 		Description:    "The specified group does not exist.",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrAdminGroupNotEmpty: {
-		Code:           "XMinioAdminGroupNotEmpty",
+		Code:           "XObstorAdminGroupNotEmpty",
 		Description:    "The specified group is not empty - cannot remove it.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminNoSuchPolicy: {
-		Code:           "XMinioAdminNoSuchPolicy",
+		Code:           "XObstorAdminNoSuchPolicy",
 		Description:    "The canned policy does not exist.",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrAdminInvalidArgument: {
-		Code:           "XMinioAdminInvalidArgument",
+		Code:           "XObstorAdminInvalidArgument",
 		Description:    "Invalid arguments specified.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminInvalidAccessKey: {
-		Code:           "XMinioAdminInvalidAccessKey",
+		Code:           "XObstorAdminInvalidAccessKey",
 		Description:    "The access key is invalid.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminInvalidSecretKey: {
-		Code:           "XMinioAdminInvalidSecretKey",
+		Code:           "XObstorAdminInvalidSecretKey",
 		Description:    "The secret key is invalid.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminConfigNoQuorum: {
-		Code:           "XMinioAdminConfigNoQuorum",
+		Code:           "XObstorAdminConfigNoQuorum",
 		Description:    "Configuration update failed because server quorum was not met",
 		HTTPStatusCode: http.StatusServiceUnavailable,
 	},
 	ErrAdminConfigTooLarge: {
-		Code: "XMinioAdminConfigTooLarge",
+		Code: "XObstorAdminConfigTooLarge",
 		Description: fmt.Sprintf("Configuration data provided exceeds the allowed maximum of %d bytes",
 			maxEConfigJSONSize),
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminConfigBadJSON: {
-		Code:           "XMinioAdminConfigBadJSON",
+		Code:           "XObstorAdminConfigBadJSON",
 		Description:    "JSON configuration provided is of incorrect format",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminConfigDuplicateKeys: {
-		Code:           "XMinioAdminConfigDuplicateKeys",
+		Code:           "XObstorAdminConfigDuplicateKeys",
 		Description:    "JSON configuration provided has objects with duplicate keys",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminConfigNotificationTargetsFailed: {
-		Code:           "XMinioAdminNotificationTargetsTestFailed",
+		Code:           "XObstorAdminNotificationTargetsTestFailed",
 		Description:    "Configuration update failed due an unsuccessful attempt to connect to one or more notification servers",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminProfilerNotEnabled: {
-		Code:           "XMinioAdminProfilerNotEnabled",
+		Code:           "XObstorAdminProfilerNotEnabled",
 		Description:    "Unable to perform the requested operation because profiling is not enabled",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminCredentialsMismatch: {
-		Code:           "XMinioAdminCredentialsMismatch",
+		Code:           "XObstorAdminCredentialsMismatch",
 		Description:    "Credentials in config mismatch with server environment variables",
 		HTTPStatusCode: http.StatusServiceUnavailable,
 	},
 	ErrAdminBucketQuotaExceeded: {
-		Code:           "XMinioAdminBucketQuotaExceeded",
+		Code:           "XObstorAdminBucketQuotaExceeded",
 		Description:    "Bucket quota exceeded",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAdminNoSuchQuotaConfiguration: {
-		Code:           "XMinioAdminNoSuchQuotaConfiguration",
+		Code:           "XObstorAdminNoSuchQuotaConfiguration",
 		Description:    "The quota configuration does not exist",
 		HTTPStatusCode: http.StatusNotFound,
 	},
 	ErrInsecureClientRequest: {
-		Code:           "XMinioInsecureClientRequest",
+		Code:           "XObstorInsecureClientRequest",
 		Description:    "Cannot respond to plain-text request from TLS-encrypted server",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
@@ -1251,7 +1250,7 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrObjectTampered: {
-		Code:           "XMinioObjectTampered",
+		Code:           "XObstorObjectTampered",
 		Description:    errObjectTampered.Error(),
 		HTTPStatusCode: http.StatusPartialContent,
 	},
@@ -1270,37 +1269,37 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealNotImplemented: {
-		Code:           "XMinioHealNotImplemented",
+		Code:           "XObstorHealNotImplemented",
 		Description:    "This server does not implement heal functionality.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealNoSuchProcess: {
-		Code:           "XMinioHealNoSuchProcess",
+		Code:           "XObstorHealNoSuchProcess",
 		Description:    "No such heal process is running on the server",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealInvalidClientToken: {
-		Code:           "XMinioHealInvalidClientToken",
+		Code:           "XObstorHealInvalidClientToken",
 		Description:    "Client token mismatch",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealMissingBucket: {
-		Code:           "XMinioHealMissingBucket",
+		Code:           "XObstorHealMissingBucket",
 		Description:    "A heal start request with a non-empty object-prefix parameter requires a bucket to be specified.",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealAlreadyRunning: {
-		Code:           "XMinioHealAlreadyRunning",
+		Code:           "XObstorHealAlreadyRunning",
 		Description:    "",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrHealOverlappingPaths: {
-		Code:           "XMinioHealOverlappingPaths",
+		Code:           "XObstorHealOverlappingPaths",
 		Description:    "",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrBackendDown: {
-		Code:           "XMinioBackendDown",
+		Code:           "XObstorBackendDown",
 		Description:    "Object storage backend is unreachable",
 		HTTPStatusCode: http.StatusServiceUnavailable,
 	},
@@ -1731,27 +1730,27 @@ var errorCodes = errorCodeMap{
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrInvalidDecompressedSize: {
-		Code:           "XMinioInvalidDecompressedSize",
+		Code:           "XObstorInvalidDecompressedSize",
 		Description:    "The data provided is unfit for decompression",
 		HTTPStatusCode: http.StatusBadRequest,
 	},
 	ErrAddUserInvalidArgument: {
-		Code:           "XMinioInvalidIAMCredentials",
+		Code:           "XObstorInvalidIAMCredentials",
 		Description:    "User is not allowed to be same as admin access key",
 		HTTPStatusCode: http.StatusForbidden,
 	},
 	ErrAdminAccountNotEligible: {
-		Code:           "XMinioInvalidIAMCredentials",
+		Code:           "XObstorInvalidIAMCredentials",
 		Description:    "The administrator key is not eligible for this operation",
 		HTTPStatusCode: http.StatusForbidden,
 	},
 	ErrAccountNotEligible: {
-		Code:           "XMinioInvalidIAMCredentials",
+		Code:           "XObstorInvalidIAMCredentials",
 		Description:    "The account key is not eligible for this operation",
 		HTTPStatusCode: http.StatusForbidden,
 	},
 	ErrAdminServiceAccountNotFound: {
-		Code:           "XMinioInvalidIAMCredentials",
+		Code:           "XObstorInvalidIAMCredentials",
 		Description:    "The specified service account is not found",
 		HTTPStatusCode: http.StatusNotFound,
 	},
@@ -2069,7 +2068,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 		// If we see an internal error try to interpret
 		// any underlying errors if possible depending on
 		// their internal error types. This code is only
-		// useful with gateway implementations.
+		// useful with backend implementations.
 		switch e := err.(type) {
 		case InvalidArgument:
 			apiErr = APIError{
@@ -2086,7 +2085,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 			}
 		case url.EscapeError:
 			apiErr = APIError{
-				Code: "XMinioInvalidObjectName",
+				Code: "XObstorInvalidObjectName",
 				Description: fmt.Sprintf("%s (%s)", errorCodes[ErrInvalidObjectName].Description,
 					e.Error()),
 				HTTPStatusCode: http.StatusBadRequest,
@@ -2133,7 +2132,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 				Description:    e.Message,
 				HTTPStatusCode: e.StatusCode,
 			}
-			if globalIsGateway && strings.Contains(e.Message, "KMS is not configured") {
+			if globalIsBackend && strings.Contains(e.Message, "KMS is not configured") {
 				apiErr = APIError{
 					Code:           "NotImplemented",
 					Description:    e.Message,
@@ -2158,7 +2157,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 				Description:    e.Error(),
 				HTTPStatusCode: e.Response().StatusCode,
 			}
-			// Add more Gateway SDKs here if any in future.
+			// Add more Backend SDKs here if any in future.
 		default:
 			apiErr = APIError{
 				Code:           apiErr.Code,
@@ -2188,7 +2187,7 @@ func getAPIErrorResponse(ctx context.Context, err APIError, resource, requestID,
 		Message:    err.Description,
 		BucketName: reqInfo.BucketName,
 		Key:        reqInfo.ObjectName,
-		Resource:   path.Clean(resource),
+		Resource:   resource,
 		Region:     globalServerRegion,
 		RequestID:  requestID,
 		HostID:     hostID,

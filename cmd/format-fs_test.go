@@ -30,7 +30,7 @@ func TestFSFormatFS(t *testing.T) {
 	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
-	fsFormatPath := pathJoin(disk, minioMetaBucket, formatConfigFile)
+	fsFormatPath := pathJoin(disk, obstorMetaBucket, formatConfigFile)
 
 	// Assign a new UUID.
 	uuid := mustGetUUID()

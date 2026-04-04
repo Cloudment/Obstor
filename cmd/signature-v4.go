@@ -55,6 +55,7 @@ type serviceType string
 const (
 	serviceS3  serviceType = "s3"
 	serviceSTS serviceType = "sts"
+	ServiceS3              = serviceS3
 )
 
 // getCanonicalHeaders generate a list of request headers with their values

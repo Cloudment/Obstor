@@ -108,8 +108,8 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 		g.Go(func() error {
 			epPath := endpoints[index].Path
 			// Need to move temporary objects left behind from previous run of obstor
-			// server to a unique directory under `minioMetaTmpBucket-old` to clean
-			// up `minioMetaTmpBucket` for the current run.
+			// server to a unique directory under `obstorMetaTmpBucket-old` to clean
+			// up `obstorMetaTmpBucket` for the current run.
 			//
 			// /disk1/.obstor.sys/tmp-old/
 			//  |__ 33a58b40-aecc-4c9f-a22f-ff17bfa33b62
@@ -117,11 +117,11 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 			//
 			// In this example, `33a58b40-aecc-4c9f-a22f-ff17bfa33b62` directory contains
 			// temporary objects from one of the previous runs of obstor server.
-			tmpOld := pathJoin(epPath, minioMetaTmpBucket+"-old", mustGetUUID())
-			if err := renameAll(pathJoin(epPath, minioMetaTmpBucket),
+			tmpOld := pathJoin(epPath, obstorMetaTmpBucket+"-old", mustGetUUID())
+			if err := renameAll(pathJoin(epPath, obstorMetaTmpBucket),
 				tmpOld); err != nil && err != errFileNotFound {
 				return fmt.Errorf("unable to rename (%s -> %s) %w",
-					pathJoin(epPath, minioMetaTmpBucket),
+					pathJoin(epPath, obstorMetaTmpBucket),
 					tmpOld,
 					osErrToFileErr(err))
 			}
@@ -130,11 +130,11 @@ func formatErasureCleanupTmpLocalEndpoints(endpoints Endpoints) error {
 			renameAllBucketMetacache(epPath)
 
 			// Removal of tmp-old folder is backgrounded completely.
-			go removeAll(pathJoin(epPath, minioMetaTmpBucket+"-old"))
+			go removeAll(pathJoin(epPath, obstorMetaTmpBucket+"-old"))
 
-			if err := mkdirAll(pathJoin(epPath, minioMetaTmpBucket), 0777); err != nil {
+			if err := mkdirAll(pathJoin(epPath, obstorMetaTmpBucket), 0700); err != nil {
 				return fmt.Errorf("unable to create (%s) %w",
-					pathJoin(epPath, minioMetaTmpBucket),
+					pathJoin(epPath, obstorMetaTmpBucket),
 					err)
 			}
 			return nil

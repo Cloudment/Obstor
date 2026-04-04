@@ -41,16 +41,16 @@ func genMessage(header, payload []byte) []byte {
 	totalLength := totalByteLength(headerLength, payloadLength)
 
 	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.BigEndian, uint32(totalLength))
-	binary.Write(buf, binary.BigEndian, uint32(headerLength))
+	_ = binary.Write(buf, binary.BigEndian, uint32(totalLength))
+	_ = binary.Write(buf, binary.BigEndian, uint32(headerLength))
 	prelude := buf.Bytes()
-	binary.Write(buf, binary.BigEndian, crc32.ChecksumIEEE(prelude))
+	_ = binary.Write(buf, binary.BigEndian, crc32.ChecksumIEEE(prelude))
 	buf.Write(header)
 	if payload != nil {
 		buf.Write(payload)
 	}
 	message := buf.Bytes()
-	binary.Write(buf, binary.BigEndian, crc32.ChecksumIEEE(message))
+	_ = binary.Write(buf, binary.BigEndian, crc32.ChecksumIEEE(message))
 
 	return buf.Bytes()
 }
@@ -228,11 +228,11 @@ func newErrorMessage(errorCode, errorMessage []byte) []byte {
 	buf.Write([]byte{13, ':', 'm', 'e', 's', 's', 'a', 'g', 'e', '-', 't', 'y', 'p', 'e', 7, 0, 5, 'e', 'r', 'r', 'o', 'r'})
 
 	buf.Write([]byte{14, ':', 'e', 'r', 'r', 'o', 'r', '-', 'm', 'e', 's', 's', 'a', 'g', 'e', 7})
-	binary.Write(buf, binary.BigEndian, uint16(len(errorMessage)))
+	_ = binary.Write(buf, binary.BigEndian, uint16(len(errorMessage)))
 	buf.Write(errorMessage)
 
 	buf.Write([]byte{11, ':', 'e', 'r', 'r', 'o', 'r', '-', 'c', 'o', 'd', 'e', 7})
-	binary.Write(buf, binary.BigEndian, uint16(len(errorCode)))
+	_ = binary.Write(buf, binary.BigEndian, uint16(len(errorCode)))
 	buf.Write(errorCode)
 
 	return genMessage(buf.Bytes(), nil)

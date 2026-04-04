@@ -39,7 +39,7 @@ func TestIsValidLocationContraint(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	if err = newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatal(err)
 	}
 
@@ -72,16 +72,16 @@ func TestIsValidLocationContraint(t *testing.T) {
 		expectedCode       APIErrorCode
 	}{
 		// Test case - 1.
-		{createExpectedRequest(&http.Request{}, "eu-central-1"), globalMinioDefaultRegion, ErrNone},
+		{createExpectedRequest(&http.Request{}, "eu-central-1"), globalObstorDefaultRegion, ErrNone},
 		// Test case - 2.
 		// In case of empty request body ErrNone is returned.
-		{createExpectedRequest(&http.Request{}, ""), globalMinioDefaultRegion, ErrNone},
+		{createExpectedRequest(&http.Request{}, ""), globalObstorDefaultRegion, ErrNone},
 		// Test case - 3
 		// In case of garbage request body ErrMalformedXML is returned.
-		{badRequest, globalMinioDefaultRegion, ErrMalformedXML},
+		{badRequest, globalObstorDefaultRegion, ErrMalformedXML},
 		// Test case - 4
 		// In case of invalid XML request body ErrMalformedXML is returned.
-		{malformedReq, globalMinioDefaultRegion, ErrMalformedXML},
+		{malformedReq, globalObstorDefaultRegion, ErrMalformedXML},
 	}
 
 	for i, testCase := range testCases {
@@ -220,9 +220,9 @@ func TestGetResource(t *testing.T) {
 		domains          []string
 		expectedResource string
 	}{
-		{"/a/b/c", "test.mydomain.com", []string{"mydomain.com"}, "/test/a/b/c"},
-		{"/a/b/c", "test.mydomain.com", []string{"notmydomain.com"}, "/a/b/c"},
-		{"/a/b/c", "test.mydomain.com", nil, "/a/b/c"},
+		{"/a/b/c", "test.example.com", []string{"example.com"}, "/test/a/b/c"},
+		{"/a/b/c", "test.example.com", []string{"not.example.com"}, "/a/b/c"},
+		{"/a/b/c", "test.example.com", nil, "/a/b/c"},
 	}
 	for i, test := range testCases {
 		gotResource, err := getResource(test.p, test.host, test.domains)

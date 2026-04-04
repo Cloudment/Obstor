@@ -184,7 +184,7 @@ func (client *storageRESTClient) Healing() *healingTracker {
 		client.diskHealCache.Update = func() (interface{}, error) {
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
-			b, err := client.ReadAll(ctx, minioMetaBucket,
+			b, err := client.ReadAll(ctx, obstorMetaBucket,
 				pathJoin(bucketMetaPrefix, healingTrackerFilename))
 			if err != nil {
 				// If error, likely not healing.
@@ -207,10 +207,10 @@ func (client *storageRESTClient) NSScanner(ctx context.Context, cache dataUsageC
 	respBody, err := client.call(ctx, storageRESTMethodNSScanner, url.Values{}, pr, -1)
 	defer xhttp.DrainBody(respBody)
 	if err != nil {
-		pr.Close()
+		_ = pr.Close()
 		return cache, err
 	}
-	pr.Close()
+	_ = pr.Close()
 
 	var newCache dataUsageCache
 	pr, pw = io.Pipe()
@@ -562,7 +562,7 @@ func (client *storageRESTClient) DeleteVersions(ctx context.Context, volume stri
 	var buffer bytes.Buffer
 	encoder := msgp.NewWriter(&buffer)
 	for _, version := range versions {
-		version.EncodeMsg(encoder)
+		_ = version.EncodeMsg(encoder)
 	}
 	logger.LogIf(ctx, encoder.Flush())
 

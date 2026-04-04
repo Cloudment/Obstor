@@ -84,7 +84,7 @@ func TestReadVersionErr(t *testing.T) {
 }
 
 func TestSaveFailOnDir(t *testing.T) {
-	defer os.RemoveAll("test-1.json")
+	defer func() { _ = os.RemoveAll("test-1.json") }()
 	err := os.MkdirAll("test-1.json", 0644)
 	if err != nil {
 		t.Fatal(err)
@@ -213,7 +213,7 @@ func TestLoadFile(t *testing.T) {
 
 func TestYAMLFormat(t *testing.T) {
 	testYAML := "test.yaml"
-	defer os.RemoveAll(testYAML)
+	defer func() { _ = os.RemoveAll(testYAML) }()
 
 	type myStruct struct {
 		Version     string
@@ -277,7 +277,7 @@ directories:
 
 func TestJSONFormat(t *testing.T) {
 	testJSON := "test.json"
-	defer os.RemoveAll(testJSON)
+	defer func() { _ = os.RemoveAll(testJSON) }()
 
 	type myStruct struct {
 		Version     string

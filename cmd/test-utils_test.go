@@ -76,8 +76,6 @@ func TestMain(m *testing.M) {
 		SecretKey: auth.DefaultSecretKey,
 	}
 
-	globalConfigEncrypted = true
-
 	// disable ENVs which interfere with tests.
 	for _, env := range []string{
 		crypto.EnvKMSAutoEncryption,
@@ -89,6 +87,12 @@ func TestMain(m *testing.M) {
 
 	// Set as non-distributed.
 	globalIsDistErasure = false
+
+	// Enable block replication mode for tests (erasure coding stubs are no longer functional).
+	globalIsReplicated = true
+	globalReplicationConfig.ReplicationFactor = 1
+	globalReplicationConfig.BlockSize = 1 << 20
+	globalReplicationConfig.Consistency = "consistent"
 
 	if !testing.Verbose() {
 		// Disable printing console messages during tests.
@@ -221,7 +225,7 @@ func initFSObjects(disk string, t *testing.T) (obj ObjectLayer) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	newTestConfig(globalMinioDefaultRegion, obj)
+	newTestConfig(globalObstorDefaultRegion, obj)
 	return obj
 }
 
@@ -314,7 +318,7 @@ func UnstartedTestServer(t TestErrHandler, instanceType string) TestServer {
 	}
 
 	// set the server configuration.
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatalf("%s", err)
 	}
 
@@ -341,9 +345,9 @@ func UnstartedTestServer(t TestErrHandler, instanceType string) TestServer {
 
 	// initialize peer rpc
 	host, port := mustSplitHostPort(testServer.Server.Listener.Addr().String())
-	globalMinioHost = host
-	globalMinioPort = port
-	globalMinioAddr = getEndpointsLocalAddr(testServer.Disks)
+	globalObstorHost = host
+	globalObstorPort = port
+	globalObstorAddr = getEndpointsLocalAddr(testServer.Disks)
 
 	newAllSubsystems()
 
@@ -467,6 +471,11 @@ func resetTestGlobals() {
 	resetGlobalHealState()
 	// Reset globalIAMSys to `nil`
 	resetGlobalIAMSys()
+	// Set block replication mode as active
+	globalIsReplicated = true
+	globalReplicationConfig.ReplicationFactor = 1
+	globalReplicationConfig.BlockSize = 1 << 20
+	globalReplicationConfig.Consistency = "consistent"
 }
 
 // Configure the server for the test run.
@@ -647,7 +656,7 @@ func signStreamingRequest(req *http.Request, accessKey, secretKey string, currTi
 	// Get scope.
 	scope := strings.Join([]string{
 		currTime.Format(yyyymmdd),
-		globalMinioDefaultRegion,
+		globalObstorDefaultRegion,
 		string(serviceS3),
 		"aws4_request",
 	}, SlashSeparator)
@@ -657,7 +666,7 @@ func signStreamingRequest(req *http.Request, accessKey, secretKey string, currTi
 	stringToSign = stringToSign + getSHA256Hash([]byte(canonicalRequest))
 
 	date := sumHMAC([]byte("AWS4"+secretKey), []byte(currTime.Format(yyyymmdd)))
-	region := sumHMAC(date, []byte(globalMinioDefaultRegion))
+	region := sumHMAC(date, []byte(globalObstorDefaultRegion))
 	service := sumHMAC(region, []byte(string(serviceS3)))
 	signingKey := sumHMAC(service, []byte("aws4_request"))
 
@@ -1566,7 +1575,7 @@ func newTestObjectLayer(ctx context.Context, endpointServerPools EndpointServerP
 
 	newAllSubsystems()
 
-	initAllSubsystems(ctx, z)
+	_ = initAllSubsystems(ctx, z)
 
 	return z, nil
 }
@@ -1835,7 +1844,7 @@ func ExecObjectLayerAPITest(t *testing.T, objAPITest objAPITestType, endpoints [
 
 	// initialize the server and obtain the credentials and root.
 	// credentials are necessary to sign the HTTP request.
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatalf("Unable to initialize server config. %s", err)
 	}
 
@@ -1903,7 +1912,7 @@ func ExecObjectLayerTest(t TestErrHandler, objTest objTestType) {
 
 	// initialize the server and obtain the credentials and root.
 	// credentials are necessary to sign the HTTP request.
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatal("Unexpected error", err)
 	}
 
@@ -1951,7 +1960,7 @@ func ExecObjectLayerTestWithDirs(t TestErrHandler, objTest objTestTypeWithDirs) 
 
 	// initialize the server and obtain the credentials and root.
 	// credentials are necessary to sign the HTTP request.
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatal("Unexpected error", err)
 	}
 
@@ -1972,7 +1981,7 @@ func ExecObjectLayerDiskAlteredTest(t *testing.T, objTest objTestDiskNotFoundTyp
 	}
 	defer objLayer.Shutdown(ctx)
 
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatal("Failed to create config directory", err)
 	}
 
@@ -1999,7 +2008,7 @@ func ExecObjectLayerStaleFilesTest(t *testing.T, objTest objTestStaleFilesType) 
 	if err != nil {
 		t.Fatalf("Initialization of object layer failed for Erasure setup: %s", err)
 	}
-	if err = newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, objLayer); err != nil {
 		t.Fatal("Failed to create config directory", err)
 	}
 
@@ -2008,119 +2017,14 @@ func ExecObjectLayerStaleFilesTest(t *testing.T, objTest objTestStaleFilesType) 
 	defer removeRoots(erasureDisks)
 }
 
-func registerBucketLevelFunc(bucket *mux.Router, api objectAPIHandlers, apiFunctions ...string) {
-	for _, apiFunction := range apiFunctions {
-		switch apiFunction {
-		case "PostPolicy":
-			// Register PostPolicy handler.
-			bucket.Methods(http.MethodPost).HeadersRegexp("Content-Type", "multipart/form-data*").HandlerFunc(api.PostPolicyBucketHandler)
-		case "HeadObject":
-			// Register HeadObject handler.
-			bucket.Methods("Head").Path("/{object:.+}").HandlerFunc(api.HeadObjectHandler)
-		case "GetObject":
-			// Register GetObject handler.
-			bucket.Methods(http.MethodGet).Path("/{object:.+}").HandlerFunc(api.GetObjectHandler)
-		case "PutObject":
-			// Register PutObject handler.
-			bucket.Methods(http.MethodPut).Path("/{object:.+}").HandlerFunc(api.PutObjectHandler)
-		case "DeleteObject":
-			// Register Delete Object handler.
-			bucket.Methods(http.MethodDelete).Path("/{object:.+}").HandlerFunc(api.DeleteObjectHandler)
-		case "CopyObject":
-			// Register Copy Object  handler.
-			bucket.Methods(http.MethodPut).Path("/{object:.+}").HeadersRegexp("X-Amz-Copy-Source", ".*?(\\/|%2F).*?").HandlerFunc(api.CopyObjectHandler)
-		case "PutBucketPolicy":
-			// Register PutBucket Policy handler.
-			bucket.Methods(http.MethodPut).HandlerFunc(api.PutBucketPolicyHandler).Queries("policy", "")
-		case "DeleteBucketPolicy":
-			// Register Delete bucket HTTP policy handler.
-			bucket.Methods(http.MethodDelete).HandlerFunc(api.DeleteBucketPolicyHandler).Queries("policy", "")
-		case "GetBucketPolicy":
-			// Register Get Bucket policy HTTP Handler.
-			bucket.Methods(http.MethodGet).HandlerFunc(api.GetBucketPolicyHandler).Queries("policy", "")
-		case "GetBucketLifecycle":
-			bucket.Methods(http.MethodGet).HandlerFunc(api.GetBucketLifecycleHandler).Queries("lifecycle", "")
-		case "PutBucketLifecycle":
-			bucket.Methods(http.MethodPut).HandlerFunc(api.PutBucketLifecycleHandler).Queries("lifecycle", "")
-		case "DeleteBucketLifecycle":
-			bucket.Methods(http.MethodDelete).HandlerFunc(api.DeleteBucketLifecycleHandler).Queries("lifecycle", "")
-		case "GetBucketLocation":
-			// Register GetBucketLocation handler.
-			bucket.Methods(http.MethodGet).HandlerFunc(api.GetBucketLocationHandler).Queries("location", "")
-		case "HeadBucket":
-			// Register HeadBucket handler.
-			bucket.Methods(http.MethodHead).HandlerFunc(api.HeadBucketHandler)
-		case "DeleteMultipleObjects":
-			// Register DeleteMultipleObjects handler.
-			bucket.Methods(http.MethodPost).HandlerFunc(api.DeleteMultipleObjectsHandler).Queries("delete", "")
-		case "NewMultipart":
-			// Register New Multipart upload handler.
-			bucket.Methods(http.MethodPost).Path("/{object:.+}").HandlerFunc(api.NewMultipartUploadHandler).Queries("uploads", "")
-		case "CopyObjectPart":
-			// Register CopyObjectPart handler.
-			bucket.Methods(http.MethodPut).Path("/{object:.+}").HeadersRegexp("X-Amz-Copy-Source", ".*?(\\/|%2F).*?").HandlerFunc(api.CopyObjectPartHandler).Queries("partNumber", "{partNumber:[0-9]+}", "uploadId", "{uploadId:.*}")
-		case "PutObjectPart":
-			// Register PutObjectPart handler.
-			bucket.Methods(http.MethodPut).Path("/{object:.+}").HandlerFunc(api.PutObjectPartHandler).Queries("partNumber", "{partNumber:[0-9]+}", "uploadId", "{uploadId:.*}")
-		case "ListObjectParts":
-			// Register ListObjectParts handler.
-			bucket.Methods(http.MethodGet).Path("/{object:.+}").HandlerFunc(api.ListObjectPartsHandler).Queries("uploadId", "{uploadId:.*}")
-		case "ListMultipartUploads":
-			// Register ListMultipartUploads handler.
-			bucket.Methods(http.MethodGet).HandlerFunc(api.ListMultipartUploadsHandler).Queries("uploads", "")
-		case "CompleteMultipart":
-			// Register Complete Multipart Upload handler.
-			bucket.Methods(http.MethodPost).Path("/{object:.+}").HandlerFunc(api.CompleteMultipartUploadHandler).Queries("uploadId", "{uploadId:.*}")
-		case "AbortMultipart":
-			// Register AbortMultipart Handler.
-			bucket.Methods(http.MethodDelete).Path("/{object:.+}").HandlerFunc(api.AbortMultipartUploadHandler).Queries("uploadId", "{uploadId:.*}")
-		case "GetBucketNotification":
-			// Register GetBucketNotification Handler.
-			bucket.Methods(http.MethodGet).HandlerFunc(api.GetBucketNotificationHandler).Queries("notification", "")
-		case "PutBucketNotification":
-			// Register PutBucketNotification Handler.
-			bucket.Methods(http.MethodPut).HandlerFunc(api.PutBucketNotificationHandler).Queries("notification", "")
-		case "ListenNotification":
-			// Register ListenNotification Handler.
-			bucket.Methods(http.MethodGet).HandlerFunc(api.ListenNotificationHandler).Queries("events", "{events:.*}")
-		}
-	}
-}
-
 // registerAPIFunctions helper function to add API functions identified by name to the routers.
 func registerAPIFunctions(muxRouter *mux.Router, objLayer ObjectLayer, apiFunctions ...string) {
-	if len(apiFunctions) == 0 {
-		// Register all api endpoints by default.
-		registerAPIRouter(muxRouter)
-		return
-	}
-	// API Router.
-	apiRouter := muxRouter.PathPrefix(SlashSeparator).Subrouter()
-	// Bucket router.
-	bucketRouter := apiRouter.PathPrefix("/{bucket}").Subrouter()
-
-	// All object storage operations are registered as HTTP handlers on `objectAPIHandlers`.
-	// When the handlers get a HTTP request they use the underlying ObjectLayer to perform operations.
 	globalObjLayerMutex.Lock()
 	globalObjectAPI = objLayer
 	globalObjLayerMutex.Unlock()
 
-	// When cache is enabled, Put and Get operations are passed
-	// to underlying cache layer to manage object layer operation and disk caching
-	// operation
-	api := objectAPIHandlers{
-		ObjectAPI: func() ObjectLayer {
-			return globalObjectAPI
-		},
-		CacheAPI: func() CacheObjectLayer {
-			return globalCacheObjectAPI
-		},
-	}
-
-	// Register ListBuckets	handler.
-	apiRouter.Methods(http.MethodGet).HandlerFunc(api.ListBucketsHandler)
-	// Register all bucket level handlers.
-	registerBucketLevelFunc(bucketRouter, api, apiFunctions...)
+	// Always register all routes, the s3 protocol package handles the full router.
+	registerAPIRouter(muxRouter)
 }
 
 // Takes in Erasure object layer, and the list of API end points to be tested/required, registers the API end points and returns the HTTP handler.
@@ -2275,7 +2179,7 @@ func getEndpointsLocalAddr(endpointServerPools EndpointServerPools) string {
 		}
 	}
 
-	return net.JoinHostPort(globalMinioHost, globalMinioPort)
+	return net.JoinHostPort(globalObstorHost, globalObstorPort)
 }
 
 // fetches a random number between range min-max.
@@ -2394,7 +2298,7 @@ func uploadTestObject(t *testing.T, apiRouter http.Handler, creds auth.Credentia
 			apiRouter.ServeHTTP(rec, req)
 			checkRespErr(rec, http.StatusOK)
 			header := rec.Header()
-			if v := header.Values("ETag"); len(v) > 0 {
+			if v, ok := header["Etag"]; ok { //nolint:staticcheck // ETag is set with non-canonical casing by the server
 				etag := v[0]
 				if etag == "" {
 					t.Fatalf("Unexpected empty etag")

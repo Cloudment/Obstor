@@ -431,13 +431,13 @@ func TestParseEndpointSet(t *testing.T) {
 		},
 		// Supporting some advanced cases.
 		{
-			"http://obstor{1...64}.mydomain.net/data",
+			"http://obstor{1...64}.example.net/data",
 			endpointSet{
 				[]ellipses.ArgPattern{
 					[]ellipses.Pattern{
 						{
 							Prefix: "http://obstor",
-							Suffix: ".mydomain.net/data",
+							Suffix: ".example.net/data",
 							Seq:    getSequences(1, 64, 0),
 						},
 					},
@@ -448,7 +448,7 @@ func TestParseEndpointSet(t *testing.T) {
 			true,
 		},
 		{
-			"http://rack{1...4}.mydomain.obstor{1...16}/data",
+			"http://rack{1...4}.example.obstor{1...16}/data",
 			endpointSet{
 				[]ellipses.ArgPattern{
 					[]ellipses.Pattern{
@@ -459,7 +459,7 @@ func TestParseEndpointSet(t *testing.T) {
 						},
 						{
 							Prefix: "http://rack",
-							Suffix: ".mydomain.obstor",
+							Suffix: ".example.obstor",
 							Seq:    getSequences(1, 4, 0),
 						},
 					},
@@ -471,7 +471,7 @@ func TestParseEndpointSet(t *testing.T) {
 		},
 		// Supporting kubernetes cases.
 		{
-			"http://obstor{0...15}.mydomain.net/data{0...1}",
+			"http://obstor{0...15}.example.net/data{0...1}",
 			endpointSet{
 				[]ellipses.ArgPattern{
 					[]ellipses.Pattern{
@@ -482,7 +482,7 @@ func TestParseEndpointSet(t *testing.T) {
 						},
 						{
 							Prefix: "http://obstor",
-							Suffix: ".mydomain.net/data",
+							Suffix: ".example.net/data",
 							Seq:    getSequences(0, 15, 0),
 						},
 					},

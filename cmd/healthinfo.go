@@ -78,7 +78,7 @@ func getLocalDrives(ctx context.Context, parallel bool, endpointServerPools Endp
 					})
 					continue
 				}
-				measurePath := pathJoin(minioMetaTmpBucket, mustGetUUID())
+				measurePath := pathJoin(obstorMetaTmpBucket, mustGetUUID())
 				measure := func(path string) {
 					defer wg.Done()
 					driveInfo := madmin.DrivePerfInfo{

@@ -100,7 +100,7 @@ func untar(r io.Reader, putObject func(reader io.Reader, info os.FileInfo, name 
 		if err != nil {
 			return err
 		}
-		defer gz.Close()
+		defer func() { _ = gz.Close() }()
 		r = gz
 	case formatS2:
 		r = s2.NewReader(bf)

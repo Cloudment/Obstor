@@ -399,7 +399,7 @@ func (adm AdminClient) executeMethod(ctx context.Context, method string, reqData
 		errResponse := ToErrorResponse(httpRespToErrorResponse(res))
 
 		// Save the body back again.
-		errBodySeeker.Seek(0, 0) // Seek back to starting point.
+		_, _ = errBodySeeker.Seek(0, 0) // Seek back to starting point.
 		res.Body = io.NopCloser(errBodySeeker)
 
 		// Verify if error response code is retryable.

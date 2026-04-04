@@ -158,7 +158,7 @@ func (c *cacheObjects) DeleteObject(ctx context.Context, bucket, object string, 
 	if cerr != nil {
 		return objInfo, cerr
 	}
-	dcache.Delete(ctx, bucket, object)
+	_ = dcache.Delete(ctx, bucket, object)
 	return
 }
 
@@ -246,11 +246,11 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 			}
 			c.cacheStats.incHit()
 			c.cacheStats.incBytesServed(bytesServed)
-			c.incHitsToMeta(ctx, dcache, bucket, object, cacheReader.ObjInfo.Size, cacheReader.ObjInfo.ETag, rs)
+			_ = c.incHitsToMeta(ctx, dcache, bucket, object, cacheReader.ObjInfo.Size, cacheReader.ObjInfo.ETag, rs)
 			return cacheReader, nil
 		}
 		if cc != nil && cc.noStore {
-			cacheReader.Close()
+			_ = cacheReader.Close()
 			c.cacheStats.incMiss()
 			bReader, err := c.InnerGetObjectNInfoFn(ctx, bucket, object, rs, h, lockType, opts)
 			bReader.ObjInfo.CacheLookupStatus = CacheHit
@@ -265,13 +265,13 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		return cacheReader, nil
 	} else if err != nil {
 		if cacheErr == nil {
-			cacheReader.Close()
+			_ = cacheReader.Close()
 		}
 		if _, ok := err.(ObjectNotFound); ok {
 			if cacheErr == nil {
 				// Delete cached entry if backend object
 				// was deleted.
-				dcache.Delete(ctx, bucket, object)
+				_ = dcache.Delete(ctx, bucket, object)
 			}
 		}
 		c.cacheStats.incMiss()
@@ -280,7 +280,7 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 
 	if !objInfo.IsCacheable() {
 		if cacheErr == nil {
-			cacheReader.Close()
+			_ = cacheReader.Close()
 		}
 		c.cacheStats.incMiss()
 		return c.InnerGetObjectNInfoFn(ctx, bucket, object, rs, h, lockType, opts)
@@ -290,7 +290,7 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 	legalHold := objectlock.GetObjectLegalHoldMeta(objInfo.UserDefined)
 	if objRetention.Mode.Valid() || legalHold.Status.Valid() {
 		if cacheErr == nil {
-			cacheReader.Close()
+			_ = cacheReader.Close()
 		}
 		c.cacheStats.incMiss()
 		return c.InnerGetObjectNInfoFn(ctx, bucket, object, rs, h, lockType, opts)
@@ -299,13 +299,13 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		// if ETag matches for stale cache entry, serve from cache
 		if cacheReader.ObjInfo.ETag == objInfo.ETag {
 			// Update metadata in case server-side copy might have changed object metadata
-			c.updateMetadataIfChanged(ctx, dcache, bucket, object, objInfo, cacheReader.ObjInfo, rs)
+			_ = c.updateMetadataIfChanged(ctx, dcache, bucket, object, objInfo, cacheReader.ObjInfo, rs)
 			c.incCacheStats(cacheObjSize)
 			return cacheReader, nil
 		}
-		cacheReader.Close()
+		_ = cacheReader.Close()
 		// Object is stale, so delete from cache
-		dcache.Delete(ctx, bucket, object)
+		_ = dcache.Delete(ctx, bucket, object)
 	}
 
 	// Reaching here implies cache miss
@@ -319,7 +319,7 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 	// If object has less hits than configured cache after, just increment the hit counter
 	// but do not cache it.
 	if numCacheHits < c.after {
-		c.incHitsToMeta(ctx, dcache, bucket, object, objInfo.Size, objInfo.ETag, rs)
+		_ = c.incHitsToMeta(ctx, dcache, bucket, object, objInfo.Size, objInfo.ETag, rs)
 		return bkReader, bkErr
 	}
 
@@ -342,12 +342,12 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 			if bErr != nil {
 				return
 			}
-			defer bReader.Close()
+			defer func() { _ = bReader.Close() }()
 			oi, _, _, err := dcache.statRange(GlobalContext, bucket, object, rs)
 			// Avoid cache overwrite if another background routine filled cache
 			if err != nil || oi.ETag != bReader.ObjInfo.ETag {
 				// Use a new context to avoid locker prematurely timing out operation when the GetObjectNInfo returns.
-				dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, rs, ObjectOptions{
+				_, _ = dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, rs, ObjectOptions{
 					UserDefined: getMetadata(bReader.ObjInfo),
 				}, false)
 				return
@@ -370,8 +370,8 @@ func (c *cacheObjects) GetObjectNInfo(ctx context.Context, bucket, object string
 		// propagated to getObjReader
 		pipeWriter.CloseWithError(putErr)
 	}()
-	cleanupBackend := func() { bkReader.Close() }
-	cleanupPipe := func() { pipeWriter.Close() }
+	cleanupBackend := func() { _ = bkReader.Close() }
+	cleanupPipe := func() { _ = pipeWriter.Close() }
 	return NewGetObjectReaderFromReader(teeReader, bkReader.ObjInfo, opts, cleanupBackend, cleanupPipe)
 }
 
@@ -404,7 +404,7 @@ func (c *cacheObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 	if err != nil {
 		if _, ok := err.(ObjectNotFound); ok {
 			// Delete the cached entry if backend object was deleted.
-			dcache.Delete(ctx, bucket, object)
+			_ = dcache.Delete(ctx, bucket, object)
 			c.cacheStats.incMiss()
 			return ObjectInfo{}, err
 		}
@@ -428,7 +428,7 @@ func (c *cacheObjects) GetObjectInfo(ctx context.Context, bucket, object string,
 	}
 	if cachedObjInfo.ETag != objInfo.ETag {
 		// Delete the cached entry if the backend object was replaced.
-		dcache.Delete(ctx, bucket, object)
+		_ = dcache.Delete(ctx, bucket, object)
 	}
 	return objInfo, nil
 }
@@ -451,7 +451,7 @@ func (c *cacheObjects) CopyObject(ctx context.Context, srcBucket, srcObject, dst
 	if cachedObjInfo, _, cerr := dcache.Stat(ctx, srcBucket, srcObject); cerr == nil {
 		cc := cacheControlOpts(cachedObjInfo)
 		if cc == nil || !cc.isStale(cachedObjInfo.ModTime) {
-			dcache.Delete(ctx, srcBucket, srcObject)
+			_ = dcache.Delete(ctx, srcBucket, srcObject)
 		}
 	}
 	return copyObjectFn(ctx, srcBucket, srcObject, dstBucket, dstObject, srcInfo, srcOpts, dstOpts)
@@ -639,7 +639,7 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 	}
 
 	if opts.ServerSideEncryption != nil {
-		dcache.Delete(ctx, bucket, object)
+		_ = dcache.Delete(ctx, bucket, object)
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 
@@ -647,14 +647,14 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 	objRetention := objectlock.GetObjectRetentionMeta(opts.UserDefined)
 	legalHold := objectlock.GetObjectLegalHoldMeta(opts.UserDefined)
 	if objRetention.Mode.Valid() || legalHold.Status.Valid() {
-		dcache.Delete(ctx, bucket, object)
+		_ = dcache.Delete(ctx, bucket, object)
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 
 	// Fetch from backend if cache exclude pattern or cache-control
 	// directive set to exclude
 	if c.isCacheExclude(bucket, object) {
-		dcache.Delete(ctx, bucket, object)
+		_ = dcache.Delete(ctx, bucket, object)
 		return putObjectFn(ctx, bucket, object, r, opts)
 	}
 	if c.commitWriteback {
@@ -674,11 +674,11 @@ func (c *cacheObjects) PutObject(ctx context.Context, bucket, object string, r *
 			if bErr != nil {
 				return
 			}
-			defer bReader.Close()
+			defer func() { _ = bReader.Close() }()
 			oi, _, err := dcache.Stat(GlobalContext, bucket, object)
 			// Avoid cache overwrite if another background routine filled cache
 			if err != nil || oi.ETag != bReader.ObjInfo.ETag {
-				dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, nil, ObjectOptions{UserDefined: getMetadata(bReader.ObjInfo)}, false)
+				_, _ = dcache.Put(GlobalContext, bucket, object, bReader, bReader.ObjInfo.Size, nil, ObjectOptions{UserDefined: getMetadata(bReader.ObjInfo)}, false)
 			}
 		}()
 	}
@@ -697,7 +697,7 @@ func (c *cacheObjects) uploadObject(ctx context.Context, oi ObjectInfo) {
 	if bErr != nil {
 		return
 	}
-	defer cReader.Close()
+	defer func() { _ = cReader.Close() }()
 
 	if cReader.ObjInfo.ETag != oi.ETag {
 		return
@@ -730,7 +730,7 @@ func (c *cacheObjects) uploadObject(ctx context.Context, oi ObjectInfo) {
 	}
 	meta[writeBackStatusHeader] = wbCommitStatus.String()
 	meta["etag"] = oi.ETag
-	dcache.SaveMetadata(ctx, oi.Bucket, oi.Name, meta, objInfo.Size, nil, "", false)
+	_ = dcache.SaveMetadata(ctx, oi.Bucket, oi.Name, meta, objInfo.Size, nil, "", false)
 	if retryCnt > 0 {
 		// Slow down retries
 		time.Sleep(time.Second * time.Duration(retryCnt%10+1))

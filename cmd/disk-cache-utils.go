@@ -197,27 +197,27 @@ func readCacheFileStream(filePath string, offset, length int64) (io.ReadCloser, 
 	// Stat to get the size of the file at path.
 	st, err := fr.Stat()
 	if err != nil {
+		fr.Close()
 		err = osErrToFileErr(err)
 		return nil, err
 	}
 
 	if err = os.Chtimes(filePath, time.Now(), st.ModTime()); err != nil {
+		fr.Close()
 		return nil, err
 	}
 
 	// Verify if its not a regular file, since subsequent Seek is undefined.
 	if !st.Mode().IsRegular() {
+		fr.Close()
 		return nil, errIsNotRegular
-	}
-
-	if err = os.Chtimes(filePath, time.Now(), st.ModTime()); err != nil {
-		return nil, err
 	}
 
 	// Seek to the requested offset.
 	if offset > 0 {
 		_, err = fr.Seek(offset, io.SeekStart)
 		if err != nil {
+			fr.Close()
 			return nil, err
 		}
 	}

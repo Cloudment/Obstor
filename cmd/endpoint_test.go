@@ -363,11 +363,11 @@ func TestGetLocalPeer(t *testing.T) {
 }
 
 func TestGetRemotePeers(t *testing.T) {
-	tempGlobalMinioPort := globalMinioPort
+	tempGlobalObstorPort := globalObstorPort
 	defer func() {
-		globalMinioPort = tempGlobalMinioPort
+		globalObstorPort = tempGlobalObstorPort
 	}()
-	globalMinioPort = "9000"
+	globalObstorPort = "9000"
 
 	testCases := []struct {
 		endpointArgs   []string
@@ -399,11 +399,11 @@ func TestGetRemotePeers(t *testing.T) {
 }
 
 func TestUpdateDomainIPs(t *testing.T) {
-	tempGlobalMinioPort := globalMinioPort
+	tempGlobalObstorPort := globalObstorPort
 	defer func() {
-		globalMinioPort = tempGlobalMinioPort
+		globalObstorPort = tempGlobalObstorPort
 	}()
-	globalMinioPort = "9000"
+	globalObstorPort = "9000"
 
 	tempGlobalDomainIPs := globalDomainIPs
 	defer func() {

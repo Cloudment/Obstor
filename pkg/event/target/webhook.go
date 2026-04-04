@@ -124,8 +124,8 @@ func (target *WebhookTarget) IsActive() (bool, error) {
 		}
 		return false, err
 	}
-	io.Copy(io.Discard, resp.Body)
-	resp.Body.Close()
+	_, _ = io.Copy(io.Discard, resp.Body)
+	_ = resp.Body.Close()
 	// No network failure i.e response from the target means its up
 	return true, nil
 }
@@ -170,14 +170,14 @@ func (target *WebhookTarget) send(eventData event.Event) error {
 
 	resp, err := target.httpClient.Do(req)
 	if err != nil {
-		target.Close()
+		_ = target.Close()
 		return err
 	}
-	defer resp.Body.Close()
-	io.Copy(io.Discard, resp.Body)
+	defer func() { _ = resp.Body.Close() }()
+	_, _ = io.Copy(io.Discard, resp.Body)
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		target.Close()
+		_ = target.Close()
 		return fmt.Errorf("sending event failed with %v", resp.Status)
 	}
 

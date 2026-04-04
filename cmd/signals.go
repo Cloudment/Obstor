@@ -34,7 +34,7 @@ func handleSignals() {
 		globalProfilerMu.Lock()
 		defer globalProfilerMu.Unlock()
 		for _, p := range globalProfiler {
-			p.Stop()
+			_, _ = p.Stop()
 		}
 
 		if success {

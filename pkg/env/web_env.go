@@ -181,7 +181,7 @@ func LookupEnv(key string) (string, string, string, bool) {
 		// this value is a fallback in-case of
 		// server restarts when webhook server
 		// is down.
-		os.Setenv("_"+key, v)
+		_ = os.Setenv("_"+key, v)
 		return v, user, pwd, true
 	}
 	return v, "", "", ok

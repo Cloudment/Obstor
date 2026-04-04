@@ -81,7 +81,7 @@ func (pr *progressReader) Close() error {
 	}
 	pr.closed = true
 	if pr.gzr != nil {
-		pr.gzr.Close()
+		_ = pr.gzr.Close()
 	}
 	return pr.rc.Close()
 }

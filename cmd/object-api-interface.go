@@ -185,7 +185,7 @@ func GetObject(ctx context.Context, api ObjectLayer, bucket, object string, star
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	_, err = io.Copy(writer, reader)
 	return err

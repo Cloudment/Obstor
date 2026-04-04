@@ -26,7 +26,7 @@ import (
 // Key used for Get/SetReqInfo
 type contextKeyType string
 
-const contextLogKey = contextKeyType("miniolog")
+const contextLogKey = contextKeyType("obstorlog")
 
 // KeyVal - appended to ReqInfo.Tags
 type KeyVal struct {

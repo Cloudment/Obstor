@@ -33,8 +33,8 @@ import (
 func TestGetSource(t *testing.T) {
 	currentSource := func() string { return getSource(2) }
 	gotSource := currentSource()
-	// Hard coded line number, 34, in the "expectedSource" value
-	expectedSource := "[namespace-lock_test.go:34:TestGetSource()]"
+	// Hard coded line number, 35, in the "expectedSource" value
+	expectedSource := "[namespace-lock_test.go:35:TestGetSource()]"
 	if gotSource != expectedSource {
 		t.Errorf("expected : %s, got : %s", expectedSource, gotSource)
 	}

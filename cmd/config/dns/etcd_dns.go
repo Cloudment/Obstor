@@ -52,7 +52,7 @@ func newCoreDNSMsg(ip string, port string, ttl uint32, t time.Time) ([]byte, err
 
 // Close closes the internal etcd client and cannot be used further
 func (c *CoreDNS) Close() error {
-	c.etcdClient.Close()
+	_ = c.etcdClient.Close()
 	return nil
 }
 
@@ -163,7 +163,7 @@ func (c *CoreDNS) list(key string, domain bool) ([]SrvRecord, error) {
 
 // Put - Adds DNS entries into etcd endpoint in CoreDNS etcd message format.
 func (c *CoreDNS) Put(bucket string) error {
-	c.Delete(bucket) // delete any existing entries.
+	_ = c.Delete(bucket) // delete any existing entries.
 
 	t := time.Now().UTC()
 	for ip := range c.domainIPs {
@@ -179,7 +179,7 @@ func (c *CoreDNS) Put(bucket string) error {
 			cancel()
 			if err != nil {
 				ctx, cancel = context.WithTimeout(context.Background(), defaultContextTimeout)
-				c.etcdClient.Delete(ctx, key)
+				_, _ = c.etcdClient.Delete(ctx, key)
 				cancel()
 				return err
 			}

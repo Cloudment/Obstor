@@ -22,5 +22,5 @@ package cmd
 
 var (
 	// Newer official download info URLs appear earlier below.
-	minioReleaseInfoURL = minioReleaseURL + "obstor.fips.sha256sum"
+	obstorReleaseInfoURL = obstorReleaseURL + "obstor.fips.sha256sum"
 )

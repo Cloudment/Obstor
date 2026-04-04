@@ -158,15 +158,15 @@ func sortIPs(ipList []string) []string {
 
 func getAPIEndpoints() (apiEndpoints []string) {
 	var ipList []string
-	if globalMinioHost == "" {
+	if globalObstorHost == "" {
 		ipList = sortIPs(mustGetLocalIP4().ToSlice())
 		ipList = append(ipList, mustGetLocalIP6().ToSlice()...)
 	} else {
-		ipList = []string{globalMinioHost}
+		ipList = []string{globalObstorHost}
 	}
 
 	for _, ip := range ipList {
-		endpoint := fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(ip, globalMinioPort))
+		endpoint := fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(ip, globalObstorPort))
 		apiEndpoints = append(apiEndpoints, endpoint)
 	}
 

@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	adminPathPrefix         = minioReservedBucketPath + "/admin"
+	adminPathPrefix         = obstorReservedBucketPath + "/admin"
 	adminAPIVersionV2       = madmin.AdminAPIVersionV2
 	adminAPIVersion         = madmin.AdminAPIVersion
 	adminAPIVersionPrefix   = SlashSeparator + adminAPIVersion
@@ -202,7 +202,7 @@ func registerAdminRouter(router *mux.Router, enableConfigOps, enableIAMOps bool)
 		// HTTP Trace
 		adminRouter.Methods(http.MethodGet).Path(adminVersion + "/trace").HandlerFunc(adminAPI.TraceHandler)
 
-		// Console Logs
+		// Frontend Dashboard Logs
 		adminRouter.Methods(http.MethodGet).Path(adminVersion + "/log").HandlerFunc(httpTraceAll(adminAPI.ConsoleLogHandler))
 
 		// -- KMS APIs --
@@ -210,7 +210,7 @@ func registerAdminRouter(router *mux.Router, enableConfigOps, enableIAMOps bool)
 		adminRouter.Methods(http.MethodPost).Path(adminVersion+"/kms/key/create").HandlerFunc(httpTraceAll(adminAPI.KMSCreateKeyHandler)).Queries("key-id", "{key-id:.*}")
 		adminRouter.Methods(http.MethodGet).Path(adminVersion + "/kms/key/status").HandlerFunc(httpTraceAll(adminAPI.KMSKeyStatusHandler))
 
-		if !globalIsGateway {
+		if !globalIsBackend {
 			// Keep obdinfo for backward compatibility with mc
 			adminRouter.Methods(http.MethodGet).Path(adminVersion + "/obdinfo").
 				HandlerFunc(httpTraceHdrs(adminAPI.HealthInfoHandler))

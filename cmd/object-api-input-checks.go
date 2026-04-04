@@ -40,7 +40,7 @@ func checkDelObjArgs(ctx context.Context, bucket, object string) error {
 // Checks bucket and object name validity, returns nil if both are valid.
 func checkBucketAndObjectNames(ctx context.Context, bucket, object string) error {
 	// Verify if bucket is valid.
-	if !isMinioMetaBucketName(bucket) && s3utils.CheckValidBucketName(bucket) != nil {
+	if !isObstorMetaBucketName(bucket) && s3utils.CheckValidBucketName(bucket) != nil {
 		logger.LogIf(ctx, BucketNameInvalid{Bucket: bucket})
 		return BucketNameInvalid{Bucket: bucket}
 	}

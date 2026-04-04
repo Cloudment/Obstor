@@ -33,8 +33,8 @@ const (
 	// DistErasureSetupType - Distributed Erasure setup type enum.
 	DistErasureSetupType
 
-	// GatewaySetupType - gateway setup type enum.
-	GatewaySetupType
+	// BackendSetupType - backend setup type enum.
+	BackendSetupType
 
 	// ReplicatedSetupType - block replication setup type enum.
 	ReplicatedSetupType
@@ -43,13 +43,13 @@ const (
 func (setupType SetupType) String() string {
 	switch setupType {
 	case FSSetupType:
-		return globalMinioModeFS
+		return globalObstorModeFS
 	case ErasureSetupType:
-		return globalMinioModeErasure
+		return globalObstorModeErasure
 	case DistErasureSetupType:
-		return globalMinioModeDistErasure
-	case GatewaySetupType:
-		return globalMinioModeGatewayPrefix
+		return globalObstorModeDistErasure
+	case BackendSetupType:
+		return globalObstorModeBackendPrefix
 	case ReplicatedSetupType:
 		return "mode-server-replicated"
 	}

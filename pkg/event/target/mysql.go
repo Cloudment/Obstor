@@ -82,6 +82,11 @@ const (
 	mysqlInsertRow = `INSERT INTO %s (event_time, event_data) VALUES (?, ?);`
 )
 
+// Sanitize quotes
+func sanitizeMySQLIdentifier(name string) string {
+	return "`" + strings.ReplaceAll(name, "`", "``") + "`"
+}
+
 // MySQL related constants
 const (
 	MySQLFormat             = "format"
@@ -333,14 +338,16 @@ func (target *MySQLTarget) Close() error {
 // Executes the table creation statements.
 func (target *MySQLTarget) executeStmts() error {
 
-	_, err := target.db.Exec(fmt.Sprintf(mysqlTableExists, target.args.Table))
+	table := sanitizeMySQLIdentifier(target.args.Table)
+
+	_, err := target.db.Exec(fmt.Sprintf(mysqlTableExists, table))
 	if err != nil {
 		createStmt := mysqlCreateNamespaceTable
 		if target.args.Format == event.AccessFormat {
 			createStmt = mysqlCreateAccessTable
 		}
 
-		if _, dbErr := target.db.Exec(fmt.Sprintf(createStmt, target.args.Table)); dbErr != nil {
+		if _, dbErr := target.db.Exec(fmt.Sprintf(createStmt, table)); dbErr != nil {
 			return dbErr
 		}
 	}
@@ -348,16 +355,16 @@ func (target *MySQLTarget) executeStmts() error {
 	switch target.args.Format {
 	case event.NamespaceFormat:
 		// Insert or update statement
-		if target.updateStmt, err = target.db.Prepare(fmt.Sprintf(mysqlUpdateRow, target.args.Table)); err != nil {
+		if target.updateStmt, err = target.db.Prepare(fmt.Sprintf(mysqlUpdateRow, table)); err != nil {
 			return err
 		}
 		// delete statement
-		if target.deleteStmt, err = target.db.Prepare(fmt.Sprintf(mysqlDeleteRow, target.args.Table)); err != nil {
+		if target.deleteStmt, err = target.db.Prepare(fmt.Sprintf(mysqlDeleteRow, table)); err != nil {
 			return err
 		}
 	case event.AccessFormat:
 		// Insert statement
-		if target.insertStmt, err = target.db.Prepare(fmt.Sprintf(mysqlInsertRow, target.args.Table)); err != nil {
+		if target.insertStmt, err = target.db.Prepare(fmt.Sprintf(mysqlInsertRow, table)); err != nil {
 			return err
 		}
 	}

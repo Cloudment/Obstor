@@ -52,14 +52,14 @@ func TestDoesPolicySignatureMatch(t *testing.T) {
 		// (1) It should fail if the access key is incorrect.
 		{
 			form: http.Header{
-				"X-Amz-Credential": []string{fmt.Sprintf(credentialTemplate, "EXAMPLEINVALIDEXAMPL", now.Format(yyyymmdd), globalMinioDefaultRegion)},
+				"X-Amz-Credential": []string{fmt.Sprintf(credentialTemplate, "EXAMPLEINVALIDEXAMPL", now.Format(yyyymmdd), globalObstorDefaultRegion)},
 			},
 			expected: ErrInvalidAccessKeyID,
 		},
 		// (2) It should fail with a bad signature.
 		{
 			form: http.Header{
-				"X-Amz-Credential": []string{fmt.Sprintf(credentialTemplate, accessKey, now.Format(yyyymmdd), globalMinioDefaultRegion)},
+				"X-Amz-Credential": []string{fmt.Sprintf(credentialTemplate, accessKey, now.Format(yyyymmdd), globalObstorDefaultRegion)},
 				"X-Amz-Date":       []string{now.Format(iso8601Format)},
 				"X-Amz-Signature":  []string{"invalidsignature"},
 				"Policy":           []string{"policy"},
@@ -70,12 +70,12 @@ func TestDoesPolicySignatureMatch(t *testing.T) {
 		{
 			form: http.Header{
 				"X-Amz-Credential": []string{
-					fmt.Sprintf(credentialTemplate, accessKey, now.Format(yyyymmdd), globalMinioDefaultRegion),
+					fmt.Sprintf(credentialTemplate, accessKey, now.Format(yyyymmdd), globalObstorDefaultRegion),
 				},
 				"X-Amz-Date": []string{now.Format(iso8601Format)},
 				"X-Amz-Signature": []string{
 					getSignature(getSigningKey(globalActiveCred.SecretKey, now,
-						globalMinioDefaultRegion, serviceS3), "policy"),
+						globalObstorDefaultRegion, serviceS3), "policy"),
 				},
 				"Policy": []string{"policy"},
 			},
@@ -98,7 +98,7 @@ func TestDoesPresignedSignatureMatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	if err = newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatal(err)
 	}
 
@@ -117,7 +117,7 @@ func TestDoesPresignedSignatureMatch(t *testing.T) {
 	}{
 		// (0) Should error without a set URL query.
 		{
-			region:   globalMinioDefaultRegion,
+			region:   globalObstorDefaultRegion,
 			expected: ErrInvalidQueryParams,
 		},
 		// (1) Should error on an invalid access key.

@@ -339,7 +339,7 @@ type InvalidUploadIDKeyCombination struct {
 }
 
 func (e InvalidUploadIDKeyCombination) Error() string {
-	return fmt.Sprintf("Invalid combination of uploadID marker '%s' and marker '%s'", e.UploadIDMarker, e.KeyMarker)
+	return fmt.Sprintf("invalid combination of uploadID marker '%s' and marker '%s'", e.UploadIDMarker, e.KeyMarker)
 }
 
 // InvalidMarkerPrefixCombination - invalid marker and prefix combination.
@@ -348,7 +348,7 @@ type InvalidMarkerPrefixCombination struct {
 }
 
 func (e InvalidMarkerPrefixCombination) Error() string {
-	return fmt.Sprintf("Invalid combination of marker '%s' and prefix '%s'", e.Marker, e.Prefix)
+	return fmt.Sprintf("invalid combination of marker '%s' and prefix '%s'", e.Marker, e.Prefix)
 }
 
 // BucketPolicyNotFound - no bucket policy found.
@@ -577,7 +577,7 @@ type MalformedUploadID struct {
 }
 
 func (e MalformedUploadID) Error() string {
-	return "Malformed upload id " + e.UploadID
+	return "malformed upload id " + e.UploadID
 }
 
 // InvalidUploadID invalid upload id.
@@ -644,7 +644,7 @@ func (e UnsupportedMetadata) Error() string {
 	return "Unsupported headers in Metadata"
 }
 
-// BackendDown is returned for network errors or if the gateway's backend is down.
+// BackendDown is returned for network errors or if the backend is down.
 type BackendDown struct{}
 
 func (e BackendDown) Error() string {

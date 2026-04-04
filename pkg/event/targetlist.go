@@ -79,7 +79,7 @@ func (list *TargetList) Remove(targetIDSet TargetIDSet) {
 	for id := range targetIDSet {
 		target, ok := list.targets[id]
 		if ok {
-			target.Close()
+			_ = target.Close()
 			delete(list.targets, id)
 		}
 	}

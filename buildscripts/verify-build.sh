@@ -68,8 +68,8 @@ function start_minio_pool_erasure_sets()
     export OBSTOR_ROOT_USER=$ACCESS_KEY
     export OBSTOR_ROOT_PASSWORD=$SECRET_KEY
     export OBSTOR_ENDPOINTS="http://127.0.0.1:9000${WORK_DIR}/pool-disk-sets{1...4} http://127.0.0.1:9001${WORK_DIR}/pool-disk-sets{5...8}"
-    "${OBSTOR[@]}" server --address ":9000" > "$WORK_DIR/pool-obstor-9000.log" 2>&1 &
-    "${OBSTOR[@]}" server --address ":9001" > "$WORK_DIR/pool-obstor-9001.log" 2>&1 &
+    "${OBSTOR[@]}" server --web-address ":9000" > "$WORK_DIR/pool-obstor-9000.log" 2>&1 &
+    "${OBSTOR[@]}" server --web-address ":9001" > "$WORK_DIR/pool-obstor-9001.log" 2>&1 &
 
     sleep 40
 }
@@ -79,8 +79,8 @@ function start_minio_pool_erasure_sets_ipv6()
     export OBSTOR_ROOT_USER=$ACCESS_KEY
     export OBSTOR_ROOT_PASSWORD=$SECRET_KEY
     export OBSTOR_ENDPOINTS="http://[::1]:9000${WORK_DIR}/pool-disk-sets{1...4} http://[::1]:9001${WORK_DIR}/pool-disk-sets{5...8}"
-    "${OBSTOR[@]}" server --address="[::1]:9000" > "$WORK_DIR/pool-obstor-ipv6-9000.log" 2>&1 &
-    "${OBSTOR[@]}" server --address="[::1]:9001" > "$WORK_DIR/pool-obstor-ipv6-9001.log" 2>&1 &
+    "${OBSTOR[@]}" server --web-address="[::1]:9000" > "$WORK_DIR/pool-obstor-ipv6-9000.log" 2>&1 &
+    "${OBSTOR[@]}" server --web-address="[::1]:9001" > "$WORK_DIR/pool-obstor-ipv6-9001.log" 2>&1 &
 
     sleep 40
 }
@@ -91,7 +91,7 @@ function start_minio_dist_erasure()
     export OBSTOR_ROOT_PASSWORD=$SECRET_KEY
     export OBSTOR_ENDPOINTS="http://127.0.0.1:9000${WORK_DIR}/dist-disk1 http://127.0.0.1:9001${WORK_DIR}/dist-disk2 http://127.0.0.1:9002${WORK_DIR}/dist-disk3 http://127.0.0.1:9003${WORK_DIR}/dist-disk4"
     for i in $(seq 0 3); do
-        "${OBSTOR[@]}" server --address ":900${i}" > "$WORK_DIR/dist-obstor-900${i}.log" 2>&1 &
+        "${OBSTOR[@]}" server --web-address ":900${i}" > "$WORK_DIR/dist-obstor-900${i}.log" 2>&1 &
     done
 
     sleep 40

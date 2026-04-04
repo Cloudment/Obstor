@@ -50,7 +50,7 @@ type LifecycleSys struct{}
 
 // Get - gets lifecycle config associated to a given bucket name.
 func (sys *LifecycleSys) Get(bucketName string) (lc *lifecycle.Lifecycle, err error) {
-	if globalIsGateway {
+	if globalIsBackend {
 		objAPI := newObjectLayerFn()
 		if objAPI == nil {
 			return nil, errServerNotInitialized
@@ -206,7 +206,7 @@ func validateTransitionDestination(ctx context.Context, bucket string, targetLab
 	if found, _ := clnt.BucketExists(ctx, arn.Bucket); !found {
 		return false, "", BucketRemoteDestinationNotFound{Bucket: arn.Bucket}
 	}
-	sameTarget, _ := isLocalHost(clnt.EndpointURL().Hostname(), clnt.EndpointURL().Port(), globalMinioPort)
+	sameTarget, _ := isLocalHost(clnt.EndpointURL().Hostname(), clnt.EndpointURL().Port(), globalObstorPort)
 	return sameTarget, arn.Bucket, nil
 }
 
@@ -394,21 +394,21 @@ func transitionObject(ctx context.Context, objectAPI ObjectLayer, objInfo Object
 	}
 	oi := gr.ObjInfo
 	if oi.TransitionStatus == lifecycle.TransitionComplete {
-		gr.Close()
+		_ = gr.Close()
 		return nil
 	}
 
 	putOpts, err := putTransitionOpts(oi)
 	if err != nil {
-		gr.Close()
+		_ = gr.Close()
 		return err
 
 	}
 	if _, err = tgt.PutObject(ctx, arn.Bucket, oi.Name, gr, oi.Size, putOpts); err != nil {
-		gr.Close()
+		_ = gr.Close()
 		return err
 	}
-	gr.Close()
+	_ = gr.Close()
 
 	var opts ObjectOptions
 	opts.Versioned = globalBucketVersioningSys.Enabled(oi.Bucket)
@@ -482,7 +482,7 @@ func getTransitionedObjectReader(ctx context.Context, bucket, object string, rs 
 	if err != nil {
 		return nil, err
 	}
-	closeReader := func() { reader.Close() }
+	closeReader := func() { _ = reader.Close() }
 
 	return fn(reader, h, opts.CheckPrecondFn, closeReader)
 }
@@ -700,7 +700,7 @@ func restoreTransitionedObject(ctx context.Context, bucket, object string, objAP
 	if err != nil {
 		return err
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 	hashReader, err := hash.NewReader(gr, objInfo.Size, "", "", objInfo.Size)
 	if err != nil {
 		return err

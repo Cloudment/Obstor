@@ -142,7 +142,7 @@ func sanitizePolicy(r io.Reader) (io.Reader, error) {
 				}
 				sset.Add(kv.Key)
 			}
-			e.Encode(kvs)
+			_ = e.Encode(kvs)
 		}
 	}
 	return &buf, d.Err()

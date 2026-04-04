@@ -111,7 +111,7 @@ func (m *cacheMeta) ToObjectInfo(bucket, object string) (o ObjectInfo) {
 	if storageClass, ok := m.Meta[xhttp.AmzStorageClass]; ok {
 		o.StorageClass = storageClass
 	} else {
-		o.StorageClass = globalMinioDefaultStorageClass
+		o.StorageClass = globalObstorDefaultStorageClass
 	}
 	var (
 		t time.Time
@@ -164,7 +164,7 @@ func newDiskCache(ctx context.Context, dir string, config cache.Config) (*diskCa
 		quotaPct = config.Quota
 	}
 
-	if err := os.MkdirAll(dir, 0777); err != nil {
+	if err := os.MkdirAll(dir, 0700); err != nil {
 		return nil, fmt.Errorf("unable to initialize '%s' dir, %w", dir, err)
 	}
 	cache := diskCache{
@@ -319,7 +319,7 @@ func (c *diskCache) purge(ctx context.Context) {
 	}
 
 	filterFn := func(name string, typ os.FileMode) error {
-		if name == minioMetaBucket {
+		if name == obstorMetaBucket {
 			// Proceed to next file.
 			return nil
 		}
@@ -534,10 +534,10 @@ func (c *diskCache) saveMetadata(ctx context.Context, bucket, object string, met
 	cachedPath := getCacheSHADir(c.dir, bucket, object)
 	metaPath := pathJoin(cachedPath, cacheMetaJSONFile)
 	// Create cache directory if needed
-	if err := os.MkdirAll(cachedPath, 0777); err != nil {
+	if err := os.MkdirAll(cachedPath, 0700); err != nil {
 		return err
 	}
-	f, err := os.OpenFile(metaPath, os.O_RDWR|os.O_CREATE, 0666)
+	f, err := os.OpenFile(metaPath, os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		return err
 	}
@@ -595,7 +595,7 @@ func getCacheSHADir(dir, bucket, object string) string {
 
 // Cache data to disk with bitrot checksum added for each block of 1MB
 func (c *diskCache) bitrotWriteToCache(cachePath, fileName string, reader io.Reader, size uint64) (int64, string, error) {
-	if err := os.MkdirAll(cachePath, 0777); err != nil {
+	if err := os.MkdirAll(cachePath, 0700); err != nil {
 		return 0, "", err
 	}
 	filePath := pathJoin(cachePath, fileName)
@@ -725,7 +725,7 @@ func (c *diskCache) Put(ctx context.Context, bucket, object string, data io.Read
 	if !c.diskSpaceAvailable(size) {
 		return oi, errDiskFull
 	}
-	if err := os.MkdirAll(cachePath, 0777); err != nil {
+	if err := os.MkdirAll(cachePath, 0700); err != nil {
 		return oi, err
 	}
 	var metadata = cloneMSS(opts.UserDefined)
@@ -779,7 +779,7 @@ func (c *diskCache) putRange(ctx context.Context, bucket, object string, data io
 		return errDiskFull
 	}
 	cachePath := getCacheSHADir(c.dir, bucket, object)
-	if err := os.MkdirAll(cachePath, 0777); err != nil {
+	if err := os.MkdirAll(cachePath, 0700); err != nil {
 		return err
 	}
 	var metadata = cloneMSS(opts.UserDefined)
@@ -796,7 +796,7 @@ func (c *diskCache) putRange(ctx context.Context, bucket, object string, data io
 		objSize, _ = sio.EncryptedSize(uint64(size))
 
 	}
-	cacheFile := MustGetUUID()
+	cacheFile := mustGetUUID()
 	n, _, err := c.bitrotWriteToCache(cachePath, cacheFile, reader, actualSize)
 	if IsErr(err, baseErrs...) {
 		// Take the cache drive offline
@@ -957,7 +957,7 @@ func (c *diskCache) Get(ctx context.Context, bucket, object string, rs *HTTPRang
 	}()
 	// Cleanup function to cause the go routine above to exit, in
 	// case of incomplete read.
-	pipeCloser := func() { pr.Close() }
+	pipeCloser := func() { _ = pr.Close() }
 
 	gr, gerr := fn(pr, h, opts.CheckPrecondFn, pipeCloser)
 	if gerr != nil {
@@ -1004,7 +1004,7 @@ func (c *diskCache) Exists(ctx context.Context, bucket, object string) bool {
 func (c *diskCache) scanCacheWritebackFailures(ctx context.Context) {
 	defer close(c.retryWritebackCh)
 	filterFn := func(name string, typ os.FileMode) error {
-		if name == minioMetaBucket {
+		if name == obstorMetaBucket {
 			// Proceed to next file.
 			return nil
 		}

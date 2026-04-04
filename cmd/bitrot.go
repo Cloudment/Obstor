@@ -114,21 +114,25 @@ func newBitrotReader(disk StorageAPI, data []byte, bucket string, filePath strin
 }
 
 // Close all the readers.
-func closeBitrotReaders(rs []io.ReaderAt) {
-	for _, r := range rs {
+func closeBitrotReaders(rs []io.ReaderAt) []error {
+	errs := make([]error, len(rs))
+	for i, r := range rs {
 		if br, ok := r.(io.Closer); ok {
-			br.Close()
+			errs[i] = br.Close()
 		}
 	}
+	return errs
 }
 
 // Close all the writers.
-func closeBitrotWriters(ws []io.Writer) {
-	for _, w := range ws {
+func closeBitrotWriters(ws []io.Writer) []error {
+	errs := make([]error, len(ws))
+	for i, w := range ws {
 		if bw, ok := w.(io.Closer); ok {
-			bw.Close()
+			errs[i] = bw.Close()
 		}
 	}
+	return errs
 }
 
 // Returns hash sum for whole-bitrot, nil for streaming-bitrot.

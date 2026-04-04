@@ -252,7 +252,7 @@ func (e *In) evalInNode(r Record, lhs *Value, tableAlias string) (*Value, error)
 	var cmp func(a, b Value) bool
 	cmp = func(a, b Value) bool {
 		// Convert if needed.
-		inferTypesForCmp(&a, &b)
+		_ = inferTypesForCmp(&a, &b)
 
 		if a.Equals(b) {
 			return true
@@ -359,7 +359,7 @@ func (e *UnaryTerm) evalNode(r Record, tableAlias string) (*Value, error) {
 		return nil, err
 	}
 
-	inferTypeForArithOp(v)
+	_ = inferTypeForArithOp(v)
 	v.negate()
 	if v.isNumeric() {
 		return v, nil

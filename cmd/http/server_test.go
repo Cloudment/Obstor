@@ -29,7 +29,7 @@ import (
 func TestNewServer(t *testing.T) {
 	nonLoopBackIP := getNonLoopBackIP(t)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, world")
+		_, _ = fmt.Fprintf(w, "Hello, world")
 	})
 
 	testCases := []struct {

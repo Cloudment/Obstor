@@ -42,9 +42,9 @@ import (
 )
 
 const (
-	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
-	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.pgg.net/packages/obstor/release/" + minioOSARCH + SlashSeparator
+	obstorReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
+	obstorOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
+	obstorReleaseURL           = "https://dl.pgg.net/packages/obstor/release/" + obstorOSARCH + SlashSeparator
 
 	envMinisignPubKey = "OBSTOR_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
@@ -52,15 +52,15 @@ const (
 
 var (
 	// For windows our files have .exe additionally.
-	minioReleaseWindowsInfoURL = minioReleaseURL + "obstor.exe.sha256sum"
+	obstorReleaseWindowsInfoURL = obstorReleaseURL + "obstor.exe.sha256sum"
 )
 
-// minioVersionToReleaseTime - parses a standard official release
+// obstorVersionToReleaseTime - parses a standard official release
 // Obstor version string.
 //
 // An official binary's version string is the release time formatted
 // with RFC3339 (in UTC) - e.g. `2017-09-29T19:16:56Z`
-func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error) {
+func obstorVersionToReleaseTime(version string) (releaseTime time.Time, err error) {
 	return time.Parse(time.RFC3339, version)
 }
 
@@ -70,7 +70,7 @@ func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error
 // An official obstor release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
 func releaseTimeToReleaseTag(releaseTime time.Time) string {
-	return "RELEASE." + releaseTime.Format(minioReleaseTagTimeLayout)
+	return "RELEASE." + releaseTime.Format(obstorReleaseTagTimeLayout)
 }
 
 // releaseTagToReleaseTime - reverse of `releaseTimeToReleaseTag()`
@@ -82,7 +82,7 @@ func releaseTagToReleaseTime(releaseTag string) (releaseTime time.Time, err erro
 	if fields[0] != "RELEASE" {
 		return releaseTime, fmt.Errorf("%s is not a valid release tag", releaseTag)
 	}
-	return time.Parse(minioReleaseTagTimeLayout, fields[1])
+	return time.Parse(obstorReleaseTagTimeLayout, fields[1])
 }
 
 // getModTime - get the file modification time of `path`
@@ -108,7 +108,7 @@ func getModTime(path string) (t time.Time, err error) {
 // is official obstor version, parsed version is returned else obstor
 // binary's mod time is returned.
 func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
-	if releaseTime, err = minioVersionToReleaseTime(Version); err == nil {
+	if releaseTime, err = obstorVersionToReleaseTime(Version); err == nil {
 		return releaseTime, err
 	}
 
@@ -195,6 +195,7 @@ func getHelmVersion(helmInfoFilePath string) string {
 		}
 		return ""
 	}
+	defer helmInfoFile.Close()
 
 	scanner := bufio.NewScanner(helmInfoFile)
 	for scanner.Scan() {
@@ -211,7 +212,7 @@ func getHelmVersion(helmInfoFilePath string) string {
 // IsSourceBuild - returns if this binary is a non-official build from
 // source code.
 func IsSourceBuild() bool {
-	_, err := minioVersionToReleaseTime(Version)
+	_, err := obstorVersionToReleaseTime(Version)
 	return err != nil
 }
 
@@ -466,10 +467,10 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 
 	// For binary only installations, we return link to the latest binary.
 	if runtime.GOOS == "windows" {
-		return minioReleaseURL + "obstor.exe"
+		return obstorReleaseURL + "obstor.exe"
 	}
 
-	return minioReleaseURL + "obstor"
+	return obstorReleaseURL + "obstor"
 }
 
 func getUpdateReaderFromURL(u *url.URL, transport http.RoundTripper, mode string) (io.ReadCloser, error) {

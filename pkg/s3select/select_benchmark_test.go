@@ -45,10 +45,10 @@ func newRandString(length int) string {
 func genSampleCSVData(count int) []byte {
 	buf := &bytes.Buffer{}
 	csvWriter := csv.NewWriter(buf)
-	csvWriter.Write([]string{"id", "name", "age", "city"})
+	_ = csvWriter.Write([]string{"id", "name", "age", "city"})
 
 	for i := 0; i < count; i++ {
-		csvWriter.Write([]string{
+		_ = csvWriter.Write([]string{
 			strconv.Itoa(i),
 			newRandString(10),
 			newRandString(5),
@@ -119,7 +119,7 @@ func benchmarkSelect(b *testing.B, count int, query string) {
 			}
 
 			s3Select.Evaluate(&nullResponseWriter{})
-			s3Select.Close()
+			_ = s3Select.Close()
 		}
 	})
 }

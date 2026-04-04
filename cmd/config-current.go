@@ -312,11 +312,11 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 			if err != nil {
 				return err
 			}
-			etcdClnt.Close()
+			_ = etcdClnt.Close()
 		}
 	}
 	if _, err := openid.LookupConfig(s[config.IdentityOpenIDSubSys][config.Default],
-		NewGatewayHTTPTransport(), xhttp.DrainBody); err != nil {
+		NewBackendHTTPTransport(), xhttp.DrainBody); err != nil {
 		return err
 	}
 
@@ -331,12 +331,12 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 			if cerr != nil {
 				return cerr
 			}
-			conn.Close()
+			_ = conn.Close()
 		}
 	}
 
 	if _, err := opa.LookupConfig(s[config.PolicyOPASubSys][config.Default],
-		NewGatewayHTTPTransport(), xhttp.DrainBody); err != nil {
+		NewBackendHTTPTransport(), xhttp.DrainBody); err != nil {
 		return err
 	}
 
@@ -344,7 +344,7 @@ func validateConfig(s config.Config, setDriveCounts []int) error {
 		return err
 	}
 
-	return notify.TestNotificationTargets(GlobalContext, s, NewGatewayHTTPTransport(), globalNotificationSys.ConfiguredTargetIDs())
+	return notify.TestNotificationTargets(GlobalContext, s, NewBackendHTTPTransport(), globalNotificationSys.ConfiguredTargetIDs())
 }
 
 func lookupConfigs(s config.Config, setDriveCounts []int) {
@@ -364,7 +364,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 			dns.Authentication(dnsUser, dnsPass),
 			dns.RootCAs(globalRootCAs))
 		if err != nil {
-			if globalIsGateway {
+			if globalIsBackend {
 				logger.FatalIf(err, "Unable to initialize remote webhook DNS config")
 			} else {
 				logger.LogIf(ctx, fmt.Errorf("unable to initialize remote webhook DNS config %w", err))
@@ -374,7 +374,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	etcdCfg, err := etcd.LookupConfig(s[config.EtcdSubSys][config.Default], globalRootCAs)
 	if err != nil {
-		if globalIsGateway {
+		if globalIsBackend {
 			logger.FatalIf(err, "Unable to initialize etcd config")
 		} else {
 			logger.LogIf(ctx, fmt.Errorf("unable to initialize etcd config: %w", err))
@@ -385,7 +385,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		if globalEtcdClient == nil {
 			globalEtcdClient, err = etcd.New(etcdCfg)
 			if err != nil {
-				if globalIsGateway {
+				if globalIsBackend {
 					logger.FatalIf(err, "Unable to initialize etcd config")
 				} else {
 					logger.LogIf(ctx, fmt.Errorf("unable to initialize etcd config: %w", err))
@@ -402,11 +402,11 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 				globalDNSConfig, err = dns.NewCoreDNS(etcdCfg.Config,
 					dns.DomainNames(globalDomainNames),
 					dns.DomainIPs(globalDomainIPs),
-					dns.DomainPort(globalMinioPort),
+					dns.DomainPort(globalObstorPort),
 					dns.CoreDNSPath(etcdCfg.CoreDNSPath),
 				)
 				if err != nil {
-					if globalIsGateway {
+					if globalIsBackend {
 						logger.FatalIf(err, "Unable to initialize DNS config")
 					} else {
 						logger.LogIf(ctx, fmt.Errorf("unable to initialize DNS config for %s: %w",
@@ -438,7 +438,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	// Initialize remote instance transport once.
 	getRemoteInstanceTransportOnce.Do(func() {
-		getRemoteInstanceTransport = newGatewayHTTPTransport(apiConfig.RemoteTransportDeadline)
+		getRemoteInstanceTransport = newBackendHTTPTransport(apiConfig.RemoteTransportDeadline)
 	})
 
 	if globalIsErasure {
@@ -458,7 +458,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 
 	globalCacheConfig, err = cache.LookupConfig(s[config.CacheSubSys][config.Default])
 	if err != nil {
-		if globalIsGateway {
+		if globalIsBackend {
 			logger.FatalIf(err, "Unable to setup cache")
 		} else {
 			logger.LogIf(ctx, fmt.Errorf("unable to setup cache: %w", err))
@@ -478,7 +478,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 	if err != nil {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize SFTP config: %w", err))
 	}
-	globalSFTPConfig = sftpCfg
+	GlobalSFTPConfig = sftpCfg
 
 	replCfg, err := replication.LookupConfig(s[config.ReplicationSubSys][config.Default])
 	if err != nil {
@@ -492,13 +492,13 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 	}
 
 	globalOpenIDConfig, err = openid.LookupConfig(s[config.IdentityOpenIDSubSys][config.Default],
-		NewGatewayHTTPTransport(), xhttp.DrainBody)
+		NewBackendHTTPTransport(), xhttp.DrainBody)
 	if err != nil {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize OpenID: %w", err))
 	}
 
 	opaCfg, err := opa.LookupConfig(s[config.PolicyOPASubSys][config.Default],
-		NewGatewayHTTPTransport(), xhttp.DrainBody)
+		NewBackendHTTPTransport(), xhttp.DrainBody)
 	if err != nil {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize OPA: %w", err))
 	}
@@ -513,7 +513,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 	}
 
 	// Load logger targets based on user's configuration
-	loggerUserAgent := getUserAgent(getMinioMode())
+	loggerUserAgent := getUserAgent(getObstorMode())
 
 	loggerCfg, err := logger.LookupConfig(s)
 	if err != nil {
@@ -530,7 +530,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 					http.WithAuthToken(l.AuthToken),
 					http.WithUserAgent(loggerUserAgent),
 					http.WithLogKind(string(logger.All)),
-					http.WithTransport(NewGatewayHTTPTransport()),
+					http.WithTransport(NewBackendHTTPTransport()),
 				),
 			); err != nil {
 				logger.LogIf(ctx, fmt.Errorf("unable to initialize console HTTP target: %w", err))
@@ -548,7 +548,7 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 					http.WithAuthToken(l.AuthToken),
 					http.WithUserAgent(loggerUserAgent),
 					http.WithLogKind(string(logger.All)),
-					http.WithTransport(NewGatewayHTTPTransportWithClientCerts(l.ClientCert, l.ClientKey)),
+					http.WithTransport(NewBackendHTTPTransportWithClientCerts(l.ClientCert, l.ClientKey)),
 				),
 			); err != nil {
 				logger.LogIf(ctx, fmt.Errorf("unable to initialize audit HTTP target: %w", err))
@@ -556,12 +556,12 @@ func lookupConfigs(s config.Config, setDriveCounts []int) {
 		}
 	}
 
-	globalConfigTargetList, err = notify.GetNotificationTargets(GlobalContext, s, NewGatewayHTTPTransport(), false)
+	globalConfigTargetList, err = notify.GetNotificationTargets(GlobalContext, s, NewBackendHTTPTransport(), false)
 	if err != nil {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize notification target(s): %w", err))
 	}
 
-	globalEnvTargetList, err = notify.GetNotificationTargets(GlobalContext, newServerConfig(), NewGatewayHTTPTransport(), true)
+	globalEnvTargetList, err = notify.GetNotificationTargets(GlobalContext, newServerConfig(), NewBackendHTTPTransport(), true)
 	if err != nil {
 		logger.LogIf(ctx, fmt.Errorf("unable to initialize notification target(s): %w", err))
 	}
@@ -760,7 +760,7 @@ func getOpenIDValidators(cfg openid.Config) *openid.Validators {
 	validators := openid.NewValidators()
 
 	if cfg.JWKS.URL != nil {
-		validators.Add(openid.NewJWT(cfg))
+		_ = validators.Add(openid.NewJWT(cfg))
 	}
 
 	return validators

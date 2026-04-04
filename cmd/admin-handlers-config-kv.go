@@ -287,7 +287,7 @@ func (a adminAPIHandlers) RestoreConfigHistoryKVHandler(w http.ResponseWriter, r
 		return
 	}
 
-	delServerConfigHistory(ctx, objectAPI, restoreID)
+	_ = delServerConfigHistory(ctx, objectAPI, restoreID)
 }
 
 // ListConfigHistoryKVHandler - lists all the KV ids.
@@ -354,7 +354,7 @@ func (a adminAPIHandlers) HelpConfigKVHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	json.NewEncoder(w).Encode(rd)
+	_ = json.NewEncoder(w).Encode(rd)
 	w.(http.Flusher).Flush()
 }
 

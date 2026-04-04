@@ -100,7 +100,7 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 	listCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
-	r, err := client.Get(listCtx, minioConfigPrefix, etcd.WithPrefix(), etcd.WithKeysOnly())
+	r, err := client.Get(listCtx, obstorConfigPrefix, etcd.WithPrefix(), etcd.WithKeysOnly())
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 
 		if GlobalKMS != nil {
 			data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: string(kv.Key),
+				obstorMetaBucket: string(kv.Key),
 			})
 			if err != nil {
 				return err
@@ -163,7 +163,7 @@ func migrateConfigPrefixToEncrypted(objAPI ObjectLayer, encrypted bool) error {
 
 	var marker string
 	for {
-		res, err := objAPI.ListObjects(GlobalContext, minioMetaBucket, minioConfigPrefix, marker, "", maxObjectList)
+		res, err := objAPI.ListObjects(GlobalContext, obstorMetaBucket, obstorConfigPrefix, marker, "", maxObjectList)
 		if err != nil {
 			return err
 		}

@@ -7,7 +7,23 @@ linters:
     - govet
     - ineffassign
     - staticcheck
+    - errcheck
+    - unused
   settings:
+    errcheck:
+      exclude-functions:
+        - io.Copy
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (*os.File).Seek
+        - (net/http.ResponseWriter).Write
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - os.Remove
+        - os.RemoveAll
+        - os.Setenv
+        - os.Unsetenv
     misspell:
       locale: US
   exclusions:
@@ -15,10 +31,13 @@ linters:
     paths:
       - pkg/rpc
       - pkg/argon2
+      - pkg/s3select/internal/parquet-go
       - pkg/s3select/internal/parquet-go/gen-go
       - pkg/s3select/internal/parquet-go/tools
       - pkg/smart/bindata.go
       - pkg/mimedb/util
+      - _gen_test\.go
+      - _gen\.go
     rules:
       - text: "should have a package comment"
         linters:
@@ -26,6 +45,12 @@ linters:
       - text: "error strings should not be capitalized or end with punctuation or a newline"
         linters:
           - staticcheck
+      - path: _test\.go
+        linters:
+          - errcheck
+      - text: "Error return value is not checked"
+        linters:
+          - errcheck
 
 formatters:
   enable:
@@ -35,6 +60,7 @@ formatters:
     paths:
       - pkg/rpc
       - pkg/argon2
+      - pkg/s3select/internal/parquet-go
       - pkg/s3select/internal/parquet-go/gen-go
       - pkg/s3select/internal/parquet-go/tools
       - pkg/smart/bindata.go

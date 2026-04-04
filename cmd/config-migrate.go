@@ -286,7 +286,7 @@ func migrateV2ToV3() error {
 	srvConfig.Region = cv2.Credentials.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature V4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = consoleLoggerV1{
 		Enable: true,
@@ -340,7 +340,7 @@ func migrateV3ToV4() error {
 	srvConfig.Region = cv3.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv3.Logger.Console
 	srvConfig.Logger.File = cv3.Logger.File
@@ -378,7 +378,7 @@ func migrateV4ToV5() error {
 	srvConfig.Region = cv4.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv4.Logger.Console
 	srvConfig.Logger.File = cv4.Logger.File
@@ -419,7 +419,7 @@ func migrateV5ToV6() error {
 	srvConfig.Region = cv5.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv5.Logger.Console
 	srvConfig.Logger.File = cv5.Logger.File
@@ -508,7 +508,7 @@ func migrateV6ToV7() error {
 	srvConfig.Region = cv6.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv6.Logger.Console
 	srvConfig.Logger.File = cv6.Logger.File
@@ -564,7 +564,7 @@ func migrateV7ToV8() error {
 	srvConfig.Region = cv7.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv7.Logger.Console
 	srvConfig.Logger.File = cv7.Logger.File
@@ -626,7 +626,7 @@ func migrateV8ToV9() error {
 	srvConfig.Region = cv8.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv8.Logger.Console
 	srvConfig.Logger.Console.Level = "error"
@@ -696,7 +696,7 @@ func migrateV9ToV10() error {
 	srvConfig.Region = cv9.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv9.Logger.Console
 	srvConfig.Logger.File = cv9.Logger.File
@@ -764,7 +764,7 @@ func migrateV10ToV11() error {
 	srvConfig.Region = cv10.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv10.Logger.Console
 	srvConfig.Logger.File = cv10.Logger.File
@@ -835,7 +835,7 @@ func migrateV11ToV12() error {
 	srvConfig.Region = cv11.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv11.Logger.Console
 	srvConfig.Logger.File = cv11.Logger.File
@@ -935,7 +935,7 @@ func migrateV12ToV13() error {
 	srvConfig.Region = cv12.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv12.Logger.Console
 	srvConfig.Logger.File = cv12.Logger.File
@@ -1015,7 +1015,7 @@ func migrateV13ToV14() error {
 	srvConfig.Region = cv13.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv13.Logger.Console
 	srvConfig.Logger.File = cv13.Logger.File
@@ -1100,7 +1100,7 @@ func migrateV14ToV15() error {
 	srvConfig.Region = cv14.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 	srvConfig.Logger.Console = cv14.Logger.Console
 	srvConfig.Logger.File = cv14.Logger.File
@@ -1190,7 +1190,7 @@ func migrateV15ToV16() error {
 	srvConfig.Region = cv15.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	// Check and set notifiers config
@@ -1280,7 +1280,7 @@ func migrateV16ToV17() error {
 	srvConfig.Region = cv16.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	srvConfig.Logger.Console = cv16.Logger.Console
@@ -1401,7 +1401,7 @@ func migrateV17ToV18() error {
 	srvConfig.Region = cv17.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	srvConfig.Logger.Console = cv17.Logger.Console
@@ -1503,7 +1503,7 @@ func migrateV18ToV19() error {
 	srvConfig.Region = cv18.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	srvConfig.Logger.Console = cv18.Logger.Console
@@ -1609,7 +1609,7 @@ func migrateV19ToV20() error {
 	srvConfig.Region = cv19.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	srvConfig.Logger.Console = cv19.Logger.Console
@@ -1713,7 +1713,7 @@ func migrateV20ToV21() error {
 	srvConfig.Region = cv20.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv20.Notify.AMQP) == 0 {
@@ -1817,7 +1817,7 @@ func migrateV21ToV22() error {
 	srvConfig.Region = cv21.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv21.Notify.AMQP) == 0 {
@@ -1921,7 +1921,7 @@ func migrateV22ToV23() error {
 	srvConfig.Region = cv22.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv22.Notify.AMQP) == 0 {
@@ -2034,7 +2034,7 @@ func migrateV23ToV24() error {
 	srvConfig.Region = cv23.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv23.Notify.AMQP) == 0 {
@@ -2147,7 +2147,7 @@ func migrateV24ToV25() error {
 	srvConfig.Region = cv24.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv24.Notify.AMQP) == 0 {
@@ -2265,7 +2265,7 @@ func migrateV25ToV26() error {
 	srvConfig.Region = cv25.Region
 	if srvConfig.Region == "" {
 		// Region needs to be set for AWS Signature Version 4.
-		srvConfig.Region = globalMinioDefaultRegion
+		srvConfig.Region = globalObstorDefaultRegion
 	}
 
 	if len(cv25.Notify.AMQP) == 0 {
@@ -2423,9 +2423,9 @@ func migrateV27ToV28() error {
 
 // Migrates ${HOME}/.obstor/config.json to '<export_path>/.obstor.sys/config/config.json'
 // if etcd is configured then migrates /config/config.json to '<export_path>/.obstor.sys/config/config.json'
-func migrateConfigToMinioSys(objAPI ObjectLayer) (err error) {
+func migrateConfigToObstorSys(objAPI ObjectLayer) (err error) {
 	// Construct path to config.json for the given bucket.
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	defer func() {
 		if err == nil {
@@ -2434,7 +2434,7 @@ func migrateConfigToMinioSys(objAPI ObjectLayer) (err error) {
 			} else {
 				// Rename config.json to config.json.deprecated only upon
 				// success of this function.
-				os.Rename(getConfigFile(), getConfigFile()+".deprecated")
+				_ = os.Rename(getConfigFile(), getConfigFile()+".deprecated")
 			}
 		}
 	}()
@@ -2470,9 +2470,9 @@ func migrateConfigToMinioSys(objAPI ObjectLayer) (err error) {
 }
 
 // Migrates '.obstor.sys/config.json' to v33.
-func migrateMinioSysConfig(objAPI ObjectLayer) error {
+func migrateObstorSysConfig(objAPI ObjectLayer) error {
 	// Construct path to config.json for the given bucket.
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	// Check if the config version is latest, if not migrate.
 	ok, _, err := checkConfigVersion(objAPI, configFile, "33")
@@ -2483,22 +2483,22 @@ func migrateMinioSysConfig(objAPI ObjectLayer) error {
 		return nil
 	}
 
-	if err := migrateV27ToV28MinioSys(objAPI); err != nil {
+	if err := migrateV27ToV28ObstorSys(objAPI); err != nil {
 		return err
 	}
-	if err := migrateV28ToV29MinioSys(objAPI); err != nil {
+	if err := migrateV28ToV29ObstorSys(objAPI); err != nil {
 		return err
 	}
-	if err := migrateV29ToV30MinioSys(objAPI); err != nil {
+	if err := migrateV29ToV30ObstorSys(objAPI); err != nil {
 		return err
 	}
-	if err := migrateV30ToV31MinioSys(objAPI); err != nil {
+	if err := migrateV30ToV31ObstorSys(objAPI); err != nil {
 		return err
 	}
-	if err := migrateV31ToV32MinioSys(objAPI); err != nil {
+	if err := migrateV31ToV32ObstorSys(objAPI); err != nil {
 		return err
 	}
-	return migrateV32ToV33MinioSys(objAPI)
+	return migrateV32ToV33ObstorSys(objAPI)
 }
 
 func checkConfigVersion(objAPI ObjectLayer, configFile string, version string) (bool, []byte, error) {
@@ -2510,7 +2510,7 @@ func checkConfigVersion(objAPI ObjectLayer, configFile string, version string) (
 	if !utf8.Valid(data) {
 		if GlobalKMS != nil {
 			data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: path.Join(minioMetaBucket, configFile),
+				obstorMetaBucket: path.Join(obstorMetaBucket, configFile),
 			})
 			if err != nil {
 				data, err = madmin.DecryptData(globalActiveCred.String(), bytes.NewReader(data))
@@ -2543,8 +2543,8 @@ func checkConfigVersion(objAPI ObjectLayer, configFile string, version string) (
 	return vcfg.Version == version, data, nil
 }
 
-func migrateV27ToV28MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV27ToV28ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 	ok, data, err := checkConfigVersion(objAPI, configFile, "27")
 	if err == errConfigNotFound {
 		return nil
@@ -2569,8 +2569,8 @@ func migrateV27ToV28MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateV28ToV29MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV28ToV29ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "28")
 	if err == errConfigNotFound {
@@ -2596,8 +2596,8 @@ func migrateV28ToV29MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateV29ToV30MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV29ToV30ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "29")
 	if err == errConfigNotFound {
@@ -2628,8 +2628,8 @@ func migrateV29ToV30MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateV30ToV31MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV30ToV31ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "30")
 	if err == errConfigNotFound {
@@ -2663,8 +2663,8 @@ func migrateV30ToV31MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateV31ToV32MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV31ToV32ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "31")
 	if err == errConfigNotFound {
@@ -2693,8 +2693,8 @@ func migrateV31ToV32MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateV32ToV33MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateV32ToV33ObstorSys(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "32")
 	if err == errConfigNotFound {
@@ -2721,8 +2721,8 @@ func migrateV32ToV33MinioSys(objAPI ObjectLayer) error {
 	return nil
 }
 
-func migrateMinioSysConfigToKV(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+func migrateObstorSysConfigToKV(objAPI ObjectLayer) error {
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 
 	// Check if the config version is latest, if not migrate.
 	ok, data, err := checkConfigVersion(objAPI, configFile, "33")
@@ -2759,34 +2759,34 @@ func migrateMinioSysConfigToKV(objAPI ObjectLayer) error {
 	compress.SetCompressionConfig(newCfg, cfg.Compression)
 
 	for k, args := range cfg.Notify.AMQP {
-		notify.SetNotifyAMQP(newCfg, k, args)
+		_ = notify.SetNotifyAMQP(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.Elasticsearch {
-		notify.SetNotifyES(newCfg, k, args)
+		_ = notify.SetNotifyES(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.Kafka {
-		notify.SetNotifyKafka(newCfg, k, args)
+		_ = notify.SetNotifyKafka(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.MQTT {
-		notify.SetNotifyMQTT(newCfg, k, args)
+		_ = notify.SetNotifyMQTT(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.MySQL {
-		notify.SetNotifyMySQL(newCfg, k, args)
+		_ = notify.SetNotifyMySQL(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.NATS {
-		notify.SetNotifyNATS(newCfg, k, args)
+		_ = notify.SetNotifyNATS(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.NSQ {
-		notify.SetNotifyNSQ(newCfg, k, args)
+		_ = notify.SetNotifyNSQ(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.PostgreSQL {
-		notify.SetNotifyPostgres(newCfg, k, args)
+		_ = notify.SetNotifyPostgres(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.Redis {
-		notify.SetNotifyRedis(newCfg, k, args)
+		_ = notify.SetNotifyRedis(newCfg, k, args)
 	}
 	for k, args := range cfg.Notify.Webhook {
-		notify.SetNotifyWebhook(newCfg, k, args)
+		_ = notify.SetNotifyWebhook(newCfg, k, args)
 	}
 
 	if err = saveServerConfig(GlobalContext, objAPI, newCfg); err != nil {

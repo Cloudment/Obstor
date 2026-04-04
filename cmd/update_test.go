@@ -30,7 +30,7 @@ import (
 	"time"
 )
 
-func TestMinioVersionToReleaseTime(t *testing.T) {
+func TestObstorVersionToReleaseTime(t *testing.T) {
 	testCases := []struct {
 		version    string
 		isOfficial bool
@@ -40,7 +40,7 @@ func TestMinioVersionToReleaseTime(t *testing.T) {
 		{"DEVELOPMENT.GOGET", false},
 	}
 	for i, testCase := range testCases {
-		_, err := minioVersionToReleaseTime(testCase.version)
+		_, err := obstorVersionToReleaseTime(testCase.version)
 		if (err == nil) != testCase.isOfficial {
 			t.Errorf("Test %d: Expected %v but got %v",
 				i+1, testCase.isOfficial, err == nil)
@@ -88,33 +88,33 @@ func TestDownloadURL(t *testing.T) {
 	os.Setenv("OBSTOR_CI_CD", "")
 	defer os.Setenv("OBSTOR_CI_CD", sci)
 
-	minioVersion1 := releaseTimeToReleaseTag(UTCNow())
-	durl := getDownloadURL(minioVersion1)
+	obstorVersion1 := releaseTimeToReleaseTag(UTCNow())
+	durl := getDownloadURL(obstorVersion1)
 	if IsDocker() {
-		if durl != "docker pull cloudment/obstor:"+minioVersion1 {
-			t.Errorf("Expected %s, got %s", "docker pull cloudment/obstor:"+minioVersion1, durl)
+		if durl != "docker pull cloudment/obstor:"+obstorVersion1 {
+			t.Errorf("Expected %s, got %s", "docker pull cloudment/obstor:"+obstorVersion1, durl)
 		}
 	} else {
 		if runtime.GOOS == "windows" {
-			if durl != minioReleaseURL+"obstor.exe" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor.exe", durl)
+			if durl != obstorReleaseURL+"obstor.exe" {
+				t.Errorf("Expected %s, got %s", obstorReleaseURL+"obstor.exe", durl)
 			}
 		} else {
-			if durl != minioReleaseURL+"obstor" {
-				t.Errorf("Expected %s, got %s", minioReleaseURL+"obstor", durl)
+			if durl != obstorReleaseURL+"obstor" {
+				t.Errorf("Expected %s, got %s", obstorReleaseURL+"obstor", durl)
 			}
 		}
 	}
 
 	os.Setenv("KUBERNETES_SERVICE_HOST", "10.11.148.5")
-	durl = getDownloadURL(minioVersion1)
+	durl = getDownloadURL(obstorVersion1)
 	if durl != kubernetesDeploymentDoc {
 		t.Errorf("Expected %s, got %s", kubernetesDeploymentDoc, durl)
 	}
 	os.Unsetenv("KUBERNETES_SERVICE_HOST")
 
 	os.Setenv("MESOS_CONTAINER_NAME", "mesos-1111")
-	durl = getDownloadURL(minioVersion1)
+	durl = getDownloadURL(obstorVersion1)
 	if durl != mesosDeploymentDoc {
 		t.Errorf("Expected %s, got %s", mesosDeploymentDoc, durl)
 	}
@@ -132,20 +132,20 @@ func TestUserAgent(t *testing.T) {
 		{
 			envName:     "",
 			envValue:    "",
-			mode:        globalMinioModeFS,
-			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeFS),
+			mode:        globalObstorModeFS,
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalObstorModeFS),
 		},
 		{
 			envName:     "MESOS_CONTAINER_NAME",
 			envValue:    "mesos-11111",
-			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/universe-%s", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "dcos", "mesos-1111"),
+			mode:        globalObstorModeErasure,
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/universe-%s", runtime.GOOS, runtime.GOARCH, globalObstorModeErasure, "dcos", "mesos-1111"),
 		},
 		{
 			envName:     "KUBERNETES_SERVICE_HOST",
 			envValue:    "10.11.148.5",
-			mode:        globalMinioModeErasure,
-			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalMinioModeErasure, "kubernetes"),
+			mode:        globalObstorModeErasure,
+			expectedStr: fmt.Sprintf("Obstor (%s; %s; %s; %s; source) Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET Obstor/DEVELOPMENT.GOGET", runtime.GOOS, runtime.GOARCH, globalObstorModeErasure, "kubernetes"),
 		},
 	}
 

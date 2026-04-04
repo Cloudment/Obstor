@@ -300,7 +300,7 @@ func (l *Config) LookupUserDN(username string) (string, []string, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// Bind to the lookup user account
 	if err = l.lookupBind(conn); err != nil {
@@ -329,7 +329,7 @@ func (l *Config) Bind(username, password string) (string, []string, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	var bindDN string
 	if l.isUsingLookupBind {
@@ -423,7 +423,7 @@ func (l Config) testConnection() error {
 	if err != nil {
 		return fmt.Errorf("error creating connection to LDAP server: %v", err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 	if l.isUsingLookupBind {
 		if err = l.lookupBind(conn); err != nil {
 			return fmt.Errorf("error connecting as LDAP Lookup Bind user: %v", err)

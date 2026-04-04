@@ -109,11 +109,11 @@ func formatFSMigrateV1ToV2(ctx context.Context, wlk *lock.LockedFile, fsPath str
 		return fmt.Errorf(`format.json version expected %s, found %s`, formatFSVersionV1, version)
 	}
 
-	if err = fsRemoveAll(ctx, path.Join(fsPath, minioMetaMultipartBucket)); err != nil {
+	if err = fsRemoveAll(ctx, path.Join(fsPath, obstorMetaMultipartBucket)); err != nil {
 		return err
 	}
 
-	if err = os.MkdirAll(path.Join(fsPath, minioMetaMultipartBucket), 0755); err != nil {
+	if err = os.MkdirAll(path.Join(fsPath, obstorMetaMultipartBucket), 0755); err != nil {
 		return err
 	}
 
@@ -164,7 +164,7 @@ func formatFSMigrate(ctx context.Context, wlk *lock.LockedFile, fsPath string) e
 // Creates a new format.json if unformatted.
 func createFormatFS(fsFormatPath string) error {
 	// Attempt a write lock on formatConfigFile `format.json`
-	// file stored in minioMetaBucket(.obstor.sys) directory.
+	// file stored in obstorMetaBucket(.obstor.sys) directory.
 	lk, err := lock.TryLockedOpenFile(fsFormatPath, os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		return err
@@ -189,7 +189,7 @@ func createFormatFS(fsFormatPath string) error {
 // of the process so that another obstor process does not try to
 // migrate the backend when we are actively working on the backend.
 func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, err error) {
-	fsFormatPath := pathJoin(fsPath, minioMetaBucket, formatConfigFile)
+	fsFormatPath := pathJoin(fsPath, obstorMetaBucket, formatConfigFile)
 
 	// Add a deployment ID, if it does not exist.
 	if err := formatFSFixDeploymentID(ctx, fsFormatPath); err != nil {
@@ -214,7 +214,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 		}
 		if osIsNotExist(err) || isEmpty {
 			if err == nil {
-				rlk.Close()
+				_ = rlk.Close()
 			}
 			// Fresh disk - create format.json
 			err = createFormatFS(fsFormatPath)
@@ -249,7 +249,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 		}
 		if version != formatFSVersionV2 {
 			// Format needs migration
-			rlk.Close()
+			_ = rlk.Close()
 			// Hold write lock during migration so that we do not disturb any
 			// obstor processes running in parallel.
 			var wlk *lock.LockedFile
@@ -273,7 +273,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 		}
 		var id string
 		if id, err = formatFSGetDeploymentID(rlk); err != nil {
-			rlk.Close()
+			_ = rlk.Close()
 			return nil, err
 		}
 		globalDeploymentID = id
@@ -299,11 +299,11 @@ func formatFSFixDeploymentID(ctx context.Context, fsFormatPath string) error {
 		var fi os.FileInfo
 		fi, err = rlk.Stat()
 		if err != nil {
-			rlk.Close()
+			_ = rlk.Close()
 			return err
 		}
 		if fi.Size() == 0 {
-			rlk.Close()
+			_ = rlk.Close()
 			return nil
 		}
 	}
@@ -316,17 +316,17 @@ func formatFSFixDeploymentID(ctx context.Context, fsFormatPath string) error {
 
 	formatBackend, err := formatMetaGetFormatBackendFS(rlk)
 	if err != nil {
-		rlk.Close()
+		_ = rlk.Close()
 		return err
 	}
 	if formatBackend != formatBackendFS {
-		rlk.Close()
+		_ = rlk.Close()
 		return fmt.Errorf(`%s file: expected format-type: %s, found: %s`, formatConfigFile, formatBackendFS, formatBackend)
 	}
 
 	format := &formatFS{}
 	err = jsonLoad(rlk, format)
-	rlk.Close()
+	_ = rlk.Close()
 	if err != nil {
 		return err
 	}

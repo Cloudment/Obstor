@@ -97,7 +97,7 @@ func (c *OperatorDNS) Put(bucket string) error {
 		}
 	}
 	var errorStringBuilder strings.Builder
-	io.Copy(&errorStringBuilder, io.LimitReader(resp.Body, resp.ContentLength))
+	_, _ = io.Copy(&errorStringBuilder, io.LimitReader(resp.Body, resp.ContentLength))
 	xhttp.DrainBody(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		errorString := errorStringBuilder.String()

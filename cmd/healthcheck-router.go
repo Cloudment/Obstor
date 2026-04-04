@@ -29,7 +29,7 @@ const (
 	healthCheckReadinessPath   = "/ready"
 	healthCheckClusterPath     = "/cluster"
 	healthCheckClusterReadPath = "/cluster/read"
-	healthCheckPathPrefix      = minioReservedBucketPath + healthCheckPath
+	healthCheckPathPrefix      = obstorReservedBucketPath + healthCheckPath
 )
 
 // registerHealthCheckRouter - add handler functions for liveness and readiness routes.

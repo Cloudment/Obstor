@@ -378,7 +378,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 				continue
 			}
 
-			_, err := disks[0].ReadVersion(ctx, minioMetaBucket, o.objectPath(0), "", false)
+			_, err := disks[0].ReadVersion(ctx, obstorMetaBucket, o.objectPath(0), "", false)
 			if err != nil {
 				time.Sleep(retryDelay)
 				retries++
@@ -387,9 +387,9 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 		}
 
 		// Read metadata associated with the object from all disks.
-		fi, metaArr, onlineDisks, err := er.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(0), ObjectOptions{}, true)
+		fi, metaArr, onlineDisks, err := er.getObjectFileInfo(ctx, obstorMetaBucket, o.objectPath(0), ObjectOptions{}, true)
 		if err != nil {
-			switch toObjectErr(err, minioMetaBucket, o.objectPath(0)).(type) {
+			switch toObjectErr(err, obstorMetaBucket, o.objectPath(0)).(type) {
 			case ObjectNotFound:
 				retries++
 				time.Sleep(retryDelay)
@@ -453,7 +453,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 						continue
 					}
 
-					_, err := disks[0].ReadVersion(ctx, minioMetaBucket, o.objectPath(partN), "", false)
+					_, err := disks[0].ReadVersion(ctx, obstorMetaBucket, o.objectPath(partN), "", false)
 					if err != nil {
 						time.Sleep(retryDelay)
 						retries++
@@ -461,7 +461,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 					}
 				}
 				// Load first part metadata...
-				fi, metaArr, onlineDisks, err = er.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
+				fi, metaArr, onlineDisks, err = er.getObjectFileInfo(ctx, obstorMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
 				if err != nil {
 					time.Sleep(retryDelay)
 					retries++
@@ -477,9 +477,9 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 				}
 			}
 			buf.Reset()
-			err := er.getObjectWithFileInfo(ctx, minioMetaBucket, o.objectPath(partN), 0, fi.Size, buf, fi, metaArr, onlineDisks)
+			err := er.getObjectWithFileInfo(ctx, obstorMetaBucket, o.objectPath(partN), 0, fi.Size, buf, fi, metaArr, onlineDisks)
 			if err != nil {
-				switch toObjectErr(err, minioMetaBucket, o.objectPath(partN)).(type) {
+				switch toObjectErr(err, obstorMetaBucket, o.objectPath(partN)).(type) {
 				case ObjectNotFound:
 					retries++
 					time.Sleep(retryDelay)
@@ -665,7 +665,7 @@ func (er *erasureObjects) listPath(ctx context.Context, o listPathOptions) (entr
 				r, err := hash.NewReader(bytes.NewReader(b.data), int64(len(b.data)), "", "", int64(len(b.data)))
 				logger.LogIf(ctx, err)
 				custom := b.headerKV()
-				_, err = er.putObject(ctx, minioMetaBucket, o.objectPath(b.n), NewPutObjReader(r), ObjectOptions{
+				_, err = er.putObject(ctx, obstorMetaBucket, o.objectPath(b.n), NewPutObjReader(r), ObjectOptions{
 					UserDefined:    custom,
 					NoLock:         true, // No need to hold namespace lock, each prefix caches uniquely.
 					ParentIsObject: nil,
@@ -693,7 +693,7 @@ func (er *erasureObjects) listPath(ctx context.Context, o listPathOptions) (entr
 					for k, v := range meta {
 						fi.Metadata[k] = v
 					}
-					err := er.updateObjectMeta(ctx, minioMetaBucket, o.objectPath(0), fi)
+					err := er.updateObjectMeta(ctx, obstorMetaBucket, o.objectPath(0), fi)
 					if err == nil {
 						break
 					}
@@ -952,7 +952,7 @@ func listPathRaw(ctx context.Context, opts listPathRawOptions) (err error) {
 		if agree == len(readers) {
 			// Everybody agreed
 			for _, r := range readers {
-				r.skip(1)
+				_ = r.skip(1)
 			}
 			if opts.agreed != nil {
 				opts.agreed(current)
@@ -965,7 +965,7 @@ func listPathRaw(ctx context.Context, opts listPathRawOptions) (err error) {
 		// Skip the inputs we used.
 		for i, r := range readers {
 			if topEntries[i].name != "" {
-				r.skip(1)
+				_ = r.skip(1)
 			}
 		}
 	}

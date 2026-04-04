@@ -50,6 +50,9 @@ var (
 	errInvalidEncryptionParameters = errors.New("the encryption parameters are not applicable to this object")
 )
 
+// ErrInvalidEncryptionParametersValue is exported for use by external packages.
+var ErrInvalidEncryptionParametersValue = errInvalidEncryptionParameters
+
 const (
 	// SSECustomerKeySize is the size of valid client provided encryption keys in bytes.
 	// Currently AWS supports only AES256. So the SSE-C key size is fixed to 32 bytes.
@@ -243,7 +246,7 @@ func EncryptRequest(content io.Reader, r *http.Request, bucket, object string, m
 	return newEncryptReader(content, key, bucket, object, metadata, crypto.S3.IsRequested(r.Header))
 }
 
-func decryptObjectInfo(key []byte, bucket, object string, metadata map[string]string) ([]byte, error) {
+func DecryptObjectMeta(key []byte, bucket, object string, metadata map[string]string) ([]byte, error) {
 	switch kind, _ := crypto.IsEncrypted(metadata); kind {
 	case crypto.S3:
 		var KMS = GlobalKMS
@@ -315,7 +318,7 @@ func DecryptCopyRequestR(client io.Reader, h http.Header, bucket, object string,
 }
 
 func newDecryptReader(client io.Reader, key []byte, bucket, object string, seqNumber uint32, metadata map[string]string) (io.Reader, error) {
-	objectEncryptionKey, err := decryptObjectInfo(key, bucket, object, metadata)
+	objectEncryptionKey, err := DecryptObjectMeta(key, bucket, object, metadata)
 	if err != nil {
 		return nil, err
 	}
@@ -428,7 +431,7 @@ func (d *DecryptBlocksReader) buildDecrypter(partID int) error {
 		return err
 	}
 
-	objectEncryptionKey, err := decryptObjectInfo(key, d.bucket, d.object, m)
+	objectEncryptionKey, err := DecryptObjectMeta(key, d.bucket, d.object, m)
 	if err != nil {
 		return err
 	}
@@ -594,7 +597,7 @@ func getDecryptedETag(headers http.Header, objInfo ObjectInfo, copySource bool) 
 		return objInfo.ETag[len(objInfo.ETag)-32:]
 	}
 
-	objectEncryptionKey, err := decryptObjectInfo(key[:], objInfo.Bucket, objInfo.Name, objInfo.UserDefined)
+	objectEncryptionKey, err := DecryptObjectMeta(key[:], objInfo.Bucket, objInfo.Name, objInfo.UserDefined)
 	if err != nil {
 		return objInfo.ETag
 	}
@@ -809,9 +812,9 @@ func DecryptObjectInfo(info *ObjectInfo, r *http.Request) (encrypted bool, err e
 	return encrypted, nil
 }
 
-// The customer key in the header is used by the gateway for encryption in the case of
-// s3 gateway double encryption. A new client key is derived from the customer provided
-// key to be sent to the s3 backend for encryption at the backend.
+// The customer key in the header is used by the backend for encryption in the case of
+// s3 backend double encryption. A new client key is derived from the customer provided
+// key to be sent to the s3 remote storage for encryption at the remote storage.
 func deriveClientKey(clientKey [32]byte, bucket, object string) [32]byte {
 	var key [32]byte
 	mac := hmac.New(sha256.New, clientKey[:])

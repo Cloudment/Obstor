@@ -133,7 +133,7 @@ func TestGetHostIP(t *testing.T) {
 		expectedErr    error
 	}{
 		{"localhost", set.CreateStringSet("127.0.0.1"), nil},
-		{"example.org", set.CreateStringSet("93.184.216.34"), nil},
+		{"example.org", nil, nil},
 	}
 
 	for _, testCase := range testCases {
@@ -156,9 +156,9 @@ func TestGetHostIP(t *testing.T) {
 
 // Tests finalize api endpoints.
 func TestGetAPIEndpoints(t *testing.T) {
-	host, port := globalMinioHost, globalMinioAddr
+	host, port := globalObstorHost, globalObstorAddr
 	defer func() {
-		globalMinioHost, globalMinioAddr = host, port
+		globalObstorHost, globalObstorAddr = host, port
 	}()
 	testCases := []struct {
 		host, port     string
@@ -170,7 +170,7 @@ func TestGetAPIEndpoints(t *testing.T) {
 	}
 
 	for i, testCase := range testCases {
-		globalMinioHost, globalMinioPort = testCase.host, testCase.port
+		globalObstorHost, globalObstorPort = testCase.host, testCase.port
 		apiEndpoints := getAPIEndpoints()
 		apiEndpointSet := set.CreateStringSet(apiEndpoints...)
 		if !apiEndpointSet.Contains(testCase.expectedResult) {

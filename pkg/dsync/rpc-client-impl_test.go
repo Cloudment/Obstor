@@ -88,7 +88,7 @@ func (rpcClient *ReconnectRPCClient) Call(serviceMethod string, args interface{}
 		return rpcClient.rpc.Call(serviceMethod, args, reply)
 	}
 	if err = dialCall(); err == rpc.ErrShutdown {
-		rpcClient.rpc.Close()
+		_ = rpcClient.rpc.Close()
 		rpcClient.rpc = nil
 		err = dialCall()
 	}

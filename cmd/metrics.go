@@ -39,7 +39,7 @@ var (
 		},
 		[]string{"api"},
 	)
-	minioVersionInfo = prometheus.NewGaugeVec(
+	obstorVersionInfo = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: "obstor",
 			Name:      "version_info",
@@ -56,46 +56,46 @@ var (
 
 const (
 	healMetricsNamespace = "self_heal"
-	gatewayNamespace     = "gateway"
+	backendNamespace     = "backend"
 	cacheNamespace       = "cache"
 	s3Namespace          = "s3"
 	bucketNamespace      = "bucket"
-	minioNamespace       = "obstor"
+	obstorNamespace      = "obstor"
 	diskNamespace        = "disk"
 	interNodeNamespace   = "internode"
 )
 
 func init() {
 	prometheus.MustRegister(httpRequestsDuration)
-	prometheus.MustRegister(newMinioCollector())
-	prometheus.MustRegister(minioVersionInfo)
+	prometheus.MustRegister(newObstorCollector())
+	prometheus.MustRegister(obstorVersionInfo)
 }
 
-// newMinioCollector describes the collector
-// and returns reference of minioCollector
+// newObstorCollector describes the collector
+// and returns reference of obstorCollector
 // It creates the Prometheus Description which is used
 // to define metric and  help string
-func newMinioCollector() *minioCollector {
-	return &minioCollector{
+func newObstorCollector() *obstorCollector {
+	return &obstorCollector{
 		desc: prometheus.NewDesc("obstor_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 
-// minioCollector is the Custom Collector
-type minioCollector struct {
+// obstorCollector is the Custom Collector
+type obstorCollector struct {
 	desc *prometheus.Desc
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *obstorCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *obstorCollector) Collect(ch chan<- prometheus.Metric) {
 
 	// Expose Obstor's version information
-	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
+	obstorVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	storageMetricsPrometheus(ch)
 	nodeHealthMetricsPrometheus(ch)
@@ -103,7 +103,7 @@ func (c *minioCollector) Collect(ch chan<- prometheus.Metric) {
 	networkMetricsPrometheus(ch)
 	httpMetricsPrometheus(ch)
 	cacheMetricsPrometheus(ch)
-	gatewayMetricsPrometheus(ch)
+	backendMetricsPrometheus(ch)
 	healingMetricsPrometheus(ch)
 }
 
@@ -111,7 +111,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	nodesUp, nodesDown := GetPeerOnlineCount()
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "nodes", "online"),
+			prometheus.BuildFQName(obstorNamespace, "nodes", "online"),
 			"Total number of Obstor nodes online",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -119,7 +119,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "nodes", "offline"),
+			prometheus.BuildFQName(obstorNamespace, "nodes", "offline"),
 			"Total number of Obstor nodes offline",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -186,10 +186,10 @@ func healingMetricsPrometheus(ch chan<- prometheus.Metric) {
 	}
 }
 
-// Collects gateway specific metrics for Obstor instance in Prometheus specific format
+// Collects backend specific metrics for Obstor instance in Prometheus specific format
 // and sends to given channel
-func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
-	if !globalIsGateway || (globalGatewayName != S3BackendGateway && globalGatewayName != AzureBackendGateway && globalGatewayName != GCSBackendGateway) {
+func backendMetricsPrometheus(ch chan<- prometheus.Metric) {
+	if !globalIsBackend || (globalBackendName != S3Backend && globalBackendName != AzureBackend && globalBackendName != GCSBackend) {
 		return
 	}
 
@@ -206,16 +206,16 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "bytes_received"),
-			"Total number of bytes received by current Obstor Gateway "+globalGatewayName+" backend",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "bytes_received"),
+			"Total number of bytes received by current Obstor Backend "+globalBackendName+" backend",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(m.GetBytesReceived()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "bytes_sent"),
-			"Total number of bytes sent by current Obstor Gateway to "+globalGatewayName+" backend",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "bytes_sent"),
+			"Total number of bytes sent by current Obstor Backend to "+globalBackendName+" backend",
 			nil, nil),
 		prometheus.CounterValue,
 		float64(m.GetBytesSent()),
@@ -223,8 +223,8 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	s := m.GetRequests()
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "requests"),
+			"Total number of requests made to "+globalBackendName+" by current Obstor Backend",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Get)),
@@ -232,8 +232,8 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "requests"),
+			"Total number of requests made to "+globalBackendName+" by current Obstor Backend",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Head)),
@@ -241,8 +241,8 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "requests"),
+			"Total number of requests made to "+globalBackendName+" by current Obstor Backend",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Put)),
@@ -250,8 +250,8 @@ func gatewayMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(gatewayNamespace, globalGatewayName, "requests"),
-			"Total number of requests made to "+globalGatewayName+" by current Obstor Gateway",
+			prometheus.BuildFQName(backendNamespace, globalBackendName, "requests"),
+			"Total number of requests made to "+globalBackendName+" by current Obstor Backend",
 			[]string{"method"}, nil),
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(&s.Post)),
@@ -503,7 +503,7 @@ func bucketUsageMetricsPrometheus(ch chan<- prometheus.Metric) {
 		return
 	}
 
-	if globalIsGateway {
+	if globalIsBackend {
 		return
 	}
 
@@ -615,7 +615,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 		return
 	}
 
-	if globalIsGateway {
+	if globalIsBackend {
 		return
 	}
 
@@ -629,7 +629,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total capacity
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_raw", "total"),
+			prometheus.BuildFQName(obstorNamespace, "capacity_raw", "total"),
 			"Total capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -639,7 +639,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total capacity free
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_raw_free", "total"),
+			prometheus.BuildFQName(obstorNamespace, "capacity_raw_free", "total"),
 			"Total free capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -650,7 +650,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total usable capacity
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_usable", "total"),
+			prometheus.BuildFQName(obstorNamespace, "capacity_usable", "total"),
 			"Total usable capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -659,7 +659,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total usable capacity free
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_usable_free", "total"),
+			prometheus.BuildFQName(obstorNamespace, "capacity_usable_free", "total"),
 			"Total free usable capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -669,7 +669,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Obstor Offline Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "disks", "offline"),
+			prometheus.BuildFQName(obstorNamespace, "disks", "offline"),
 			"Total number of offline disks in current Obstor server instance",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -679,7 +679,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Obstor Total Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "disks", "total"),
+			prometheus.BuildFQName(obstorNamespace, "disks", "total"),
 			"Total number of disks for current Obstor server instance",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -726,13 +726,13 @@ func metricsHandler() http.Handler {
 
 	registry := prometheus.NewRegistry()
 
-	err := registry.Register(minioVersionInfo)
+	err := registry.Register(obstorVersionInfo)
 	logger.LogIf(GlobalContext, err)
 
 	err = registry.Register(httpRequestsDuration)
 	logger.LogIf(GlobalContext, err)
 
-	err = registry.Register(newMinioCollector())
+	err = registry.Register(newObstorCollector())
 	logger.LogIf(GlobalContext, err)
 
 	gatherers := prometheus.Gatherers{

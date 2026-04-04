@@ -76,7 +76,7 @@ func TestPrintServerCommonMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	if err = newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatal(err)
 	}
 
@@ -91,7 +91,7 @@ func TestPrintCLIAccessMsg(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	if err = newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatal(err)
 	}
 
@@ -106,7 +106,7 @@ func TestPrintStartupMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	if err = newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err = newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatal(err)
 	}
 

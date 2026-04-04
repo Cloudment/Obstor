@@ -337,7 +337,7 @@ func parseErrorResponse(resp *http.Response) error {
 	if resp.Body == nil {
 		return NewKESError(resp.StatusCode, "")
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	const MaxBodySize = 1 << 20
 	var size = resp.ContentLength
@@ -397,7 +397,7 @@ func (c *kesClient) postRetry(path string, body io.ReadSeeker, limit int64) (io.
 	retryMax := 1 + len(c.endpoints)
 	for i := 0; ; i++ {
 		if body != nil {
-			body.Seek(0, io.SeekStart) // seek to the beginning of the body.
+			_, _ = body.Seek(0, io.SeekStart) // seek to the beginning of the body.
 		}
 
 		response, err := c.post(c.endpoints[i%len(c.endpoints)]+path, body, limit)

@@ -53,7 +53,7 @@ func lockedOpenFile(path string, flag int, perm os.FileMode, lockType int) (*Loc
 	}
 
 	if err = syscall.Flock(int(f.Fd()), lockType); err != nil {
-		f.Close()
+		_ = f.Close()
 		if err == syscall.EWOULDBLOCK {
 			err = ErrAlreadyLocked
 		}
@@ -62,12 +62,12 @@ func lockedOpenFile(path string, flag int, perm os.FileMode, lockType int) (*Loc
 
 	st, err := os.Stat(path)
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, err
 	}
 
 	if st.IsDir() {
-		f.Close()
+		_ = f.Close()
 		return nil, &os.PathError{
 			Op:   "open",
 			Path: path,

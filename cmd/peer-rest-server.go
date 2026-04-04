@@ -301,14 +301,14 @@ func (s *peerRESTServer) StartProfilingHandler(w http.ResponseWriter, r *http.Re
 	globalProfilerMu.Lock()
 	defer globalProfilerMu.Unlock()
 	if globalProfiler == nil {
-		globalProfiler = make(map[string]minioProfiler, 10)
+		globalProfiler = make(map[string]obstorProfiler, 10)
 	}
 
 	// Stop profiler of all types if already running
 	for k, v := range globalProfiler {
 		for _, p := range profiles {
 			if p == k {
-				v.Stop()
+				_, _ = v.Stop()
 				delete(globalProfiler, k)
 			}
 		}
@@ -770,7 +770,7 @@ func (s *peerRESTServer) ServerUpdateHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if _, err = updateServer(info.URL, info.Sha256Sum, info.Time, info.ReleaseInfo, getMinioMode()); err != nil {
+	if _, err = updateServer(info.URL, info.Sha256Sum, info.Time, info.ReleaseInfo, getObstorMode()); err != nil {
 		s.writeErrorResponse(w, err)
 		return
 	}

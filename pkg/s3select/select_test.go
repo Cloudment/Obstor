@@ -431,13 +431,13 @@ func TestJSONQueries(t *testing.T) {
 				cpuid.CPU.Disable(cpuid.AVX2)
 				defer cpuid.CPU.Enable(cpuid.AVX2)
 			}
-			if true {
-				t.Fatal("setup error: expected cpu to be unsupported")
+			if cpuid.CPU.Supports(cpuid.AVX2) {
+				t.Fatal("setup error: expected AVX2 to be disabled")
 			}
 			testReq := testCase.requestXML
 			if len(testReq) == 0 {
 				var escaped bytes.Buffer
-				xml.EscapeText(&escaped, []byte(testCase.query))
+				_ = xml.EscapeText(&escaped, []byte(testCase.query))
 				testReq = []byte(fmt.Sprintf(defRequest, escaped.String()))
 			}
 			s3Select, err := NewS3Select(bytes.NewReader(testReq))
@@ -457,7 +457,7 @@ func TestJSONQueries(t *testing.T) {
 
 			w := &testResponseWriter{}
 			s3Select.Evaluate(w)
-			s3Select.Close()
+			_ = s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
 				Body:          io.NopCloser(bytes.NewReader(w.response)),
@@ -485,7 +485,7 @@ func TestJSONQueries(t *testing.T) {
 			testReq := testCase.requestXML
 			if len(testReq) == 0 {
 				var escaped bytes.Buffer
-				xml.EscapeText(&escaped, []byte(testCase.query))
+				_ = xml.EscapeText(&escaped, []byte(testCase.query))
 				testReq = []byte(fmt.Sprintf(defRequest, escaped.String()))
 			}
 			s3Select, err := NewS3Select(bytes.NewReader(testReq))
@@ -505,7 +505,7 @@ func TestJSONQueries(t *testing.T) {
 
 			w := &testResponseWriter{}
 			s3Select.Evaluate(w)
-			s3Select.Close()
+			_ = s3Select.Close()
 			resp := http.Response{
 				StatusCode:    http.StatusOK,
 				Body:          io.NopCloser(bytes.NewReader(w.response)),
@@ -1156,8 +1156,8 @@ func TestJSONInput(t *testing.T) {
 }
 
 func TestParquetInput(t *testing.T) {
-	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
-	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
+	_ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer func() { _ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "off") }()
 
 	var testTable = []struct {
 		requestXML     []byte
@@ -1273,8 +1273,8 @@ func TestParquetInput(t *testing.T) {
 }
 
 func TestParquetInputSchema(t *testing.T) {
-	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
-	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
+	_ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer func() { _ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "off") }()
 
 	var testTable = []struct {
 		requestXML []byte
@@ -1394,8 +1394,8 @@ func TestParquetInputSchema(t *testing.T) {
 }
 
 func TestParquetInputSchemaCSV(t *testing.T) {
-	os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
-	defer os.Setenv("OBSTOR_API_SELECT_PARQUET", "off")
+	_ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "on")
+	defer func() { _ = os.Setenv("OBSTOR_API_SELECT_PARQUET", "off") }()
 
 	var testTable = []struct {
 		requestXML []byte

@@ -52,14 +52,14 @@ func startRPCServers() {
 			mutex:   sync.Mutex{},
 			lockMap: make(map[string]int64),
 		}
-		server.RegisterName("Dsync", ls)
+		_ = server.RegisterName("Dsync", ls)
 		// For some reason the registration paths need to be different (even for different server objs)
 		server.HandleHTTP(rpcPaths[i], fmt.Sprintf("%s-debug", rpcPaths[i]))
 		l, e := net.Listen("tcp", ":"+strconv.Itoa(i+12345))
 		if e != nil {
 			log.Fatal("listen error:", e)
 		}
-		go http.Serve(l, nil)
+		go func() { _ = http.Serve(l, nil) }()
 
 		lockServers = append(lockServers, ls)
 	}

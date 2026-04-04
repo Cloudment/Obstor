@@ -91,7 +91,7 @@ func loadHealingTracker(ctx context.Context, disk StorageAPI) (*healingTracker, 
 	if err != nil {
 		return nil, err
 	}
-	b, err := disk.ReadAll(ctx, minioMetaBucket,
+	b, err := disk.ReadAll(ctx, obstorMetaBucket,
 		pathJoin(bucketMetaPrefix, slashSeparator, healingTrackerFilename))
 	if err != nil {
 		return nil, err
@@ -152,14 +152,14 @@ func (h *healingTracker) save(ctx context.Context) error {
 		return err
 	}
 	globalBackgroundHealState.updateHealStatus(h)
-	return h.disk.WriteAll(ctx, minioMetaBucket,
+	return h.disk.WriteAll(ctx, obstorMetaBucket,
 		pathJoin(bucketMetaPrefix, slashSeparator, healingTrackerFilename),
 		htrackerBytes)
 }
 
 // delete the tracker on disk.
 func (h *healingTracker) delete(ctx context.Context) error {
-	return h.disk.Delete(ctx, minioMetaBucket,
+	return h.disk.Delete(ctx, obstorMetaBucket,
 		pathJoin(bucketMetaPrefix, slashSeparator, healingTrackerFilename),
 		false)
 }
@@ -212,9 +212,9 @@ func (h *healingTracker) setQueuedBuckets(buckets []BucketInfo) {
 func (h *healingTracker) printTo(writer io.Writer) {
 	b, err := json.MarshalIndent(h, "", "  ")
 	if err != nil {
-		writer.Write([]byte(err.Error()))
+		_, _ = writer.Write([]byte(err.Error()))
 	}
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 // toHealingDisk converts the information to madmin.HealingDisk
@@ -373,18 +373,18 @@ func monitorLocalDisksAndHeal(ctx context.Context, z *erasureServerPools, bgSeq 
 			buckets, _ := z.ListBuckets(ctx)
 
 			buckets = append(buckets, BucketInfo{
-				Name: pathJoin(minioMetaBucket, minioConfigPrefix),
+				Name: pathJoin(obstorMetaBucket, obstorConfigPrefix),
 			})
 
 			// Buckets data are dispersed in multiple zones/sets, make
 			// sure to heal all bucket metadata configuration.
 			buckets = append(buckets, []BucketInfo{
-				{Name: pathJoin(minioMetaBucket, bucketMetaPrefix)},
+				{Name: pathJoin(obstorMetaBucket, bucketMetaPrefix)},
 			}...)
 
 			// Heal latest buckets first.
 			sort.Slice(buckets, func(i, j int) bool {
-				a, b := strings.HasPrefix(buckets[i].Name, minioMetaBucket), strings.HasPrefix(buckets[j].Name, minioMetaBucket)
+				a, b := strings.HasPrefix(buckets[i].Name, obstorMetaBucket), strings.HasPrefix(buckets[j].Name, obstorMetaBucket)
 				if a != b {
 					return a
 				}

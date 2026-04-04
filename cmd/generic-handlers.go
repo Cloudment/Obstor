@@ -140,9 +140,9 @@ func containsReservedMetadata(header http.Header) bool {
 
 // Reserved bucket.
 const (
-	minioReservedBucket     = "obstor"
-	minioReservedBucketPath = SlashSeparator + minioReservedBucket
-	loginPathPrefix         = SlashSeparator + "login"
+	obstorReservedBucket     = "obstor"
+	obstorReservedBucketPath = SlashSeparator + obstorReservedBucket
+	loginPathPrefix          = SlashSeparator + "login"
 )
 
 func setRedirectHandler(h http.Handler) http.Handler {
@@ -214,8 +214,8 @@ func shouldProxy() bool {
 // serves only limited purpose on redirect-handler for
 // browser requests.
 func getRedirectLocation(urlPath string) (rLocation string) {
-	if urlPath == minioReservedBucketPath {
-		rLocation = minioReservedBucketPath + SlashSeparator
+	if urlPath == obstorReservedBucketPath {
+		rLocation = obstorReservedBucketPath + SlashSeparator
 	}
 	if contains([]string{
 		SlashSeparator,
@@ -225,7 +225,7 @@ func getRedirectLocation(urlPath string) (rLocation string) {
 		"/favicon-32x32.png",
 		"/favicon-96x96.png",
 	}, urlPath) {
-		rLocation = minioReservedBucketPath + urlPath
+		rLocation = obstorReservedBucketPath + urlPath
 	}
 	return rLocation
 }
@@ -267,9 +267,9 @@ func guessIsMetricsReq(req *http.Request) bool {
 	}
 	aType := getRequestAuthType(req)
 	return (aType == authTypeAnonymous || aType == authTypeJWT) &&
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsPathLegacy ||
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsV2ClusterPath ||
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsV2NodePath
+		req.URL.Path == obstorReservedBucketPath+prometheusMetricsPathLegacy ||
+		req.URL.Path == obstorReservedBucketPath+prometheusMetricsV2ClusterPath ||
+		req.URL.Path == obstorReservedBucketPath+prometheusMetricsV2NodePath
 }
 
 // guessIsRPCReq - returns true if the request is for an RPC endpoint.
@@ -278,7 +278,7 @@ func guessIsRPCReq(req *http.Request) bool {
 		return false
 	}
 	return req.Method == http.MethodPost &&
-		strings.HasPrefix(req.URL.Path, minioReservedBucketPath+SlashSeparator)
+		strings.HasPrefix(req.URL.Path, obstorReservedBucketPath+SlashSeparator)
 }
 
 // Adds Cache-Control header
@@ -286,8 +286,8 @@ func setBrowserCacheControlHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if globalBrowserEnabled && r.Method == http.MethodGet && guessIsBrowserReq(r) {
 			// For all browser requests set appropriate Cache-Control policies
-			if HasPrefix(r.URL.Path, minioReservedBucketPath+SlashSeparator) {
-				if HasSuffix(r.URL.Path, ".js") || r.URL.Path == minioReservedBucketPath+"/favicon.ico" {
+			if HasPrefix(r.URL.Path, obstorReservedBucketPath+SlashSeparator) {
+				if HasSuffix(r.URL.Path, ".js") || r.URL.Path == obstorReservedBucketPath+"/favicon.ico" {
 					// For assets set cache expiry of one year. For each release, the name
 					// of the asset name will change and hence it can not be served from cache.
 					w.Header().Set(xhttp.CacheControl, "max-age=31536000")
@@ -323,7 +323,7 @@ func setReservedBucketHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// For all other requests reject access to reserved buckets
 		bucketName, _ := request2BucketObjectName(r)
-		if isMinioReservedBucket(bucketName) || isMinioMetaBucket(bucketName) {
+		if isObstorReservedBucket(bucketName) || isObstorMetaBucket(bucketName) {
 			if !guessIsRPCReq(r) && !guessIsBrowserReq(r) && !guessIsHealthCheckReq(r) && !guessIsMetricsReq(r) && !isAdminReq(r) {
 				writeErrorResponse(r.Context(), w, errorCodes.ToAPIErr(ErrAllAccessDisabled), r.URL, guessIsBrowserReq(r))
 				return
@@ -412,7 +412,7 @@ func setHTTPStatsHandler(h http.Handler) http.Handler {
 		r.Body = meteredRequest
 		h.ServeHTTP(meteredResponse, r)
 
-		if strings.HasPrefix(r.URL.Path, minioReservedBucketPath) {
+		if strings.HasPrefix(r.URL.Path, obstorReservedBucketPath) {
 			globalConnStats.incInputBytes(meteredRequest.BytesCount())
 			globalConnStats.incOutputBytes(meteredResponse.BytesCount())
 		} else {
@@ -531,12 +531,12 @@ func setBucketForwardingHandler(h http.Handler) http.Handler {
 			switch r.Method {
 			case http.MethodPut:
 				if getRequestAuthType(r) == authTypeJWT {
-					bucket, _ = path2BucketObjectWithBasePath(minioReservedBucketPath+"/upload", r.URL.Path)
+					bucket, _ = path2BucketObjectWithBasePath(obstorReservedBucketPath+"/upload", r.URL.Path)
 				}
 			case http.MethodGet:
 				if t := r.URL.Query().Get("token"); t != "" {
-					bucket, _ = path2BucketObjectWithBasePath(minioReservedBucketPath+"/download", r.URL.Path)
-				} else if getRequestAuthType(r) != authTypeJWT && !strings.HasPrefix(r.URL.Path, minioReservedBucketPath) {
+					bucket, _ = path2BucketObjectWithBasePath(obstorReservedBucketPath+"/download", r.URL.Path)
+				} else if getRequestAuthType(r) != authTypeJWT && !strings.HasPrefix(r.URL.Path, obstorReservedBucketPath) {
 					bucket, _ = request2BucketObjectName(r)
 				}
 			}

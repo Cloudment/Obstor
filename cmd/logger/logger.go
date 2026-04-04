@@ -66,7 +66,7 @@ const TimeFormat string = "15:04:05 MST 01/02/2006"
 var matchingFuncNames = [...]string{
 	"http.HandlerFunc.ServeHTTP",
 	"cmd.serverMain",
-	"cmd.StartGateway",
+	"cmd.StartBackend",
 	"cmd.(*webAPIHandlers).ListBuckets",
 	"cmd.(*webAPIHandlers).MakeBucket",
 	"cmd.(*webAPIHandlers).DeleteBucket",
@@ -264,7 +264,7 @@ func getTrace(traceLevel int) []string {
 // Return the highway hash of the passed string
 func hashString(input string) string {
 	defer loggerHighwayHasher.Reset()
-	loggerHighwayHasher.Write([]byte(input))
+	_, _ = loggerHighwayHasher.Write([]byte(input))
 	checksum := loggerHighwayHasher.Sum(nil)
 	return hex.EncodeToString(checksum)
 }
@@ -273,8 +273,8 @@ func hashString(input string) string {
 type Kind string
 
 const (
-	// Minio errors
-	Minio Kind = "OBSTOR"
+	// Obstor errors
+	Obstor Kind = "OBSTOR"
 	// Application errors
 	Application Kind = "APPLICATION"
 	// All errors
@@ -316,7 +316,7 @@ func logIf(ctx context.Context, err error, errKind ...interface{}) {
 	if Disable {
 		return
 	}
-	logKind := string(Minio)
+	logKind := string(Obstor)
 	if len(errKind) > 0 {
 		if ek, ok := errKind[0].(Kind); ok {
 			logKind = string(ek)
@@ -380,7 +380,7 @@ func logIf(ctx context.Context, err error, errKind ...interface{}) {
 
 	// Iterate over all logger targets to send the log entry
 	for _, t := range Targets {
-		t.Send(entry, entry.LogKind)
+		_ = t.Send(entry, entry.LogKind)
 	}
 }
 

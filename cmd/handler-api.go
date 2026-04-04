@@ -111,6 +111,11 @@ func (t *apiConfig) getCorsAllowOrigins() []string {
 	return corsAllowOrigins
 }
 
+// Return allowed CORS origins for protocols
+func GlobalGetCorsAllowOrigins() []string {
+	return globalAPIConfig.getCorsAllowOrigins()
+}
+
 func (t *apiConfig) getClusterDeadline() time.Duration {
 	t.mu.RLock()
 	defer t.mu.RUnlock()

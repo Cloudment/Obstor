@@ -36,38 +36,38 @@ func TestRedirectLocation(t *testing.T) {
 	}{
 		{
 			// 1. When urlPath is '/obstor'
-			urlPath:  minioReservedBucketPath,
-			location: minioReservedBucketPath + SlashSeparator,
+			urlPath:  obstorReservedBucketPath,
+			location: obstorReservedBucketPath + SlashSeparator,
 		},
 		{
 			// 2. When urlPath is '/'
 			urlPath:  SlashSeparator,
-			location: minioReservedBucketPath + SlashSeparator,
+			location: obstorReservedBucketPath + SlashSeparator,
 		},
 		{
 			// 3. When urlPath is '/webrpc'
 			urlPath:  "/webrpc",
-			location: minioReservedBucketPath + "/webrpc",
+			location: obstorReservedBucketPath + "/webrpc",
 		},
 		{
 			// 4. When urlPath is '/login'
 			urlPath:  "/login",
-			location: minioReservedBucketPath + "/login",
+			location: obstorReservedBucketPath + "/login",
 		},
 		{
 			// 5. When urlPath is '/favicon-16x16.png'
 			urlPath:  "/favicon-16x16.png",
-			location: minioReservedBucketPath + "/favicon-16x16.png",
+			location: obstorReservedBucketPath + "/favicon-16x16.png",
 		},
 		{
 			// 6. When urlPath is '/favicon-16x16.png'
 			urlPath:  "/favicon-32x32.png",
-			location: minioReservedBucketPath + "/favicon-32x32.png",
+			location: obstorReservedBucketPath + "/favicon-32x32.png",
 		},
 		{
 			// 7. When urlPath is '/favicon-96x96.png'
 			urlPath:  "/favicon-96x96.png",
-			location: minioReservedBucketPath + "/favicon-96x96.png",
+			location: obstorReservedBucketPath + "/favicon-96x96.png",
 		},
 		{
 			// 8. When urlPath is '/unknown'

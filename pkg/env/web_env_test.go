@@ -42,7 +42,7 @@ func GetenvHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "key not found", http.StatusNotFound)
 		return
 	}
-	w.Write([]byte("http://127.0.0.{1..4}:9000/data{1...4}"))
+	_, _ = w.Write([]byte("http://127.0.0.{1..4}:9000/data{1...4}"))
 	w.(http.Flusher).Flush()
 }
 

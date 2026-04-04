@@ -51,7 +51,7 @@ func writeSTSErrorResponse(ctx context.Context, w http.ResponseWriter, isErrCode
 	var logKind logger.Kind
 	switch errCode {
 	case ErrSTSInternalError, ErrSTSNotInitialized:
-		logKind = logger.Minio
+		logKind = logger.Obstor
 	default:
 		logKind = logger.All
 	}

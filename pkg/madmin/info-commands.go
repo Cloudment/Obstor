@@ -36,7 +36,7 @@ const (
 	FS
 	// Multi disk Erasure (single, distributed) backend.
 	Erasure
-	// Gateway to other storage
+	// Backend to other storage
 	Gateway
 
 	// Add your own backend.
@@ -65,10 +65,10 @@ type StorageInfo struct {
 
 // BackendInfo - contains info of the underlying backend
 type BackendInfo struct {
-	// Represents various backend types, currently on FS, Erasure and Gateway
+	// Represents various backend types, currently on FS, Erasure and Backend
 	Type BackendType
 
-	// Following fields are only meaningful if BackendType is Gateway.
+	// Following fields are only meaningful if BackendType is Backend.
 	GatewayOnline bool
 
 	// Following fields are only meaningful if BackendType is Erasure.

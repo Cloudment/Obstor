@@ -35,13 +35,13 @@ func AppendFile(dst string, src string, osync bool) error {
 	if err != nil {
 		return err
 	}
-	defer appendFile.Close()
+	defer func() { _ = appendFile.Close() }()
 
 	srcFile, err := os.Open(src)
 	if err != nil {
 		return err
 	}
-	defer srcFile.Close()
+	defer func() { _ = srcFile.Close() }()
 	_, err = io.Copy(appendFile, srcFile)
 	return err
 }

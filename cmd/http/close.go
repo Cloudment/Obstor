@@ -36,7 +36,7 @@ func DrainBody(respBody io.ReadCloser) {
 		// Without this closing connection would disallow re-using
 		// the same connection for future uses.
 		//  - http://stackoverflow.com/a/17961593/4465767
-		defer respBody.Close()
-		io.Copy(io.Discard, respBody)
+		defer func() { _ = respBody.Close() }()
+		_, _ = io.Copy(io.Discard, respBody)
 	}
 }

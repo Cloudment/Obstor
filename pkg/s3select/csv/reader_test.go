@@ -70,11 +70,11 @@ func TestRead(t *testing.T) {
 				QuoteEscape:    '"',
 				AlwaysQuote:    false,
 			}
-			record.WriteCSV(&result, opts)
+			_ = record.WriteCSV(&result, opts)
 			result.Truncate(result.Len() - 1)
 			result.WriteString(c.recordDelimiter)
 		}
-		r.Close()
+		_ = r.Close()
 		if err != io.EOF {
 			t.Fatalf("Case %d failed with %s", i, err)
 		}
@@ -104,7 +104,7 @@ func openTestFile(t tester, file string) []byte {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer rc.Close()
+			defer func() { _ = rc.Close() }()
 			b, err := io.ReadAll(rc)
 			if err != nil {
 				t.Fatal(err)
@@ -263,7 +263,7 @@ func TestReadExtended(t *testing.T) {
 				}
 				fields++
 			}
-			r.Close()
+			_ = r.Close()
 			if err != io.EOF {
 				t.Fatalf("Case %d failed with %s", i, err)
 			}
@@ -480,7 +480,7 @@ func TestReadFailures(t *testing.T) {
 				}
 				fields++
 			}
-			r.Close()
+			_ = r.Close()
 			if err != c.wantErr {
 				t.Fatalf("Case %d failed with %s", i, err)
 			}
@@ -510,7 +510,7 @@ func BenchmarkReaderBasic(b *testing.B) {
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	b.ReportAllocs()
 	b.ResetTimer()
 	b.SetBytes(int64(len(f)))
@@ -526,7 +526,7 @@ func BenchmarkReaderBasic(b *testing.B) {
 				b.Fatalf("Reading failed with %s", err)
 			}
 		}
-		r.Close()
+		_ = r.Close()
 	}
 }
 
@@ -567,7 +567,7 @@ func BenchmarkReaderHuge(b *testing.B) {
 					}
 					got++
 				}
-				r.Close()
+				_ = r.Close()
 				if got != want {
 					b.Errorf("want %d records, got %d", want, got)
 				}
@@ -592,7 +592,7 @@ func BenchmarkReaderReplace(b *testing.B) {
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	b.ReportAllocs()
 	b.ResetTimer()
 	b.SetBytes(int64(len(f)))
@@ -609,7 +609,7 @@ func BenchmarkReaderReplace(b *testing.B) {
 				b.Fatalf("Reading failed with %s", err)
 			}
 		}
-		r.Close()
+		_ = r.Close()
 	}
 }
 
@@ -629,7 +629,7 @@ func BenchmarkReaderReplaceTwo(b *testing.B) {
 	if err != nil {
 		b.Fatalf("Reading init failed with %s", err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	b.ReportAllocs()
 	b.ResetTimer()
 	b.SetBytes(int64(len(f)))
@@ -646,6 +646,6 @@ func BenchmarkReaderReplaceTwo(b *testing.B) {
 				b.Fatalf("Reading failed with %s", err)
 			}
 		}
-		r.Close()
+		_ = r.Close()
 	}
 }

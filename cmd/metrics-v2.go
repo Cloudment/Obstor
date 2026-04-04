@@ -46,7 +46,7 @@ const (
 	healMetricNamespace      MetricNamespace = "obstor_heal"
 	interNodeMetricNamespace MetricNamespace = "obstor_inter_node"
 	nodeMetricNamespace      MetricNamespace = "obstor_node"
-	minioMetricNamespace     MetricNamespace = "obstor"
+	obstorMetricNamespace    MetricNamespace = "obstor"
 	s3MetricNamespace        MetricNamespace = "obstor_s3"
 )
 
@@ -224,7 +224,7 @@ type MetricsGenerator func() MetricsGroup
 func GetGlobalGenerators() []MetricsGenerator {
 	g := []MetricsGenerator{
 		getBucketUsageMetrics,
-		getMinioHealingMetrics,
+		getObstorHealingMetrics,
 		getNodeHealthMetrics,
 		getClusterStorageMetrics,
 	}
@@ -245,8 +245,8 @@ func GetGeneratorsForPeer() []MetricsGenerator {
 		getGoMetrics,
 		getHTTPMetrics,
 		getLocalStorageMetrics,
-		getMinioProcMetrics,
-		getMinioVersionMetrics,
+		getObstorProcMetrics,
+		getObstorVersionMetrics,
 		getNetworkMetrics,
 		getS3TTFBMetric,
 	}
@@ -260,7 +260,7 @@ func GetSingleNodeGenerators() []MetricsGenerator {
 		getCacheMetrics,
 		getHTTPMetrics,
 		getNetworkMetrics,
-		getMinioVersionMetrics,
+		getObstorVersionMetrics,
 		getS3TTFBMetric,
 	}
 	return g
@@ -362,7 +362,7 @@ func getNodeDiskTotalBytesMD() MetricDescription {
 }
 func getUsageLastScanActivityMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: obstorMetricNamespace,
 		Subsystem: usageSubsystem,
 		Name:      lastActivityTime,
 		Help:      "Time elapsed (in nano seconds) since last scan activity. This is set to 0 until first scan cycle",
@@ -580,7 +580,7 @@ func getS3RejectedInvalidRequestsTotalMD() MetricDescription {
 }
 func getCacheHitsTotalMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      hitsTotal,
 		Help:      "Total number of disk cache hits",
@@ -589,7 +589,7 @@ func getCacheHitsTotalMD() MetricDescription {
 }
 func getCacheHitsMissedTotalMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      missedTotal,
 		Help:      "Total number of disk cache misses",
@@ -598,8 +598,8 @@ func getCacheHitsMissedTotalMD() MetricDescription {
 }
 func getCacheUsagePercentMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
-		Subsystem: minioNamespace,
+		Namespace: obstorNamespace,
+		Subsystem: obstorNamespace,
 		Name:      usagePercent,
 		Help:      "Total percentage cache usage",
 		Type:      gaugeMetric,
@@ -607,7 +607,7 @@ func getCacheUsagePercentMD() MetricDescription {
 }
 func getCacheUsageInfoMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      usageInfo,
 		Help:      "Total percentage cache usage, value of 1 indicates high and 0 low, label level is set as well",
@@ -616,7 +616,7 @@ func getCacheUsageInfoMD() MetricDescription {
 }
 func getCacheUsedBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      usedBytes,
 		Help:      "Current cache usage in bytes",
@@ -625,7 +625,7 @@ func getCacheUsedBytesMD() MetricDescription {
 }
 func getCacheTotalBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      totalBytes,
 		Help:      "Total size of cache disk in bytes",
@@ -634,7 +634,7 @@ func getCacheTotalBytesMD() MetricDescription {
 }
 func getCacheSentBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: obstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      sentBytes,
 		Help:      "Total number of bytes served from cache",
@@ -698,7 +698,7 @@ func getNodeOfflineTotalMD() MetricDescription {
 }
 func getObstorVersionMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: obstorMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      versionInfo,
 		Help:      "Obstor Release tag for the server",
@@ -707,7 +707,7 @@ func getObstorVersionMD() MetricDescription {
 }
 func getObstorCommitMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: obstorMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      commitInfo,
 		Help:      "Git commit hash for the Obstor release.",
@@ -723,7 +723,7 @@ func getS3TTFBDistributionMD() MetricDescription {
 		Type:      gaugeMetric,
 	}
 }
-func getMinioFDOpenMD() MetricDescription {
+func getObstorFDOpenMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: fileDescriptorSubsystem,
@@ -732,7 +732,7 @@ func getMinioFDOpenMD() MetricDescription {
 		Type:      gaugeMetric,
 	}
 }
-func getMinioFDLimitMD() MetricDescription {
+func getObstorFDLimitMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: fileDescriptorSubsystem,
@@ -741,7 +741,7 @@ func getMinioFDLimitMD() MetricDescription {
 		Type:      gaugeMetric,
 	}
 }
-func getMinioProcessIOWriteBytesMD() MetricDescription {
+func getObstorProcessIOWriteBytesMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: ioSubsystem,
@@ -750,7 +750,7 @@ func getMinioProcessIOWriteBytesMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getMinioProcessIOReadBytesMD() MetricDescription {
+func getObstorProcessIOReadBytesMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: ioSubsystem,
@@ -759,7 +759,7 @@ func getMinioProcessIOReadBytesMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getMinioProcessIOWriteCachedBytesMD() MetricDescription {
+func getObstorProcessIOWriteCachedBytesMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: ioSubsystem,
@@ -768,7 +768,7 @@ func getMinioProcessIOWriteCachedBytesMD() MetricDescription {
 		Type:      counterMetric,
 	}
 }
-func getMinioProcessIOReadCachedBytesMD() MetricDescription {
+func getObstorProcessIOReadCachedBytesMD() MetricDescription {
 	return MetricDescription{
 		Namespace: nodeMetricNamespace,
 		Subsystem: ioSubsystem,
@@ -822,9 +822,9 @@ func getObstorProcessUptimeMD() MetricDescription {
 		Type:      gaugeMetric,
 	}
 }
-func getMinioProcMetrics() MetricsGroup {
+func getObstorProcMetrics() MetricsGroup {
 	return MetricsGroup{
-		id:         "MinioProcMetrics",
+		id:         "ObstorProcMetrics",
 		cachedRead: cachedRead,
 		read: func(ctx context.Context) (metrics []Metric) {
 			if runtime.GOOS == "windows" {
@@ -839,12 +839,12 @@ func getMinioProcMetrics() MetricsGroup {
 			var openFDs int
 			openFDs, err = p.FileDescriptorsLen()
 			if err != nil {
-				logger.LogOnceIf(ctx, err, getMinioFDOpenMD())
+				logger.LogOnceIf(ctx, err, getObstorFDOpenMD())
 				return
 			}
 			l, err := p.Limits()
 			if err != nil {
-				logger.LogOnceIf(ctx, err, getMinioFDLimitMD())
+				logger.LogOnceIf(ctx, err, getObstorFDLimitMD())
 				return
 			}
 			io, err := p.IO()
@@ -865,13 +865,13 @@ func getMinioProcMetrics() MetricsGroup {
 
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioFDOpenMD(),
+					Description: getObstorFDOpenMD(),
 					Value:       float64(openFDs),
 				},
 			)
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioFDLimitMD(),
+					Description: getObstorFDLimitMD(),
 					Value:       float64(l.OpenFiles),
 				})
 			metrics = append(metrics,
@@ -886,22 +886,22 @@ func getMinioProcMetrics() MetricsGroup {
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioProcessIOReadBytesMD(),
+					Description: getObstorProcessIOReadBytesMD(),
 					Value:       float64(io.ReadBytes),
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioProcessIOWriteBytesMD(),
+					Description: getObstorProcessIOWriteBytesMD(),
 					Value:       float64(io.WriteBytes),
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioProcessIOReadCachedBytesMD(),
+					Description: getObstorProcessIOReadCachedBytesMD(),
 					Value:       float64(io.RChar),
 				})
 			metrics = append(metrics,
 				Metric{
-					Description: getMinioProcessIOWriteCachedBytesMD(),
+					Description: getObstorProcessIOWriteCachedBytesMD(),
 					Value:       float64(io.WChar),
 				})
 			metrics = append(metrics,
@@ -978,9 +978,9 @@ func getS3TTFBMetric() MetricsGroup {
 	}
 }
 
-func getMinioVersionMetrics() MetricsGroup {
+func getObstorVersionMetrics() MetricsGroup {
 	return MetricsGroup{
-		id:         "MinioVersionMetrics",
+		id:         "ObstorVersionMetrics",
 		cachedRead: cachedRead,
 		read: func(_ context.Context) (metrics []Metric) {
 			metrics = append(metrics, Metric{
@@ -1015,9 +1015,9 @@ func getNodeHealthMetrics() MetricsGroup {
 	}
 }
 
-func getMinioHealingMetrics() MetricsGroup {
+func getObstorHealingMetrics() MetricsGroup {
 	return MetricsGroup{
-		id:         "minioHealingMetrics",
+		id:         "obstorHealingMetrics",
 		cachedRead: cachedRead,
 		read: func(_ context.Context) (metrics []Metric) {
 			metrics = make([]Metric, 0, 5)
@@ -1243,7 +1243,7 @@ func getBucketUsageMetrics() MetricsGroup {
 				return
 			}
 
-			if globalIsGateway {
+			if globalIsBackend {
 				return
 			}
 
@@ -1333,7 +1333,7 @@ func getLocalStorageMetrics() MetricsGroup {
 				return
 			}
 
-			if globalIsGateway {
+			if globalIsBackend {
 				return
 			}
 
@@ -1373,7 +1373,7 @@ func getClusterStorageMetrics() MetricsGroup {
 				return
 			}
 
-			if globalIsGateway {
+			if globalIsBackend {
 				return
 			}
 
@@ -1422,23 +1422,23 @@ func getClusterStorageMetrics() MetricsGroup {
 	}
 }
 
-type minioClusterCollector struct {
+type obstorClusterCollector struct {
 	desc *prometheus.Desc
 }
 
-func newMinioClusterCollector() *minioClusterCollector {
-	return &minioClusterCollector{
-		desc: prometheus.NewDesc("minio_stats", "Statistics exposed by Obstor server", nil, nil),
+func newObstorClusterCollector() *obstorClusterCollector {
+	return &obstorClusterCollector{
+		desc: prometheus.NewDesc("obstor_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioClusterCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *obstorClusterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioClusterCollector) Collect(out chan<- prometheus.Metric) {
+func (c *obstorClusterCollector) Collect(out chan<- prometheus.Metric) {
 
 	var wg sync.WaitGroup
 	publish := func(in <-chan Metric) {
@@ -1520,14 +1520,14 @@ func ReportMetrics(ctx context.Context, generators func() []MetricsGenerator) <-
 	return ch
 }
 
-// minioCollectorV2 is the Custom Collector
-type minioCollectorV2 struct {
+// obstorCollectorV2 is the Custom Collector
+type obstorCollectorV2 struct {
 	generator func() []MetricsGenerator
 	desc      *prometheus.Desc
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioCollectorV2) Describe(ch chan<- *prometheus.Desc) {
+func (c *obstorCollectorV2) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
@@ -1546,10 +1546,10 @@ func populateAndPublish(generatorFn func() []MetricsGenerator, publish func(m Me
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioCollectorV2) Collect(ch chan<- prometheus.Metric) {
+func (c *obstorCollectorV2) Collect(ch chan<- prometheus.Metric) {
 
 	// Expose Obstor's version information
-	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
+	obstorVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	populateAndPublish(c.generator, func(metric Metric) bool {
 		labels, values := getOrderedLabelValueArrays(metric.VariableLabels)
@@ -1610,14 +1610,14 @@ func getOrderedLabelValueArrays(labelsWithValue map[string]string) (labels, valu
 	return
 }
 
-// newMinioCollectorV2 describes the collector
-// and returns reference of minioCollector for version 2
+// newObstorCollectorV2 describes the collector
+// and returns reference of obstorCollector for version 2
 // It creates the Prometheus Description which is used
 // to define Metric and  help string
-func newMinioCollectorV2(generator func() []MetricsGenerator) *minioCollectorV2 {
-	return &minioCollectorV2{
+func newObstorCollectorV2(generator func() []MetricsGenerator) *obstorCollectorV2 {
+	return &obstorCollectorV2{
 		generator: generator,
-		desc:      prometheus.NewDesc("minio_stats", "Statistics exposed by Obstor server", nil, nil),
+		desc:      prometheus.NewDesc("obstor_stats", "Statistics exposed by Obstor server", nil, nil),
 	}
 }
 
@@ -1626,7 +1626,7 @@ func metricsServerHandler() http.Handler {
 	registry := prometheus.NewRegistry()
 
 	// Report all other metrics
-	err := registry.Register(newMinioClusterCollector())
+	err := registry.Register(newObstorClusterCollector())
 	if err != nil {
 		logger.CriticalIf(GlobalContext, err)
 	}
@@ -1647,12 +1647,12 @@ func metricsServerHandler() http.Handler {
 func metricsNodeHandler() http.Handler {
 	registry := prometheus.NewRegistry()
 
-	err := registry.Register(newMinioCollectorV2(GetSingleNodeGenerators))
+	err := registry.Register(newObstorCollectorV2(GetSingleNodeGenerators))
 	if err != nil {
 		logger.CriticalIf(GlobalContext, err)
 	}
 	err = registry.Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{
-		Namespace:    minioNamespace,
+		Namespace:    obstorNamespace,
 		ReportErrors: true,
 	}))
 	if err != nil {

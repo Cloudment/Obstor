@@ -256,9 +256,9 @@ func (o listPathOptions) checkMetacacheState(ctx context.Context, rpc *peerRESTC
 			cache.error = err.Error()
 			cache.status = scanStateError
 			if rpc == nil || o.Transient {
-				localMetacacheMgr.updateCacheEntry(cache)
+				_, _ = localMetacacheMgr.updateCacheEntry(cache)
 			} else {
-				rpc.UpdateMetacacheListing(ctx, cache)
+				_, _ = rpc.UpdateMetacacheListing(ctx, cache)
 			}
 			return err
 		}

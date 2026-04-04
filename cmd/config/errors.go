@@ -144,10 +144,10 @@ var (
 		`Access key length should be at least 3, and secret key length at least 8 characters`,
 	)
 
-	ErrEnvCredentialsMissingGateway = newErrFn(
+	ErrEnvCredentialsMissingBackend = newErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`In Gateway mode, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD respectively`,
+		`In Backend mode, access and secret keys should be specified via environment variables OBSTOR_ROOT_USER and OBSTOR_ROOT_PASSWORD respectively`,
 	)
 
 	ErrEnvCredentialsMissingDistributed = newErrFn(
@@ -183,12 +183,12 @@ Refer to the link https://github.com/cloudment/obstor/tree/master/docs/erasure/s
 	)
 
 	ErrInvalidAddressFlag = newErrFn(
-		"--address input is invalid",
-		"Please check --address parameter",
-		`--address binds to a specific ADDRESS:PORT, ADDRESS can be an IPv4/IPv6 address or hostname (default port is ':9000')
-	Examples: --address ':443'
-		  --address '172.16.34.31:9000'
-		  --address '[fe80::da00:a6c8:e3ae:ddd7]:9000'`,
+		"--web-address input is invalid",
+		"Please check --web-address parameter",
+		`--web-address binds to a specific ADDRESS:PORT, ADDRESS can be an IPv4/IPv6 address or hostname (default port is ':9000')
+	Examples: --web-address ':443'
+		  --web-address '172.16.34.31:9000'
+		  --web-address '[fe80::da00:a6c8:e3ae:ddd7]:9000'`,
 	)
 
 	ErrInvalidFSEndpoint = newErrFn(
@@ -272,15 +272,15 @@ Example 1:
 	)
 
 	ErrInvalidGWSSEValue = newErrFn(
-		"Invalid gateway SSE value",
+		"Invalid backend SSE value",
 		"Please check the passed value",
-		"OBSTOR_GATEWAY_SSE: Gateway SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
+		"OBSTOR_BACKEND_SSE: Backend SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
 	)
 
 	ErrInvalidGWSSEEnvValue = newErrFn(
-		"Invalid gateway SSE configuration",
+		"Invalid backend SSE configuration",
 		"",
-		"Refer to https://obstor.net/docs/obstor-kms-quickstart-guide.html for setting up SSE",
+		"Refer to https://obstor.net/docs/obstor-kms-quickstart-guide for setting up SSE",
 	)
 
 	ErrInvalidReplicationWorkersValue = newErrFn(

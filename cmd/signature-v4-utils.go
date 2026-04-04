@@ -107,12 +107,12 @@ func isValidRegion(reqRegion string, confRegion string) bool {
 		return true
 	}
 	if confRegion == "US" {
-		confRegion = globalMinioDefaultRegion
+		confRegion = globalObstorDefaultRegion
 	}
 	// Some older s3 clients set region as "US" instead of
-	// globalMinioDefaultRegion, handle it.
+	// globalObstorDefaultRegion, handle it.
 	if reqRegion == "US" {
-		reqRegion = globalMinioDefaultRegion
+		reqRegion = globalObstorDefaultRegion
 	}
 	return reqRegion == confRegion
 }

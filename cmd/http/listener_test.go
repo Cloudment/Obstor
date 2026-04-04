@@ -163,7 +163,7 @@ func TestNewHTTPListener(t *testing.T) {
 		}
 
 		if err == nil {
-			listener.Close()
+			_ = listener.Close()
 		}
 	}
 }
@@ -199,10 +199,10 @@ func TestHTTPListenerStartClose(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Test %d: error: expected = <nil>, got = %v", i+1, err)
 			}
-			conn.Close()
+			_ = conn.Close()
 		}
 
-		listener.Close()
+		_ = listener.Close()
 	}
 }
 
@@ -242,7 +242,7 @@ func TestHTTPListenerAddr(t *testing.T) {
 			t.Fatalf("Test %d: addr: expected = %v, got = %v", i+1, testCase.expectedAddr, addr)
 		}
 
-		listener.Close()
+		_ = listener.Close()
 	}
 }
 
@@ -287,7 +287,7 @@ func TestHTTPListenerAddrs(t *testing.T) {
 			t.Fatalf("Test %d: addr: expected = %v, got = %v", i+1, testCase.expectedAddrs, addrs)
 		}
 
-		listener.Close()
+		_ = listener.Close()
 	}
 }
 

@@ -42,7 +42,7 @@ func (w *sleepWriter) Close() error {
 func TestDeadlineWriter(t *testing.T) {
 	w := NewDeadlineWriter(&sleepWriter{timeout: 500 * time.Millisecond}, 450*time.Millisecond)
 	_, err := w.Write([]byte("1"))
-	w.Close()
+	_ = w.Close()
 	if err != context.Canceled {
 		t.Error("deadlineWriter shouldn't be successful - should return context.Canceled")
 	}
@@ -52,7 +52,7 @@ func TestDeadlineWriter(t *testing.T) {
 	}
 	w = NewDeadlineWriter(&sleepWriter{timeout: 100 * time.Millisecond}, 600*time.Millisecond)
 	n, err := w.Write([]byte("abcd"))
-	w.Close()
+	_ = w.Close()
 	if err != nil {
 		t.Errorf("DeadlineWriter should succeed but failed with %s", err)
 	}
@@ -66,13 +66,13 @@ func TestCloseOnWriter(t *testing.T) {
 	if writer.HasWritten() {
 		t.Error("writeOnCloser must not be marked as HasWritten")
 	}
-	writer.Write(nil)
+	_, _ = writer.Write(nil)
 	if !writer.HasWritten() {
 		t.Error("writeOnCloser must be marked as HasWritten")
 	}
 
 	writer = WriteOnClose(io.Discard)
-	writer.Close()
+	_ = writer.Close()
 	if !writer.HasWritten() {
 		t.Error("writeOnCloser must be marked as HasWritten")
 	}
@@ -85,18 +85,18 @@ func TestAppendFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	name1 := f.Name()
-	defer os.Remove(name1)
-	f.WriteString("aaaaaaaaaa")
-	f.Close()
+	defer func() { _ = os.Remove(name1) }()
+	_, _ = f.WriteString("aaaaaaaaaa")
+	_ = f.Close()
 
 	f, err = os.CreateTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	name2 := f.Name()
-	defer os.Remove(name2)
-	f.WriteString("bbbbbbbbbb")
-	f.Close()
+	defer func() { _ = os.Remove(name2) }()
+	_, _ = f.WriteString("bbbbbbbbbb")
+	_ = f.Close()
 
 	if err = AppendFile(name1, name2, false); err != nil {
 		t.Error(err)
@@ -145,8 +145,8 @@ func TestSameFile(t *testing.T) {
 		t.Errorf("Error creating tmp file: %v", err)
 	}
 	tmpFile := f.Name()
-	f.Close()
-	defer os.Remove(f.Name())
+	_ = f.Close()
+	defer func() { _ = os.Remove(f.Name()) }()
 	fi1, err := os.Stat(tmpFile)
 	if err != nil {
 		t.Fatalf("Error Stat(): %v", err)

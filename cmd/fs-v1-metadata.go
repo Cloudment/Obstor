@@ -170,7 +170,7 @@ func (m fsMetaV1) ToObjectInfo(bucket, object string, fi os.FileInfo) ObjectInfo
 	if storageClass, ok := m.Meta[xhttp.AmzStorageClass]; ok {
 		objInfo.StorageClass = storageClass
 	} else {
-		objInfo.StorageClass = globalMinioDefaultStorageClass
+		objInfo.StorageClass = globalObstorDefaultStorageClass
 	}
 	var (
 		t time.Time

@@ -145,7 +145,7 @@ func checkAssumeRoleAuth(ctx context.Context, r *http.Request) (user auth.Creden
 }
 
 // AssumeRole - implementation of AWS STS API AssumeRole to get temporary
-// credentials for regular users on Minio.
+// credentials for regular users on Obstor.
 // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
 func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AssumeRole")

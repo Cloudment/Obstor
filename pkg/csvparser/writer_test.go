@@ -83,7 +83,7 @@ func (e errorWriter) Write(b []byte) (int, error) {
 func TestError(t *testing.T) {
 	b := &bytes.Buffer{}
 	f := NewWriter(b)
-	f.Write([]string{"abc"})
+	_ = f.Write([]string{"abc"})
 	f.Flush()
 	err := f.Error()
 
@@ -92,7 +92,7 @@ func TestError(t *testing.T) {
 	}
 
 	f = NewWriter(errorWriter{})
-	f.Write([]string{"abc"})
+	_ = f.Write([]string{"abc"})
 	f.Flush()
 	err = f.Error()
 

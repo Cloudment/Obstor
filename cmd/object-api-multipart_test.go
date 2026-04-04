@@ -447,7 +447,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting the result to contain one MultipartInfo entry and Istruncated to be false.
 		{
 			MaxUploads:  10,
-			KeyMarker:   "min",
+			KeyMarker:   "obs",
 			IsTruncated: false,
 			Uploads: []MultipartInfo{
 				{
@@ -462,7 +462,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting the result to contain one MultipartInfo entry and IsTruncated to be false.
 		{
 			MaxUploads:  1,
-			KeyMarker:   "min",
+			KeyMarker:   "obs",
 			IsTruncated: false,
 			Uploads: []MultipartInfo{
 				{
@@ -478,7 +478,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting `IsTruncated` to be true.
 		{
 			MaxUploads:  0,
-			KeyMarker:   "min",
+			KeyMarker:   "obs",
 			IsTruncated: true,
 		},
 		// listMultipartResults - 8.
@@ -488,7 +488,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting `isTruncated` to be true.
 		{
 			MaxUploads:  0,
-			KeyMarker:   "min",
+			KeyMarker:   "obs",
 			IsTruncated: true,
 		},
 		// listMultipartResults - 9.
@@ -527,7 +527,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting the result to contain one MultipartInfo entry and IsTruncated to be false.
 		{
 			MaxUploads:  2,
-			Prefix:      "min",
+			Prefix:      "obs",
 			IsTruncated: false,
 			Uploads: []MultipartInfo{
 				{
@@ -542,7 +542,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Expecting the result to contain one MultipartInfo entry and IsTruncated to be false.
 		{
 			MaxUploads:  1,
-			Prefix:      "min",
+			Prefix:      "obs",
 			IsTruncated: false,
 			Uploads: []MultipartInfo{
 				{
@@ -708,12 +708,12 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 			},
 		},
 		// listMultipartResults - 22.
-		// Testing for listing of 3 uploadID's for a given object, setting `prefix` to be "min".
+		// Testing for listing of 3 uploadID's for a given object, setting `prefix` to be "obs".
 		// Will be used to list on bucketNames[1].
 		{
 			MaxUploads:  10,
 			IsTruncated: false,
-			Prefix:      "min",
+			Prefix:      "obs",
 			Uploads: []MultipartInfo{
 				{
 					Object:   objectNames[0],
@@ -755,7 +755,7 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 			MaxUploads:     10,
 			KeyMarker:      "obstor-object-1.txt",
 			IsTruncated:    false,
-			Prefix:         "min",
+			Prefix:         "obs",
 			UploadIDMarker: uploadIDs[1],
 			Uploads: []MultipartInfo{
 				{
@@ -804,11 +804,11 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 			},
 		},
 		// listMultipartResults - 27.
-		//  listing with `prefix` "min".
+		//  listing with `prefix` "obs".
 		{
 			MaxUploads:  100,
 			IsTruncated: false,
-			Prefix:      "min",
+			Prefix:      "obs",
 			Uploads: []MultipartInfo{
 				{
 					Object:   objectNames[0],
@@ -1043,13 +1043,13 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		{bucketNames[0], "", "obstor-object-1.txt", "", "", 100, listMultipartResults[1], nil, true},
 		{bucketNames[0], "", "orange", "", "", 100, listMultipartResults[2], nil, true},
 		{bucketNames[0], "", "orange", "", "", 1, listMultipartResults[3], nil, true},
-		{bucketNames[0], "", "min", "", "", 10, listMultipartResults[4], nil, true},
+		{bucketNames[0], "", "obs", "", "", 10, listMultipartResults[4], nil, true},
 		// Test case with keyMarker set equal to number of parts in the result. (Test number 18).
-		{bucketNames[0], "", "min", "", "", 1, listMultipartResults[5], nil, true},
+		{bucketNames[0], "", "obs", "", "", 1, listMultipartResults[5], nil, true},
 		// Test case with keyMarker set to 0. (Test number 19).
-		{bucketNames[0], "", "min", "", "", 0, listMultipartResults[6], nil, true},
+		{bucketNames[0], "", "obs", "", "", 0, listMultipartResults[6], nil, true},
 		// Test case with keyMarker less than 0. (Test number 20).
-		// {bucketNames[0], "", "min", "", "", -1, listMultipartResults[7], nil, true},
+		// {bucketNames[0], "", "obs", "", "", -1, listMultipartResults[7], nil, true},
 		// The result contains only one entry. The  KeyPrefix is set to the object name in the result.
 		// Expecting the result to skip the KeyPrefix entry in the result (Test number 21).
 		{bucketNames[0], "", "obstor-object", "", "", 2, listMultipartResults[8], nil, true},
@@ -1057,9 +1057,9 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// Setting prefix to be equal to object name.(Test number 22).
 		{bucketNames[0], "obstor-object-1.txt", "", "", "", 2, listMultipartResults[9], nil, true},
 		// Setting `prefix` to contain the object name as its prefix (Test number 23).
-		{bucketNames[0], "min", "", "", "", 2, listMultipartResults[10], nil, true},
+		{bucketNames[0], "obs", "", "", "", 2, listMultipartResults[10], nil, true},
 		// Setting `prefix` to contain the object name as its prefix (Test number 24).
-		{bucketNames[0], "min", "", "", "", 1, listMultipartResults[11], nil, true},
+		{bucketNames[0], "obs", "", "", "", 1, listMultipartResults[11], nil, true},
 		// Setting `prefix` to not to contain the object name as its prefix (Test number 25-26).
 		{bucketNames[0], "orange", "", "", "", 2, listMultipartResults[12], nil, true},
 		{bucketNames[0], "Asia", "", "", "", 2, listMultipartResults[13], nil, true},
@@ -1082,11 +1082,11 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// and NextMarkers are expected to empty.
 		{bucketNames[1], "", "", "", "", 3, listMultipartResults[20], nil, true},
 		// Adding  prefix (Test number 34-36).
-		{bucketNames[1], "min", "", "", "", 10, listMultipartResults[21], nil, true},
+		{bucketNames[1], "obs", "", "", "", 10, listMultipartResults[21], nil, true},
 		{bucketNames[1], "orange", "", "", "", 10, listMultipartResults[22], nil, true},
 		{bucketNames[1], "Asia", "", "", "", 10, listMultipartResults[23], nil, true},
 		// Test case with `Prefix` and `UploadIDMarker` (Test number 37).
-		{bucketNames[1], "min", "obstor-object-1.txt", uploadIDs[1], "", 10, listMultipartResults[24], nil, true},
+		{bucketNames[1], "obs", "obstor-object-1.txt", uploadIDs[1], "", 10, listMultipartResults[24], nil, true},
 		// Test case for bucket with multiple objects in it.
 		//	Bucket used : `bucketNames[2]`.
 		//	Objects used: `objectNames[1-5]`.
@@ -1094,8 +1094,8 @@ func testListMultipartUploads(obj ObjectLayer, instanceType string, t TestErrHan
 		// (Test number 39).
 		{bucketNames[2], "", "", "", "", 100, listMultipartResults[25], nil, true},
 		//Test cases with prefixes.
-		//Testing listing with prefix set to "min" (Test number 40)	.
-		{bucketNames[2], "min", "", "", "", 100, listMultipartResults[26], nil, true},
+		//Testing listing with prefix set to "obs" (Test number 40)	.
+		{bucketNames[2], "obs", "", "", "", 100, listMultipartResults[26], nil, true},
 		//Testing listing with prefix set to "ney" (Test number 41).
 		{bucketNames[2], "ney", "", "", "", 100, listMultipartResults[27], nil, true},
 		//Testing listing with prefix set to "par" (Test number 42).

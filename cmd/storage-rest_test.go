@@ -416,9 +416,9 @@ func testStorageAPIRenameFile(t *testing.T, storage StorageAPI) {
 }
 
 func newStorageRESTHTTPServerClient(t *testing.T) (*httptest.Server, *storageRESTClient, config.Config, string) {
-	prevHost, prevPort := globalMinioHost, globalMinioPort
+	prevHost, prevPort := globalObstorHost, globalObstorPort
 	defer func() {
-		globalMinioHost, globalMinioPort = prevHost, prevPort
+		globalObstorHost, globalObstorPort = prevHost, prevPort
 	}()
 
 	endpointPath, err := os.MkdirTemp("", ".TestStorageREST.")
@@ -435,7 +435,7 @@ func newStorageRESTHTTPServerClient(t *testing.T) (*httptest.Server, *storageRES
 	}
 	url.Path = endpointPath
 
-	globalMinioHost, globalMinioPort = mustSplitHostPort(url.Host)
+	globalObstorHost, globalObstorPort = mustSplitHostPort(url.Host)
 
 	endpoint, err := NewEndpoint(url.String())
 	if err != nil {

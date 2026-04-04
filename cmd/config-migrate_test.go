@@ -32,7 +32,7 @@ func TestServerConfigMigrateV1(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(fsDir)
-	err = newTestConfig(globalMinioDefaultRegion, objLayer)
+	err = newTestConfig(globalObstorDefaultRegion, objLayer)
 	if err != nil {
 		t.Fatalf("Init Test config failed")
 	}
@@ -177,7 +177,7 @@ func TestServerConfigMigrateV2toV33(t *testing.T) {
 	}
 	defer os.RemoveAll(fsDir)
 
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + obstorConfigFile
 
 	// Create a corrupted config file
 	if err := os.WriteFile(configPath, []byte("{ \"version\":\"2\","), 0644); err != nil {
@@ -202,15 +202,15 @@ func TestServerConfigMigrateV2toV33(t *testing.T) {
 		t.Fatal("Unexpected error: ", err)
 	}
 
-	if err := migrateConfigToMinioSys(objLayer); err != nil {
+	if err := migrateConfigToObstorSys(objLayer); err != nil {
 		t.Fatal("Unexpected error: ", err)
 	}
 
-	if err := migrateMinioSysConfig(objLayer); err != nil {
+	if err := migrateObstorSysConfig(objLayer); err != nil {
 		t.Fatal("Unexpected error: ", err)
 	}
 
-	if err := migrateMinioSysConfigToKV(objLayer); err != nil {
+	if err := migrateObstorSysConfigToKV(objLayer); err != nil {
 		t.Fatal("Unexpected error: ", err)
 	}
 
@@ -240,7 +240,7 @@ func TestServerConfigMigrateFaultyConfig(t *testing.T) {
 	defer os.RemoveAll(rootPath)
 
 	globalConfigDir = &ConfigDir{path: rootPath}
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + obstorConfigFile
 
 	// Create a corrupted config file
 	if err := os.WriteFile(configPath, []byte("{ \"version\":\"2\", \"test\":"), 0644); err != nil {
@@ -337,7 +337,7 @@ func TestServerConfigMigrateCorruptedConfig(t *testing.T) {
 	defer os.RemoveAll(rootPath)
 
 	globalConfigDir = &ConfigDir{path: rootPath}
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + obstorConfigFile
 
 	for i := 3; i <= 17; i++ {
 		// Create a corrupted config file

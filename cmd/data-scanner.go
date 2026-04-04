@@ -91,7 +91,7 @@ func (s *safeDuration) Get() time.Duration {
 func runDataScanner(ctx context.Context, objAPI ObjectLayer) {
 	var err error
 	// Make sure only 1 scanner is running on the cluster.
-	locker := objAPI.NewNSLock(minioMetaBucket, "runDataScanner.lock")
+	locker := objAPI.NewNSLock(obstorMetaBucket, "runDataScanner.lock")
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		ctx, err = locker.GetLock(ctx, dataScannerLeaderLockTimeout)
@@ -117,7 +117,7 @@ func runDataScanner(ctx context.Context, objAPI ObjectLayer) {
 				logger.LogIf(ctx, err)
 			}
 		}
-		br.Close()
+		_ = br.Close()
 	}
 
 	scannerTimer := time.NewTimer(scannerCycle.Get())
@@ -662,7 +662,7 @@ func (f *folderScanner) scanQueuedLevels(ctx context.Context, folders []cachedFo
 					console.Debugf(healObjectsPrefix+" deleting dangling directory %s\n", prefix)
 				}
 
-				objAPI.HealObjects(ctx, bucket, prefix, madmin.HealOpts{
+				_ = objAPI.HealObjects(ctx, bucket, prefix, madmin.HealOpts{
 					Recursive: true,
 					Remove:    healDeleteDangling,
 				},

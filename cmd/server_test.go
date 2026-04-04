@@ -1275,7 +1275,7 @@ func (s *TestSuiteCommon) TestPutObjectLongName(c *check) {
 
 	response, err = s.client.Do(request)
 	c.Assert(err, nil)
-	verifyError(c, response, "XMinioInvalidObjectName", "Object name contains unsupported characters.", http.StatusBadRequest)
+	verifyError(c, response, "XObstorInvalidObjectName", "Object name contains unsupported characters.", http.StatusBadRequest)
 }
 
 // TestNotBeAbleToCreateObjectInNonexistentBucket - Validates the error response
@@ -1581,14 +1581,14 @@ func (s *TestSuiteCommon) TestListObjectsHandler(c *check) {
 			[]string{
 				"<Key>foo bar 1</Key>",
 				"<Key>foo bar 2</Key>",
-				fmt.Sprintf("<Owner><ID>%s</ID><DisplayName>obstor</DisplayName></Owner>", globalMinioDefaultOwnerID),
+				fmt.Sprintf("<Owner><ID>%s</ID><DisplayName>obstor</DisplayName></Owner>", globalObstorDefaultOwnerID),
 			},
 		},
 		{getListObjectsV2URL(s.endPoint, bucketName, "", "1000", "true", ""),
 			[]string{
 				"<Key>foo bar 1</Key>",
 				"<Key>foo bar 2</Key>",
-				fmt.Sprintf("<Owner><ID>%s</ID><DisplayName>obstor</DisplayName></Owner>", globalMinioDefaultOwnerID),
+				fmt.Sprintf("<Owner><ID>%s</ID><DisplayName>obstor</DisplayName></Owner>", globalObstorDefaultOwnerID),
 			},
 		},
 		{getListObjectsV2URL(s.endPoint, bucketName, "", "1000", "", "url"), []string{"<Key>foo+bar+1</Key>", "<Key>foo+bar+2</Key>"}},

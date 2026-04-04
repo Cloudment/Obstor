@@ -58,6 +58,9 @@ var errInvalidBucketName = errors.New("the specified bucket is not valid")
 // errInvalidRange - returned when given range value is not valid.
 var errInvalidRange = errors.New("invalid range")
 
+// ErrInvalidRangeValue - Used by external packages
+var ErrInvalidRangeValue = errInvalidRange
+
 // errInvalidRangeSource - returned when given range value exceeds
 // the source object size.
 var errInvalidRangeSource = errors.New("range specified exceeds source object size")

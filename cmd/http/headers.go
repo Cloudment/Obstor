@@ -136,7 +136,7 @@ const (
 	AmzRequestID = "x-amz-request-id"
 
 	// Deployment id.
-	MinioDeploymentID = "x-obstor-deployment-id"
+	ObstorDeploymentID = "x-obstor-deployment-id"
 
 	// Server-Status
 	ObstorServerStatus = "x-obstor-server-status"

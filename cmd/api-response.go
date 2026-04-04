@@ -36,7 +36,9 @@ import (
 
 const (
 	// RFC3339 a subset of the ISO8601 timestamp format. e.g 2014-04-29T18:30:38Z
-	iso8601TimeFormat = "2006-01-02T15:04:05.000Z"                     // Reply date format with nanosecond precision.
+	iso8601TimeFormat = "2006-01-02T15:04:05.000Z" // Reply date format with nanosecond precision.
+	// ISO8601TimeFormat - used by external packages
+	ISO8601TimeFormat = iso8601TimeFormat
 	maxObjectList     = metacacheBlockSize - (metacacheBlockSize / 10) // Limit number of objects in a listObjectsResponse/listObjectsVersionsResponse.
 	maxDeleteList     = 10000                                          // Limit number of objects deleted in a delete call.
 	maxUploadsList    = 10000                                          // Limit number of uploads in a listUploadsResponse.
@@ -418,7 +420,7 @@ func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 	listbuckets := make([]Bucket, 0, len(buckets))
 	var data = ListBucketsResponse{}
 	var owner = Owner{
-		ID:          globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
 		DisplayName: "obstor",
 	}
 
@@ -439,7 +441,7 @@ func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delimiter, encodingType string, maxKeys int, resp ListObjectVersionsInfo) ListVersionsResponse {
 	versions := make([]ObjectVersion, 0, len(resp.Objects))
 	var owner = Owner{
-		ID:          globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
 		DisplayName: "obstor",
 	}
 	var data = ListVersionsResponse{}
@@ -458,7 +460,7 @@ func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delim
 		if object.StorageClass != "" {
 			content.StorageClass = object.StorageClass
 		} else {
-			content.StorageClass = globalMinioDefaultStorageClass
+			content.StorageClass = globalObstorDefaultStorageClass
 		}
 		content.Owner = owner
 		content.VersionID = object.VersionID
@@ -497,7 +499,7 @@ func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delim
 func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingType string, maxKeys int, resp ListObjectsInfo) ListObjectsResponse {
 	contents := make([]Object, 0, len(resp.Objects))
 	var owner = Owner{
-		ID:          globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
 		DisplayName: "obstor",
 	}
 	var data = ListObjectsResponse{}
@@ -516,7 +518,7 @@ func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingTy
 		if object.StorageClass != "" {
 			content.StorageClass = object.StorageClass
 		} else {
-			content.StorageClass = globalMinioDefaultStorageClass
+			content.StorageClass = globalObstorDefaultStorageClass
 		}
 		content.Owner = owner
 		contents = append(contents, content)
@@ -546,7 +548,7 @@ func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingTy
 func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter, delimiter, encodingType string, fetchOwner, isTruncated bool, maxKeys int, objects []ObjectInfo, prefixes []string, metadata bool) ListObjectsV2Response {
 	contents := make([]Object, 0, len(objects))
 	var owner = Owner{
-		ID:          globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
 		DisplayName: "obstor",
 	}
 	var data = ListObjectsV2Response{}
@@ -565,12 +567,12 @@ func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter,
 		if object.StorageClass != "" {
 			content.StorageClass = object.StorageClass
 		} else {
-			content.StorageClass = globalMinioDefaultStorageClass
+			content.StorageClass = globalObstorDefaultStorageClass
 		}
 		content.Owner = owner
 		if metadata {
 			content.UserMetadata = make(StringMap)
-			for k, v := range CleanMinioInternalMetadataKeys(object.UserDefined) {
+			for k, v := range CleanObstorInternalMetadataKeys(object.UserDefined) {
 				if strings.HasPrefix(strings.ToLower(k), ReservedMetadataPrefixLower) {
 					// Do not need to send any internal metadata
 					// values to client.
@@ -650,16 +652,16 @@ func generateListPartsResponse(partsInfo ListPartsInfo, encodingType string) Lis
 	listPartsResponse.Bucket = partsInfo.Bucket
 	listPartsResponse.Key = s3EncodeName(partsInfo.Object, encodingType)
 	listPartsResponse.UploadID = partsInfo.UploadID
-	listPartsResponse.StorageClass = globalMinioDefaultStorageClass
+	listPartsResponse.StorageClass = globalObstorDefaultStorageClass
 
 	// Dumb values not meaningful
 	listPartsResponse.Initiator = Initiator{
-		ID:          globalMinioDefaultOwnerID,
-		DisplayName: globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
+		DisplayName: globalObstorDefaultOwnerID,
 	}
 	listPartsResponse.Owner = Owner{
-		ID:          globalMinioDefaultOwnerID,
-		DisplayName: globalMinioDefaultOwnerID,
+		ID:          globalObstorDefaultOwnerID,
+		DisplayName: globalObstorDefaultOwnerID,
 	}
 
 	listPartsResponse.MaxParts = partsInfo.MaxParts
@@ -777,7 +779,7 @@ func writeSuccessResponseHeadersOnly(w http.ResponseWriter) {
 // writeErrorRespone writes error headers
 func writeErrorResponse(ctx context.Context, w http.ResponseWriter, err APIError, reqURL *url.URL, browser bool) {
 	switch err.Code {
-	case "SlowDown", "XMinioServerNotInitialized", "XMinioReadQuorum", "XMinioWriteQuorum":
+	case "SlowDown", "XObstorServerNotInitialized", "XObstorReadQuorum", "XObstorWriteQuorum":
 		// Set retry-after header to indicate user-agents to retry request after 120secs.
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
 		w.Header().Set(xhttp.RetryAfter, "120")

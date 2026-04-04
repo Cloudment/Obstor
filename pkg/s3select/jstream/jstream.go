@@ -468,12 +468,12 @@ func (d *Decoder) skipObject(dec *json.Decoder) {
 		// Skip value.
 		d.skipValue(dec)
 	}
-	dec.Token() // consume '}'
+	_, _ = dec.Token() // consume '}'
 }
 
 func (d *Decoder) skipArray(dec *json.Decoder) {
 	for dec.More() {
 		d.skipValue(dec)
 	}
-	dec.Token() // consume ']'
+	_, _ = dec.Token() // consume ']'
 }

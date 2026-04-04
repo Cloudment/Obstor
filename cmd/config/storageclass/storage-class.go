@@ -157,14 +157,14 @@ func parseStorageClass(storageClassEnv string) (sc StorageClass, err error) {
 
 	// Only two elements allowed in the string - "scheme" and "number of parity disks"
 	if len(s) > 2 {
-		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Too many sections in %s", storageClassEnv)
+		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("too many sections in %s", storageClassEnv)
 	} else if len(s) < 2 {
-		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Too few sections in %s", storageClassEnv)
+		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("too few sections in %s", storageClassEnv)
 	}
 
 	// Only allowed scheme is "EC"
 	if s[0] != schemePrefix {
-		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("Unsupported scheme %s. Supported scheme is EC", s[0])
+		return StorageClass{}, config.ErrStorageClassValue(nil).Msg("unsupported scheme %s. Supported scheme is EC", s[0])
 	}
 
 	// Number of parity disks should be integer

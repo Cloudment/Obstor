@@ -47,7 +47,7 @@ func TestNewPReader(t *testing.T) {
 					break
 				}
 			}
-			r.Close()
+			_ = r.Close()
 			if err != io.EOF {
 				t.Fatalf("Reading failed with %s, %s", err, name)
 			}
@@ -59,7 +59,7 @@ func TestNewPReader(t *testing.T) {
 				t.Fatal(err)
 			}
 			r := NewPReader(f, &ReaderArgs{})
-			r.Close()
+			_ = r.Close()
 			var record sql.Record
 			for {
 				record, err = r.Read(record)
@@ -98,7 +98,7 @@ func BenchmarkPReader(b *testing.B) {
 						break
 					}
 				}
-				r.Close()
+				_ = r.Close()
 				if err != io.EOF {
 					b.Fatalf("Reading failed with %s, %s", err, name)
 				}

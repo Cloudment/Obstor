@@ -83,6 +83,11 @@ const (
 	psqlInsertRow = `INSERT INTO %s (event_time, event_data) VALUES ($1, $2);`
 )
 
+// Sanitize quotes
+func sanitizePgIdentifier(name string) string {
+	return `"` + strings.ReplaceAll(name, `"`, `""`) + `"`
+}
+
 // Postgres constants
 const (
 	PostgresFormat             = "format"
@@ -334,14 +339,16 @@ func (target *PostgreSQLTarget) Close() error {
 // Executes the table creation statements.
 func (target *PostgreSQLTarget) executeStmts() error {
 
-	_, err := target.db.Exec(fmt.Sprintf(psqlTableExists, target.args.Table))
+	table := sanitizePgIdentifier(target.args.Table)
+
+	_, err := target.db.Exec(fmt.Sprintf(psqlTableExists, table))
 	if err != nil {
 		createStmt := psqlCreateNamespaceTable
 		if target.args.Format == event.AccessFormat {
 			createStmt = psqlCreateAccessTable
 		}
 
-		if _, dbErr := target.db.Exec(fmt.Sprintf(createStmt, target.args.Table)); dbErr != nil {
+		if _, dbErr := target.db.Exec(fmt.Sprintf(createStmt, table)); dbErr != nil {
 			return dbErr
 		}
 	}
@@ -349,16 +356,16 @@ func (target *PostgreSQLTarget) executeStmts() error {
 	switch target.args.Format {
 	case event.NamespaceFormat:
 		// Insert or update statement
-		if target.updateStmt, err = target.db.Prepare(fmt.Sprintf(psqlUpdateRow, target.args.Table)); err != nil {
+		if target.updateStmt, err = target.db.Prepare(fmt.Sprintf(psqlUpdateRow, table)); err != nil {
 			return err
 		}
 		// delete statement
-		if target.deleteStmt, err = target.db.Prepare(fmt.Sprintf(psqlDeleteRow, target.args.Table)); err != nil {
+		if target.deleteStmt, err = target.db.Prepare(fmt.Sprintf(psqlDeleteRow, table)); err != nil {
 			return err
 		}
 	case event.AccessFormat:
 		// Insert statement
-		if target.insertStmt, err = target.db.Prepare(fmt.Sprintf(psqlInsertRow, target.args.Table)); err != nil {
+		if target.insertStmt, err = target.db.Prepare(fmt.Sprintf(psqlInsertRow, table)); err != nil {
 			return err
 		}
 	}

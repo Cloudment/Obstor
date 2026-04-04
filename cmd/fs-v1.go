@@ -53,7 +53,7 @@ var defaultEtag = "00000000000000000000000000000000-1"
 
 // FSObjects - Implements fs object layer.
 type FSObjects struct {
-	GatewayUnsupported
+	BackendUnsupported
 
 	// The count of concurrent calls on FSObjects API
 	activeIOCount int64
@@ -97,23 +97,23 @@ func initMetaVolumeFS(fsPath, fsUUID string) error {
 	// is the only place where it can be made less expensive
 	// optimizing all other calls. Create obstor meta volume,
 	// if it doesn't exist yet.
-	metaBucketPath := pathJoin(fsPath, minioMetaBucket)
+	metaBucketPath := pathJoin(fsPath, obstorMetaBucket)
 
-	if err := os.MkdirAll(metaBucketPath, 0777); err != nil {
+	if err := os.MkdirAll(metaBucketPath, 0700); err != nil {
 		return err
 	}
 
-	metaTmpPath := pathJoin(fsPath, minioMetaTmpBucket, fsUUID)
-	if err := os.MkdirAll(metaTmpPath, 0777); err != nil {
+	metaTmpPath := pathJoin(fsPath, obstorMetaTmpBucket, fsUUID)
+	if err := os.MkdirAll(metaTmpPath, 0700); err != nil {
 		return err
 	}
 
-	if err := os.MkdirAll(pathJoin(fsPath, dataUsageBucket), 0777); err != nil {
+	if err := os.MkdirAll(pathJoin(fsPath, dataUsageBucket), 0700); err != nil {
 		return err
 	}
 
-	metaMultipartPath := pathJoin(fsPath, minioMetaMultipartBucket)
-	return os.MkdirAll(metaMultipartPath, 0777)
+	metaMultipartPath := pathJoin(fsPath, obstorMetaMultipartBucket)
+	return os.MkdirAll(metaMultipartPath, 0700)
 
 }
 
@@ -196,10 +196,10 @@ func (fs *FSObjects) SetDriveCounts() []int {
 
 // Shutdown - should be called when process shuts down.
 func (fs *FSObjects) Shutdown(ctx context.Context) error {
-	fs.fsFormatRlk.Close()
+	_ = fs.fsFormatRlk.Close()
 
 	// Cleanup and delete tmp uuid.
-	return fsRemoveAll(ctx, pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID))
+	return fsRemoveAll(ctx, pathJoin(fs.fsPath, obstorMetaTmpBucket, fs.fsUUID))
 }
 
 // BackendInfo - returns backend information
@@ -330,7 +330,7 @@ func (fs *FSObjects) scanBucket(ctx context.Context, bucket string, cache dataUs
 	// Load bucket info.
 	cache, err = scanDataFolder(ctx, fs.fsPath, cache, func(item scannerItem) (sizeSummary, error) {
 		bucket, object := item.bucket, item.objectPath()
-		fsMetaBytes, err := xioutil.ReadFile(pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile))
+		fsMetaBytes, err := xioutil.ReadFile(pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile))
 		if err != nil && !osIsNotExist(err) {
 			if intDataUpdateTracker.debug {
 				logger.Info(color.Green("scanBucket:")+" object return unexpected error: %v/%v: %w", item.bucket, item.objectPath(), err)
@@ -568,7 +568,7 @@ func (fs *FSObjects) DeleteBucket(ctx context.Context, bucket string, forceDelet
 			return toObjectErr(err, bucket)
 		}
 	} else {
-		tmpBucketPath := pathJoin(fs.fsPath, minioMetaTmpBucket, bucket+"."+mustGetUUID())
+		tmpBucketPath := pathJoin(fs.fsPath, obstorMetaTmpBucket, bucket+"."+mustGetUUID())
 		if err = fsSimpleRenameFile(ctx, bucketDir, tmpBucketPath); err != nil {
 			return toObjectErr(err, bucket)
 		}
@@ -579,8 +579,8 @@ func (fs *FSObjects) DeleteBucket(ctx context.Context, bucket string, forceDelet
 	}
 
 	// Cleanup all the bucket metadata.
-	minioMetadataBucketDir := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket)
-	if err = fsRemoveAll(ctx, minioMetadataBucketDir); err != nil {
+	obstorMetadataBucketDir := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket)
+	if err = fsRemoveAll(ctx, obstorMetadataBucketDir); err != nil {
 		return toObjectErr(err, bucket)
 	}
 
@@ -626,7 +626,7 @@ func (fs *FSObjects) CopyObject(ctx context.Context, srcBucket, srcObject, dstBu
 	}
 
 	if cpSrcDstSame && srcInfo.metadataOnly {
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, srcBucket, srcObject, fs.metaJSONFile)
+		fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, srcBucket, srcObject, fs.metaJSONFile)
 		wlk, err := fs.rwPool.Write(fsMetaPath)
 		if err != nil {
 			wlk, err = fs.rwPool.Create(fsMetaPath)
@@ -729,10 +729,10 @@ func (fs *FSObjects) GetObjectNInfo(ctx context.Context, bucket, object string, 
 		// objReader.Close() is called by the caller.
 		return NewGetObjectReaderFromReader(bytes.NewBuffer(nil), objInfo, opts, nsUnlocker)
 	}
-	// Take a rwPool lock for NFS gateway type deployment
+	// Take a rwPool lock for NFS backend type deployment
 	rwPoolUnlocker := func() {}
-	if bucket != minioMetaBucket && lockType != noLock {
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	if bucket != obstorMetaBucket && lockType != noLock {
+		fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 		_, err = fs.rwPool.Open(fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			logger.LogIf(ctx, err)
@@ -741,7 +741,7 @@ func (fs *FSObjects) GetObjectNInfo(ctx context.Context, bucket, object string, 
 		}
 		// Need to clean up lock after getObject is
 		// completed.
-		rwPoolUnlocker = func() { fs.rwPool.Close(fsMetaPath) }
+		rwPoolUnlocker = func() { _ = fs.rwPool.Close(fsMetaPath) }
 	}
 
 	objReaderFn, off, length, err := NewGetObjectReader(rs, objInfo, opts, nsUnlocker, rwPoolUnlocker)
@@ -812,7 +812,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 		return fsMeta.ToObjectInfo(bucket, object, fi), nil
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	// Read `fs.json` to perhaps contend with
 	// parallel Put() operations.
 
@@ -867,7 +867,7 @@ func (fs *FSObjects) getObjectInfo(ctx context.Context, bucket, object string) (
 		return fsMeta.ToObjectInfo(bucket, object, fi), nil
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	// Read `fs.json` to perhaps contend with
 	// parallel Put() operations.
 
@@ -875,7 +875,7 @@ func (fs *FSObjects) getObjectInfo(ctx context.Context, bucket, object string) (
 	if err == nil {
 		// Read from fs metadata only if it exists.
 		_, rerr := fsMeta.ReadFrom(ctx, rlk.LockedFile)
-		fs.rwPool.Close(fsMetaPath)
+		_ = fs.rwPool.Close(fsMetaPath)
 		if rerr != nil {
 			// For any error to read fsMeta, set default ETag and proceed.
 			fsMeta = fs.defaultFsJSON(object)
@@ -950,7 +950,7 @@ func (fs *FSObjects) GetObjectInfo(ctx context.Context, bucket, object string, o
 			return oi, toObjectErr(err, bucket, object)
 		}
 
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+		fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 		err = fs.createFsJSON(object, fsMetaPath)
 		lk.Unlock()
 		if err != nil {
@@ -1060,8 +1060,8 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 	}
 
 	var wlk *lock.LockedFile
-	if bucket != minioMetaBucket {
-		bucketMetaDir := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix)
+	if bucket != obstorMetaBucket {
+		bucketMetaDir := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix)
 		fsMetaPath := pathJoin(bucketMetaDir, bucket, object, fs.metaJSONFile)
 		wlk, err = fs.rwPool.Write(fsMetaPath)
 		var freshFile bool
@@ -1082,7 +1082,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 			// We should preserve the `fs.json` of any
 			// existing object
 			if retErr != nil && freshFile {
-				tmpDir := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID)
+				tmpDir := pathJoin(fs.fsPath, obstorMetaTmpBucket, fs.fsUUID)
 				fsRemoveMeta(ctx, bucketMetaDir, fsMetaPath, tmpDir)
 			}
 		}()
@@ -1093,7 +1093,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 	// so that cleaning it up will be easy if the server goes down.
 	tempObj := mustGetUUID()
 
-	fsTmpObjPath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, tempObj)
+	fsTmpObjPath := pathJoin(fs.fsPath, obstorMetaTmpBucket, fs.fsUUID, tempObj)
 	bytesWritten, err := fsCreateFile(ctx, fsTmpObjPath, data, data.Size())
 
 	// Delete the temporary object in the case of a
@@ -1118,7 +1118,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 		return ObjectInfo{}, toObjectErr(err, bucket, object)
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != obstorMetaBucket {
 		// Write FS metadata after a successful namespace operation.
 		if _, err = fsMeta.WriteTo(wlk); err != nil {
 			return ObjectInfo{}, toObjectErr(err, bucket, object)
@@ -1196,9 +1196,9 @@ func (fs *FSObjects) DeleteObject(ctx context.Context, bucket, object string, op
 
 	var rwlk *lock.LockedFile
 
-	minioMetaBucketDir := pathJoin(fs.fsPath, minioMetaBucket)
-	fsMetaPath := pathJoin(minioMetaBucketDir, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
-	if bucket != minioMetaBucket {
+	obstorMetaBucketDir := pathJoin(fs.fsPath, obstorMetaBucket)
+	fsMetaPath := pathJoin(obstorMetaBucketDir, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	if bucket != obstorMetaBucket {
 		rwlk, err = fs.rwPool.Write(fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			logger.LogIf(ctx, err)
@@ -1219,9 +1219,9 @@ func (fs *FSObjects) DeleteObject(ctx context.Context, bucket, object string, op
 		rwlk.Close()
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != obstorMetaBucket {
 		// Delete the metadata object.
-		err = fsDeleteFile(ctx, minioMetaBucketDir, fsMetaPath)
+		err = fsDeleteFile(ctx, obstorMetaBucketDir, fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			return objInfo, toObjectErr(err, bucket, object)
 		}
@@ -1315,7 +1315,7 @@ func (fs *FSObjects) PutObjectTags(ctx context.Context, bucket, object string, t
 		}
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, obstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	fsMeta := fsMetaV1{}
 	wlk, err := fs.rwPool.Write(fsMetaPath)
 	if err != nil {

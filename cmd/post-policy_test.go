@@ -121,7 +121,7 @@ func TestPostPolicyBucketHandler(t *testing.T) {
 
 // testPostPolicyBucketHandler - Tests validate post policy handler uploading objects.
 func testPostPolicyBucketHandler(obj ObjectLayer, instanceType string, t TestErrHandler) {
-	if err := newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err := newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatalf("Initializing config.json failed")
 	}
 
@@ -422,7 +422,7 @@ func TestPostPolicyBucketHandlerRedirect(t *testing.T) {
 
 // testPostPolicyBucketHandlerRedirect tests POST Object when success_action_redirect is specified
 func testPostPolicyBucketHandlerRedirect(obj ObjectLayer, instanceType string, t TestErrHandler) {
-	if err := newTestConfig(globalMinioDefaultRegion, obj); err != nil {
+	if err := newTestConfig(globalObstorDefaultRegion, obj); err != nil {
 		t.Fatalf("Initializing config.json failed")
 	}
 

@@ -177,25 +177,25 @@ func TestGetCompleteMultipartMD5(t *testing.T) {
 	}
 }
 
-// TestIsMinioBucketName - Tests isMinioBucketName helper function.
-func TestIsMinioMetaBucketName(t *testing.T) {
+// TestIsObstorBucketName - Tests isObstorBucketName helper function.
+func TestIsObstorMetaBucketName(t *testing.T) {
 	testCases := []struct {
 		bucket string
 		result bool
 	}{
 		// Obstor meta bucket.
 		{
-			bucket: minioMetaBucket,
+			bucket: obstorMetaBucket,
 			result: true,
 		},
 		// Obstor meta bucket.
 		{
-			bucket: minioMetaMultipartBucket,
+			bucket: obstorMetaMultipartBucket,
 			result: true,
 		},
 		// Obstor meta bucket.
 		{
-			bucket: minioMetaTmpBucket,
+			bucket: obstorMetaTmpBucket,
 			result: true,
 		},
 		// Normal bucket
@@ -206,7 +206,7 @@ func TestIsMinioMetaBucketName(t *testing.T) {
 	}
 
 	for i, test := range testCases {
-		actual := isMinioMetaBucketName(test.bucket)
+		actual := isObstorMetaBucketName(test.bucket)
 		if actual != test.result {
 			t.Errorf("Test %d - expected %v but received %v",
 				i+1, test.result, actual)

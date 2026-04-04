@@ -508,7 +508,7 @@ func (r *metacacheReader) readN(n int, inclDeleted, inclDirs bool, prefix string
 			return metaCacheEntriesSorted{o: res}, err
 		}
 		if !meta.hasPrefix(prefix) {
-			r.mr.R.Skip(1)
+			_, _ = r.mr.R.Skip(1)
 			return metaCacheEntriesSorted{o: res}, io.EOF
 		}
 		if meta.metadata, err = r.mr.ReadBytes(nil); err != nil {
@@ -769,7 +769,7 @@ func newMetacacheBlockWriter(in <-chan metaCacheEntry, nextBlock func(b *metacac
 			bufferPool.Put(buf)
 		}()
 		block := newMetacacheWriter(buf, 1<<20)
-		defer block.Close()
+		defer func() { _ = block.Close() }()
 		finishBlock := func() {
 			if err := block.Close(); err != nil {
 				w.streamErr = err

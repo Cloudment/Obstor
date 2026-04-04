@@ -33,6 +33,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"runtime/pprof"
 	"runtime/trace"
@@ -168,7 +169,7 @@ const (
 	// (Acceptable values range from 1 to 10000 inclusive)
 	globalMaxPartID = 10000
 
-	// Default values used while communicating for gateway communication
+	// Default values used while communicating for backend communication
 	defaultDialTimeout = 5 * time.Second
 )
 
@@ -274,7 +275,7 @@ func setDefaultProfilerRates() {
 }
 
 // Starts a profiler returns nil if profiler is not enabled, caller needs to handle this.
-func startProfiler(profilerType string) (minioProfiler, error) {
+func startProfiler(profilerType string) (obstorProfiler, error) {
 	var prof profilerWrapper
 	prof.ext = "pprof"
 	// Enable profiler and set the name of the file that pkg/pprof
@@ -375,8 +376,8 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 	return prof, nil
 }
 
-// minioProfiler - obstor profiler interface.
-type minioProfiler interface {
+// obstorProfiler - obstor profiler interface.
+type obstorProfiler interface {
 	// Return base profile. 'nil' if none.
 	Base() []byte
 	// Stop the profiler
@@ -386,7 +387,7 @@ type minioProfiler interface {
 }
 
 // Global profiler to be used by service go-routine.
-var globalProfiler map[string]minioProfiler
+var globalProfiler map[string]obstorProfiler
 var globalProfilerMu sync.Mutex
 
 // Dump the request into a string in JSON format.
@@ -603,10 +604,10 @@ func newCustomHTTPTransport(tlsConfig *tls.Config, dialTimeout time.Duration) fu
 	}
 }
 
-// NewGatewayHTTPTransportWithClientCerts returns a new http configuration
+// NewBackendHTTPTransportWithClientCerts returns a new http configuration
 // used while communicating with the cloud backends.
-func NewGatewayHTTPTransportWithClientCerts(clientCert, clientKey string) *http.Transport {
-	transport := newGatewayHTTPTransport(1 * time.Minute)
+func NewBackendHTTPTransportWithClientCerts(clientCert, clientKey string) *http.Transport {
+	transport := newBackendHTTPTransport(1 * time.Minute)
 	if clientCert != "" && clientKey != "" {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
@@ -622,18 +623,18 @@ func NewGatewayHTTPTransportWithClientCerts(clientCert, clientKey string) *http.
 	return transport
 }
 
-// NewGatewayHTTPTransport returns a new http configuration
+// NewBackendHTTPTransport returns a new http configuration
 // used while communicating with the cloud backends.
-func NewGatewayHTTPTransport() *http.Transport {
-	return newGatewayHTTPTransport(1 * time.Minute)
+func NewBackendHTTPTransport() *http.Transport {
+	return newBackendHTTPTransport(1 * time.Minute)
 }
 
-func newGatewayHTTPTransport(timeout time.Duration) *http.Transport {
+func newBackendHTTPTransport(timeout time.Duration) *http.Transport {
 	tr := newCustomHTTPTransport(&tls.Config{
 		RootCAs: globalRootCAs,
 	}, defaultDialTimeout)()
 
-	// Customize response header timeout for gateway transport.
+	// Customize response header timeout for backend transport.
 	tr.ResponseHeaderTimeout = timeout
 	return tr
 }
@@ -854,14 +855,14 @@ func lcp(strs []string, pre bool) string {
 }
 
 // Returns the mode in which Obstor is running
-func getMinioMode() string {
-	mode := globalMinioModeFS
+func getObstorMode() string {
+	mode := globalObstorModeFS
 	if globalIsDistErasure {
-		mode = globalMinioModeDistErasure
+		mode = globalObstorModeDistErasure
 	} else if globalIsErasure {
-		mode = globalMinioModeErasure
-	} else if globalIsGateway {
-		mode = globalMinioModeGatewayPrefix + globalGatewayName
+		mode = globalObstorModeErasure
+	} else if globalIsBackend {
+		mode = globalObstorModeBackendPrefix + globalBackendName
 	}
 	return mode
 }
@@ -960,4 +961,11 @@ func decodeDirObject(object string) string {
 func loadAndResetRPCNetworkErrsCounter() uint64 {
 	defer rest.ResetNetworkErrsCounter()
 	return rest.GetNetworkErrsCounter()
+}
+
+// Returns ETag with leading and trailing double-quotes removed
+var etagRegex = regexp.MustCompile("\"*?([^\"]*?)\"*?$")
+
+func CanonicalizeETag(etag string) string {
+	return etagRegex.ReplaceAllString(etag, "$1")
 }

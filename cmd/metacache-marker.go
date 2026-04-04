@@ -31,7 +31,7 @@ const markerTagVersion = "v1"
 
 // parseMarker will parse a marker possibly encoded with encodeMarker
 func parseMarker(s string) (marker, uuid string) {
-	if !strings.Contains(s, "[minio_cache:"+markerTagVersion) {
+	if !strings.Contains(s, "[obstor_cache:"+markerTagVersion) {
 		return s, ""
 	}
 	start := strings.LastIndex(s, "[")
@@ -46,7 +46,7 @@ tagLoop:
 			continue
 		}
 		switch kv[0] {
-		case "minio_cache":
+		case "obstor_cache":
 			if kv[1] != markerTagVersion {
 				break tagLoop
 			}
@@ -68,5 +68,5 @@ func encodeMarker(marker, uuid string) string {
 	if strings.ContainsAny(uuid, "[:,") {
 		logger.LogIf(context.Background(), fmt.Errorf("encodeMarker: uuid %s contained invalid characters", uuid))
 	}
-	return fmt.Sprintf("%s[minio_cache:%s,id:%s]", marker, markerTagVersion, uuid)
+	return fmt.Sprintf("%s[obstor_cache:%s,id:%s]", marker, markerTagVersion, uuid)
 }

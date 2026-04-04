@@ -38,8 +38,8 @@ const (
 	BackendFS = BackendType(madmin.FS)
 	// Multi disk BackendErasure (single, distributed) backend.
 	BackendErasure = BackendType(madmin.Erasure)
-	// Gateway backend.
-	BackendGateway = BackendType(madmin.Gateway)
+	// Remote backend storage.
+	BackendRemote = BackendType(madmin.Gateway)
 	// Add your own backend.
 )
 
@@ -99,7 +99,7 @@ type ObjectInfo struct {
 	// Hex encoded unique entity tag of the object.
 	ETag string
 
-	// The ETag stored in the gateway backend
+	// The ETag stored in the backend storage
 	InnerETag string
 
 	// Version ID of this object.

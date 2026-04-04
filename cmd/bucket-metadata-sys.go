@@ -46,7 +46,7 @@ type BucketMetadataSys struct {
 
 // Remove bucket metadata from memory.
 func (sys *BucketMetadataSys) Remove(bucket string) {
-	if globalIsGateway {
+	if globalIsBackend {
 		return
 	}
 	sys.Lock()
@@ -61,11 +61,11 @@ func (sys *BucketMetadataSys) Remove(bucket string) {
 // so they should be replaced atomically and not appended to, etc.
 // Data is not persisted to disk.
 func (sys *BucketMetadataSys) Set(bucket string, meta BucketMetadata) {
-	if globalIsGateway {
+	if globalIsBackend {
 		return
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != obstorMetaBucket {
 		sys.Lock()
 		sys.metadataMap[bucket] = meta
 		sys.Unlock()
@@ -80,11 +80,11 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 		return errServerNotInitialized
 	}
 
-	if globalIsGateway {
-		// This code is needed only for gateway implementations.
+	if globalIsBackend {
+		// This code is needed only for backend implementations.
 		switch configFile {
 		case bucketSSEConfig:
-			if globalGatewayName == NASBackendGateway {
+			if globalBackendName == NASBackend {
 				meta, err := loadBucketMetadata(GlobalContext, objAPI, bucket)
 				if err != nil {
 					return err
@@ -93,7 +93,7 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 				return meta.Save(GlobalContext, objAPI)
 			}
 		case bucketLifecycleConfig:
-			if globalGatewayName == NASBackendGateway {
+			if globalBackendName == NASBackend {
 				meta, err := loadBucketMetadata(GlobalContext, objAPI, bucket)
 				if err != nil {
 					return err
@@ -102,7 +102,7 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 				return meta.Save(GlobalContext, objAPI)
 			}
 		case bucketTaggingConfig:
-			if globalGatewayName == NASBackendGateway {
+			if globalBackendName == NASBackend {
 				meta, err := loadBucketMetadata(GlobalContext, objAPI, bucket)
 				if err != nil {
 					return err
@@ -111,7 +111,7 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 				return meta.Save(GlobalContext, objAPI)
 			}
 		case bucketNotificationConfig:
-			if globalGatewayName == NASBackendGateway {
+			if globalBackendName == NASBackend {
 				meta, err := loadBucketMetadata(GlobalContext, objAPI, bucket)
 				if err != nil {
 					return err
@@ -132,7 +132,7 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 		return NotImplemented{}
 	}
 
-	if bucket == minioMetaBucket {
+	if bucket == obstorMetaBucket {
 		return errInvalidArgument
 	}
 
@@ -202,7 +202,7 @@ func (sys *BucketMetadataSys) Update(bucket string, configFile string, configDat
 // For all other bucket specific metadata, use the relevant
 // calls implemented specifically for each of those features.
 func (sys *BucketMetadataSys) Get(bucket string) (BucketMetadata, error) {
-	if globalIsGateway || bucket == minioMetaBucket {
+	if globalIsBackend || bucket == obstorMetaBucket {
 		return newBucketMetadata(bucket), errConfigNotFound
 	}
 
@@ -278,8 +278,8 @@ func (sys *BucketMetadataSys) GetLifecycleConfig(bucket string) (*lifecycle.Life
 // GetNotificationConfig returns configured notification config
 // The returned object may not be modified.
 func (sys *BucketMetadataSys) GetNotificationConfig(bucket string) (*event.Config, error) {
-	if globalIsGateway && globalGatewayName == NASBackendGateway {
-		// Only needed in case of NAS gateway.
+	if globalIsBackend && globalBackendName == NASBackend {
+		// Only needed in case of NAS backend.
 		objAPI := newObjectLayerFn()
 		if objAPI == nil {
 			return nil, errServerNotInitialized
@@ -317,7 +317,7 @@ func (sys *BucketMetadataSys) GetSSEConfig(bucket string) (*bucketsse.BucketSSEC
 // GetPolicyConfig returns configured bucket policy
 // The returned object may not be modified.
 func (sys *BucketMetadataSys) GetPolicyConfig(bucket string) (*policy.Policy, error) {
-	if globalIsGateway {
+	if globalIsBackend {
 		objAPI := newObjectLayerFn()
 		if objAPI == nil {
 			return nil, errServerNotInitialized
@@ -400,11 +400,11 @@ func (sys *BucketMetadataSys) GetConfig(bucket string) (BucketMetadata, error) {
 		return newBucketMetadata(bucket), errServerNotInitialized
 	}
 
-	if globalIsGateway {
+	if globalIsBackend {
 		return newBucketMetadata(bucket), NotImplemented{}
 	}
 
-	if bucket == minioMetaBucket {
+	if bucket == obstorMetaBucket {
 		return newBucketMetadata(bucket), errInvalidArgument
 	}
 
@@ -430,9 +430,9 @@ func (sys *BucketMetadataSys) Init(ctx context.Context, buckets []BucketInfo, ob
 		return errServerNotInitialized
 	}
 
-	// In gateway mode, we don't need to load the policies
+	// In backend mode, we don't need to load the policies
 	// from the backend.
-	if globalIsGateway {
+	if globalIsBackend {
 		return nil
 	}
 

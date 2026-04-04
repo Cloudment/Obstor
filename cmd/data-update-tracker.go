@@ -231,19 +231,20 @@ func (d *dataUpdateTracker) load(ctx context.Context, drives ...string) {
 	for _, drive := range drives {
 
 		cacheFormatPath := pathJoin(drive, dataUpdateTrackerFilename)
-		f, err := os.Open(cacheFormatPath)
-		if err != nil {
-			if osIsNotExist(err) {
-				continue
+		func() {
+			f, err := os.Open(cacheFormatPath)
+			if err != nil {
+				if !osIsNotExist(err) {
+					logger.LogIf(ctx, err)
+				}
+				return
 			}
-			logger.LogIf(ctx, err)
-			continue
-		}
-		err = d.deserialize(f, d.Saved)
-		if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
-			logger.LogIf(ctx, err)
-		}
-		f.Close()
+			defer f.Close()
+			err = d.deserialize(f, d.Saved)
+			if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
+				logger.LogIf(ctx, err)
+			}
+		}()
 	}
 }
 

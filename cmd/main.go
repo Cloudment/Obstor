@@ -69,7 +69,7 @@ var GlobalFlags = []cli.Flag{
 }
 
 // Help template for obstor.
-var minioHelpTemplate = `NAME:
+var obstorHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
 DESCRIPTION:
@@ -124,7 +124,7 @@ func newApp(name string) *cli.App {
 
 	// Register all commands.
 	registerCommand(serverCmd)
-	registerCommand(gatewayCmd)
+	registerCommand(backendCmd)
 
 	// Set up app.
 	cli.HelpFlag = cli.BoolFlag{
@@ -141,7 +141,7 @@ func newApp(name string) *cli.App {
 	app.Flags = GlobalFlags
 	app.HideHelp = true // Hide `help, h` command, we already have `obstor --help`.
 	app.Commands = commands
-	app.CustomAppHelpTemplate = minioHelpTemplate
+	app.CustomAppHelpTemplate = obstorHelpTemplate
 	app.CommandNotFound = func(ctx *cli.Context, command string) {
 		console.Printf("‘%s’ is not a obstor sub-command. See ‘obstor --help’.\n", command)
 		closestCommands := findClosestCommands(command)

@@ -20,7 +20,7 @@ package cmd
 const (
 	peerRESTVersion       = "v14" // Add GetBucketStats API
 	peerRESTVersionPrefix = SlashSeparator + peerRESTVersion
-	peerRESTPrefix        = minioReservedBucketPath + "/peer"
+	peerRESTPrefix        = obstorReservedBucketPath + "/peer"
 	peerRESTPath          = peerRESTPrefix + peerRESTVersionPrefix
 )
 

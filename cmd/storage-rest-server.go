@@ -581,7 +581,7 @@ func (s *storageRESTServer) ListDirHandler(w http.ResponseWriter, r *http.Reques
 		s.writeErrorResponse(w, err)
 		return
 	}
-	gob.NewEncoder(w).Encode(&entries)
+	_ = gob.NewEncoder(w).Encode(&entries)
 	w.(http.Flusher).Flush()
 }
 
@@ -648,7 +648,7 @@ func (s *storageRESTServer) DeleteVersionsHandler(w http.ResponseWriter, r *http
 			dErrsResp.Errs[idx] = StorageErr(errs[idx].Error())
 		}
 	}
-	encoder.Encode(dErrsResp)
+	_ = encoder.Encode(dErrsResp)
 	w.(http.Flusher).Flush()
 }
 
@@ -939,7 +939,7 @@ func (s *storageRESTServer) VerifyFileHandler(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		vresp.Err = StorageErr(err.Error())
 	}
-	encoder.Encode(vresp)
+	_ = encoder.Encode(vresp)
 	w.(http.Flusher).Flush()
 }
 

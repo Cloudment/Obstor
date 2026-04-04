@@ -297,13 +297,13 @@ func (s3Select *S3Select) Open(getReader func(offset, length int64) (io.ReadClos
 
 		s3Select.progressReader, err = newProgressReader(rc, s3Select.Input.CompressionType)
 		if err != nil {
-			rc.Close()
+			_ = rc.Close()
 			return err
 		}
 
 		s3Select.recordReader, err = csv.NewReader(s3Select.progressReader, &s3Select.Input.CSVArgs)
 		if err != nil {
-			rc.Close()
+			_ = rc.Close()
 			var stErr bzip2.StructuralError
 			if errors.As(err, &stErr) {
 				return errInvalidBZIP2CompressionFormat(err)
@@ -320,7 +320,7 @@ func (s3Select *S3Select) Open(getReader func(offset, length int64) (io.ReadClos
 
 		s3Select.progressReader, err = newProgressReader(rc, s3Select.Input.CompressionType)
 		if err != nil {
-			rc.Close()
+			_ = rc.Close()
 			return err
 		}
 
@@ -429,7 +429,7 @@ func (s3Select *S3Select) Evaluate(w http.ResponseWriter) {
 				return false
 			}
 			if buf.Len()-before > maxRecordSize {
-				writer.FinishWithError("OverMaxRecordSize", "The length of a record in the input or result is greater than maxCharsPerRecord of 1 MB.")
+				_ = writer.FinishWithError("OverMaxRecordSize", "The length of a record in the input or result is greater than maxCharsPerRecord of 1 MB.")
 				bufPool.Put(buf)
 				return false
 			}

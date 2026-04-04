@@ -32,7 +32,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 )
 
-// Set encryption options for pass through to backend in the case of gateway and UserDefined metadata
+// Set encryption options for pass through to backend in the case of backend and UserDefined metadata
 func getDefaultOpts(header http.Header, copySource bool, metadata map[string]string) (opts ObjectOptions, err error) {
 	var clientKey [32]byte
 	var sse encrypt.ServerSide
@@ -106,7 +106,7 @@ func getOpts(ctx context.Context, r *http.Request, bucket, object string) (Objec
 		}
 	}
 
-	if GlobalGatewaySSE.SSEC() && crypto.SSEC.IsRequested(r.Header) {
+	if GlobalBackendSSE.SSEC() && crypto.SSEC.IsRequested(r.Header) {
 		key, err := crypto.SSEC.ParseHTTP(r.Header)
 		if err != nil {
 			return opts, err
@@ -250,7 +250,7 @@ func putOpts(ctx context.Context, r *http.Request, bucket, object string, metada
 
 	// In the case of multipart custom format, the metadata needs to be checked in addition to header to see if it
 	// is SSE-S3 encrypted, primarily because S3 protocol does not require SSE-S3 headers in PutObjectPart calls
-	if GlobalGatewaySSE.SSES3() && (crypto.S3.IsRequested(r.Header) || crypto.S3.IsEncrypted(metadata)) {
+	if GlobalBackendSSE.SSES3() && (crypto.S3.IsRequested(r.Header) || crypto.S3.IsEncrypted(metadata)) {
 		return ObjectOptions{
 			ServerSideEncryption: encrypt.NewSSE(),
 			UserDefined:          metadata,
@@ -259,7 +259,7 @@ func putOpts(ctx context.Context, r *http.Request, bucket, object string, metada
 			MTime:                mtime,
 		}, nil
 	}
-	if GlobalGatewaySSE.SSEC() && crypto.SSEC.IsRequested(r.Header) {
+	if GlobalBackendSSE.SSEC() && crypto.SSEC.IsRequested(r.Header) {
 		opts, err = getOpts(ctx, r, bucket, object)
 		opts.VersionID = vid
 		opts.Versioned = versioned
@@ -306,7 +306,7 @@ func copySrcOpts(ctx context.Context, r *http.Request, bucket, object string) (O
 		opts ObjectOptions
 	)
 
-	if GlobalGatewaySSE.SSEC() && crypto.SSECopy.IsRequested(r.Header) {
+	if GlobalBackendSSE.SSEC() && crypto.SSECopy.IsRequested(r.Header) {
 		key, err := crypto.SSECopy.ParseHTTP(r.Header)
 		if err != nil {
 			return opts, err

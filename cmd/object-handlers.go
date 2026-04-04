@@ -31,7 +31,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/cloudment/obstor/cmd/config/dns"
@@ -55,21 +54,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/sio"
 )
-
-// supportedHeadGetReqParams - supported request parameters for GET and HEAD presigned request.
-var supportedHeadGetReqParams = map[string]string{
-	"response-expires":             xhttp.Expires,
-	"response-content-type":        xhttp.ContentType,
-	"response-cache-control":       xhttp.CacheControl,
-	"response-content-encoding":    xhttp.ContentEncoding,
-	"response-content-language":    xhttp.ContentLanguage,
-	"response-content-disposition": xhttp.ContentDisposition,
-}
 
 const (
 	compressionAlgorithmV1 = "golang/snappy/LZ77"
@@ -80,15 +68,6 @@ const (
 	// Add an input buffer of this size.
 	encryptBufferSize = 1 << 20
 )
-
-// setHeadGetRespHeaders - set any requested parameters as response headers.
-func setHeadGetRespHeaders(w http.ResponseWriter, reqParams url.Values) {
-	for k, v := range reqParams {
-		if header, ok := supportedHeadGetReqParams[strings.ToLower(k)]; ok {
-			w.Header()[header] = v
-		}
-	}
-}
 
 // SelectObjectContentHandler - GET Object?select
 // ----------
@@ -125,7 +104,7 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 		return
 	}
 
-	// Get gateway encryption options
+	// Get backend encryption options
 	opts, err := getOpts(ctx, r, bucket, object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -249,7 +228,7 @@ func (api objectAPIHandlers) SelectObjectContentHandler(w http.ResponseWriter, r
 		}
 		return
 	}
-	defer s3Select.Close()
+	defer func() { _ = s3Select.Close() }()
 
 	if err = s3Select.Open(getObject); err != nil {
 		if serr, ok := err.(s3select.SelectError); ok {
@@ -329,7 +308,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Get gateway encryption options
+	// Get backend encryption options
 	opts, err := getOpts(ctx, r, bucket, object)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
@@ -391,10 +370,10 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		rs, rangeErr = parseRequestRangeSpec(rangeHeader)
-		// Handle only errInvalidRange. Ignore other
+		// Handle only ErrInvalidRangeValue. Ignore other
 		// parse error and treat it as regular Get
 		// request like Amazon S3.
-		if rangeErr == errInvalidRange {
+		if rangeErr == ErrInvalidRangeValue {
 			writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrInvalidRange), r.URL, guessIsBrowserReq(r))
 			return
 		}
@@ -452,7 +431,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 			return
 		}
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 
 	objInfo := gr.ObjInfo
 
@@ -494,7 +473,7 @@ func (api objectAPIHandlers) GetObjectHandler(w http.ResponseWriter, r *http.Req
 		setPartsCountHeaders(w, objInfo)
 	}
 
-	setHeadGetRespHeaders(w, r.URL.Query())
+	SetHeadGetRespHeaders(w, r.URL.Query())
 
 	statusCodeWritten := false
 	httpWriter := ioutil.WriteOnClose(w)
@@ -685,10 +664,10 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 		}
 
 		if rs, err = parseRequestRangeSpec(rangeHeader); err != nil {
-			// Handle only errInvalidRange. Ignore other
+			// Handle only ErrInvalidRangeValue. Ignore other
 			// parse error and treat it as regular Get
 			// request like Amazon S3.
-			if err == errInvalidRange {
+			if err == ErrInvalidRangeValue {
 				writeErrorResponseHeadersOnly(w, errorCodes.ToAPIErr(ErrInvalidRange))
 				return
 			}
@@ -725,7 +704,7 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	// Set any additional requested response headers.
-	setHeadGetRespHeaders(w, r.URL.Query())
+	SetHeadGetRespHeaders(w, r.URL.Query())
 
 	// Successful response.
 	if rs != nil || opts.PartNumber > 0 {
@@ -746,104 +725,17 @@ func (api objectAPIHandlers) HeadObjectHandler(w http.ResponseWriter, r *http.Re
 	})
 }
 
-// Extract metadata relevant for an CopyObject operation based on conditional
-// header values specified in X-Amz-Metadata-Directive.
-func getCpObjMetadataFromHeader(ctx context.Context, r *http.Request, userMeta map[string]string) (map[string]string, error) {
-	// Make a copy of the supplied metadata to avoid
-	// to change the original one.
-	defaultMeta := make(map[string]string, len(userMeta))
-	for k, v := range userMeta {
-		defaultMeta[k] = v
-	}
-
-	// Remove SSE Headers from source info
-	crypto.RemoveSSEHeaders(defaultMeta)
-
-	// Storage class is special, it can be replaced regardless of the
-	// metadata directive, if set should be preserved and replaced
-	// to the destination metadata.
-	sc := r.Header.Get(xhttp.AmzStorageClass)
-	if sc == "" {
-		sc = r.URL.Query().Get(xhttp.AmzStorageClass)
-	}
-
-	// if x-amz-metadata-directive says REPLACE then
-	// we extract metadata from the input headers.
-	if isDirectiveReplace(r.Header.Get(xhttp.AmzMetadataDirective)) {
-		emetadata, err := extractMetadata(ctx, r)
-		if err != nil {
-			return nil, err
-		}
-		if sc != "" {
-			emetadata[xhttp.AmzStorageClass] = sc
-		}
-		return emetadata, nil
-	}
-
-	if sc != "" {
-		defaultMeta[xhttp.AmzStorageClass] = sc
-	}
-
-	// if x-amz-metadata-directive says COPY then we
-	// return the default metadata.
-	if isDirectiveCopy(r.Header.Get(xhttp.AmzMetadataDirective)) {
-		return defaultMeta, nil
-	}
-
-	// Copy is default behavior if not x-amz-metadata-directive is set.
-	return defaultMeta, nil
-}
-
-// getRemoteInstanceTransport contains a singleton roundtripper.
-var (
-	getRemoteInstanceTransport     *http.Transport
-	getRemoteInstanceTransportOnce sync.Once
-)
-
-// Returns a minio-go Client configured to access remote host described by destDNSRecord
-// Applicable only in a federated deployment
-var getRemoteInstanceClient = func(r *http.Request, host string) (*miniogo.Core, error) {
-	if newObjectLayerFn() == nil {
-		return nil, errServerNotInitialized
-	}
-
-	cred := getReqAccessCred(r, globalServerRegion)
-	// In a federated deployment, all the instances share config files
-	// and hence expected to have same credentials.
-	core, err := miniogo.NewCore(host, &miniogo.Options{
-		Creds:     credentials.NewStaticV4(cred.AccessKey, cred.SecretKey, ""),
-		Secure:    globalIsTLS,
-		Transport: getRemoteInstanceTransport,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return core, nil
-}
-
 // Check if the destination bucket is on a remote site, this code only gets executed
 // when federation is enabled, ie when globalDNSConfig is non 'nil'.
 //
-// This function is similar to isRemoteCallRequired but specifically for COPY object API
+// This function is similar to IsRemoteCallRequired but specifically for COPY object API
 // if destination and source are same we do not need to check for destination bucket
 // to exist locally.
 func isRemoteCopyRequired(ctx context.Context, srcBucket, dstBucket string, objAPI ObjectLayer) bool {
 	if srcBucket == dstBucket {
 		return false
 	}
-	return isRemoteCallRequired(ctx, dstBucket, objAPI)
-}
-
-// Check if the bucket is on a remote site, this code only gets executed when federation is enabled.
-func isRemoteCallRequired(ctx context.Context, bucket string, objAPI ObjectLayer) bool {
-	if globalDNSConfig == nil {
-		return false
-	}
-	if globalBucketFederation {
-		_, err := objAPI.GetBucketInfo(ctx, bucket)
-		return err == toObjectErr(errVolumeNotFound, bucket)
-	}
-	return false
+	return IsRemoteCallRequired(ctx, dstBucket, objAPI)
 }
 
 // CopyObjectHandler - Copy Object
@@ -872,7 +764,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	if _, ok := crypto.IsRequested(r.Header); ok {
-		if globalIsGateway {
+		if globalIsBackend {
 			if crypto.SSEC.IsRequested(r.Header) && !objectAPI.IsEncryptionSupported() {
 				writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrNotImplemented), r.URL, guessIsBrowserReq(r))
 				return
@@ -1024,7 +916,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 		return
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 	srcInfo := gr.ObjInfo
 
 	// Maximum Upload size for object in a single CopyObject operation.
@@ -1217,7 +1109,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 
 	srcInfo.PutObjReader = pReader
 
-	srcInfo.UserDefined, err = getCpObjMetadataFromHeader(ctx, r, srcInfo.UserDefined)
+	srcInfo.UserDefined, err = GetCpObjMetadataFromHeader(ctx, r, srcInfo.UserDefined)
 	if err != nil {
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 		return
@@ -1231,7 +1123,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 			return
 		}
-		if globalIsGateway {
+		if globalIsBackend {
 			srcInfo.UserDefined[xhttp.AmzTagDirective] = replaceDirective
 		}
 	}
@@ -1311,7 +1203,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		}
 
 		// Send PutObject request to appropriate instance (in federated deployment)
-		core, rerr := getRemoteInstanceClient(r, getHostFromSrv(dstRecords))
+		core, rerr := GetRemoteInstanceClient(r, getHostFromSrv(dstRecords))
 		if rerr != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, rerr), r.URL, guessIsBrowserReq(r))
 			return
@@ -1405,7 +1297,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	if _, ok := crypto.IsRequested(r.Header); ok {
-		if globalIsGateway {
+		if globalIsBackend {
 			if crypto.SSEC.IsRequested(r.Header) && !objectAPI.IsEncryptionSupported() {
 				writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrNotImplemented), r.URL, guessIsBrowserReq(r))
 				return
@@ -1574,7 +1466,7 @@ func (api objectAPIHandlers) PutObjectHandler(w http.ResponseWriter, r *http.Req
 	rawReader := hashReader
 	pReader := NewPutObjReader(rawReader)
 
-	// Get gateway encryption options
+	// Get backend encryption options
 	var opts ObjectOptions
 	opts, err = putOpts(ctx, r, bucket, object, metadata)
 	if err != nil {
@@ -1717,7 +1609,7 @@ func (api objectAPIHandlers) PutObjectExtractHandler(w http.ResponseWriter, r *h
 	}
 
 	if _, ok := crypto.IsRequested(r.Header); ok {
-		if globalIsGateway {
+		if globalIsBackend {
 			if crypto.SSEC.IsRequested(r.Header) && !objectAPI.IsEncryptionSupported() {
 				writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrNotImplemented), r.URL, guessIsBrowserReq(r))
 				return
@@ -2006,7 +1898,7 @@ func (api objectAPIHandlers) NewMultipartUploadHandler(w http.ResponseWriter, r 
 	}
 
 	if _, ok := crypto.IsRequested(r.Header); ok {
-		if globalIsGateway {
+		if globalIsBackend {
 			if crypto.SSEC.IsRequested(r.Header) && !objectAPI.IsEncryptionSupported() {
 				writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrNotImplemented), r.URL, guessIsBrowserReq(r))
 				return
@@ -2276,7 +2168,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 		writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 		return
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 	srcInfo := gr.ObjInfo
 
 	actualPartSize := srcInfo.Size
@@ -2321,7 +2213,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 		}
 
 		// Send PutObject request to appropriate instance (in federated deployment)
-		core, rerr := getRemoteInstanceClient(r, getHostFromSrv(dstRecords))
+		core, rerr := GetRemoteInstanceClient(r, getHostFromSrv(dstRecords))
 		if rerr != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, rerr), r.URL, guessIsBrowserReq(r))
 			return
@@ -2396,7 +2288,7 @@ func (api objectAPIHandlers) CopyObjectPartHandler(w http.ResponseWriter, r *htt
 				return
 			}
 		}
-		key, err = decryptObjectInfo(key, dstBucket, dstObject, mi.UserDefined)
+		key, err = DecryptObjectMeta(key, dstBucket, dstObject, mi.UserDefined)
 		if err != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 			return
@@ -2468,7 +2360,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 	}
 
 	if _, ok := crypto.IsRequested(r.Header); ok {
-		if globalIsGateway {
+		if globalIsBackend {
 			if crypto.SSEC.IsRequested(r.Header) && !objectAPI.IsEncryptionSupported() {
 				writeErrorResponse(ctx, w, errorCodes.ToAPIErr(ErrNotImplemented), r.URL, guessIsBrowserReq(r))
 				return
@@ -2654,7 +2546,7 @@ func (api objectAPIHandlers) PutObjectPartHandler(w http.ResponseWriter, r *http
 		}
 
 		// Calculating object encryption key
-		key, err = decryptObjectInfo(key, bucket, object, mi.UserDefined)
+		key, err = DecryptObjectMeta(key, bucket, object, mi.UserDefined)
 		if err != nil {
 			writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 			return
@@ -2820,7 +2712,7 @@ func (api objectAPIHandlers) ListObjectPartsHandler(w http.ResponseWriter, r *ht
 		var objectEncryptionKey []byte
 		if crypto.S3.IsEncrypted(listPartsInfo.UserDefined) {
 			// Calculating object encryption key
-			objectEncryptionKey, err = decryptObjectInfo(key, bucket, object, listPartsInfo.UserDefined)
+			objectEncryptionKey, err = DecryptObjectMeta(key, bucket, object, listPartsInfo.UserDefined)
 			if err != nil {
 				writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 				return
@@ -2982,7 +2874,7 @@ func (api objectAPIHandlers) CompleteMultipartUploadHandler(w http.ResponseWrite
 			ssec = crypto.SSEC.IsEncrypted(mi.UserDefined)
 			if crypto.S3.IsEncrypted(mi.UserDefined) {
 				// Calculating object encryption key
-				objectEncryptionKey, err = decryptObjectInfo(key, bucket, object, mi.UserDefined)
+				objectEncryptionKey, err = DecryptObjectMeta(key, bucket, object, mi.UserDefined)
 				if err != nil {
 					writeErrorResponse(ctx, w, toAPIError(ctx, err), r.URL, guessIsBrowserReq(r))
 					return
@@ -3029,7 +2921,7 @@ func (api objectAPIHandlers) CompleteMultipartUploadHandler(w http.ResponseWrite
 	// complete multipart upload operations on FS mode.
 	writeErrorResponseWithoutXMLHeader := func(ctx context.Context, w http.ResponseWriter, err APIError, reqURL *url.URL) {
 		switch err.Code {
-		case "SlowDown", "XMinioServerNotInitialized", "XMinioReadQuorum", "XMinioWriteQuorum":
+		case "SlowDown", "XObstorServerNotInitialized", "XObstorReadQuorum", "XObstorWriteQuorum":
 			// Set retxry-after header to indicate user-agents to retry request after 120secs.
 			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
 			w.Header().Set(xhttp.RetryAfter, "120")
@@ -3256,7 +3148,7 @@ func (api objectAPIHandlers) DeleteObjectHandler(w http.ResponseWriter, r *http.
 				VersionID:                     versionID,
 				DeleteMarkerVersionID:         dmVersionID,
 				DeleteMarkerReplicationStatus: string(objInfo.ReplicationStatus),
-				DeleteMarkerMTime:             DeleteMarkerMTime{objInfo.ModTime},
+				DeleteMarkerMTime:             DeleteMarkerMTime{Time: objInfo.ModTime},
 				DeleteMarker:                  objInfo.DeleteMarker,
 				VersionPurgeStatus:            objInfo.VersionPurgeStatus,
 			},
@@ -3990,7 +3882,7 @@ func (api objectAPIHandlers) PostRestoreObjectHandler(w http.ResponseWriter, r *
 			rw.LogErrBody = true
 			rw.LogAllBody = true
 			rreq.SelectParameters.Evaluate(rw)
-			rreq.SelectParameters.Close()
+			_ = rreq.SelectParameters.Close()
 			return
 		}
 		if err := restoreTransitionedObject(rctx, bucket, object, objectAPI, objInfo, rreq, restoreExpiry); err != nil {

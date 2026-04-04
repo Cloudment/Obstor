@@ -77,7 +77,7 @@ func (s *xlStorage) WalkDir(ctx context.Context, opts WalkDirOptions, wr io.Writ
 
 	// Use a small block size to start sending quickly
 	w := newMetacacheWriter(wr, 16<<10)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 	out, err := w.stream()
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func (s *xlStorage) WalkDir(ctx context.Context, opts WalkDirOptions, wr io.Writ
 			if contextCanceled(ctx) {
 				return ctx.Err()
 			}
-			meta := metaCacheEntry{name: PathJoin(current, entry)}
+			meta := metaCacheEntry{name: pathJoin(current, entry)}
 
 			// If directory entry on stack before this, pop it now.
 			for len(dirStack) > 0 && dirStack[len(dirStack)-1] < meta.name {

@@ -97,7 +97,7 @@ func (srv *Server) Start() (err error) {
 			// To indicate disable keep-alives
 			w.Header().Set("Connection", "close")
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(http.ErrServerClosed.Error()))
+			_, _ = w.Write([]byte(http.ErrServerClosed.Error()))
 			w.(http.Flusher).Flush()
 			return
 		}
@@ -155,7 +155,7 @@ func (srv *Server) Shutdown() error {
 			tmp, err := os.CreateTemp("", "minio-goroutines-*.txt")
 			if err == nil {
 				_ = pprof.Lookup("goroutine").WriteTo(tmp, 1)
-				tmp.Close()
+				_ = tmp.Close()
 				return errors.New("timed out. some connections are still active. goroutines written to " + tmp.Name())
 			}
 			return errors.New("timed out. some connections are still active")

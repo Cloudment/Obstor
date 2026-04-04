@@ -225,7 +225,7 @@ func handleDateAdd(r Record, d *DateAddFunc, tableAlias string) (*Value, error) 
 	if err != nil {
 		return nil, err
 	}
-	inferTypeForArithOp(q)
+	_ = inferTypeForArithOp(q)
 	qty, ok := q.ToFloat()
 	if !ok {
 		return nil, fmt.Errorf("quantity must be a numeric argument to %s()", sqlFnDateAdd)
@@ -306,7 +306,7 @@ func handleSQLSubstring(r Record, e *SubstringFunc, tableAlias string) (val *Val
 	if err != nil {
 		return nil, err
 	}
-	inferTypeForArithOp(v2)
+	_ = inferTypeForArithOp(v2)
 	startIdx, ok := v2.ToInt()
 	if !ok {
 		err := fmt.Errorf("incorrect type for start index argument in %s", sqlFnSubstring)
@@ -320,7 +320,7 @@ func handleSQLSubstring(r Record, e *SubstringFunc, tableAlias string) (val *Val
 		if err != nil {
 			return nil, err
 		}
-		inferTypeForArithOp(v3)
+		_ = inferTypeForArithOp(v3)
 		lenInt, ok := v3.ToInt()
 		if !ok {
 			err := fmt.Errorf("incorrect type for length argument in %s", sqlFnSubstring)

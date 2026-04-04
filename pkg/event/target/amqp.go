@@ -128,7 +128,7 @@ func (target *AMQPTarget) IsActive() (bool, error) {
 		return false, err
 	}
 	defer func() {
-		ch.Close()
+		_ = ch.Close()
 	}()
 	return true, nil
 }

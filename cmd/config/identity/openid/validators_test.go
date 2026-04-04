@@ -38,7 +38,7 @@ func (e errorValidator) ID() ID {
 func TestValidators(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
   "keys" : [ {
     "kty" : "RSA",
     "kid" : "1438289820780",

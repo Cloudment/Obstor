@@ -72,7 +72,7 @@ func updateServer(u *url.URL, sha256Sum []byte, lrTime time.Time, releaseInfo st
 	}
 
 	us.CurrentVersion = Version
-	us.UpdatedVersion = lrTime.Format(minioReleaseTagTimeLayout)
+	us.UpdatedVersion = lrTime.Format(obstorReleaseTagTimeLayout)
 	return us, nil
 }
 
@@ -97,11 +97,11 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 
 	vars := mux.Vars(r)
 	updateURL := vars["updateURL"]
-	mode := getMinioMode()
+	mode := getObstorMode()
 	if updateURL == "" {
-		updateURL = minioReleaseInfoURL
+		updateURL = obstorReleaseInfoURL
 		if runtime.GOOS == globalWindowsOSName {
-			updateURL = minioReleaseWindowsInfoURL
+			updateURL = obstorReleaseWindowsInfoURL
 		}
 	}
 
@@ -432,7 +432,7 @@ func (a adminAPIHandlers) ForceUnlockHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	for _, locker := range lockersMap {
-		locker.ForceUnlock(ctx, args)
+		_, _ = locker.ForceUnlock(ctx, args)
 	}
 }
 
@@ -518,14 +518,14 @@ func (a adminAPIHandlers) StartProfilingHandler(w http.ResponseWriter, r *http.R
 	defer globalProfilerMu.Unlock()
 
 	if globalProfiler == nil {
-		globalProfiler = make(map[string]minioProfiler, 10)
+		globalProfiler = make(map[string]obstorProfiler, 10)
 	}
 
 	// Stop profiler of all types if already running
 	for k, v := range globalProfiler {
 		for _, p := range profiles {
 			if p == k {
-				v.Stop()
+				_, _ = v.Stop()
 				delete(globalProfiler, k)
 			}
 		}
@@ -754,13 +754,13 @@ func (a adminAPIHandlers) HealHandler(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(200)
 				}
 				// Send whitespace and keep connection open
-				w.Write([]byte(" "))
+				_, _ = w.Write([]byte(" "))
 				w.(http.Flusher).Flush()
 			case hr := <-respCh:
 				switch hr.apiErr {
 				case noError:
 					if started {
-						w.Write(hr.respBytes)
+						_, _ = w.Write(hr.respBytes)
 						w.(http.Flusher).Flush()
 					} else {
 						writeSuccessResponseJSON(w, hr.respBytes)
@@ -785,7 +785,7 @@ func (a adminAPIHandlers) HealHandler(w http.ResponseWriter, r *http.Request) {
 						w.Header().Set(xhttp.ContentType, string(mimeJSON))
 						w.WriteHeader(hr.apiErr.HTTPStatusCode)
 					}
-					w.Write(errorRespJSON)
+					_, _ = w.Write(errorRespJSON)
 					w.(http.Flusher).Flush()
 				}
 				break forLoop
@@ -944,9 +944,9 @@ func (ae AdminError) Error() string {
 
 // Admin API errors
 const (
-	AdminUpdateUnexpectedFailure = "XMinioAdminUpdateUnexpectedFailure"
-	AdminUpdateURLNotReachable   = "XMinioAdminUpdateURLNotReachable"
-	AdminUpdateApplyFailure      = "XMinioAdminUpdateApplyFailure"
+	AdminUpdateUnexpectedFailure = "XObstorAdminUpdateUnexpectedFailure"
+	AdminUpdateURLNotReachable   = "XObstorAdminUpdateURLNotReachable"
+	AdminUpdateApplyFailure      = "XObstorAdminUpdateApplyFailure"
 )
 
 // toAdminAPIErrCode - converts errErasureWriteQuorum error to admin API
@@ -969,13 +969,13 @@ func toAdminAPIErr(ctx context.Context, err error) APIError {
 	switch e := err.(type) {
 	case iampolicy.Error:
 		apiErr = APIError{
-			Code:           "XMinioMalformedIAMPolicy",
+			Code:           "XObstorMalformedIAMPolicy",
 			Description:    e.Error(),
 			HTTPStatusCode: http.StatusBadRequest,
 		}
 	case config.Error:
 		apiErr = APIError{
-			Code:           "XMinioConfigError",
+			Code:           "XObstorConfigError",
 			Description:    e.Error(),
 			HTTPStatusCode: http.StatusBadRequest,
 		}
@@ -989,25 +989,25 @@ func toAdminAPIErr(ctx context.Context, err error) APIError {
 		switch {
 		case errors.Is(err, errConfigNotFound):
 			apiErr = APIError{
-				Code:           "XMinioConfigError",
+				Code:           "XObstorConfigError",
 				Description:    err.Error(),
 				HTTPStatusCode: http.StatusNotFound,
 			}
 		case errors.Is(err, errIAMActionNotAllowed):
 			apiErr = APIError{
-				Code:           "XMinioIAMActionNotAllowed",
+				Code:           "XObstorIAMActionNotAllowed",
 				Description:    err.Error(),
 				HTTPStatusCode: http.StatusForbidden,
 			}
 		case errors.Is(err, errIAMNotInitialized):
 			apiErr = APIError{
-				Code:           "XMinioIAMNotInitialized",
+				Code:           "XObstorIAMNotInitialized",
 				Description:    err.Error(),
 				HTTPStatusCode: http.StatusServiceUnavailable,
 			}
 		case errors.Is(err, crypto.ErrKESKeyExists):
 			apiErr = APIError{
-				Code:           "XMinioKMSKeyExists",
+				Code:           "XObstorKMSKeyExists",
 				Description:    err.Error(),
 				HTTPStatusCode: http.StatusConflict,
 			}
@@ -1051,11 +1051,11 @@ func mustTrace(entry interface{}, opts madmin.ServiceTraceOpts) (shouldTrace boo
 		}
 	}
 
-	if opts.Internal && trcInfo.TraceType == trace.HTTP && HasPrefix(trcInfo.ReqInfo.Path, minioReservedBucketPath+SlashSeparator) {
+	if opts.Internal && trcInfo.TraceType == trace.HTTP && HasPrefix(trcInfo.ReqInfo.Path, obstorReservedBucketPath+SlashSeparator) {
 		return true
 	}
 
-	if opts.S3 && trcInfo.TraceType == trace.HTTP && !HasPrefix(trcInfo.ReqInfo.Path, minioReservedBucketPath+SlashSeparator) {
+	if opts.S3 && trcInfo.TraceType == trace.HTTP && !HasPrefix(trcInfo.ReqInfo.Path, obstorReservedBucketPath+SlashSeparator) {
 		return true
 	}
 
@@ -1373,7 +1373,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 	defer cancel()
 
 	var err error
-	nsLock := objectAPI.NewNSLock(minioMetaBucket, "health-check-in-progress")
+	nsLock := objectAPI.NewNSLock(obstorMetaBucket, "health-check-in-progress")
 	ctx, err = nsLock.GetLock(ctx, newDynamicTimeout(deadline, deadline))
 	if err != nil { // returns a locked lock
 		errResp(err)
@@ -1424,10 +1424,10 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 			partialWrite(healthInfo)
 		}
 
-		if config := query.Get("minioconfig"); config == "true" {
+		if config := query.Get("obstorconfig"); config == "true" {
 			cfg, err := readServerConfig(ctx, objectAPI)
 			logger.LogIf(ctx, err)
-			healthInfo.Minio.Config = cfg
+			healthInfo.Obstor.Config = cfg
 			partialWrite(healthInfo)
 		}
 
@@ -1585,7 +1585,7 @@ func (a adminAPIHandlers) ServerInfoHandler(w http.ResponseWriter, r *http.Reque
 			ldap.Status = "Not Configured"
 		} else {
 			// Close ldap connection to avoid leaks.
-			ldapConn.Close()
+			_ = ldapConn.Close()
 			ldap.Status = string(madmin.ItemOnline)
 		}
 	}

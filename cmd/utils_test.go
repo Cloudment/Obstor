@@ -467,23 +467,23 @@ func TestLCP(t *testing.T) {
 	}
 }
 
-func TestGetMinioMode(t *testing.T) {
-	testMinioMode := func(expected string) {
-		if mode := getMinioMode(); mode != expected {
+func TestGetObstorMode(t *testing.T) {
+	testObstorMode := func(expected string) {
+		if mode := getObstorMode(); mode != expected {
 			t.Fatalf("Expected %s got %s", expected, mode)
 		}
 	}
 	globalIsDistErasure = true
-	testMinioMode(globalMinioModeDistErasure)
+	testObstorMode(globalObstorModeDistErasure)
 
 	globalIsDistErasure = false
 	globalIsErasure = true
-	testMinioMode(globalMinioModeErasure)
+	testObstorMode(globalObstorModeErasure)
 
 	globalIsDistErasure, globalIsErasure = false, false
-	testMinioMode(globalMinioModeFS)
+	testObstorMode(globalObstorModeFS)
 
-	globalIsGateway, globalGatewayName = true, "azure"
-	testMinioMode(globalMinioModeGatewayPrefix + globalGatewayName)
+	globalIsBackend, globalBackendName = true, "azure"
+	testObstorMode(globalObstorModeBackendPrefix + globalBackendName)
 
 }

@@ -31,15 +31,15 @@ import (
 )
 
 const (
-	minioConfigPrefix = "config"
+	obstorConfigPrefix = "config"
 
 	kvPrefix = ".kv"
 
 	// Captures all the previous SetKV operations and allows rollback.
-	minioConfigHistoryPrefix = minioConfigPrefix + "/history"
+	obstorConfigHistoryPrefix = obstorConfigPrefix + "/history"
 
 	// Obstor configuration file.
-	minioConfigFile = "config.json"
+	obstorConfigFile = "config.json"
 )
 
 func listServerConfigHistory(ctx context.Context, objAPI ObjectLayer, withData bool, count int) (
@@ -50,7 +50,7 @@ func listServerConfigHistory(ctx context.Context, objAPI ObjectLayer, withData b
 	// List all kvs
 	marker := ""
 	for {
-		res, err := objAPI.ListObjects(ctx, minioMetaBucket, minioConfigHistoryPrefix, marker, "", maxObjectList)
+		res, err := objAPI.ListObjects(ctx, obstorMetaBucket, obstorConfigHistoryPrefix, marker, "", maxObjectList)
 		if err != nil {
 			return nil, err
 		}
@@ -93,13 +93,13 @@ func listServerConfigHistory(ctx context.Context, objAPI ObjectLayer, withData b
 }
 
 func delServerConfigHistory(ctx context.Context, objAPI ObjectLayer, uuidKV string) error {
-	historyFile := pathJoin(minioConfigHistoryPrefix, uuidKV+kvPrefix)
-	_, err := objAPI.DeleteObject(ctx, minioMetaBucket, historyFile, ObjectOptions{})
+	historyFile := pathJoin(obstorConfigHistoryPrefix, uuidKV+kvPrefix)
+	_, err := objAPI.DeleteObject(ctx, obstorMetaBucket, historyFile, ObjectOptions{})
 	return err
 }
 
 func readServerConfigHistory(ctx context.Context, objAPI ObjectLayer, uuidKV string) ([]byte, error) {
-	historyFile := pathJoin(minioConfigHistoryPrefix, uuidKV+kvPrefix)
+	historyFile := pathJoin(obstorConfigHistoryPrefix, uuidKV+kvPrefix)
 	data, err := readConfig(ctx, objAPI, historyFile)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func readServerConfigHistory(ctx context.Context, objAPI ObjectLayer, uuidKV str
 
 	if GlobalKMS != nil {
 		data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, historyFile),
+			obstorMetaBucket: path.Join(obstorMetaBucket, historyFile),
 		})
 	}
 	return data, err
@@ -115,12 +115,12 @@ func readServerConfigHistory(ctx context.Context, objAPI ObjectLayer, uuidKV str
 
 func saveServerConfigHistory(ctx context.Context, objAPI ObjectLayer, kv []byte) error {
 	uuidKV := mustGetUUID() + kvPrefix
-	historyFile := pathJoin(minioConfigHistoryPrefix, uuidKV)
+	historyFile := pathJoin(obstorConfigHistoryPrefix, uuidKV)
 
 	if GlobalKMS != nil {
 		var err error
 		kv, err = config.EncryptBytes(GlobalKMS, kv, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, historyFile),
+			obstorMetaBucket: path.Join(obstorMetaBucket, historyFile),
 		})
 		if err != nil {
 			return err
@@ -135,10 +135,10 @@ func saveServerConfig(ctx context.Context, objAPI ObjectLayer, cfg interface{}) 
 		return err
 	}
 
-	var configFile = path.Join(minioConfigPrefix, minioConfigFile)
+	var configFile = path.Join(obstorConfigPrefix, obstorConfigFile)
 	if GlobalKMS != nil {
 		data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, configFile),
+			obstorMetaBucket: path.Join(obstorMetaBucket, configFile),
 		})
 		if err != nil {
 			return err
@@ -148,7 +148,7 @@ func saveServerConfig(ctx context.Context, objAPI ObjectLayer, cfg interface{}) 
 }
 
 func readServerConfig(ctx context.Context, objAPI ObjectLayer) (config.Config, error) {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(obstorConfigPrefix, obstorConfigFile)
 	data, err := readConfig(ctx, objAPI, configFile)
 	if err != nil {
 		// Config not found for some reason, allow things to continue
@@ -161,7 +161,7 @@ func readServerConfig(ctx context.Context, objAPI ObjectLayer) (config.Config, e
 
 	if GlobalKMS != nil && !utf8.Valid(data) {
 		data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, configFile),
+			obstorMetaBucket: path.Join(obstorMetaBucket, configFile),
 		})
 		if err != nil {
 			return nil, err
@@ -217,18 +217,18 @@ func initConfig(objAPI ObjectLayer) error {
 	// ignore if the file doesn't exist.
 	// If etcd is set then migrates /config/config.json
 	// to '<export_path>/.obstor.sys/config/config.json'
-	if err := migrateConfigToMinioSys(objAPI); err != nil {
+	if err := migrateConfigToObstorSys(objAPI); err != nil {
 		return err
 	}
 
 	// Migrates backend '<export_path>/.obstor.sys/config/config.json' to latest version.
-	if err := migrateMinioSysConfig(objAPI); err != nil {
+	if err := migrateObstorSysConfig(objAPI); err != nil {
 		return err
 	}
 
 	// Migrates backend '<export_path>/.obstor.sys/config/config.json' to
 	// latest config format.
-	if err := migrateMinioSysConfigToKV(objAPI); err != nil {
+	if err := migrateObstorSysConfigToKV(objAPI); err != nil {
 		return err
 	}
 

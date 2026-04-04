@@ -32,16 +32,16 @@ import (
 func updateCerts(crt, key string) {
 	// ignore error handling
 	crtSource, _ := os.Open(crt)
-	defer crtSource.Close()
+	defer func() { _ = crtSource.Close() }()
 	crtDest, _ := os.Create("public.crt")
-	defer crtDest.Close()
-	io.Copy(crtDest, crtSource)
+	defer func() { _ = crtDest.Close() }()
+	_, _ = io.Copy(crtDest, crtSource)
 
 	keySource, _ := os.Open(key)
-	defer keySource.Close()
+	defer func() { _ = keySource.Close() }()
 	keyDest, _ := os.Create("private.key")
-	defer keyDest.Close()
-	io.Copy(keyDest, keySource)
+	defer func() { _ = keyDest.Close() }()
+	_, _ = io.Copy(keyDest, keySource)
 }
 
 func TestNewManager(t *testing.T) {

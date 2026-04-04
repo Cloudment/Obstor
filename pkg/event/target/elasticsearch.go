@@ -134,7 +134,7 @@ func (target *ElasticsearchTarget) IsActive() (bool, error) {
 		}
 		return false, err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 	return res.StatusCode < http.StatusBadRequest, nil
 }
 
@@ -181,7 +181,7 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 		if err != nil {
 			return false, err
 		}
-		defer res.Body.Close()
+		defer func() { _ = res.Body.Close() }()
 		return !res.IsError(), nil
 	}
 
@@ -196,7 +196,7 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 			if err != nil {
 				return err
 			}
-			defer res.Body.Close()
+			defer func() { _ = res.Body.Close() }()
 			if res.IsError() {
 				return fmt.Errorf("delete failed: %s", res.String())
 			}
@@ -218,7 +218,7 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 		if err != nil {
 			return err
 		}
-		defer res.Body.Close()
+		defer func() { _ = res.Body.Close() }()
 		if res.IsError() {
 			return fmt.Errorf("index failed: %s", res.String())
 		}
@@ -238,7 +238,7 @@ func (target *ElasticsearchTarget) send(eventData event.Event) error {
 		if err != nil {
 			return err
 		}
-		defer res.Body.Close()
+		defer func() { _ = res.Body.Close() }()
 		if res.IsError() {
 			return fmt.Errorf("index failed: %s", res.String())
 		}
@@ -309,13 +309,13 @@ func createIndex(client *elasticsearch.Client, args ElasticsearchArgs) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 	if res.StatusCode == http.StatusNotFound {
 		res, err = client.Indices.Create(args.Index)
 		if err != nil {
 			return err
 		}
-		defer res.Body.Close()
+		defer func() { _ = res.Body.Close() }()
 		if res.IsError() {
 			return fmt.Errorf("index %v not created: %s", args.Index, res.String())
 		}
@@ -351,7 +351,7 @@ func newClient(args ElasticsearchArgs) (*elasticsearch.Client, error) {
 		}
 		return nil, err
 	}
-	res.Body.Close()
+	_ = res.Body.Close()
 
 	if err = createIndex(client, args); err != nil {
 		return nil, err

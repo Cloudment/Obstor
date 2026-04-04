@@ -71,24 +71,31 @@ func (c *Target) Send(e interface{}, logKind string) error {
 		trace[i] = fmt.Sprintf("%8v: %s", traceLength-i, element)
 	}
 
-	tagString := ""
+	var tagBuf strings.Builder
 	for key, value := range entry.Trace.Variables {
 		if value != "" {
-			if tagString != "" {
-				tagString += ", "
+			if tagBuf.Len() > 0 {
+				tagBuf.WriteString(", ")
 			}
-			tagString += fmt.Sprintf("%s=%v", key, value)
+			fmt.Fprintf(&tagBuf, "%s=%v", key, value)
 		}
 	}
+	tagString := tagBuf.String()
 
-	apiString := "API: " + entry.API.Name + "("
+	var apiBuf strings.Builder
+	apiBuf.WriteString("API: ")
+	apiBuf.WriteString(entry.API.Name)
+	apiBuf.WriteString("(")
 	if entry.API.Args != nil && entry.API.Args.Bucket != "" {
-		apiString = apiString + "bucket=" + entry.API.Args.Bucket
+		apiBuf.WriteString("bucket=")
+		apiBuf.WriteString(entry.API.Args.Bucket)
 	}
 	if entry.API.Args != nil && entry.API.Args.Object != "" {
-		apiString = apiString + ", object=" + entry.API.Args.Object
+		apiBuf.WriteString(", object=")
+		apiBuf.WriteString(entry.API.Args.Object)
 	}
-	apiString += ")"
+	apiBuf.WriteString(")")
+	apiString := apiBuf.String()
 	timeString := "Time: " + time.Now().Format(logger.TimeFormat)
 
 	var deploymentID string

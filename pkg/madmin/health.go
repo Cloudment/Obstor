@@ -38,11 +38,11 @@ import (
 
 // HealthInfo - Obstor cluster's health Info
 type HealthInfo struct {
-	TimeStamp time.Time       `json:"timestamp,omitempty"`
-	Error     string          `json:"error,omitempty"`
-	Perf      PerfInfo        `json:"perf,omitempty"`
-	Minio     MinioHealthInfo `json:"obstor,omitempty"`
-	Sys       SysHealthInfo   `json:"sys,omitempty"`
+	TimeStamp time.Time        `json:"timestamp,omitempty"`
+	Error     string           `json:"error,omitempty"`
+	Perf      PerfInfo         `json:"perf,omitempty"`
+	Obstor    ObstorHealthInfo `json:"obstor,omitempty"`
+	Sys       SysHealthInfo    `json:"sys,omitempty"`
 }
 
 // SysHealthInfo - Includes hardware and system information of the Obstor cluster
@@ -119,8 +119,8 @@ type ServerCPUInfo struct {
 	Error    string          `json:"error,omitempty"`
 }
 
-// MinioHealthInfo - Includes Obstor confifuration information
-type MinioHealthInfo struct {
+// ObstorHealthInfo - Includes Obstor confifuration information
+type ObstorHealthInfo struct {
 	Info   InfoMessage `json:"info,omitempty"`
 	Config interface{} `json:"config,omitempty"`
 	Error  string      `json:"error,omitempty"`
@@ -194,42 +194,42 @@ type HealthDataType string
 
 // HealthDataTypes
 const (
-	HealthDataTypePerfDrive   HealthDataType = "perfdrive"
-	HealthDataTypePerfNet     HealthDataType = "perfnet"
-	HealthDataTypeMinioInfo   HealthDataType = "minioinfo"
-	HealthDataTypeMinioConfig HealthDataType = "minioconfig"
-	HealthDataTypeSysCPU      HealthDataType = "syscpu"
-	HealthDataTypeSysDiskHw   HealthDataType = "sysdiskhw"
-	HealthDataTypeSysDocker   HealthDataType = "sysdocker" // is this really needed?
-	HealthDataTypeSysOsInfo   HealthDataType = "sysosinfo"
-	HealthDataTypeSysLoad     HealthDataType = "sysload" // provides very little info. Making it TBD
-	HealthDataTypeSysMem      HealthDataType = "sysmem"
-	HealthDataTypeSysNet      HealthDataType = "sysnet"
-	HealthDataTypeSysProcess  HealthDataType = "sysprocess"
+	HealthDataTypePerfDrive    HealthDataType = "perfdrive"
+	HealthDataTypePerfNet      HealthDataType = "perfnet"
+	HealthDataTypeObstorInfo   HealthDataType = "obstorinfo"
+	HealthDataTypeObstorConfig HealthDataType = "obstorconfig"
+	HealthDataTypeSysCPU       HealthDataType = "syscpu"
+	HealthDataTypeSysDiskHw    HealthDataType = "sysdiskhw"
+	HealthDataTypeSysDocker    HealthDataType = "sysdocker" // is this really needed?
+	HealthDataTypeSysOsInfo    HealthDataType = "sysosinfo"
+	HealthDataTypeSysLoad      HealthDataType = "sysload" // provides very little info. Making it TBD
+	HealthDataTypeSysMem       HealthDataType = "sysmem"
+	HealthDataTypeSysNet       HealthDataType = "sysnet"
+	HealthDataTypeSysProcess   HealthDataType = "sysprocess"
 )
 
 // HealthDataTypesMap - Map of Health datatypes
 var HealthDataTypesMap = map[string]HealthDataType{
-	"perfdrive":   HealthDataTypePerfDrive,
-	"perfnet":     HealthDataTypePerfNet,
-	"minioinfo":   HealthDataTypeMinioInfo,
-	"minioconfig": HealthDataTypeMinioConfig,
-	"syscpu":      HealthDataTypeSysCPU,
-	"sysdiskhw":   HealthDataTypeSysDiskHw,
-	"sysdocker":   HealthDataTypeSysDocker,
-	"sysosinfo":   HealthDataTypeSysOsInfo,
-	"sysload":     HealthDataTypeSysLoad,
-	"sysmem":      HealthDataTypeSysMem,
-	"sysnet":      HealthDataTypeSysNet,
-	"sysprocess":  HealthDataTypeSysProcess,
+	"perfdrive":    HealthDataTypePerfDrive,
+	"perfnet":      HealthDataTypePerfNet,
+	"obstorinfo":   HealthDataTypeObstorInfo,
+	"obstorconfig": HealthDataTypeObstorConfig,
+	"syscpu":       HealthDataTypeSysCPU,
+	"sysdiskhw":    HealthDataTypeSysDiskHw,
+	"sysdocker":    HealthDataTypeSysDocker,
+	"sysosinfo":    HealthDataTypeSysOsInfo,
+	"sysload":      HealthDataTypeSysLoad,
+	"sysmem":       HealthDataTypeSysMem,
+	"sysnet":       HealthDataTypeSysNet,
+	"sysprocess":   HealthDataTypeSysProcess,
 }
 
 // HealthDataTypesList - List of Health datatypes
 var HealthDataTypesList = []HealthDataType{
 	HealthDataTypePerfDrive,
 	HealthDataTypePerfNet,
-	HealthDataTypeMinioInfo,
-	HealthDataTypeMinioConfig,
+	HealthDataTypeObstorInfo,
+	HealthDataTypeObstorConfig,
 	HealthDataTypeSysCPU,
 	HealthDataTypeSysDiskHw,
 	HealthDataTypeSysDocker,
@@ -303,7 +303,7 @@ func (adm *AdminClient) ServerHealthInfo(ctx context.Context, healthDataTypes []
 
 		respChan <- healthInfoMessage
 
-		if v.Get(string(HealthDataTypeMinioInfo)) == "true" {
+		if v.Get(string(HealthDataTypeObstorInfo)) == "true" {
 			info, err := adm.ServerInfo(ctx)
 			if err != nil {
 				respChan <- HealthInfo{
@@ -311,7 +311,7 @@ func (adm *AdminClient) ServerHealthInfo(ctx context.Context, healthDataTypes []
 				}
 				return
 			}
-			healthInfoMessage.Minio.Info = info
+			healthInfoMessage.Obstor.Info = info
 			respChan <- healthInfoMessage
 		}
 

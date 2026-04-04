@@ -24,7 +24,7 @@ import (
 
 const (
 	// Default obstor configuration directory where below configuration files/directories are stored.
-	defaultMinioConfigDir = ".obstor"
+	defaultObstorConfigDir = ".obstor"
 
 	// Directory contains below files/directories for HTTPS configuration.
 	certsDir = "certs"
@@ -50,7 +50,7 @@ func getDefaultConfigDir() string {
 		return ""
 	}
 
-	return filepath.Join(homeDir, defaultMinioConfigDir)
+	return filepath.Join(homeDir, defaultObstorConfigDir)
 }
 
 func getDefaultCertsDir() string {
@@ -94,7 +94,7 @@ func mkdirAllIgnorePerm(path string) error {
 }
 
 func getConfigFile() string {
-	return filepath.Join(globalConfigDir.Get(), minioConfigFile)
+	return filepath.Join(globalConfigDir.Get(), obstorConfigFile)
 }
 
 func getPublicCertFile() string {

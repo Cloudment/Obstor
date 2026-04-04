@@ -122,7 +122,7 @@ func (fsi *fsIOPool) Open(path string) (*lock.RLockedFile, error) {
 		if ok {
 			// Close the new fd, since we already seem to have
 			// an active reference.
-			newRlkFile.Close()
+			_ = newRlkFile.Close()
 		} else {
 			// Save the new rlk file.
 			rlkFile = newRlkFile
@@ -216,7 +216,7 @@ func (fsi *fsIOPool) Close(path string) error {
 	}
 
 	// Close the reader.
-	rlkFile.Close()
+	_ = rlkFile.Close()
 
 	// If the file is closed, remove it from the reader pool map.
 	if rlkFile.IsClosed() {

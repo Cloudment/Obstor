@@ -83,7 +83,7 @@ func validateCredentialfields(t *testing.T, testNum int, expectedCredentials cre
 // Credential = accessKey + SlashSeparator+ scope
 // where scope = string.Join([]string{  currTime.Format(yyyymmdd),
 //
-//				globalMinioDefaultRegion,
+//				globalObstorDefaultRegion,
 //	              	"s3",
 //			        "aws4_request",
 //	                      },SlashSeparator)

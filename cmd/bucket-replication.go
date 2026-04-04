@@ -41,7 +41,7 @@ import (
 
 // Gets replication config associated to a given bucket name.
 func getReplicationConfig(ctx context.Context, bucketName string) (rc *replication.Config, err error) {
-	if globalIsGateway {
+	if globalIsBackend {
 		objAPI := newObjectLayerFn()
 		if objAPI == nil {
 			return nil, errServerNotInitialized
@@ -82,7 +82,7 @@ func validateReplicationDestination(ctx context.Context, bucket string, rCfg *re
 	c, ok := globalBucketTargetSys.arnRemotesMap[rCfg.RoleArn]
 	if ok {
 		if c.EndpointURL().String() == clnt.EndpointURL().String() {
-			sameTarget, _ := isLocalHost(clnt.EndpointURL().Hostname(), clnt.EndpointURL().Port(), globalMinioPort)
+			sameTarget, _ := isLocalHost(clnt.EndpointURL().Hostname(), clnt.EndpointURL().Port(), globalObstorPort)
 			return sameTarget, nil
 		}
 	}
@@ -108,7 +108,7 @@ func mustReplicate(ctx context.Context, r *http.Request, bucket, object string, 
 // mustReplicater returns 2 booleans - true if object meets replication criteria and true if replication is to be done in
 // a synchronous manner.
 func mustReplicater(ctx context.Context, bucket, object string, meta map[string]string, replStatus string) (replicate bool, sync bool) {
-	if globalIsGateway {
+	if globalIsBackend {
 		return replicate, sync
 	}
 	if rs, ok := meta[xhttp.AmzBucketReplicationStatus]; ok {
@@ -611,7 +611,7 @@ func replicateObject(ctx context.Context, ri ReplicateObjectInfo, objectAPI Obje
 		logger.LogIf(ctx, fmt.Errorf("unable to update replicate for %s/%s(%s): %w", bucket, object, objInfo.VersionID, err))
 		return
 	}
-	defer gr.Close() // hold write lock for entire transaction
+	defer func() { _ = gr.Close() }() // hold write lock for entire transaction
 
 	objInfo = gr.ObjInfo
 	size, err := objInfo.GetActualSize()

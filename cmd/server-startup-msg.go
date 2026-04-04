@@ -117,7 +117,7 @@ func stripStandardPorts(apiEndpoints []string) (newAPIEndpoints []string) {
 		if err != nil {
 			continue
 		}
-		if globalMinioHost == "" && isNotIPv4(u.Host) {
+		if globalObstorHost == "" && isNotIPv4(u.Host) {
 			// Skip all non-IPv4 endpoints when we bind to all interfaces.
 			continue
 		}
