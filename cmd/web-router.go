@@ -43,7 +43,7 @@ type indexHandler struct {
 }
 
 func (h indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	r.URL.Path = minioReservedBucketPath + SlashSeparator
+	r.URL.Path = obstorReservedBucketPath + SlashSeparator
 	h.handler.ServeHTTP(w, r)
 }
 
@@ -60,7 +60,7 @@ func registerWebRPCRouter(router *mux.Router) error {
 	}
 
 	codec := json2.NewCodec()
-	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
+	webBrowserRouter := router.PathPrefix(obstorReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
 
 	webRPC := jsonrpc.NewServer()
 	webRPC.RegisterCodec(codec, "application/json")
@@ -105,7 +105,7 @@ func registerWebRouter(router *mux.Router) error {
 	codec := json2.NewCodec()
 
 	// Obstor browser router.
-	webBrowserRouter := router.PathPrefix(minioReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
+	webBrowserRouter := router.PathPrefix(obstorReservedBucketPath).HeadersRegexp("User-Agent", ".*Mozilla.*").Subrouter()
 
 	// Initialize json rpc handlers.
 	webRPC := jsonrpc.NewServer()
@@ -146,7 +146,7 @@ func registerWebRouter(router *mux.Router) error {
 	if err != nil {
 		panic(err)
 	}
-	compressAssets := handlers.CompressHandler(http.StripPrefix(minioReservedBucketPath, http.FileServer(http.FS(assetFS))))
+	compressAssets := handlers.CompressHandler(http.StripPrefix(obstorReservedBucketPath, http.FileServer(http.FS(assetFS))))
 
 	// Serve javascript files and favicon from assets.
 	webBrowserRouter.Path(fmt.Sprintf("/{assets:%s}", specialAssets)).Handler(compressAssets)

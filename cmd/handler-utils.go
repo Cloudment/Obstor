@@ -30,17 +30,22 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 
+	"github.com/cloudment/obstor/cmd/crypto"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/cmd/logger"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/cloudment/obstor/pkg/handlers"
 	"github.com/cloudment/obstor/pkg/madmin"
+	miniogo "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 const (
 	copyDirective    = "COPY"
 	replaceDirective = "REPLACE"
+	ReplaceDirective = replaceDirective
 )
 
 // Parses location constraint from the incoming reader.
@@ -405,7 +410,7 @@ func getResource(path string, host string, domains []string) (string, error) {
 	}
 	// If virtual-host-style is enabled construct the "resource" properly.
 	if strings.Contains(host, ":") {
-		// In bucket.mydomain.com:9000, strip out :9000
+		// In bucket.example.com:9000, strip out :9000
 		var err error
 		if host, _, err = net.SplitHostPort(host); err != nil {
 			reqInfo := (&logger.ReqInfo{}).AppendTags("host", host)
@@ -416,7 +421,7 @@ func getResource(path string, host string, domains []string) (string, error) {
 		}
 	}
 	for _, domain := range domains {
-		if host == minioReservedBucket+"."+domain {
+		if host == obstorReservedBucket+"."+domain {
 			continue
 		}
 		if !strings.HasSuffix(host, "."+domain) {
@@ -447,21 +452,21 @@ func methodNotAllowedHandler(api string) func(w http.ResponseWriter, r *http.Req
 		case strings.HasPrefix(r.URL.Path, peerRESTPrefix):
 			desc := fmt.Sprintf("Server expects 'peer' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", peerRESTVersion, version, ReleaseTag)
 			writeErrorResponseString(r.Context(), w, APIError{
-				Code:           "XMinioPeerVersionMismatch",
+				Code:           "XObstorPeerVersionMismatch",
 				Description:    desc,
 				HTTPStatusCode: http.StatusUpgradeRequired,
 			}, r.URL)
 		case strings.HasPrefix(r.URL.Path, storageRESTPrefix):
 			desc := fmt.Sprintf("Server expects 'storage' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", storageRESTVersion, version, ReleaseTag)
 			writeErrorResponseString(r.Context(), w, APIError{
-				Code:           "XMinioStorageVersionMismatch",
+				Code:           "XObstorStorageVersionMismatch",
 				Description:    desc,
 				HTTPStatusCode: http.StatusUpgradeRequired,
 			}, r.URL)
 		case strings.HasPrefix(r.URL.Path, lockRESTPrefix):
 			desc := fmt.Sprintf("Server expects 'lock' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", lockRESTVersion, version, ReleaseTag)
 			writeErrorResponseString(r.Context(), w, APIError{
-				Code:           "XMinioLockVersionMismatch",
+				Code:           "XObstorLockVersionMismatch",
 				Description:    desc,
 				HTTPStatusCode: http.StatusUpgradeRequired,
 			}, r.URL)
@@ -471,21 +476,20 @@ func methodNotAllowedHandler(api string) func(w http.ResponseWriter, r *http.Req
 			case "v1":
 				desc = fmt.Sprintf("Server expects client requests with 'admin' API version '%s', found '%s', please upgrade the client to latest releases", madmin.AdminAPIVersion, version)
 			case madmin.AdminAPIVersion:
-				desc = fmt.Sprintf("This 'admin' API is not supported by server in '%s'", getMinioMode())
+				desc = fmt.Sprintf("This 'admin' API is not supported by server in '%s'", getObstorMode())
 			default:
 				desc = fmt.Sprintf("Unexpected client 'admin' API version found '%s', expected '%s', please downgrade the client to older releases", version, madmin.AdminAPIVersion)
 			}
 			writeErrorResponseJSON(r.Context(), w, APIError{
-				Code:           "XMinioAdminVersionMismatch",
+				Code:           "XObstorAdminVersionMismatch",
 				Description:    desc,
 				HTTPStatusCode: http.StatusUpgradeRequired,
 			}, r.URL)
 		default:
 			writeErrorResponse(r.Context(), w, APIError{
-				Code: "BadRequest",
-				Description: fmt.Sprintf("An error occurred when parsing the HTTP request %s at '%s'",
-					r.Method, r.URL.Path),
-				HTTPStatusCode: http.StatusBadRequest,
+				Code:           "MethodNotAllowed",
+				Description:    "The specified method is not allowed against this resource.",
+				HTTPStatusCode: http.StatusMethodNotAllowed,
 			}, r.URL, guessIsBrowserReq(r))
 		}
 	}
@@ -501,21 +505,21 @@ func errorResponseHandler(w http.ResponseWriter, r *http.Request) {
 	case strings.HasPrefix(r.URL.Path, peerRESTPrefix):
 		desc := fmt.Sprintf("Server expects 'peer' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", peerRESTVersion, version, ReleaseTag)
 		writeErrorResponseString(r.Context(), w, APIError{
-			Code:           "XMinioPeerVersionMismatch",
+			Code:           "XObstorPeerVersionMismatch",
 			Description:    desc,
 			HTTPStatusCode: http.StatusUpgradeRequired,
 		}, r.URL)
 	case strings.HasPrefix(r.URL.Path, storageRESTPrefix):
 		desc := fmt.Sprintf("Server expects 'storage' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", storageRESTVersion, version, ReleaseTag)
 		writeErrorResponseString(r.Context(), w, APIError{
-			Code:           "XMinioStorageVersionMismatch",
+			Code:           "XObstorStorageVersionMismatch",
 			Description:    desc,
 			HTTPStatusCode: http.StatusUpgradeRequired,
 		}, r.URL)
 	case strings.HasPrefix(r.URL.Path, lockRESTPrefix):
 		desc := fmt.Sprintf("Server expects 'lock' API version '%s', instead found '%s' - *rolling upgrade is not allowed* - please make sure all servers are running the same Obstor version (%s)", lockRESTVersion, version, ReleaseTag)
 		writeErrorResponseString(r.Context(), w, APIError{
-			Code:           "XMinioLockVersionMismatch",
+			Code:           "XObstorLockVersionMismatch",
 			Description:    desc,
 			HTTPStatusCode: http.StatusUpgradeRequired,
 		}, r.URL)
@@ -525,12 +529,12 @@ func errorResponseHandler(w http.ResponseWriter, r *http.Request) {
 		case "v1":
 			desc = fmt.Sprintf("Server expects client requests with 'admin' API version '%s', found '%s', please upgrade the client to latest releases", madmin.AdminAPIVersion, version)
 		case madmin.AdminAPIVersion:
-			desc = fmt.Sprintf("This 'admin' API is not supported by server in '%s'", getMinioMode())
+			desc = fmt.Sprintf("This 'admin' API is not supported by server in '%s'", getObstorMode())
 		default:
 			desc = fmt.Sprintf("Unexpected client 'admin' API version found '%s', expected '%s', please downgrade the client to older releases", version, madmin.AdminAPIVersion)
 		}
 		writeErrorResponseJSON(r.Context(), w, APIError{
-			Code:           "XMinioAdminVersionMismatch",
+			Code:           "XObstorAdminVersionMismatch",
 			Description:    desc,
 			HTTPStatusCode: http.StatusUpgradeRequired,
 		}, r.URL)
@@ -584,4 +588,92 @@ func proxyRequest(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	r.URL.Host = ep.Host
 	f.ServeHTTP(w, r)
 	return
+}
+
+var supportedHeadGetReqParams = map[string]string{
+	"response-expires":             xhttp.Expires,
+	"response-content-type":        xhttp.ContentType,
+	"response-cache-control":       xhttp.CacheControl,
+	"response-content-encoding":    xhttp.ContentEncoding,
+	"response-content-language":    xhttp.ContentLanguage,
+	"response-content-disposition": xhttp.ContentDisposition,
+}
+
+func SetHeadGetRespHeaders(w http.ResponseWriter, reqParams url.Values) {
+	for k, v := range reqParams {
+		if header, ok := supportedHeadGetReqParams[strings.ToLower(k)]; ok {
+			w.Header()[header] = v
+		}
+	}
+}
+
+func GetCpObjMetadataFromHeader(ctx context.Context, r *http.Request, userMeta map[string]string) (map[string]string, error) {
+	defaultMeta := make(map[string]string, len(userMeta))
+	for k, v := range userMeta {
+		defaultMeta[k] = v
+	}
+
+	crypto.RemoveSSEHeaders(defaultMeta)
+
+	// Preserve storage class override.
+	sc := r.Header.Get(xhttp.AmzStorageClass)
+	if sc == "" {
+		sc = r.URL.Query().Get(xhttp.AmzStorageClass)
+	}
+
+	if isDirectiveReplace(r.Header.Get(xhttp.AmzMetadataDirective)) {
+		emetadata, err := extractMetadata(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+		if sc != "" {
+			emetadata[xhttp.AmzStorageClass] = sc
+		}
+		return emetadata, nil
+	}
+
+	if sc != "" {
+		defaultMeta[xhttp.AmzStorageClass] = sc
+	}
+
+	if isDirectiveCopy(r.Header.Get(xhttp.AmzMetadataDirective)) {
+		return defaultMeta, nil
+	}
+
+	return defaultMeta, nil
+}
+
+var (
+	getRemoteInstanceTransport     *http.Transport
+	getRemoteInstanceTransportOnce sync.Once
+)
+
+// Return client for the given remote host.
+var GetRemoteInstanceClient = func(r *http.Request, host string) (*miniogo.Core, error) {
+	if newObjectLayerFn() == nil {
+		return nil, errServerNotInitialized
+	}
+
+	cred := getReqAccessCred(r, globalServerRegion)
+	core, err := miniogo.NewCore(host, &miniogo.Options{
+		Creds:     credentials.NewStaticV4(cred.AccessKey, cred.SecretKey, ""),
+		Secure:    globalIsTLS,
+		Transport: getRemoteInstanceTransport,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return core, nil
+}
+
+// Checks if the bucket lives on a remote site.
+func IsRemoteCallRequired(ctx context.Context, bucket string, objAPI ObjectLayer) bool {
+	if globalDNSConfig == nil {
+		return false
+	}
+	if globalBucketFederation {
+		_, err := objAPI.GetBucketInfo(ctx, bucket)
+		return err == toObjectErr(errVolumeNotFound, bucket)
+	}
+	return false
 }

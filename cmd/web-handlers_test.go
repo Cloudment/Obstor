@@ -28,6 +28,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
@@ -238,6 +239,8 @@ func testServerInfoWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 		t.Fatalf("Cannot get obstor version from server info handler")
 	}
 	serverInfoReply.ObstorGlobalInfo["domains"] = []string(nil)
+	serverInfoReply.ObstorGlobalInfo["nodes"] = 0
+	serverInfoReply.ObstorGlobalInfo["drives"] = 0
 	globalInfo := getGlobalInfo()
 	if !reflect.DeepEqual(serverInfoReply.ObstorGlobalInfo, globalInfo) {
 		t.Fatalf("Global info did not match got %#v, expected %#v", serverInfoReply.ObstorGlobalInfo, globalInfo)
@@ -272,7 +275,7 @@ func testMakeBucketWebHandler(obj ObjectLayer, instanceType string, t TestErrHan
 		{".", false},
 		{"ab", false},
 		{"obstor", false},
-		{minioMetaBucket, false},
+		{obstorMetaBucket, false},
 		{bucketName, true},
 	}
 
@@ -1025,7 +1028,13 @@ func testWebPresignedGetHandler(obj ObjectLayer, instanceType string, t TestErrH
 	// Initialize a new api recorder.
 	arec := httptest.NewRecorder()
 
-	req, err = newTestRequest(http.MethodGet, presignGetRep.URL, 0, nil)
+	// Strip x-obstor-otp from url for API router during tests
+	presignURL, _ := url.Parse(presignGetRep.URL)
+	q := presignURL.Query()
+	q.Del("x-obstor-otp")
+	presignURL.RawQuery = q.Encode()
+
+	req, err = newTestRequest(http.MethodGet, presignURL.String(), 0, nil)
 	req.Header.Del("x-amz-content-sha256")
 	if err != nil {
 		t.Fatal("Failed to initialized a new request", err)
@@ -1086,7 +1095,7 @@ func TestWebCheckAuthorization(t *testing.T) {
 
 	// initialize the server and obtain the credentials and root.
 	// credentials are necessary to sign the HTTP request.
-	err = newTestConfig(globalMinioDefaultRegion, obj)
+	err = newTestConfig(globalObstorDefaultRegion, obj)
 	if err != nil {
 		t.Fatal("Init Test config failed", err)
 	}
@@ -1174,7 +1183,7 @@ func TestWebObjectLayerFaultyDisks(t *testing.T) {
 
 	// initialize the server and obtain the credentials and root.
 	// credentials are necessary to sign the HTTP request.
-	err = newTestConfig(globalMinioDefaultRegion, obj)
+	err = newTestConfig(globalObstorDefaultRegion, obj)
 	if err != nil {
 		t.Fatal("Init Test config failed", err)
 	}

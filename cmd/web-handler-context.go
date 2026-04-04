@@ -259,6 +259,14 @@ func (args *GetObjectLocationsArgs) ToKeyValue() KeyValueMap {
 	return km
 }
 
+// ToKeyValue implementation for GetObjectChecksumsArgs
+func (args *GetObjectChecksumsArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	km.SetObject(args.ObjectName)
+	return km
+}
+
 // ToKeyValue implementation for PresignedPutArgs
 func (args *PresignedPutArgs) ToKeyValue() KeyValueMap {
 	km := KeyValueMap{}

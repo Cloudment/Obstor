@@ -86,11 +86,11 @@ start_frontend() {
         prev=""
         for arg in "$@"; do
             case "$arg" in
-                --api-address=*) API_PORT="${arg#--api-address=}" ;;
+                --s3-address=*) API_PORT="${arg#--s3-address=}" ;;
                 --certs-dir=*) CERTS_DIR="${arg#--certs-dir=}" ;;
             esac
             case "$prev" in
-                --api-address) API_PORT="$arg" ;;
+                --s3-address) API_PORT="$arg" ;;
                 --certs-dir) CERTS_DIR="$arg" ;;
             esac
             prev="$arg"
