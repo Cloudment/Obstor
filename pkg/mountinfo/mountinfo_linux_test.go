@@ -67,7 +67,7 @@ func TestCrossDeviceMountPaths(t *testing.T) {
 		if err = checkCrossDevice(absPaths, mountsPath); err == nil {
 			t.Fatal("Expected to fail for non absolute paths")
 		}
-		expectedErrMsg := fmt.Sprintf("Invalid argument, path (%s) is expected to be absolute", ".")
+		expectedErrMsg := fmt.Sprintf("invalid argument, path (%s) is expected to be absolute", ".")
 		if err.Error() != expectedErrMsg {
 			t.Fatalf("Expected %s, got %s", expectedErrMsg, err)
 		}
@@ -122,7 +122,7 @@ func TestCrossDeviceMount(t *testing.T) {
 		if err = mounts.checkCrossMounts("."); err == nil {
 			t.Fatal("Expected to fail for non absolute paths")
 		}
-		expectedErrMsg := fmt.Sprintf("Invalid argument, path (%s) is expected to be absolute", ".")
+		expectedErrMsg := fmt.Sprintf("invalid argument, path (%s) is expected to be absolute", ".")
 		if err.Error() != expectedErrMsg {
 			t.Fatalf("Expected %s, got %s", expectedErrMsg, err)
 		}
