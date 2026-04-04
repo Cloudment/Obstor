@@ -96,7 +96,7 @@ $ export OBSTOR_ROOT_PASSWORD=obstor123
 $ obstor server ~/test
 ```
 
-Create new users following the multi-user guide [here](https://obstor.net/docs/obstor-multi-user-quickstart-guide.html)
+Create new users following the multi-user guide [here](https://obstor.net/docs/obstor-multi-user-quickstart-guide)
 
 Testing with an example
 > Use the same username and password created in the previous steps.
@@ -126,5 +126,5 @@ $ aws --profile foobar --endpoint-url http://localhost:9000 sts assume-role --po
 ```
 
 ## Explore Further
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

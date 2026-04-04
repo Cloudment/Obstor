@@ -2,7 +2,7 @@
 
 ## Description of `xl.meta`
 
-`xl.meta` is a new self describing backend format used by Obstor to support AWS S3 compatible versioning. This file is the source of truth for each `version` at rest. `xl.meta` is a msgpack file serialized from a well defined data structure. To understand `xl.meta` here are the few things to start with
+`xl.meta` is a new self describing backend format used by Obstor to support AWS S3-compatible versioning. This file is the source of truth for each `version` at rest. `xl.meta` is a msgpack file serialized from a well defined data structure. To understand `xl.meta` here are the few things to start with
 
 `xl.meta` carries first 8 bytes an XL header which describes the current format and the format version, allowing the unmarshaller's to automatically use the right data structures to parse the subsequent content in the stream.
 
@@ -26,7 +26,7 @@ Once the header is validated, we proceed to the actual data structure of the `xl
 - LegacyObjectType (preserves existing deployments and older xl.json format)
 - DeleteMarker (a versionId to capture the DELETE sequences implemented primarily for AWS spec compatibility)
 
-A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` using [xl-meta.go](https://github.com/cloudment/obstor/blob/main/docs/bucket/versioning/xl-meta.go) program.
+A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` using [xl-meta.go](xl-meta.go) program.
 ```json
 {
   "Versions": [

@@ -76,7 +76,7 @@ GLOBAL FLAGS:
 				if err != nil {
 					return err
 				}
-				defer f.Close()
+				defer func() { _ = f.Close() }()
 				r = f
 			}
 

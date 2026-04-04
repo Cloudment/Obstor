@@ -7,7 +7,7 @@ Buckets can be configured to have one of two types of quota configuration - FIFO
 - `Hard` quota disallows writes to the bucket after configured quota limit is reached.
 - `FIFO` quota automatically deletes oldest content until bucket usage falls within configured limit while permitting writes.
 
-> NOTE: Bucket quotas are not supported under gateway or standalone single disk deployments.
+> NOTE: Bucket quotas are not supported under backend or standalone single disk deployments.
 
 ## Prerequisites
 - Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).

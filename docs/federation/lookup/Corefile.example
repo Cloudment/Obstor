@@ -5,7 +5,7 @@
   }
   debug
   prometheus
-  cache 160 mydomain.com
+  cache 160 example.com
   loadbalance
   forward . /etc/resolv.conf
 }

@@ -2,7 +2,7 @@
 
 Obstor server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
 
-This page is intended as a summary of Obstor Erasure Coding. For a more complete explanation, see https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding.html.
+This page is intended as a summary of Obstor Erasure Coding. For a more complete explanation, see https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding.
 
 ## Overview
 
@@ -54,7 +54,7 @@ The default value for the `STANDARD` storage class depends on the number of volu
 | 8 or more        |                 EC:4  |
 
 Prior to the ``RELEASE.2021-01-30T00-20-58Z`` Obstor release, the default `STANDARD` value was `EC(N/2)` where `N` was the number of erasure set drives.
-For more complete documentation on Erasure Set sizing, see the [Obstor Documentation on Erasure Sets](https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding.html#erasure-sets).
+For more complete documentation on Erasure Set sizing, see the [Obstor Documentation on Erasure Sets](https://obstor.net/docs/obstor/baremetal/concepts/erasure-coding#erasure-sets).
 
 ### Allowed values for REDUCED_REDUNDANCY storage class
 
@@ -83,7 +83,7 @@ export OBSTOR_STORAGE_CLASS_STANDARD=EC:3
 export OBSTOR_STORAGE_CLASS_RRS=EC:2
 ```
 
-Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](https://github.com/cloudment/obstor/tree/master/docs/config#storage-class) for
+Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](../../config#storage-class) for
 more details.
 
 *Note*

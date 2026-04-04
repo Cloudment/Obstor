@@ -2,7 +2,7 @@
 
 Events occurring on objects in a bucket can be monitored using bucket event notifications.
 
-> NOTE: Gateway mode does not support bucket notifications (except NAS gateway).
+> NOTE: Backend mode does not support bucket notifications (except NAS backend).
 
 Various event types supported by Obstor server are
 

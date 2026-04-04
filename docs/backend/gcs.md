@@ -1,12 +1,12 @@
-# Obstor GCS Gateway
+# Obstor GCS Backend
 
-Obstor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S3-compatible APIs
+Obstor GCS Backend allows you to access Google Cloud Storage (GCS) with S3-compatible APIs and [other supported protocols](../protocols/README.md)
 
-- [Run Obstor Gateway for GCS](#run-obstor-gateway-for-gcs)
+- [Run Obstor Backend for GCS](#run-obstor-backend-for-gcs)
 - [Test Using Browser Dashboard](#test-using-obstor-browser)
 - [Test Using Obstor Client](#test-using-obstor-client)
 
-## <a name="run-obstor-gateway-for-gcs"></a>1. Run Obstor Gateway for GCS
+## <a name="run-obstor-backend-for-gcs"></a>1. Run Obstor Backend for GCS
 
 ### 1.1 Create a Service Account key for GCS and get the Credentials File
 1. Navigate to the [API Console Credentials page](https://console.developers.google.com/project/_/apis/credentials).
@@ -19,41 +19,41 @@ Obstor GCS Gateway allows you to access Google Cloud Storage (GCS) with Amazon S
 
 **Note:** For alternate ways to set up *Application Default Credentials*, see [Setting Up Authentication for Server to Server Production Applications](https://developers.google.com/identity/protocols/application-default-credentials).
 
-### 1.2 Run Obstor GCS Gateway Using Docker
+### 1.2 Run Obstor GCS Backend Using Docker
 ```sh
 docker run -p 9000:9000 --name gcs-s3 \
  -v /path/to/credentials.json:/credentials.json \
  -e "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json" \
  -e "OBSTOR_ROOT_USER=obstoraccountname" \
  -e "OBSTOR_ROOT_PASSWORD=obstoraccountkey" \
- ghcr.io/cloudment/obstor gateway gcs yourprojectid
+ ghcr.io/cloudment/obstor backend gcs yourprojectid
 ```
 
-### 1.3 Run Obstor GCS Gateway Using the Obstor Binary
+### 1.3 Run Obstor GCS Backend Using the Obstor Binary
 
 ```sh
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 export OBSTOR_ROOT_USER=obstoraccesskey
 export OBSTOR_ROOT_PASSWORD=obstorsecretkey
-obstor gateway gcs yourprojectid
+obstor backend gcs yourprojectid
 ```
 
 ## <a name="test-using-obstor-browser"></a>2. Test Using Browser Dashboard
 
-Obstor Gateway comes with an embedded web-based object browser that outputs content to http://127.0.0.1:9000. To test that Obstor Gateway is running, open a web browser, navigate to http://127.0.0.1:9000, and ensure that the object browser is displayed.
+Obstor Backend comes with an embedded web-based object browser that outputs content to http://127.0.0.1:9000. To test that Obstor Backend is running, open a web browser, navigate to http://127.0.0.1:9000, and ensure that the object browser is displayed.
 
 ![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/dashboard.png)
 
 ## <a name="test-using-obstor-client"></a>3. Test Using Obstor Client
 
-Obstor Client is a command-line tool called `mc` that provides UNIX-like commands for interacting with the server (e.g. ls, cat, cp, mirror, diff, find, etc.).  `mc` supports file systems and Amazon S3-compatible cloud storage services (AWS Signature v2 and v4).
+Obstor Client is a command-line tool called `mc` that provides UNIX-like commands for interacting with the server (e.g. ls, cat, cp, mirror, diff, find, etc.).  `mc` supports file systems and S3-compatible cloud storage services (AWS Signature v2 and v4).
 
-### 3.1 Configure the Gateway using Obstor Client
+### 3.1 Configure the Backend using Obstor Client
 
-Use the following command to configure the gateway:
+Use the following command to configure the backend:
 
 ```sh
-mc alias set mygcs http://gateway-ip:9000 minioaccesskey miniosecretkey
+mc alias set mygcs http://backend-ip:9000 obstoraccesskey obstorsecretkey
 ```
 
 ### 3.2 List Containers on GCS
@@ -73,7 +73,7 @@ A response similar to this one should be displayed:
 ```
 
 ### 3.3 Known limitations
-Obstor Gateway has the following limitations when used with GCS:
+Obstor Backend has the following limitations when used with GCS:
 
 * It only supports read-only and write-only bucket policies at the bucket level; all other variations will return `API Not implemented`.
 * The `List Multipart Uploads` and `List Object parts` commands always return empty lists. Therefore, the client must store all of the parts that it has uploaded and use that information when invoking the `_Complete Multipart Upload` command.
@@ -83,6 +83,7 @@ Other limitations:
 * Bucket notification APIs are not supported.
 
 ## <a name="explore-further"></a>4. Explore Further
+- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

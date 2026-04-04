@@ -5,12 +5,12 @@ Obstor supports multiple long term users in addition to default user created dur
 In this document we will explain in detail on how to configure multiple users.
 
 ### 1. Prerequisites
-- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide)
 - Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide)
-- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/cloudment/obstor/blob/main/docs/sts/etcd.md)
+- Configure etcd (optional needed only in backend or federation mode) - [Etcd V3 Quickstart Guide](../sts/etcd.md)
 
 ### 2. Create a new user with canned policy
-Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
+Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
 
 Create new canned policy file `getonly.json`. This policy enables users to download all objects under `my-bucketname`.
 ```json
@@ -241,5 +241,5 @@ If the user is authenticating using an STS credential which was authorized from 
 ## Explore Further
 - [Obstor Client Complete Guide](https://obstor.net/docs/obstor-client-complete-guide)
 - [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide)
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

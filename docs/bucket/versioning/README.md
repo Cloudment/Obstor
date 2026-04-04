@@ -160,7 +160,7 @@ public class IsVersioningEnabled {
 ```
 
 ## Explore Further
-- [Use `minio-java` SDK with Obstor Server](https://obstor.net/docs/java-client-quickstart-guide.html)
-- [Object Lock and Immutablity Guide](https://obstor.net/docs/obstor-bucket-object-lock-guide.html)
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Use `minio-java` SDK with Obstor Server](https://obstor.net/docs/java-client-quickstart-guide)
+- [Object Lock and Immutablity Guide](https://obstor.net/docs/obstor-bucket-object-lock-guide)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

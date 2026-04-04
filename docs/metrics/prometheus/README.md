@@ -117,7 +117,7 @@ Here `prometheus.yml` is the name of configuration file. You can now see Obstor 
 ### 6. Configure Grafana
 
 After Prometheus is configured, you can use Grafana to visualize Obstor metrics.
-Refer the [document here to setup Grafana with Obstor prometheus metrics](https://github.com/cloudment/obstor/blob/main/docs/metrics/prometheus/grafana/README.md).
+Refer the [document here to setup Grafana with Obstor prometheus metrics](grafana/README.md).
 
 ## List of metrics exposed by Obstor
 
@@ -129,4 +129,4 @@ curl https://play.obstor.net/obstor/v2/metrics/cluster
 
 ### List of metrics reported
 
-[The list of metrics reported can be here](https://github.com/cloudment/obstor/blob/main/docs/metrics/prometheus/list.md)
+[The list of metrics reported can be here](list.md)

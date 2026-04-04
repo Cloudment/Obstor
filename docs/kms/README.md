@@ -66,7 +66,7 @@ The Obstor-KES configuration is always the same - regardless of the underlying K
 
 ### Further references
 
-- [Run Obstor with TLS / HTTPS](https://obstor.net/docs/how-to-secure-access-to-obstor-server-with-tls.html)
+- [Run Obstor with TLS / HTTPS](https://obstor.net/docs/how-to-secure-access-to-obstor-server-with-tls)
 - [Tweak the KES server configuration](https://github.com/minio/kes/wiki/Configuration)
 - [Run a load balancer infront of KES](https://github.com/minio/kes/wiki/TLS-Proxy)
 - [Understand the KES server concepts](https://github.com/minio/kes/wiki/Concepts)
@@ -87,7 +87,7 @@ Auto encryption 'sse-s3' is enabled
 ```
 
 ### Using environment (deprecated)
-> NOTE: The following ENV might be removed in future, you are advised to move to the previously recommended approach using `mc encrypt`. S3 gateway supports encryption at gateway layer which may  be dropped in favor of simplicity at a later time. It is advised that S3 gateway users migrate to Obstor server mode or enable encryption at REST at the backend.
+> NOTE: The following ENV might be removed in future, you are advised to move to the previously recommended approach using `mc encrypt`. S3 backend supports encryption at backend layer which may  be dropped in favor of simplicity at a later time. It is advised that S3 backend users migrate to Obstor server mode or enable encryption at REST at the backend.
 
 Obstor automatically encrypts all objects on buckets if KMS is successfully configured and following ENV is enabled:
 ```

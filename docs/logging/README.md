@@ -13,7 +13,7 @@ Console target is on always and cannot be disabled.
 ### HTTP Target
 HTTP target logs to a generic HTTP endpoint in JSON format and is not enabled by default. To enable HTTP target logging you would have to update your Obstor server configuration using `mc admin config set` command.
 
-Assuming `mc` is already [configured](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+Assuming `mc` is already [configured](https://obstor.net/docs/obstor-client-quickstart-guide)
 ```
 mc admin config get myobstor/ logger_webhook
 logger_webhook:name1 auth_token="" endpoint=""
@@ -35,7 +35,7 @@ obstor server /mnt/data
 ```
 
 ## Audit Targets
-Assuming `mc` is already [configured](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+Assuming `mc` is already [configured](https://obstor.net/docs/obstor-client-quickstart-guide)
 ```
 mc admin config get myobstor/ audit_webhook
 audit_webhook:name1 enable=off endpoint= auth_token= client_cert= client_key=

@@ -1,6 +1,6 @@
-# Obstor SFTP Gateway
+# SFTP Protocol
 
-Obstor includes a built-in SFTP gateway that allows any standard SFTP client to access your object storage. This enables legacy applications, automated file transfers, and users who prefer SFTP workflows to interact with S3-compatible storage seamlessly.
+Obstor includes a built-in SFTP server that allows any standard SFTP client to access your object storage. This enables legacy applications, automated file transfers, and users who prefer SFTP workflows to interact with S3-compatible storage seamlessly.
 
 ## Features
 
@@ -19,23 +19,23 @@ Start Obstor with the SFTP flag enabled:
 ```sh
 export OBSTOR_ROOT_USER=admin
 export OBSTOR_ROOT_PASSWORD=password
-obstor server /data --sftp-address :2022
+obstor server /data --sftp-address :9002
 ```
 
-The SFTP server will listen on port `2022` by default.
+The SFTP server will listen on port `9002` by default.
 
 ### 2. Connect with an SFTP Client
 
 Use any standard SFTP client to connect:
 
 ```sh
-sftp -P 2022 admin@localhost
+sftp -P 9002 admin@localhost
 ```
 
 Or use the `sftp://` protocol URL:
 
 ```
-sftp://admin:password@localhost:2022
+sftp://admin:password@localhost:9002
 ```
 
 ### 3. Transfer Files
@@ -65,7 +65,7 @@ obstor server /data --sftp-address :2222
 Obstor auto-generates SSH host keys on first startup. To use custom host keys:
 
 ```sh
-obstor server /data --sftp-address :2022 --sftp-ssh-key /path/to/ssh_host_rsa_key
+obstor server /data --sftp-address :9002 --sftp-ssh-key /path/to/ssh_host_rsa_key
 ```
 
 ### TLS with SFTP
@@ -74,7 +74,7 @@ SFTP uses SSH protocol encryption by default. For additional TLS encryption on t
 
 ```sh
 obstor server /data \
-  --sftp-address :2022 \
+  --sftp-address :9002 \
   --certs-dir /path/to/certs
 ```
 
@@ -96,12 +96,12 @@ mc admin policy attach myminio readwrite --user sftpuser
 The user can then connect via SFTP:
 
 ```sh
-sftp -P 2022 sftpuser@your-server
+sftp -P 9002 sftpuser@your-server
 ```
 
 ## Client Compatibility
 
-Obstor's SFTP gateway works with all standard SFTP clients:
+The SFTP server works with all standard SFTP clients:
 
 | Client | Platform | Status |
 |--------|----------|--------|
@@ -124,4 +124,4 @@ Obstor's SFTP gateway works with all standard SFTP clients:
 - [Obstor Distributed Mode](../distributed/README.md) - deploy across multiple nodes
 - [TLS Configuration](../tls/README.md) - secure your deployment
 - [IAM & Policies](../multi-user/README.md) - manage user access
-- [S3 Gateway](./s3.md) - S3 API compatibility details
+- [S3 Backend](../backend/s3.md) - S3 API compatibility details

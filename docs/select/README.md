@@ -10,7 +10,7 @@ You can use the Select API to query objects with following features:
 
 Type inference and automatic conversion of values is performed based on the context when the value is un-typed (such as when reading CSV data). If present, the CAST function overrides automatic conversion.
 
-The [mc sql](https://obstor.net/docs/obstor-client-complete-guide.html#sql) command can be used for executing queries using the command line.
+The [mc sql](https://obstor.net/docs/obstor-client-complete-guide#sql) command can be used for executing queries using the command line.
 
 (*) Parquet is disabled on the Obstor server by default. See below how to enable it.
 
@@ -105,7 +105,7 @@ For a more detailed SELECT SQL reference, please see [here](https://docs.aws.ama
 
 ## 5. Explore Further
 - [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
-- [Use `mc sql` with Obstor Server](https://obstor.net/docs/obstor-client-complete-guide.html#sql)
+- [Use `mc sql` with Obstor Server](https://obstor.net/docs/obstor-client-complete-guide#sql)
 - [Use `minio-go` SDK with Obstor Server](https://obstor.net/docs/golang-client-quickstart-guide)
 - [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
 - [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)

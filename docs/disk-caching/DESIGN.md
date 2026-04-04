@@ -1,11 +1,11 @@
 # Disk Caching Design
 
-This document explains some basic assumptions and design approach, limits of the disk caching feature. If you're looking to get started with disk cache, we suggest you go through the [getting started document](https://github.com/cloudment/obstor/blob/main/docs/disk-caching/README.md) first.
+This document explains some basic assumptions and design approach, limits of the disk caching feature. If you're looking to get started with disk cache, we suggest you go through the [getting started document](README.md) first.
 
 ## Command-line
 
 ```
-obstor gateway <name> -h
+obstor backend <name> -h
 ...
 ...
   CACHE:
@@ -21,7 +21,7 @@ obstor gateway <name> -h
 ...
 ...
 
-  Start Obstor gateway to s3 with edge caching enabled on '/mnt/drive1', '/mnt/drive2' and '/mnt/export1 ... /mnt/export24',
+  Start Obstor backend to s3 with edge caching enabled on '/mnt/drive1', '/mnt/drive2' and '/mnt/export1 ... /mnt/export24',
      exclude all objects under 'mybucket', exclude all objects with '.pdf' as extension. Cache only those objects accessed atleast 3 times. Garbage collection triggers in at high water mark (i.e. cache disk usage reaches 90% of cache quota) or at 72% and evicts oldest objects by access time until low watermark is reached ( 70% of cache quota) , i.e. 63% of disk usage.
      $ export OBSTOR_CACHE_DRIVES="/mnt/drive1,/mnt/drive2,/mnt/export{1..24}"
      $ export OBSTOR_CACHE_EXCLUDE="mybucket/*,*.pdf"
@@ -30,10 +30,10 @@ obstor gateway <name> -h
      $ export OBSTOR_CACHE_WATERMARK_LOW=70
      $ export OBSTOR_CACHE_WATERMARK_HIGH=90
 
-     $ obstor gateway s3
+     $ obstor backend s3
 ```
 
-### Run Obstor gateway with cache on Docker Container
+### Run Obstor backend with cache on Docker Container
 ### Stable
 Cache drives need to have `strictatime` or `relatime` enabled for disk caching feature. In this example, mount the xfs file system on /mnt/cache with `strictatime` or `relatime` enabled.
 
@@ -51,7 +51,7 @@ docker pull ghcr.io/cloudment/obstor
 docker run --net=host -e OBSTOR_ROOT_USER={s3-access-key} -e OBSTOR_ROOT_PASSWORD={s3-secret-key} \
     -e OBSTOR_CACHE_DRIVES=/cache -e OBSTOR_CACHE_QUOTA=99 -e OBSTOR_CACHE_AFTER=0 \
     -e OBSTOR_CACHE_WATERMARK_LOW=90 -e OBSTOR_CACHE_WATERMARK_HIGH=95 \
-    -v /mnt/cache:/cache  cloudment/obstor:latest gateway s3
+    -v /mnt/cache:/cache  ghcr.io/cloudment/obstor:latest backend s3
 ```
 
 ## Assumptions
@@ -74,14 +74,14 @@ Disk caching caches objects for **downloaded** objects i.e
 - To ensure security guarantees, encrypted objects are normally not cached. However, if you wish to encrypt cached content on disk, you can set OBSTOR_CACHE_ENCRYPTION_MASTER_KEY environment variable to set a cache KMS
 master key to automatically encrypt all cached content.
 
-  Note that cache KMS master key is not recommended for use in production deployments. If the Obstor server/gateway machine is ever compromised, the cache KMS master key must also be treated as compromised.
+  Note that cache KMS master key is not recommended for use in production deployments. If the Obstor server/backend machine is ever compromised, the cache KMS master key must also be treated as compromised.
   Support for external KMS to manage cache KMS keys is on the roadmap,and would be ideal for production use cases.
 
 > NOTE: Expiration happens automatically based on the configured interval as explained above, frequently accessed objects stay alive in cache for a significantly longer time.
 
 ### Crash Recovery
 
-Upon restart of obstor gateway after a running obstor process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
+Upon restart of obstor backend after a running obstor process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
 
 ## Limits
 

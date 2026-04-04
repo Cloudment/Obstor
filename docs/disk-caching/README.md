@@ -1,6 +1,6 @@
 # Disk Cache Quickstart Guide
 
-Disk caching feature here refers to the use of caching disks to store content closer to the tenants. For instance, if you access an object from a lets say `gateway azure` setup and download the object that gets cached, each subsequent request on the object gets served directly from the cache drives until it expires. This feature allows Obstor users to have
+Disk caching feature here refers to the use of caching disks to store content closer to the tenants. For instance, if you access an object from a lets say `obstor backend azure` setup and download the object that gets cached, each subsequent request on the object gets served directly from the cache drives until it expires. This feature allows Obstor users to have
 
 - Object to be delivered with the best possible performance.
 - Dramatic improvements for time to first byte for any object.
@@ -11,11 +11,11 @@ Disk caching feature here refers to the use of caching disks to store content cl
 
 Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide).
 
-### 2. Run Obstor gateway with cache
+### 2. Run Obstor backend with cache
 
-Disk caching can be enabled by setting the `cache` environment variables for Obstor gateway . `cache` environment variables takes the mounted drive(s) or directory paths, any wildcard patterns to exclude from being cached,low and high watermarks for garbage collection and the minimum accesses before caching an object.
+Disk caching can be enabled by setting the `cache` environment variables for Obstor backend . `cache` environment variables takes the mounted drive(s) or directory paths, any wildcard patterns to exclude from being cached,low and high watermarks for garbage collection and the minimum accesses before caching an object.
 
-Following example uses `/mnt/drive1`, `/mnt/drive2` ,`/mnt/cache1` ... `/mnt/cache3` for caching, while excluding all objects under bucket `mybucket` and all objects with '.pdf' as extension on a s3 gateway setup. Objects are cached if they have been accessed three times or more.Cache max usage is restricted to 80% of disk capacity in this example. Garbage collection is triggered when high watermark is reached - i.e. at 72% of cache disk usage and clears least recently accessed entries until the disk usage drops to low watermark - i.e. cache disk usage drops to 56% (70% of 80% quota)
+Following example uses `/mnt/drive1`, `/mnt/drive2` ,`/mnt/cache1` ... `/mnt/cache3` for caching, while excluding all objects under bucket `mybucket` and all objects with '.pdf' as extension on a s3 backend setup. Objects are cached if they have been accessed three times or more.Cache max usage is restricted to 80% of disk capacity in this example. Garbage collection is triggered when high watermark is reached - i.e. at 72% of cache disk usage and clears least recently accessed entries until the disk usage drops to low watermark - i.e. cache disk usage drops to 56% (70% of 80% quota)
 
 ```bash
 export OBSTOR_CACHE="on"
@@ -26,7 +26,7 @@ export OBSTOR_CACHE_AFTER=3
 export OBSTOR_CACHE_WATERMARK_LOW=70
 export OBSTOR_CACHE_WATERMARK_HIGH=90
 
-obstor gateway s3
+obstor backend s3
 ```
 
 The `CACHE_WATERMARK` numbers are percentages of `CACHE_QUOTA`.
@@ -35,11 +35,11 @@ In the example above this means that  `OBSTOR_CACHE_WATERMARK_LOW` is effectivel
 
 ### 3. Test your setup
 
-To test this setup, access the Obstor gateway via browser or [`mc`](https://obstor.net/docs/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from all the Obstor endpoints.
+To test this setup, access the Obstor backend via browser or [`mc`](https://obstor.net/docs/obstor-client-quickstart-guide). You’ll see the uploaded files are accessible from all the Obstor endpoints.
 
 # Explore Further
 
-- [Disk cache design](https://github.com/cloudment/obstor/blob/main/docs/disk-caching/DESIGN.md)
+- [Disk cache design](DESIGN.md)
 - [Use `mc` with Obstor Server](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [Use `aws-cli` with Obstor Server](https://obstor.net/docs/aws-cli-with-obstor)
 - [Use `s3cmd` with Obstor Server](https://obstor.net/docs/s3cmd-with-obstor)

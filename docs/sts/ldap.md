@@ -256,5 +256,5 @@ $ go run ldap.go -u foouser -p foopassword
 **LDAP STS credentials are not yet supported on Obstor Browser UI, we may add this feature in future releases.**
 
 ## Explore Further
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

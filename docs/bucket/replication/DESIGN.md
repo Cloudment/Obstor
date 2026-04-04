@@ -1,6 +1,6 @@
 # Bucket Replication Design
 
-This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/cloudment/obstor/blob/main/docs/bucket/replication/README.md) first.
+This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](README.md) first.
 
 ## Overview
 Replication relies on immutability provided by versioning to sync objects between the configured source and replication target.
@@ -86,5 +86,5 @@ Existing object replication, replica modification sync for 2-way replication and
 ```
 
 ## Explore Further
-- [Obstor Bucket Versioning Implementation](https://obstor.net/docs/obstor-bucket-versioning-guide.html)
-- [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+- [Obstor Bucket Versioning Implementation](https://obstor.net/docs/obstor-bucket-versioning-guide)
+- [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide)

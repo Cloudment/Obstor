@@ -164,5 +164,5 @@ JWT token returned by the Identity Provider should include a custom claim for th
 - Upon successful login on Identity Provider page the user will be automatically logged into Obstor Browser
 
 ## Explore Further
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

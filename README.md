@@ -1,9 +1,9 @@
 # :lobster: Obstor Quickstart Guide
-[![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord) [![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/cloudment/obstor.svg?maxAge=604800)](https://ghcr.io/cloudment/obstor)
+[![Discord](https://pgg.net/discord?type=svg)](https://pgg.net/discord)
 
 [![Obstor](https://raw.githubusercontent.com/cloudment/obstor/main/.github/logo.svg?sanitize=true)](https://obster.net)
 
-Obstor is a high-performance object storage system supporting popular transfer protocols like S3, SFTP, and Hadoop making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
+Obstor is a high-performance object storage system supporting popular transfer protocols like S3 and SFTP, making it suitable for building high-performance infrastructure for machine learning, analytics, and application data workloads. Obstor is based on the 2021 Apache-licensed release of MinIO, prior to the project's transition to AGPL and later archival.
 
 This README provides quickstart instructions on running Obstor on baremetal hardware, including Docker-based installations. For Kubernetes environments,
 use the [Obstor Kubernetes Operator](https://github.com/minio/operator/blob/master/README.md).
@@ -204,7 +204,7 @@ Obstor Server comes with an embedded web based object browser. Point your web br
 ![Object Browser](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/browser.png)
 
 ## Test using Obstor Client `mc`
-`mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services. Follow the Obstor Client [Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide) for further instructions.
+`mc` provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3-compatible cloud storage services. Follow the Obstor Client [Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide) for further instructions.
 
 # Upgrading Obstor
 Obstor server supports rolling upgrades, i.e. you can update one Obstor instance at a time in a distributed cluster. This allows upgrades with no downtime. Upgrades can be done manually by replacing the binary with the latest release and restarting all servers in a rolling fashion. However, we recommend all our users to use [`mc admin update`](https://obstor.net/docs/obstor-admin-complete-guide#update) from the client. This will update all the nodes in the cluster simultaneously and restart them, as shown in the following command from the Obstor client (mc):

@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- Prometheus and Obstor configured as explained in [document here](https://github.com/cloudment/obstor/blob/main/docs/metrics/prometheus/README.md).
+- Prometheus and Obstor configured as explained in [document here](../README.md).
 - Grafana installed as explained [here](https://grafana.com/grafana/download).
 
 ## Obstor Grafana Dashboard

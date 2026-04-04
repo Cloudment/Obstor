@@ -5,11 +5,11 @@ Obstor supports multiple admin users in addition to default operator credential 
 In this document we will explain in detail on how to configure admin users.
 
 ### 1. Prerequisites
-- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide.html)
+- Install mc - [Obstor Client Quickstart Guide](https://obstor.net/docs/obstor-client-quickstart-guide)
 - Install Obstor - [Obstor Quickstart Guide](https://obstor.net/docs/obstor-quickstart-guide)
 
 ### 2. Create a new admin user with CreateUser, DeleteUser and ConfigUpdate permissions
-Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide.html#policies) to create custom admin policies.
+Use [`mc admin policy`](https://obstor.net/docs/obstor-admin-complete-guide#policies) to create custom admin policies.
 
 Create new canned policy file `adminManageUser.json`. This policy enables admin user to
 manage other users.
@@ -118,5 +118,5 @@ special permissions listed above. Follow [Obstor STS Quickstart Guide](https://o
 ## Explore Further
 - [Obstor Client Complete Guide](https://obstor.net/docs/obstor-client-complete-guide)
 - [Obstor STS Quickstart Guide](https://obstor.net/docs/obstor-sts-quickstart-guide)
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)

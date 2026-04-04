@@ -2,15 +2,15 @@
 
 Obstor shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple Obstor servers. Synchronization among Obstor servers is taken care by design.
-Read more about the Obstor shared mode design [here](https://github.com/cloudment/obstor/blob/main/docs/shared-backend/DESIGN.md).
+Read more about the Obstor shared mode design [here](DESIGN.md).
 
 Obstor shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
 
-- You have already invested in NAS and would like to use Obstor to add S3 compatibility to your storage tier.
+- You have already invested in NAS and would like to use Obstor to add S3 and [other protocol](../protocols/README.md) compatibility to your storage tier.
 - You need to use NAS with an S3 interface due to your application architecture requirements.
-- You expect huge traffic and need a load balanced S3 compatible server, serving files from a single NAS backend.
+- You expect huge traffic and need a load balanced S3-compatible server, serving files from a single NAS backend.
 
-With a proxy running in front of multiple, shared mode Obstor servers, it is very easy to create a Highly Available, load balanced, AWS S3 compatible storage system.
+With a proxy running in front of multiple, shared mode Obstor servers, it is very easy to create a Highly Available, load balanced, AWS S3-compatible storage system.
 
 # Get started
 
@@ -36,7 +36,7 @@ You'll need the path to the shared volume, e.g. `/path/to/nfs-volume`. Then run 
 ```sh
 export OBSTOR_ROOT_USER=<ACCESS_KEY>
 export OBSTOR_ROOT_PASSWORD=<SECRET_KEY>
-obstor gateway nas /path/to/nfs-volume
+obstor backend nas /path/to/nfs-volume
 ```
 
 #### Obstor shared mode on Windows 2012 Server
@@ -46,7 +46,7 @@ You'll need the path to the shared volume, e.g. `\\remote-server\smb`. Then run 
 ```cmd
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
-obstor.exe gateway nas \\remote-server\smb\export
+obstor.exe backend nas \\remote-server\smb\export
 ```
 
 *Windows Tip*
@@ -57,7 +57,7 @@ If a remote volume, e.g. `\\remote-server\smb` is mounted as a drive, e.g. `M:\`
 set OBSTOR_ROOT_USER=my-username
 set OBSTOR_ROOT_PASSWORD=my-password
 net use m: \\remote-server\smb\export /P:Yes
-obstor.exe gateway nas M:\export
+obstor.exe backend nas M:\export
 ```
 
 ## 3. Test your setup

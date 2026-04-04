@@ -1,23 +1,23 @@
-# Obstor HDFS Gateway
-Obstor HDFS gateway adds Amazon S3 API support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the gateway is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
+# Obstor HDFS Backend
+Obstor HDFS backend adds S3 API and [other supported protocol](../protocols/README.md) support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the backend is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
 
-> NOTE: Intention of this gateway implementation it to make it easy to migrate your existing data on HDFS clusters to Obstor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
+> NOTE: Intention of this backend implementation it to make it easy to migrate your existing data on HDFS clusters to Obstor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
 
-## Run Obstor Gateway for HDFS Storage
+## Run Obstor Backend for HDFS Storage
 
 ### Using Binary
 Namenode information is obtained by reading `core-site.xml` automatically from your hadoop environment variables *$HADOOP_HOME*
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-obstor gateway hdfs
+obstor backend hdfs
 ```
 
 You can also override the namenode endpoint as shown below.
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-obstor gateway hdfs hdfs://namenode:8200
+obstor backend hdfs hdfs://namenode:8200
 ```
 
 ### Using Docker
@@ -27,7 +27,7 @@ docker run -p 9000:9000 \
  --name hdfs-s3 \
  -e "OBSTOR_ROOT_USER=obstor" \
  -e "OBSTOR_ROOT_PASSWORD=obstor123" \
- ghcr.io/cloudment/obstor gateway hdfs hdfs://namenode:8200
+ ghcr.io/cloudment/obstor backend hdfs hdfs://namenode:8200
 ```
 
 ### Setup Kerberos
@@ -69,18 +69,18 @@ export KRB5REALM=REALM.COM
 ```
 
 ## Test using Browser Dashboard
-*Obstor gateway* comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
+*Obstor backend* comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
 ![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/dashboard.png)
 
 ## Test using Obstor Client `mc`
 
-`mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
+`mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and S3-compatible cloud storage services.
 
 ### Configure `mc`
 
 ```
-mc alias set myhdfs http://gateway-ip:9000 access_key secret_key
+mc alias set myhdfs http://backend-ip:9000 access_key secret_key
 ```
 
 ### List buckets on hdfs
@@ -93,7 +93,7 @@ mc ls myhdfs
 ```
 
 ### Known limitations
-Gateway inherits the following limitations of HDFS storage layer:
+Backend inherits the following limitations of HDFS storage layer:
 - No bucket policy support (HDFS has no such concept)
 - No bucket notification APIs are not supported (HDFS has no support for fsnotify)
 - No server side encryption support (Intentionally not implemented)
@@ -101,6 +101,7 @@ Gateway inherits the following limitations of HDFS storage layer:
 - Concurrent multipart operations are not supported (HDFS lacks safe locking support, or poorly implemented)
 
 ## Explore Further
+- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

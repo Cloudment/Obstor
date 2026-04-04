@@ -13,7 +13,7 @@ Install Obstor Server using the instructions in the [Obstor Quickstart Guide](ht
 
 ## <a name="use-an-existing-key-and-certificate-with-obstor"></a>2. Use an Existing Key and Certificate with Obstor
 
-This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for Obstor](https://obstor.net/docs/generate-let-s-encypt-certificate-using-concert-for-obstor.html).
+This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for Obstor](https://obstor.net/docs/generate-let-s-encypt-certificate-using-concert-for-obstor).
 
 Copy the existing private key and public certificate to the `certs` directory. The default certs directory is:
 * **Linux:** `${HOME}/.obstor/certs`
@@ -233,7 +233,7 @@ Obstor can connect to other servers, including Obstor nodes or other server type
 * **Windows**: `C:\Users\<Username>\.obstor\certs\CAs`
 
 # Explore Further
-* [TLS Configuration for Obstor server on Kubernetes](https://github.com/cloudment/obstor/tree/master/docs/tls/kubernetes)
+* [TLS Configuration for Obstor server on Kubernetes](kubernetes)
 * [Obstor Client Complete Guide](https://obstor.net/docs/obstor-client-complete-guide)
 * [Generate Let's Encrypt Certificate](https://obstor.net/docs/generate-let-s-encypt-certificate-using-concert-for-obstor)
 * [Setup nginx Proxy with Obstor Server](https://obstor.net/docs/setup-nginx-proxy-with-obstor)

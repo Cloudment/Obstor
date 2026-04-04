@@ -16,7 +16,7 @@ Obstor also supports multi-cluster, multi-site federation similar to AWS regions
    *   [Setup Ambari](https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation/content/set_up_the_ambari_server.html) which automatically sets up YARN
    *   [Installing Spark](https://docs.hortonworks.com/HDPDocuments/HDP3/HDP-3.0.1/installing-spark/content/installing_spark.html)
 *  Install Obstor Distributed Server using one of the guides below.
-   *   [Deployment based on Kubernetes](https://obstor.net/docs/deploy-obstor-on-kubernetes.html#obstor-distributed-server-deployment)
+   *   [Deployment based on Kubernetes](https://obstor.net/docs/deploy-obstor-on-kubernetes#obstor-distributed-server-deployment)
    *   [Deployment based on Obstor Helm Chart](https://github.com/helm/charts/tree/master/stable/obstor)
 
 ## 3. Configure Hadoop, Spark, Hive to use Obstor

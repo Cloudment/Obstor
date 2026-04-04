@@ -86,7 +86,7 @@ obstor server /data
 ```
 
 ### Storage Class
-By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in Obstor server [here](https://github.com/cloudment/obstor/blob/main/docs/erasure/storage-class/README.md).
+By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in Obstor server [here](../erasure/storage-class/README.md).
 
 ```
 KEY:
@@ -110,7 +110,7 @@ OBSTOR_STORAGE_CLASS_COMMENT   (sentence)  optionally add a comment to this sett
 ```
 
 ### Cache
-Obstor provides caching storage tier for primarily gateway deployments, allowing you to cache content for faster reads, cost savings on repeated downloads from the cloud.
+Obstor provides caching storage tier for primarily backend deployments, allowing you to cache content for faster reads, cost savings on repeated downloads from the cloud.
 
 ```
 KEY:
@@ -172,7 +172,7 @@ OBSTOR_ETCD_COMMENT          (sentence)  optionally add a comment to this settin
 ```
 
 ### API
-By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in Obstor server [here](https://github.com/cloudment/obstor/blob/main/docs/throttle/README.md).
+By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in Obstor server [here](../throttle/README.md).
 
 ```
 KEY:
@@ -195,7 +195,7 @@ OBSTOR_API_REMOTE_TRANSPORT_DEADLINE  (duration)  set the deadline for API reque
 ```
 
 #### Notifications
-Notification targets supported by Obstor are in the following list. To configure individual targets please refer to more detailed documentation [here](https://obstor.net/docs/obstor-bucket-notification-guide.html)
+Notification targets supported by Obstor are in the following list. To configure individual targets please refer to more detailed documentation [here](https://obstor.net/docs/obstor-bucket-notification-guide)
 
 ```
 notify_webhook        publish bucket notifications to webhook endpoints
@@ -292,7 +292,7 @@ Example: Following setting will decrease the scanner speed by a factor of 3, red
 
 Once set the scanner settings are automatically applied without the need for server restarts.
 
-> NOTE: Data usage scanner is not supported under Gateway deployments.
+> NOTE: Data usage scanner is not supported under Backend deployments.
 
 ### Healing
 
@@ -319,7 +319,7 @@ Example: The following settings will increase the heal operation speed by allowi
 
 Once set the healer settings are automatically applied without the need for server restarts.
 
-> NOTE: Healing is not supported under Gateway deployments.
+> NOTE: Healing is not supported under Backend deployments.
 
 
 ## Environment only settings (not in config)

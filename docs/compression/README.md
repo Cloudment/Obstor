@@ -117,7 +117,7 @@ even if compression is enabled for all types.
 
 ### 5. Notes
 
-- Obstor does not support compression for Gateway (Azure/GCS/NAS) implementations.
+- Obstor does not support compression for Backend (Azure/GCS/NAS) implementations.
 
 ## To test the setup
 

@@ -1,8 +1,8 @@
-# Obstor NAS Gateway
+# Obstor NAS Backend
 
-Obstor Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object gateway.
+Obstor Backend adds S3 and [other supported protocol](../protocols/README.md) compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object backend.
 
-## Run Obstor Gateway for NAS Storage
+## Run Obstor Backend for NAS Storage
 
 ### Using Docker
 
@@ -13,7 +13,7 @@ docker run -p 9000:9000 --name nas-s3 \
  -e "OBSTOR_ROOT_USER=obstor" \
  -e "OBSTOR_ROOT_PASSWORD=obstor123" \
  -v /shared/nasvol:/container/vol \
- ghcr.io/cloudment/obstor gateway nas /container/vol
+ ghcr.io/cloudment/obstor backend nas /container/vol
 ```
 
 ### Using Binary
@@ -21,23 +21,23 @@ docker run -p 9000:9000 --name nas-s3 \
 ```
 export OBSTOR_ROOT_USER=obstor
 export OBSTOR_ROOT_PASSWORD=obstor123
-obstor gateway nas /shared/nasvol
+obstor backend nas /shared/nasvol
 ```
 
 ## Test using Browser Dashboard
 
-Obstor Gateway comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
+Obstor Backend comes with an embedded web based object browser. Point your web browser to http://127.0.0.1:9000 to ensure that your server has started successfully.
 
 ![Screenshot](https://raw.githubusercontent.com/cloudment/obstor/main/docs/screenshots/dashboard.png)
 
 ## Test using Obstor Client `mc`
 
-`mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and Amazon S3 compatible cloud storage services.
+`mc` provides a modern alternative to UNIX commands such as ls, cat, cp, mirror, diff etc. It supports filesystems and S3-compatible cloud storage services.
 
 ### Configure `mc`
 
 ```
-mc alias set mynas http://gateway-ip:9000 access_key secret_key
+mc alias set mynas http://backend-ip:9000 access_key secret_key
 ```
 
 ### List buckets on nas
@@ -49,13 +49,9 @@ mc ls mynas
 [2017-02-26 22:10:11 PST]     0B test-bucket1/
 ```
 
-## Breaking changes
-
-There will be a breaking change after the release version 'RELEASE.2020-06-22T03-12-50Z'.
-
 ### The file-based config settings are deprecated in NAS
 
-The support for admin config APIs will be removed. This will include getters and setters like `mc admin config get` and `mc admin config`  and any other `mc admin config` options. The reason for this change is to avoid un-necessary reloads of the config from the disk. And to comply with the Environment variable based settings like other gateways.
+The support for admin config APIs will be removed. This will include getters and setters like `mc admin config get` and `mc admin config`  and any other `mc admin config` options. The reason for this change is to avoid un-necessary reloads of the config from the disk. And to comply with the Environment variable based settings like other backends.
 
 ### Migration guide
 
@@ -81,7 +77,7 @@ export OBSTOR_NOTIFY_WEBHOOK_QUEUE_DIR_1=/tmp/webhk
 
 ## Symlink support
 
-NAS gateway implementation allows symlinks on regular files,
+NAS backend implementation allows symlinks on regular files,
 
 ### Behavior
 
@@ -97,6 +93,7 @@ NAS gateway implementation allows symlinks on regular files,
 *Directory symlinks is not and will not be supported as there are no safe ways to handle them.*
 
 ## Explore Further
+- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

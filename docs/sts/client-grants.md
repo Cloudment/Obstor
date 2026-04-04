@@ -100,7 +100,7 @@ obstor server /mnt/export
 ```
 
 Testing with an example
-> Obtaining client ID and secrets follow [Keycloak configuring documentation](https://github.com/cloudment/obstor/blob/main/docs/sts/keycloak.md)
+> Obtaining client ID and secrets follow [Keycloak configuring documentation](keycloak.md)
 
 ```
 $ go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBtrOWvhRWL4TUCga
@@ -115,5 +115,5 @@ $ go run client-grants.go -cid PoEgXP6uVO45IsENRngDXj5Au5Ya -csec eKsw6z8CtOJVBt
 ```
 
 ## Explore Further
-- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide.html)
+- [Obstor Admin Complete Guide](https://obstor.net/docs/obstor-admin-complete-guide)
 - [The Obstor documentation website](https://obstor.net/docs/obstor)
