@@ -46,7 +46,7 @@ func (file *File) Write(b []byte) (n int, err error) {
 
 	defer func() {
 		if err != nil {
-			os.Remove(file.tmpfile.Name())
+			_ = os.Remove(file.tmpfile.Name())
 			file.aborted = true
 		}
 	}()
@@ -59,7 +59,7 @@ func (file *File) Write(b []byte) (n int, err error) {
 func (file *File) Close() (err error) {
 	defer func() {
 		if err != nil {
-			os.Remove(file.tmpfile.Name())
+			_ = os.Remove(file.tmpfile.Name())
 			file.aborted = true
 		}
 	}()

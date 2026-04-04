@@ -35,7 +35,7 @@ func checkAtimeSupport(dir string) (err error) {
 	if err != nil {
 		return
 	}
-	defer os.Remove(file.Name())
+	defer func() { _ = os.Remove(file.Name()) }()
 	defer file.Close()
 	finfo1, err := os.Stat(file.Name())
 	if err != nil {

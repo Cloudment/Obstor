@@ -60,7 +60,7 @@ func GetHealthInfo(ctx context.Context, drive, fsPath string) (Latency, Throughp
 
 	defer func() {
 		_ = w.Close()
-		os.Remove(fsPath)
+		_ = os.Remove(fsPath)
 	}()
 
 	blockSize := 4 * humanize.MiByte

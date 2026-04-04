@@ -253,7 +253,7 @@ func purgeV1() error {
 		return fmt.Errorf("unrecognized config version ‘%s’", cv1.Version)
 	}
 
-	os.RemoveAll(configFile)
+	_ = os.RemoveAll(configFile)
 	logger.Info("Removed unsupported config version ‘1’.")
 	return nil
 }

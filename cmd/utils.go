@@ -301,7 +301,7 @@ func startProfiler(profilerType string) (obstorProfiler, error) {
 			if err != nil {
 				return nil, err
 			}
-			defer os.RemoveAll(dirPath)
+			defer func() { _ = os.RemoveAll(dirPath) }()
 			return os.ReadFile(fn)
 		}
 	case madmin.ProfilerMEM:
@@ -366,7 +366,7 @@ func startProfiler(profilerType string) (obstorProfiler, error) {
 			if err != nil {
 				return nil, err
 			}
-			defer os.RemoveAll(dirPath)
+			defer func() { _ = os.RemoveAll(dirPath) }()
 			return os.ReadFile(fn)
 		}
 	default:

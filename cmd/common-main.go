@@ -231,10 +231,10 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 	}
 	if sftpAddr != "" {
 		if !env.IsSet(sftpCfg.EnvSFTPEnable) {
-			os.Setenv(sftpCfg.EnvSFTPEnable, config.EnableOn)
+			_ = os.Setenv(sftpCfg.EnvSFTPEnable, config.EnableOn)
 		}
 		if !env.IsSet(sftpCfg.EnvSFTPAddress) {
-			os.Setenv(sftpCfg.EnvSFTPAddress, sftpAddr)
+			_ = os.Setenv(sftpCfg.EnvSFTPAddress, sftpAddr)
 		}
 		GlobalSFTPConfig.Enabled = true
 		GlobalSFTPConfig.Address = sftpAddr

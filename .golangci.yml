@@ -15,15 +15,10 @@ linters:
         - io.Copy
         - (io.Closer).Close
         - (*os.File).Close
-        - (*os.File).Seek
         - (net/http.ResponseWriter).Write
         - fmt.Fprint
         - fmt.Fprintf
         - fmt.Fprintln
-        - os.Remove
-        - os.RemoveAll
-        - os.Setenv
-        - os.Unsetenv
     misspell:
       locale: US
   exclusions:

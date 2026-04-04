@@ -2585,7 +2585,7 @@ func (web *webAPIHandlers) GetObjectChecksums(r *http.Request, args *GetObjectCh
 	if err != nil {
 		return toJSONError(ctx, err, args.BucketName, args.ObjectName)
 	}
-	defer gr.Close()
+	defer func() { _ = gr.Close() }()
 
 	hMD5 := md5.New()
 	hSHA1 := sha1.New()

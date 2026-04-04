@@ -2213,11 +2213,11 @@ func (s *xlStorage) WriteBlock(ctx context.Context, hash string, data []byte) er
 	// Atomic write: write to temp, then rename.
 	tmp := blockDir + ".tmp"
 	if err := os.WriteFile(tmp, data, 0666); err != nil {
-		os.Remove(tmp)
+		_ = os.Remove(tmp)
 		return err
 	}
 	if err := os.Rename(tmp, blockDir); err != nil {
-		os.Remove(tmp)
+		_ = os.Remove(tmp)
 		return err
 	}
 	return nil

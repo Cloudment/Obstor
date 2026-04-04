@@ -410,7 +410,7 @@ func deleteFile(basePath, deletePath string, recursive bool) error {
 
 	var err error
 	if recursive {
-		os.RemoveAll(deletePath)
+		_ = os.RemoveAll(deletePath)
 	} else {
 		err = os.Remove(deletePath)
 	}

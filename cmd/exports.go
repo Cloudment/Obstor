@@ -52,6 +52,6 @@ func MethodNotAllowedHandler(api string) func(w http.ResponseWriter, r *http.Req
 }
 
 func GetActiveCred() auth.Credentials { return globalActiveCred }
-func GetIAMSys() *IAMSys             { return globalIAMSys }
+func GetIAMSys() *IAMSys              { return globalIAMSys }
 func GetCertsDir() *ConfigDir         { return globalCertsDir }
 func GetDomainNames() []string        { return globalDomainNames }
