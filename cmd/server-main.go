@@ -52,14 +52,19 @@ import (
 // ServerFlags - server command specific flags
 var ServerFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:  "api-address, address",
-		Value: ":" + GlobalMinioDefaultPort,
-		Usage: "bind the S3 API to ADDRESS:PORT (default :9000)",
+		Name:  "web-address",
+		Value: ":" + GlobalObstorDefaultWebPort,
+		Usage: "bind the web dashboard to ADDRESS:PORT",
 	},
 	cli.StringFlag{
-		Name:  "frontend-address",
-		Value: ":9001",
-		Usage: "bind the frontend dashboard to ADDRESS:PORT (default :9001)",
+		Name:  "s3-address",
+		Value: ":" + GlobalObstorDefaultPort,
+		Usage: "bind the S3 API to ADDRESS:PORT",
+	},
+	cli.StringFlag{
+		Name:  "sftp-address",
+		Value: "",
+		Usage: "bind the SFTP server to ADDRESS:PORT (disabled if empty)",
 	},
 }
 
@@ -95,12 +100,12 @@ EXAMPLES:
 
   3. Start distributed obstor server on an 32 node setup with 32 drives each, run following command on all the nodes
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}obstor
-     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}obstorstorage
      {{.Prompt}} {{.HelpName}} http://node{1...32}.example.com/mnt/export{1...32}
 
   4. Start distributed obstor server in an expanded setup, run the following command on all the nodes
      {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_USER{{.AssignmentOperator}}obstor
-     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+     {{.Prompt}} {{.EnvVarSetCommand}} OBSTOR_ROOT_PASSWORD{{.AssignmentOperator}}obstorstorage
      {{.Prompt}} {{.HelpName}} http://node{1...16}.example.com/mnt/export{1...32} \
             http://node{17...64}.example.com/mnt/export{1...64}
 `,
@@ -146,9 +151,9 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	// Register root CAs for remote ENVs
 	env.RegisterGlobalCAs(globalRootCAs)
 
-	globalMinioAddr = globalCLIContext.Addr
+	globalObstorAddr = globalCLIContext.Addr
 
-	globalMinioHost, globalMinioPort = mustSplitHostPort(globalMinioAddr)
+	globalObstorHost, globalObstorPort = mustSplitHostPort(globalObstorAddr)
 
 	globalFrontendAddr = globalCLIContext.FrontendAddr
 	globalFrontendHost, globalFrontendPort = mustSplitHostPort(globalFrontendAddr)
@@ -156,7 +161,7 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	globalEndpoints, setupType, err = createServerEndpoints(globalCLIContext.Addr, serverCmdArgs(ctx)...)
 	logger.FatalIf(err, "Invalid command line arguments")
 
-	globalLocalNodeName = GetLocalPeer(globalEndpoints, globalMinioHost, globalMinioPort)
+	globalLocalNodeName = GetLocalPeer(globalEndpoints, globalObstorHost, globalObstorPort)
 
 	globalRemoteEndpoints = make(map[string]Endpoint)
 	for _, z := range globalEndpoints {
@@ -186,7 +191,7 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	// to IPv6 address ie obstor will start listening on IPv6 address whereas another
 	// (non-)obstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
-	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the server")
+	logger.FatalIf(checkPortAvailability(globalObstorHost, globalObstorPort), "Unable to start the server")
 
 	globalIsErasure = (setupType == ErasureSetupType)
 	globalIsDistErasure = (setupType == DistErasureSetupType)
@@ -288,7 +293,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 	// at a given time, this big transaction lock ensures this
 	// appropriately. This is also true for rotation of encrypted
 	// content.
-	txnLk := newObject.NewNSLock(minioMetaBucket, minioConfigPrefix+"/transaction.lock")
+	txnLk := newObject.NewNSLock(obstorMetaBucket, obstorConfigPrefix+"/transaction.lock")
 
 	// ****  WARNING ****
 	// Migrating to encrypted backend should happen before initialization of any
@@ -405,13 +410,13 @@ func initAllSubsystems(ctx context.Context, newObject ObjectLayer) (err error) {
 	}
 
 	// Initialize bucket metadata sub-system.
-	globalBucketMetadataSys.Init(ctx, buckets, newObject)
+	_ = globalBucketMetadataSys.Init(ctx, buckets, newObject)
 
 	// Initialize notification system.
-	globalNotificationSys.Init(ctx, buckets, newObject)
+	_ = globalNotificationSys.Init(ctx, buckets, newObject)
 
 	// Initialize bucket targets sub-system.
-	globalBucketTargetSys.Init(ctx, buckets, newObject)
+	_ = globalBucketTargetSys.Init(ctx, buckets, newObject)
 
 	return nil
 }
@@ -428,10 +433,11 @@ func serverMain(ctx *cli.Context) {
 
 	// Initialize globalConsoleSys system
 	globalConsoleSys = NewConsoleLogger(GlobalContext)
-	logger.AddTarget(globalConsoleSys)
+	_ = logger.AddTarget(globalConsoleSys)
 
 	// Perform any self-tests
 	bitrotSelfTest()
+	erasureSelfTest()
 	compressSelfTest()
 
 	// Handle all server command args.
@@ -449,12 +455,12 @@ func serverMain(ctx *cli.Context) {
 	// Initialize all sub-systems
 	newAllSubsystems()
 
-	globalMinioEndpoint = func() string {
-		host := globalMinioHost
+	globalObstorEndpoint = func() string {
+		host := globalObstorHost
 		if host == "" {
 			host = sortIPs(localIP4.ToSlice())[0]
 		}
-		return fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(host, globalMinioPort))
+		return fmt.Sprintf("%s://%s", getURLScheme(globalIsTLS), net.JoinHostPort(host, globalObstorPort))
 	}()
 
 	// Is distributed setup, error out if no certificates are found for HTTPS endpoints.
@@ -469,7 +475,7 @@ func serverMain(ctx *cli.Context) {
 
 	if !globalCLIContext.Quiet && !globalInplaceUpdateDisabled {
 		// Check for new updates from dl.pgg.net.
-		checkUpdate(getMinioMode())
+		checkUpdate(getObstorMode())
 	}
 
 	if !globalActiveCred.IsValid() && globalIsDistErasure {
@@ -491,7 +497,7 @@ func serverMain(ctx *cli.Context) {
 		getCert = globalTLSCerts.GetCertificate
 	}
 
-	httpServer := xhttp.NewServer([]string{globalMinioAddr}, criticalErrorHandler{corsHandler(handler)}, getCert)
+	httpServer := xhttp.NewServer([]string{globalObstorAddr}, criticalErrorHandler{corsHandler(handler)}, getCert)
 	httpServer.BaseContext = func(listener net.Listener) context.Context {
 		return GlobalContext
 	}
@@ -579,9 +585,9 @@ func serverMain(ctx *cli.Context) {
 	// Initialize users credentials and policies in background right after config has initialized.
 	go globalIAMSys.Init(GlobalContext, newObject)
 
-	// Start SFTP server if enabled.
-	if globalSFTPConfig.Enabled {
-		startSFTPServer(globalSFTPConfig)
+	// Start SFTP if enabled
+	if GlobalSFTPConfig.Enabled && GlobalSFTPStartFn != nil {
+		GlobalSFTPStartFn()
 	}
 
 	// Prints the formatted startup message, if err is not nil then it prints additional information as well.

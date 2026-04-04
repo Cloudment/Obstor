@@ -29,7 +29,7 @@ const (
 	EnvSFTPHostKey = "OBSTOR_SFTP_HOST_KEY"
 	EnvSFTPEnable  = "OBSTOR_SFTP_ENABLE"
 
-	DefaultAddress = ":8022"
+	DefaultAddress = ":9002"
 )
 
 // DefaultKVS - default KV settings for SFTP.

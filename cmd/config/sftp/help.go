@@ -27,7 +27,7 @@ var Help = config.HelpKVS{
 	},
 	config.HelpKV{
 		Key:         Address,
-		Description: `SFTP server listen address e.g. ":8022"`,
+		Description: `SFTP server listen address e.g. ":9002"`,
 		Optional:    true,
 		Type:        "address",
 	},

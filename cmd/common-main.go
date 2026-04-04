@@ -76,7 +76,7 @@ func init() {
 
 	globalForwarder = handlers.NewForwarder(&handlers.Forwarder{
 		PassHost:     true,
-		RoundTripper: newGatewayHTTPTransport(1 * time.Hour),
+		RoundTripper: newBackendHTTPTransport(1 * time.Hour),
 		Logger: func(err error) {
 			if err != nil && !errors.Is(err, context.Canceled) {
 				logger.LogIf(GlobalContext, err)
@@ -97,10 +97,10 @@ func verifyObjectLayerFeatures(name string, objAPI ObjectLayer) {
 			"Encryption support is requested but '%s' does not support encryption", name)
 	}
 
-	if strings.HasPrefix(name, "gateway") {
-		if GlobalGatewaySSE.IsSet() && GlobalKMS == nil {
-			uiErr := config.ErrInvalidGWSSEEnvValue(nil).Msg("OBSTOR_GATEWAY_SSE set but KMS is not configured")
-			logger.Fatal(uiErr, "Unable to start gateway with SSE")
+	if strings.HasPrefix(name, "backend") {
+		if GlobalBackendSSE.IsSet() && GlobalKMS == nil {
+			uiErr := config.ErrInvalidGWSSEEnvValue(nil).Msg("OBSTOR_BACKEND_SSE set but KMS is not configured")
+			logger.Fatal(uiErr, "Unable to start backend with SSE")
 		}
 	}
 
@@ -114,9 +114,9 @@ func verifyObjectLayerFeatures(name string, objAPI ObjectLayer) {
 
 // Check for updates and print a notification message
 func checkUpdate(mode string) {
-	updateURL := minioReleaseInfoURL
+	updateURL := obstorReleaseInfoURL
 	if runtime.GOOS == globalWindowsOSName {
-		updateURL = minioReleaseWindowsInfoURL
+		updateURL = obstorReleaseWindowsInfoURL
 	}
 
 	u, err := url.Parse(updateURL)
@@ -212,16 +212,32 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 		logger.EnableAnonymous()
 	}
 
-	// Fetch address option
-	globalCLIContext.Addr = ctx.GlobalString("api-address")
-	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+GlobalMinioDefaultPort {
-		globalCLIContext.Addr = ctx.String("api-address")
+	// Dashboard address option
+	globalCLIContext.FrontendAddr = ctx.GlobalString("web-address")
+	if globalCLIContext.FrontendAddr == "" || globalCLIContext.FrontendAddr == ":"+GlobalObstorDefaultWebPort {
+		globalCLIContext.FrontendAddr = ctx.String("web-address")
 	}
 
-	// Check frontend address arg
-	globalCLIContext.FrontendAddr = ctx.GlobalString("frontend-address")
-	if globalCLIContext.FrontendAddr == "" || globalCLIContext.FrontendAddr == ":9001" {
-		globalCLIContext.FrontendAddr = ctx.String("frontend-address")
+	// S3 API address option
+	globalCLIContext.Addr = ctx.GlobalString("s3-address")
+	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+GlobalObstorDefaultPort {
+		globalCLIContext.Addr = ctx.String("s3-address")
+	}
+
+	// SFTP address option
+	sftpAddr := ctx.GlobalString("sftp-address")
+	if sftpAddr == "" {
+		sftpAddr = ctx.String("sftp-address")
+	}
+	if sftpAddr != "" {
+		if !env.IsSet(sftpCfg.EnvSFTPEnable) {
+			os.Setenv(sftpCfg.EnvSFTPEnable, config.EnableOn)
+		}
+		if !env.IsSet(sftpCfg.EnvSFTPAddress) {
+			os.Setenv(sftpCfg.EnvSFTPAddress, sftpAddr)
+		}
+		GlobalSFTPConfig.Enabled = true
+		GlobalSFTPConfig.Address = sftpAddr
 	}
 
 	// Check "no-compat" flag from command line argument.
@@ -287,9 +303,9 @@ func handleCommonEnvVars() {
 
 	publicIPs := env.Get(config.EnvPublicIPs, "")
 	if len(publicIPs) != 0 {
-		minioEndpoints := strings.Split(publicIPs, config.ValueSeparator)
+		obstorEndpoints := strings.Split(publicIPs, config.ValueSeparator)
 		var domainIPs = set.NewStringSet()
-		for _, endpoint := range minioEndpoints {
+		for _, endpoint := range obstorEndpoints {
 			if net.ParseIP(endpoint) == nil {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
@@ -340,9 +356,9 @@ func handleCommonEnvVars() {
 	if env.IsSet(sftpCfg.EnvSFTPEnable) || env.IsSet(sftpCfg.EnvSFTPAddress) {
 		sftpEnabled := env.Get(sftpCfg.EnvSFTPEnable, "")
 		if sftpEnabled == config.EnableOn {
-			globalSFTPConfig.Enabled = true
-			globalSFTPConfig.Address = env.Get(sftpCfg.EnvSFTPAddress, sftpCfg.DefaultAddress)
-			globalSFTPConfig.HostKeyPath = env.Get(sftpCfg.EnvSFTPHostKey, "")
+			GlobalSFTPConfig.Enabled = true
+			GlobalSFTPConfig.Address = env.Get(sftpCfg.EnvSFTPAddress, sftpCfg.DefaultAddress)
+			GlobalSFTPConfig.HostKeyPath = env.Get(sftpCfg.EnvSFTPHostKey, "")
 		}
 	}
 
@@ -406,7 +422,7 @@ func handleCommonEnvVars() {
 
 func logStartupMessage(msg string) {
 	if globalConsoleSys != nil {
-		globalConsoleSys.Send(msg, string(logger.All))
+		_ = globalConsoleSys.Send(msg, string(logger.All))
 	}
 	logger.StartupMessage(msg)
 }
@@ -448,7 +464,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 	if err != nil {
 		return nil, nil, false, err
 	}
-	defer root.Close()
+	defer func() { _ = root.Close() }()
 
 	files, err := root.Readdir(-1)
 	if err != nil {
@@ -482,7 +498,7 @@ func getTLSConfig() (x509Certs []*x509.Certificate, manager *certs.Manager, secu
 		}
 		if err = manager.AddCertificate(certFile, keyFile); err != nil {
 			err = fmt.Errorf("unable to load TLS certificate '%s,%s': %w", certFile, keyFile, err)
-			logger.LogIf(GlobalContext, err, logger.Minio)
+			logger.LogIf(GlobalContext, err, logger.Obstor)
 		}
 	}
 	secureConn = true

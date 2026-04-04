@@ -37,10 +37,12 @@ import (
 	"github.com/cloudment/obstor/cmd/config/identity/openid"
 	"github.com/cloudment/obstor/cmd/config/policy/opa"
 	"github.com/cloudment/obstor/cmd/config/replication"
+	"github.com/cloudment/obstor/cmd/config/sftp"
 	"github.com/cloudment/obstor/cmd/config/storageclass"
 	xhttp "github.com/cloudment/obstor/cmd/http"
 	"github.com/cloudment/obstor/pkg/auth"
 	"github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
 	etcd "go.etcd.io/etcd/client/v3"
 
 	"github.com/cloudment/obstor/pkg/certs"
@@ -50,9 +52,10 @@ import (
 
 // Obstor configuration related constants.
 const (
-	GlobalMinioDefaultPort = "9000"
+	GlobalObstorDefaultPort    = "9000"
+	GlobalObstorDefaultWebPort = "9001"
 
-	globalMinioDefaultRegion = ""
+	globalObstorDefaultRegion = ""
 	// This is a sha256 output of ``arn:aws:iam::obstor:user/admin``,
 	// this is kept in present form to be compatible with S3 owner ID
 	// requirements -
@@ -62,16 +65,16 @@ const (
 	//    It is 64-character obfuscated version of the account ID.
 	// ```
 	// http://docs.aws.amazon.com/AmazonS3/latest/dev/example-walkthroughs-managing-access-example4.html
-	globalMinioDefaultOwnerID      = "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
-	globalMinioDefaultStorageClass = "STANDARD"
-	globalWindowsOSName            = "windows"
-	globalMacOSName                = "darwin"
-	globalMinioModeFS              = "mode-server-fs"
-	globalMinioModeErasure         = "mode-server-xl"
-	globalMinioModeDistErasure     = "mode-server-distributed-xl"
-	globalMinioModeGatewayPrefix   = "mode-gateway-"
-	globalDirSuffix                = "__XLDIR__"
-	globalDirSuffixWithSlash       = globalDirSuffix + slashSeparator
+	globalObstorDefaultOwnerID      = "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
+	globalObstorDefaultStorageClass = "STANDARD"
+	globalWindowsOSName             = "windows"
+	globalMacOSName                 = "darwin"
+	globalObstorModeFS              = "mode-server-fs"
+	globalObstorModeErasure         = "mode-server-xl"
+	globalObstorModeDistErasure     = "mode-server-distributed-xl"
+	globalObstorModeBackendPrefix   = "mode-backend-"
+	globalDirSuffix                 = "__XLDIR__"
+	globalDirSuffixWithSlash        = globalDirSuffix + slashSeparator
 
 	// Add new global values here.
 )
@@ -125,11 +128,11 @@ var (
 	// Indicates if the running obstor server is an erasure-code backend.
 	globalIsErasure = false
 
-	// Indicates if the running obstor is in gateway mode.
-	globalIsGateway = false
+	// Indicates if the running obstor is in backend mode.
+	globalIsBackend = false
 
-	// Name of gateway server, e.g S3, GCS, Azure, etc
-	globalGatewayName = ""
+	// Name of backend server, e.g S3, GCS, Azure, etc
+	globalBackendName = ""
 
 	// This flag is set to 'true' by default
 	globalBrowserEnabled = true
@@ -138,16 +141,16 @@ var (
 	globalInplaceUpdateDisabled = false
 
 	// This flag is set to 'us-east-1' by default
-	globalServerRegion = globalMinioDefaultRegion
+	globalServerRegion = globalObstorDefaultRegion
 
 	// Obstor local server address (in `host:port` format)
-	globalMinioAddr = ""
+	globalObstorAddr = ""
 	// Obstor default port, can be changed through command line.
-	globalMinioPort = GlobalMinioDefaultPort
-	// Holds the host that was passed using --address
-	globalMinioHost = ""
+	globalObstorPort = GlobalObstorDefaultPort
+	// Holds the host that was passed using --web-address
+	globalObstorHost = ""
 	// Holds the possible host endpoint.
-	globalMinioEndpoint = ""
+	globalObstorEndpoint = ""
 
 	// Frontend address
 	globalFrontendAddr = ""
@@ -258,30 +261,29 @@ var (
 	// Auto-Encryption, if enabled, turns any non-SSE-C request
 	// into an SSE-S3 request. If enabled a valid, non-empty KMS
 	// configuration must be present.
-	globalAutoEncryption  bool
-	globalConfigEncrypted bool
+	globalAutoEncryption bool
 
 	// Is compression enabled?
 	globalCompressConfigMu sync.Mutex
 	globalCompressConfig   compress.Config
 
-	// Some standard object extensions which we strictly dis-allow for compression.
+	// Some standard object extensions which we strictly dis-allow for compression
 	standardExcludeCompressExtensions = []string{".gz", ".bz2", ".rar", ".zip", ".7z", ".xz", ".mp4", ".mkv", ".mov", ".jpg", ".png", ".gif"}
 
-	// Some standard content-types which we strictly dis-allow for compression.
+	// Some standard content-types which we strictly dis-allow for compression
 	standardExcludeCompressContentTypes = []string{"video/*", "audio/*", "application/zip", "application/x-gzip", "application/x-zip-compressed", " application/x-compress", "application/x-spoon"}
 
-	// Authorization validators list.
+	// Authorization validators list
 	globalOpenIDValidators *openid.Validators
 
-	// OPA policy system.
+	// OPA policy system
 	globalPolicyOPA *opa.Opa
 
 	// Deployment ID - unique per deployment
 	globalDeploymentID string
 
-	// GlobalGatewaySSE sse options
-	GlobalGatewaySSE gatewaySSE
+	// GlobalBackendSSE sse options
+	GlobalBackendSSE backendSSE
 
 	globalAllHealState *allHealState
 
@@ -289,7 +291,7 @@ var (
 	globalBackgroundHealRoutine *healRoutine
 	globalBackgroundHealState   *allHealState
 
-	// If writes to FS backend should be O_SYNC.
+	// If writes to FS backend should be O_SYNC
 	globalFSOSync bool
 
 	globalProxyEndpoints []ProxyEndpoint
@@ -302,10 +304,24 @@ var (
 
 	globalForwarder *handlers.Forwarder
 
-	// Block replication config.
+	// Block replication config
 	globalReplicationConfig replication.Config
 	globalIsReplicated      bool
-	// Add new variable global values here.
+
+	// SFTP server configuration
+	GlobalSFTPConfig sftp.Config
+
+	// Import if SFTP is enabled
+	GlobalSFTPStartFn func()
+
+	// Register S3 API routes on the given router.
+	GlobalS3RegisterAPIRouterFn func(router *mux.Router)
+
+	// Wrap an http.Handler with S3-compatible CORS handling
+	GlobalS3CorsHandlerFn func(handler http.Handler) http.Handler
+
+	// Register specific S3 API functions on a router for testing.
+	GlobalS3RegisterTestAPIFn func(router *mux.Router, bucketRouter *mux.Router, apiFunctions ...string)
 )
 
 var errSelfTestFailure = errors.New("self test failed. unsafe to start server")
