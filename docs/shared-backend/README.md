@@ -6,7 +6,7 @@ Read more about the Obstor shared mode design [here](DESIGN.md).
 
 Obstor shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
 
-- You have already invested in NAS and would like to use Obstor to add S3 and [other protocol](../protocols/README.md) compatibility to your storage tier.
+- You have already invested in NAS and would like to use Obstor to add S3 and [other protocol](https://obstor.net/docs/protocols) compatibility to your storage tier.
 - You need to use NAS with an S3 interface due to your application architecture requirements.
 - You expect huge traffic and need a load balanced S3-compatible server, serving files from a single NAS backend.
 

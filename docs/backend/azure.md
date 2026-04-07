@@ -1,5 +1,5 @@
 # Obstor Azure Backend
-Obstor Backend adds S3 and [other supported protocol](../protocols/README.md) compatibility to Microsoft Azure Blob Storage.
+Obstor Backend adds S3 and [other supported protocol](https://obstor.net/docs/protocols) compatibility to Microsoft Azure Blob Storage.
 
 ## Run Obstor Backend for Microsoft Azure Blob Storage
 ### Using Docker
@@ -53,7 +53,7 @@ Other limitations:
 - Bucket notification APIs are not supported.
 
 ## Explore Further
-- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
+- [Supported Protocols](https://obstor.net/docs/protocols) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

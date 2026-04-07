@@ -1,6 +1,6 @@
 # Obstor GCS Backend
 
-Obstor GCS Backend allows you to access Google Cloud Storage (GCS) with S3-compatible APIs and [other supported protocols](../protocols/README.md)
+Obstor GCS Backend allows you to access Google Cloud Storage (GCS) with S3-compatible APIs and [other supported protocols](https://obstor.net/docs/protocols)
 
 - [Run Obstor Backend for GCS](#run-obstor-backend-for-gcs)
 - [Test Using Browser Dashboard](#test-using-obstor-browser)
@@ -83,7 +83,7 @@ Other limitations:
 * Bucket notification APIs are not supported.
 
 ## <a name="explore-further"></a>4. Explore Further
-- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
+- [Supported Protocols](https://obstor.net/docs/protocols) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

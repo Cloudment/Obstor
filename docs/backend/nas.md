@@ -1,6 +1,6 @@
 # Obstor NAS Backend
 
-Obstor Backend adds S3 and [other supported protocol](../protocols/README.md) compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object backend.
+Obstor Backend adds S3 and [other supported protocol](https://obstor.net/docs/protocols) compatibility to NAS storage. You may run multiple obstor instances on the same shared NAS volume as a distributed object backend.
 
 ## Run Obstor Backend for NAS Storage
 
@@ -93,7 +93,7 @@ NAS backend implementation allows symlinks on regular files,
 *Directory symlinks is not and will not be supported as there are no safe ways to handle them.*
 
 ## Explore Further
-- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
+- [Supported Protocols](https://obstor.net/docs/protocols) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

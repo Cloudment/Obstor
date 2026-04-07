@@ -83,7 +83,7 @@ export OBSTOR_STORAGE_CLASS_STANDARD=EC:3
 export OBSTOR_STORAGE_CLASS_RRS=EC:2
 ```
 
-Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](../../config#storage-class) for
+Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](https://obstor.net/docs/config#storage-class) for
 more details.
 
 *Note*

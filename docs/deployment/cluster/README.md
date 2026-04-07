@@ -16,7 +16,7 @@ The default replication factor is **3** - every block is stored on 3 independent
 
 This model provides strong consistency (read-after-write, list-after-write) while tolerating individual drive and node failures.
 
-> **NOTE:** Block-level replication differs from erasure coding. Replication stores full copies of each block, trading storage efficiency for simplicity and faster recovery. For erasure-coded deployments, see [Erasure Code Guide](../../erasure/README.md).
+> **NOTE:** Block-level replication differs from erasure coding. Replication stores full copies of each block, trading storage efficiency for simplicity and faster recovery. For erasure-coded deployments, see [Erasure Code Guide](https://obstor.net/docs/erasure).
 
 ## Node Quotas
 

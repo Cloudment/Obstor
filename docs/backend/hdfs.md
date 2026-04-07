@@ -1,5 +1,5 @@
 # Obstor HDFS Backend
-Obstor HDFS backend adds S3 API and [other supported protocol](../protocols/README.md) support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the backend is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
+Obstor HDFS backend adds S3 API and [other supported protocol](https://obstor.net/docs/protocols) support to Hadoop HDFS filesystem. Applications can use both the S3 and file APIs concurrently without requiring any data migration. Since the backend is stateless and shared-nothing, you may elastically provision as many Obstor instances as needed to distribute the load.
 
 > NOTE: Intention of this backend implementation it to make it easy to migrate your existing data on HDFS clusters to Obstor clusters using standard tools like `mc` or `aws-cli`, if the goal is to use HDFS perpetually we recommend that HDFS should be used directly for all write operations.
 
@@ -101,7 +101,7 @@ Backend inherits the following limitations of HDFS storage layer:
 - Concurrent multipart operations are not supported (HDFS lacks safe locking support, or poorly implemented)
 
 ## Explore Further
-- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
+- [Supported Protocols](https://obstor.net/docs/protocols) - S3, SFTP, and more
 - [`mc` command-line interface](https://obstor.net/docs/obstor-client-quickstart-guide)
 - [`aws` command-line interface](https://obstor.net/docs/aws-cli-with-obstor)
 - [`minio-go` Go SDK](https://obstor.net/docs/golang-client-quickstart-guide)

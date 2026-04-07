@@ -121,7 +121,7 @@ The SFTP server works with all standard SFTP clients:
 
 ## Explore Further
 
-- [Obstor Distributed Mode](../distributed/README.md) - deploy across multiple nodes
-- [TLS Configuration](../tls/README.md) - secure your deployment
-- [IAM & Policies](../multi-user/README.md) - manage user access
-- [S3 Backend](../backend/s3.md) - S3 API compatibility details
+- [Obstor Distributed Mode](https://obstor.net/docs/distributed) - deploy across multiple nodes
+- [TLS Configuration](https://obstor.net/docs/tls) - secure your deployment
+- [IAM & Policies](https://obstor.net/docs/multi-user) - manage user access
+- [S3 Backend](https://obstor.net/docs/backend/s3) - S3 API compatibility details

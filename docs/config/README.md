@@ -86,7 +86,7 @@ obstor server /data
 ```
 
 ### Storage Class
-By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in Obstor server [here](../erasure/storage-class/README.md).
+By default, parity for objects with standard storage class is set to `N/2`, and parity for objects with reduced redundancy storage class objects is set to `2`. Read more about storage class support in Obstor server [here](https://obstor.net/docs/erasure/storage-class).
 
 ```
 KEY:
@@ -172,7 +172,7 @@ OBSTOR_ETCD_COMMENT          (sentence)  optionally add a comment to this settin
 ```
 
 ### API
-By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in Obstor server [here](../throttle/README.md).
+By default, there is no limitation on the number of concurrent requests that a server/cluster processes at the same time. However, it is possible to impose such limitation using the API subsystem. Read more about throttling limitation in Obstor server [here](https://obstor.net/docs/throttle).
 
 ```
 KEY:

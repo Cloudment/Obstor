@@ -1,8 +1,8 @@
 # Obstor SFTP Backend
 
-Obstor SFTP Backend adds S3 and [other supported protocol](../protocols/README.md) compatibility to any existing SFTP server. Use your SFTP server as the storage backend while accessing data through the S3 API and other supported protocols.
+Obstor SFTP Backend adds S3 and [other supported protocol](https://obstor.net/docs/protocols) compatibility to any existing SFTP server. Use your SFTP server as the storage backend while accessing data through the S3 API and other supported protocols.
 
-> Looking for the built-in SFTP server? See [SFTP Protocol](../protocols/sftp.md).
+> Looking for the built-in SFTP server? See [SFTP Protocol](https://obstor.net/docs/protocols/sftp).
 
 ## Run Obstor Backend for SFTP Storage
 
@@ -100,8 +100,8 @@ mc cp myfile.txt mysftp/newbucket/myfile.txt
 
 ## Explore Further
 
-- [Supported Protocols](../protocols/README.md) - S3, SFTP, and more
-- [Obstor Distributed Mode](../distributed/README.md)
-- [TLS Configuration](../tls/README.md)
-- [IAM & Policies](../multi-user/README.md)
-- [SFTP Protocol](../protocols/sftp.md) - built-in SFTP server for accessing Obstor via SFTP
+- [Supported Protocols](https://obstor.net/docs/protocols) - S3, SFTP, and more
+- [Obstor Distributed Mode](https://obstor.net/docs/distributed)
+- [TLS Configuration](https://obstor.net/docs/tls)
+- [IAM & Policies](https://obstor.net/docs/multi-user)
+- [SFTP Protocol](https://obstor.net/docs/protocols/sftp) - built-in SFTP server for accessing Obstor via SFTP
