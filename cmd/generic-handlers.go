@@ -168,7 +168,6 @@ func setRedirectHandler(h http.Handler) http.Handler {
 func setPresignedOTPHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		otp := r.URL.Query().Get("x-obstor-otp")
-		isPresigned := r.URL.Query().Get(xhttp.AmzCredential) != ""
 
 		if otp != "" {
 			if !globalTokenStore.Consume(otp) {
@@ -184,14 +183,6 @@ func setPresignedOTPHandler(h http.Handler) http.Handler {
 			q.Del("x-obstor-otp")
 			r.URL.RawQuery = q.Encode()
 			r.RequestURI = r.URL.RequestURI()
-		} else if isPresigned {
-			// Reject presigned URL without OTP to enforce one-time use.
-			writeErrorResponseString(r.Context(), w, APIError{
-				Code:           "AccessDenied",
-				Description:    "The request signature is not valid.",
-				HTTPStatusCode: http.StatusForbidden,
-			}, r.URL)
-			return
 		}
 		h.ServeHTTP(w, r)
 	})
