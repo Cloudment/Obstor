@@ -8,8 +8,10 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
             <span className="icon-[fluent-emoji-high-contrast--lobster] text-2xl text-black" />
           </div>
-          <h1 className="font-display font-semibold text-2xl text-text-primary">Obstor</h1>
-          <p className="mt-1 font-body text-sm text-text-muted">Sign in to your storage dashboard</p>
+          <h1 className="font-display font-semibold text-2xl">Obstor</h1>
+          <p className="mt-1 font-body text-sm text-text-muted">
+            Sign in to your storage dashboard
+          </p>
         </div>
 
         <LoginForm />

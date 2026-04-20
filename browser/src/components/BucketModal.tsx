@@ -1,34 +1,18 @@
 "use client";
 
 import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import {
+  addUserAction,
+  type BucketSettings,
   createBucketWithSettingsAction,
+  detachUserFromBucketAction,
   getBucketSettingsAction,
+  type IAMUser,
+  type NamedPolicy,
+  setUserStatusAction,
   updateBucketSettingsAction,
 } from "@/lib/actions";
-
-// Types
-export interface BucketSettings {
-  name: string;
-  versioning: boolean;
-  objectLocking: boolean;
-  accessPolicy: "private" | "public-read" | "public-read-write" | "custom";
-  customPolicy: string;
-  sftpEnabled: boolean;
-  s3Enabled: boolean;
-  anonymousAccess: boolean;
-  quotaEnabled: boolean;
-  quotaType: "hard" | "fifo";
-  quotaSize: string;
-  quotaUnit: "GB" | "TB" | "PB";
-  encryptionEnabled: boolean;
-  encryptionType: "SSE-S3" | "SSE-KMS";
-  kmsKeyId: string;
-  tags: { key: string; value: string }[];
-  placementStrategy: "smart" | "custom";
-  regions: string[];
-}
 
 interface Props {
   open: boolean;
@@ -49,8 +33,9 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-const DEFAULT_POLICY_TEMPLATE = (bucketName: string) =>
-  JSON.stringify(
+const DEFAULT_POLICY_TEMPLATE = (bucketName: string, name = "admin") => ({
+  name,
+  policy: JSON.stringify(
     {
       Version: "2012-10-17",
       Statement: [
@@ -75,17 +60,32 @@ const DEFAULT_POLICY_TEMPLATE = (bucketName: string) =>
     },
     null,
     2,
-  );
+  ),
+});
+
+const READONLY_POLICY_TEMPLATE = (bucketName: string) => ({
+  name: "read-only",
+  policy: JSON.stringify(
+    {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: ["s3:GetObject", "s3:ListBucket"],
+          Resource: [`arn:aws:s3:::${bucketName || "BUCKET_NAME"}*`],
+        },
+      ],
+    },
+    null,
+    2,
+  ),
+});
 
 const EMPTY_SETTINGS: BucketSettings = {
   name: "",
+  publicAccess: "private",
   versioning: false,
   objectLocking: false,
-  accessPolicy: "private",
-  customPolicy: "",
-  sftpEnabled: false,
-  s3Enabled: true,
-  anonymousAccess: false,
   quotaEnabled: false,
   quotaType: "hard",
   quotaSize: "",
@@ -94,6 +94,10 @@ const EMPTY_SETTINGS: BucketSettings = {
   encryptionType: "SSE-S3",
   kmsKeyId: "",
   tags: [],
+  policies: [],
+  users: [],
+  sftpEnabled: false,
+  s3Enabled: true,
   placementStrategy: "smart",
   regions: [],
 };
@@ -140,7 +144,7 @@ function SettingRow({
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface/50 px-4 py-3">
       <div className="min-w-0">
-        <p className="font-body text-sm text-text-primary">{label}</p>
+        <p className="font-body text-sm">{label}</p>
         {description && (
           <p className="mt-0.5 font-body text-[11px] text-text-muted leading-relaxed">
             {description}
@@ -160,7 +164,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Tab content components
 function GeneralTab({
   settings,
   onChange,
@@ -182,7 +185,7 @@ function GeneralTab({
             onChange({ name: e.target.value.toLowerCase().replace(/[^a-z0-9.-]/g, "") })
           }
           placeholder="my-bucket"
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50"
         />
         {!isEdit && settings.name && (
           <p className="mt-1.5 font-mono text-[10px] text-text-muted">
@@ -214,55 +217,136 @@ function GeneralTab({
   );
 }
 
-function AccessTab({
+function PublicAccessSection({
   settings,
   onChange,
 }: {
   settings: BucketSettings;
   onChange: (s: Partial<BucketSettings>) => void;
 }) {
-  const policies = [
+  const options = [
     { id: "private", label: "Private", desc: "No public access" },
     { id: "public-read", label: "Public Read", desc: "Anyone can read objects" },
     { id: "public-read-write", label: "Public Read/Write", desc: "Anyone can read and write" },
-    { id: "custom", label: "Custom Policy", desc: "Define a custom IAM policy" },
   ] as const;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <SectionLabel>Access Policy</SectionLabel>
-        <div className="grid grid-cols-2 gap-2">
-          {policies.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => {
-                const update: Partial<BucketSettings> = { accessPolicy: p.id };
-                if (p.id === "custom" && !settings.customPolicy) {
-                  update.customPolicy = DEFAULT_POLICY_TEMPLATE(settings.name);
-                }
-                onChange(update);
-              }}
-              className={`rounded-lg border px-3 py-2.5 text-left transition-all ${
-                settings.accessPolicy === p.id
-                  ? "border-accent/40 bg-accent-subtle"
-                  : "border-border bg-surface/50 hover:border-border-bright"
-              }`}
+    <div>
+      <SectionLabel>Public Access</SectionLabel>
+      <div className="grid grid-cols-3 gap-2">
+        {options.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => onChange({ publicAccess: p.id })}
+            className={`rounded-lg border px-3 py-2.5 text-left transition-all ${
+              settings.publicAccess === p.id
+                ? "border-accent/40 bg-accent-subtle"
+                : "border-border bg-surface/50 hover:border-border-bright"
+            }`}
+          >
+            <p
+              className={`font-body font-medium text-xs ${settings.publicAccess === p.id ? "text-accent-bright" : "text-text-primary"}`}
             >
-              <p
-                className={`font-body font-medium text-xs ${settings.accessPolicy === p.id ? "text-accent-bright" : "text-text-primary"}`}
-              >
-                {p.label}
-              </p>
-              <p className="mt-0.5 font-body text-[10px] text-text-muted">{p.desc}</p>
-            </button>
-          ))}
-        </div>
+              {p.label}
+            </p>
+            <p className="mt-0.5 font-body text-[10px] text-text-muted">{p.desc}</p>
+          </button>
+        ))}
       </div>
+    </div>
+  );
+}
 
-      <AnimatePresence>
-        {settings.accessPolicy === "custom" && (
+function PoliciesAccordion({
+  settings,
+  onChange,
+  expanded,
+  onToggle,
+  isEdit,
+}: {
+  settings: BucketSettings;
+  onChange: (s: Partial<BucketSettings>) => void;
+  expanded: boolean;
+  onToggle: () => void;
+  isEdit: boolean;
+}) {
+  const addPolicy = () => {
+    const base =
+      settings.policies.length === 0
+        ? DEFAULT_POLICY_TEMPLATE(settings.name, "admin")
+        : READONLY_POLICY_TEMPLATE(settings.name);
+    // Check if name is available
+    const existing = new Set(settings.policies.map((p) => p.name));
+    let name = base.name;
+    let i = 2;
+    while (existing.has(name)) {
+      name = `${base.name}-${i++}`;
+    }
+    onChange({ policies: [...settings.policies, { ...base, name }] });
+  };
+
+  const updatePolicy = (idx: number, patch: Partial<NamedPolicy>) => {
+    onChange({
+      policies: settings.policies.map((p, i) => (i === idx ? { ...p, ...patch } : p)),
+    });
+  };
+
+  const removePolicy = (idx: number) => {
+    const pol = settings.policies[idx];
+    onChange({
+      policies: settings.policies.filter((_, i) => i !== idx),
+      // Cascade: detach from any user's selection in the modal
+      users: settings.users.map((u) => ({
+        ...u,
+        policies: u.policies.filter((pn) => pn !== pol.name),
+      })),
+    });
+  };
+
+  // Client-side ID React keys for policies array length
+  const [policyUIDs, setPolicyUIDs] = useState<string[]>([]);
+  useEffect(() => {
+    setPolicyUIDs((prev) => {
+      if (prev.length === settings.policies.length) return prev;
+      const next = prev.slice(0, settings.policies.length);
+      while (next.length < settings.policies.length) {
+        next.push(
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()}`,
+        );
+      }
+      return next;
+    });
+  }, [settings.policies.length]);
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-border bg-surface/30">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface/50"
+      >
+        <div className="flex items-center gap-3">
+          <span className="icon-[lucide--file-lock] text-accent text-sm" />
+          <div>
+            <p className="font-body font-medium text-sm">Access Policies</p>
+            <p className="font-mono text-[10px] text-text-muted">
+              {settings.policies.length} polic{settings.policies.length === 1 ? "y" : "ies"} scoped
+              to this bucket
+            </p>
+          </div>
+        </div>
+        <span
+          className={`icon-[lucide--chevron-down] text-sm text-text-muted transition-transform ${
+            expanded ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
           <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -270,33 +354,540 @@ function AccessTab({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <SectionLabel>Policy Document (JSON)</SectionLabel>
-            <div className="relative">
-              <textarea
-                value={settings.customPolicy}
-                onChange={(e) => onChange({ customPolicy: e.target.value })}
-                rows={16}
-                spellCheck={false}
-                className="w-full rounded-lg border border-border bg-void p-4 font-mono text-[11px] text-text-secondary leading-relaxed outline-none transition-colors focus:border-accent"
-              />
+            <div className="space-y-3 border-border border-t px-4 py-4">
+              <PublicAccessSection settings={settings} onChange={onChange} />
+
+              {(settings.policies.length > 0 || isEdit) && (
+                <div className="border-border border-t pt-3">
+                  <SectionLabel>Named IAM Policies</SectionLabel>
+                </div>
+              )}
+
+              {settings.policies.length === 0 && (
+                <p className="py-2 text-center font-body text-text-muted text-xs">
+                  No named policies defined yet.
+                </p>
+              )}
+              {settings.policies.map((p, idx) => {
+                const key = policyUIDs[idx] ?? `fallback-${idx}`;
+                return (
+                  <PolicyEditor
+                    key={key}
+                    policy={p}
+                    onChange={(patch) => updatePolicy(idx, patch)}
+                    onRemove={() => removePolicy(idx)}
+                  />
+                );
+              })}
               <button
                 type="button"
-                onClick={() => {
-                  try {
-                    const formatted = JSON.stringify(JSON.parse(settings.customPolicy), null, 2);
-                    onChange({ customPolicy: formatted });
-                  } catch {
-                    /* invalid JSON, ignore */
-                  }
-                }}
-                className="absolute top-2 right-2 rounded-md bg-surface-overlay px-2 py-1 font-mono text-[10px] text-text-muted transition-colors hover:text-text-secondary"
+                onClick={addPolicy}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-border border-dashed py-2.5 font-body text-text-muted text-xs transition-colors hover:border-accent/60 hover:text-accent"
               >
-                Format
+                <span className="icon-[lucide--plus] text-[11px]" />
+                Create More
               </button>
             </div>
           </m.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function PolicyEditor({
+  policy,
+  onChange,
+  onRemove,
+}: {
+  policy: NamedPolicy;
+  onChange: (patch: Partial<NamedPolicy>) => void;
+  onRemove: () => void;
+}) {
+  const format = () => {
+    try {
+      const formatted = JSON.stringify(JSON.parse(policy.policy), null, 2);
+      onChange({ policy: formatted });
+    } catch {
+      // Todo: Add error handling
+    }
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-surface/60 p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <input
+          type="text"
+          value={policy.name}
+          onChange={(e) => onChange({ name: e.target.value.replace(/[^a-zA-Z0-9_-]/g, "") })}
+          placeholder="policy-name"
+          className="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+        />
+        <button
+          type="button"
+          onClick={format}
+          className="rounded-md bg-surface-overlay px-2.5 py-1 font-mono text-[10px] text-text-muted transition-colors hover:text-text-secondary"
+        >
+          Format
+        </button>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+        >
+          <span className="icon-[lucide--trash-2] text-[11px]" />
+        </button>
+      </div>
+      <textarea
+        value={policy.policy}
+        onChange={(e) => onChange({ policy: e.target.value })}
+        rows={10}
+        spellCheck={false}
+        className="w-full resize-none rounded-md border border-border bg-void p-3 font-mono text-[11px] text-text-secondary leading-relaxed outline-none transition-colors focus:border-accent"
+      />
+    </div>
+  );
+}
+
+function UsersAccordion({
+  settings,
+  onChange,
+  expanded,
+  onToggle,
+  isEdit,
+  onUserError,
+}: {
+  settings: BucketSettings;
+  onChange: (s: Partial<BucketSettings>) => void;
+  expanded: boolean;
+  onToggle: () => void;
+  isEdit: boolean;
+  onUserError: (err: string) => void;
+}) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [pendingCreds, setPendingCreds] = useState<{ accessKey: string; secretKey: string } | null>(
+    null,
+  );
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+
+  const availablePolicies = settings.policies.map((p) => p.name).filter(Boolean);
+
+  const removeUser = async (user: IAMUser) => {
+    // Drop pending users
+    if (user.pendingSecretKey || !isEdit) {
+      onChange({ users: settings.users.filter((u) => u.accessKey !== user.accessKey) });
+      return;
+    }
+    setBusyKey(user.accessKey);
+    const res = await detachUserFromBucketAction(settings.name, user.accessKey);
+    setBusyKey(null);
+    if ("error" in res) {
+      onUserError(res.error);
+      return;
+    }
+    onChange({ users: settings.users.filter((u) => u.accessKey !== user.accessKey) });
+  };
+
+  const toggleStatus = async (user: IAMUser) => {
+    const next = user.status !== "enabled";
+    // Edit pending users
+    if (user.pendingSecretKey) {
+      onChange({
+        users: settings.users.map((u) =>
+          u.accessKey === user.accessKey ? { ...u, status: next ? "enabled" : "disabled" } : u,
+        ),
+      });
+      return;
+    }
+    setBusyKey(user.accessKey);
+    const res = await setUserStatusAction(user.accessKey, next);
+    setBusyKey(null);
+    if ("error" in res && res.error) {
+      onUserError(res.error);
+      return;
+    }
+    onChange({
+      users: settings.users.map((u) =>
+        u.accessKey === user.accessKey ? { ...u, status: next ? "enabled" : "disabled" } : u,
+      ),
+    });
+  };
+
+  const updateUserPolicies = (accessKey: string, policies: string[]) => {
+    onChange({
+      users: settings.users.map((u) => (u.accessKey === accessKey ? { ...u, policies } : u)),
+    });
+  };
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-border bg-surface/30">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface/50"
+      >
+        <div className="flex items-center gap-3">
+          <span className="icon-[lucide--users] text-accent text-sm" />
+          <div>
+            <p className="font-body font-medium text-sm">Users</p>
+            <p className="font-mono text-[10px] text-text-muted">
+              {settings.users.length} user{settings.users.length === 1 ? "" : "s"} with access to
+              this bucket
+            </p>
+          </div>
+        </div>
+        <span
+          className={`icon-[lucide--chevron-down] text-sm text-text-muted transition-transform ${
+            expanded ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <m.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-3 border-border border-t px-4 py-4">
+              {pendingCreds && (
+                <div className="rounded-lg border border-accent/40 bg-accent-subtle p-3">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="icon-[lucide--key-round] text-accent text-sm" />
+                    <p className="font-body font-medium text-accent-bright text-xs">
+                      Save these credentials now - the secret won't be shown again.
+                    </p>
+                  </div>
+                  <div className="grid gap-1.5 font-mono text-[11px]">
+                    <div className="flex items-center justify-between gap-2 rounded bg-void px-2 py-1.5">
+                      <span className="text-text-muted">Access Key</span>
+                      <span className="truncate">{pendingCreds.accessKey}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 rounded bg-void px-2 py-1.5">
+                      <span className="text-text-muted">Secret Key</span>
+                      <span className="truncate">{pendingCreds.secretKey}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPendingCreds(null)}
+                    className="mt-2 font-body text-[11px] text-accent transition-colors hover:text-accent-bright"
+                  >
+                    Saved credentials, dismiss
+                  </button>
+                </div>
+              )}
+
+              {settings.users.length === 0 && !showAdd && (
+                <p className="py-2 text-center font-body text-text-muted text-xs">
+                  No users attached to this bucket yet.
+                </p>
+              )}
+
+              {settings.users.map((u) => (
+                <div
+                  key={u.accessKey}
+                  className="rounded-lg border border-border bg-surface/60 p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="icon-[lucide--circle-user] text-base text-text-muted" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-mono text-xs">{u.accessKey}</p>
+                      <p className="font-mono text-[10px] text-text-muted">
+                        {u.status === "enabled" ? "Active" : "Disabled"}
+                      </p>
+                    </div>
+                    <Toggle
+                      checked={u.status === "enabled"}
+                      onChange={() => toggleStatus(u)}
+                      disabled={busyKey === u.accessKey}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeUser(u)}
+                      disabled={busyKey === u.accessKey}
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:opacity-40"
+                    >
+                      <span className="icon-[lucide--trash-2] text-[11px]" />
+                    </button>
+                  </div>
+
+                  {availablePolicies.length > 0 && (
+                    <div className="mt-3 border-border border-t pt-3">
+                      <p className="mb-1.5 font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                        Member of
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {availablePolicies.map((pn) => {
+                          const checked = u.policies.includes(pn);
+                          return (
+                            <button
+                              key={pn}
+                              type="button"
+                              onClick={() =>
+                                updateUserPolicies(
+                                  u.accessKey,
+                                  checked
+                                    ? u.policies.filter((x) => x !== pn)
+                                    : [...u.policies, pn],
+                                )
+                              }
+                              className={`rounded-md border px-2.5 py-1 font-mono text-[10px] transition-colors ${
+                                checked
+                                  ? "border-accent/40 bg-accent-subtle text-accent-bright"
+                                  : "border-border bg-surface text-text-muted hover:border-border-bright hover:text-text-secondary"
+                              }`}
+                            >
+                              {pn}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {showAdd ? (
+                <AddUserForm
+                  isEdit={isEdit}
+                  availablePolicies={availablePolicies}
+                  onCancel={() => setShowAdd(false)}
+                  onCreated={(user, creds) => {
+                    onChange({ users: [...settings.users, user] });
+                    setPendingCreds(creds);
+                    setShowAdd(false);
+                  }}
+                  onError={onUserError}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-border border-dashed py-2.5 font-body text-text-muted text-xs transition-colors hover:border-accent/60 hover:text-accent"
+                >
+                  <span className="icon-[lucide--user-plus] text-[11px]" />
+                  Add User
+                </button>
+              )}
+            </div>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function genAccessKey(): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(20));
+  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
+}
+
+function genSecretKey(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(30));
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "").slice(0, 40);
+}
+
+function AddUserForm({
+  isEdit,
+  availablePolicies,
+  onCancel,
+  onCreated,
+  onError,
+}: {
+  isEdit: boolean;
+  availablePolicies: string[];
+  onCancel: () => void;
+  onCreated: (user: IAMUser, creds: { accessKey: string; secretKey: string }) => void;
+  onError: (err: string) => void;
+}) {
+  const [autoGen, setAutoGen] = useState(true);
+  const [accessKey, setAccessKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [policies, setPolicies] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    if (policies.length === 0) {
+      onError("Select at least one policy for the user.");
+      return;
+    }
+
+    // Check user create input syntax
+    if (!isEdit) {
+      const ak = autoGen ? genAccessKey() : accessKey.trim();
+      const sk = autoGen ? genSecretKey() : secretKey.trim();
+      if (!ak || !sk) {
+        onError("Access key and secret key are required.");
+        return;
+      }
+      onCreated(
+        { accessKey: ak, status: "enabled", policies, pendingSecretKey: sk },
+        { accessKey: ak, secretKey: sk },
+      );
+      return;
+    }
+
+    // Edit user on backened
+    setBusy(true);
+    const res = await addUserAction(
+      autoGen ? "" : accessKey,
+      autoGen ? "" : secretKey,
+      policies.join(","),
+    );
+    setBusy(false);
+    if ("error" in res) {
+      onError(res.error);
+      return;
+    }
+    onCreated(
+      { accessKey: res.accessKey, status: "enabled", policies },
+      { accessKey: res.accessKey, secretKey: res.secretKey },
+    );
+  };
+
+  return (
+    <div className="space-y-3 rounded-lg border border-accent/40 bg-surface/60 p-3">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setAutoGen(true)}
+          className={`flex-1 rounded-md border px-3 py-1.5 font-body text-xs transition-colors ${
+            autoGen
+              ? "border-accent/40 bg-accent-subtle text-accent-bright"
+              : "border-border bg-surface text-text-muted hover:border-border-bright"
+          }`}
+        >
+          Generate
+        </button>
+        <button
+          type="button"
+          onClick={() => setAutoGen(false)}
+          className={`flex-1 rounded-md border px-3 py-1.5 font-body text-xs transition-colors ${
+            !autoGen
+              ? "border-accent/40 bg-accent-subtle text-accent-bright"
+              : "border-border bg-surface text-text-muted hover:border-border-bright"
+          }`}
+        >
+          Custom
+        </button>
+      </div>
+
+      {!autoGen && (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={accessKey}
+            onChange={(e) => setAccessKey(e.target.value)}
+            placeholder="Access key (≥ 3 chars)"
+            className="w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+          />
+          <input
+            type="text"
+            value={secretKey}
+            onChange={(e) => setSecretKey(e.target.value)}
+            placeholder="Secret key (≥ 8 chars)"
+            className="w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+          />
+        </div>
+      )}
+
+      <div>
+        <p className="mb-1.5 font-mono text-[10px] text-text-muted uppercase tracking-wider">
+          Policies (at least one)
+        </p>
+        {availablePolicies.length === 0 ? (
+          <p className="font-body text-[11px] text-text-muted">
+            No policies defined yet. Add a policy in the Access Policies section first.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {availablePolicies.map((pn) => {
+              const checked = policies.includes(pn);
+              return (
+                <button
+                  key={pn}
+                  type="button"
+                  onClick={() =>
+                    setPolicies(checked ? policies.filter((x) => x !== pn) : [...policies, pn])
+                  }
+                  className={`rounded-md border px-2.5 py-1 font-mono text-[10px] transition-colors ${
+                    checked
+                      ? "border-accent/40 bg-accent-subtle text-accent-bright"
+                      : "border-border bg-surface text-text-muted hover:border-border-bright hover:text-text-secondary"
+                  }`}
+                >
+                  {pn}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 pt-1">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || availablePolicies.length === 0}
+          className="flex-1 rounded-md bg-accent px-3 py-2 font-body font-medium text-black text-xs transition-colors hover:bg-accent-bright disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {busy ? "Creating..." : "Create User"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={busy}
+          className="rounded-md border border-border px-3 py-2 font-body text-text-muted text-xs transition-colors hover:bg-surface-overlay disabled:opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+      {!isEdit && (
+        <p className="font-body text-[11px] text-text-muted">
+          User will be created when you save the bucket.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function AccessTab({
+  settings,
+  onChange,
+  isEdit,
+  onUserError,
+}: {
+  settings: BucketSettings;
+  onChange: (s: Partial<BucketSettings>) => void;
+  isEdit: boolean;
+  onUserError: (err: string) => void;
+}) {
+  const [openSection, setOpenSection] = useState<"policies" | "users" | null>("policies");
+
+  return (
+    <div className="space-y-2">
+      <PoliciesAccordion
+        settings={settings}
+        onChange={onChange}
+        expanded={openSection === "policies"}
+        onToggle={() => setOpenSection(openSection === "policies" ? null : "policies")}
+        isEdit={isEdit}
+      />
+      <UsersAccordion
+        settings={settings}
+        onChange={onChange}
+        expanded={openSection === "users"}
+        onToggle={() => setOpenSection(openSection === "users" ? null : "users")}
+        isEdit={isEdit}
+        onUserError={onUserError}
+      />
     </div>
   );
 }
@@ -317,24 +908,6 @@ function FeaturesTab({
         </SettingRow>
         <SettingRow label="SFTP Access" description="Allow file access over SFTP protocol">
           <Toggle checked={settings.sftpEnabled} onChange={(v) => onChange({ sftpEnabled: v })} />
-        </SettingRow>
-      </div>
-
-      <div className="space-y-2">
-        <SectionLabel>Visibility</SectionLabel>
-        <SettingRow
-          label="Public URL Access"
-          description="Make bucket contents accessible via a direct public URL without authentication"
-        >
-          <Toggle
-            checked={settings.accessPolicy !== "private"}
-            onChange={(v) =>
-              onChange({
-                accessPolicy: v ? "public-read" : "private",
-                anonymousAccess: v,
-              })
-            }
-          />
         </SettingRow>
       </div>
     </div>
@@ -404,12 +977,12 @@ function QuotaTab({
                   value={settings.quotaSize}
                   onChange={(e) => onChange({ quotaSize: e.target.value })}
                   placeholder="100"
-                  className="flex-1 rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+                  className="flex-1 rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-text-muted focus:border-accent"
                 />
                 <select
                   value={settings.quotaUnit}
                   onChange={(e) => onChange({ quotaUnit: e.target.value as "GB" | "TB" | "PB" })}
-                  className="rounded-lg border border-border bg-surface px-3 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors focus:border-accent"
+                  className="rounded-lg border border-border bg-surface px-3 py-2.5 font-mono text-sm outline-none transition-colors focus:border-accent"
                 >
                   <option value="GB">GB</option>
                   <option value="TB">TB</option>
@@ -496,7 +1069,7 @@ function EncryptionTab({
                     value={settings.kmsKeyId}
                     onChange={(e) => onChange({ kmsKeyId: e.target.value })}
                     placeholder="arn:aws:kms:region:account:key/key-id"
-                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-text-muted focus:border-accent"
                   />
                 </m.div>
               )}
@@ -557,14 +1130,14 @@ function TagsTab({
                 value={tag.key}
                 onChange={(e) => updateTag(i, "key", e.target.value)}
                 placeholder="Key"
-                className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-text-primary text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+                className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
               />
               <input
                 type="text"
                 value={tag.value}
                 onChange={(e) => updateTag(i, "value", e.target.value)}
                 placeholder="Value"
-                className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-text-primary text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+                className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
               />
               <button
                 type="button"
@@ -682,7 +1255,7 @@ function RegionTab({
                   onChange={(e) => setRegionInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type a region and press Enter..."
-                  className="min-w-[180px] flex-1 bg-transparent py-0.5 font-mono text-sm text-text-primary outline-none placeholder:text-text-muted"
+                  className="min-w-[180px] flex-1 bg-transparent py-0.5 font-mono text-sm outline-none placeholder:text-text-muted"
                 />
               </div>
             </div>
@@ -776,36 +1349,17 @@ export function BucketModal({ open, onClose, onSuccess, editBucket }: Props) {
           }
         })
         .finally(() => dispatch({ type: "SET_LOADING", loading: false }));
-    }
-  }, [open, editBucket]);
-
-  // Update custom policy ARN when name changes
-  const policyWithBucketName = useMemo(() => {
-    if (settings.accessPolicy !== "custom" || isEdit) return settings.customPolicy;
-    try {
-      const parsed = JSON.parse(settings.customPolicy);
-      let changed = false;
-      for (const stmt of parsed.Statement || []) {
-        const newResource = [`arn:aws:s3:::${settings.name || "BUCKET_NAME"}*`];
-        if (JSON.stringify(stmt.Resource) !== JSON.stringify(newResource)) {
-          stmt.Resource = newResource;
-          changed = true;
-        }
-      }
-      return changed ? JSON.stringify(parsed, null, 2) : settings.customPolicy;
-    } catch {
-      return settings.customPolicy;
-    }
-  }, [settings.customPolicy, settings.name, settings.accessPolicy, isEdit]);
-
-  useEffect(() => {
-    if (policyWithBucketName !== settings.customPolicy && !isEdit) {
+    } else {
+      // Create a default policy and replace BUCKET_NAME placeholder with real name
       dispatch({
         type: "SET_SETTINGS",
-        settings: { ...settings, customPolicy: policyWithBucketName },
+        settings: {
+          ...EMPTY_SETTINGS,
+          policies: [DEFAULT_POLICY_TEMPLATE("", "admin")],
+        },
       });
     }
-  }, [policyWithBucketName, settings, isEdit]);
+  }, [open, editBucket]);
 
   const handleSubmit = async () => {
     if (!isEdit && !settings.name) {
@@ -874,7 +1428,7 @@ export function BucketModal({ open, onClose, onSuccess, editBucket }: Props) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 8 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="relative flex h-[70vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-abyss shadow-2xl shadow-black/50"
+              className="relative flex h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-abyss shadow-2xl shadow-black/50"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-border border-b px-6 py-4">
@@ -885,7 +1439,7 @@ export function BucketModal({ open, onClose, onSuccess, editBucket }: Props) {
                     />
                   </div>
                   <div>
-                    <h2 className="font-display font-semibold text-base text-text-primary">
+                    <h2 className="font-display font-semibold text-base">
                       {isEdit ? "Bucket Settings" : "Create Bucket"}
                     </h2>
                     {isEdit && (
@@ -932,7 +1486,14 @@ export function BucketModal({ open, onClose, onSuccess, editBucket }: Props) {
                     {tab === "general" && (
                       <GeneralTab settings={settings} onChange={update} isEdit={isEdit} />
                     )}
-                    {tab === "access" && <AccessTab settings={settings} onChange={update} />}
+                    {tab === "access" && (
+                      <AccessTab
+                        settings={settings}
+                        onChange={update}
+                        isEdit={isEdit}
+                        onUserError={(err) => dispatch({ type: "SET_ERROR", error: err })}
+                      />
+                    )}
                     {tab === "features" && <FeaturesTab settings={settings} onChange={update} />}
                     {tab === "quota" && <QuotaTab settings={settings} onChange={update} />}
                     {tab === "encryption" && (

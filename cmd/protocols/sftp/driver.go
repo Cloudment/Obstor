@@ -71,6 +71,9 @@ func (d *sftpDriver) Fileread(r *xsftp.Request) (io.ReaderAt, error) {
 	if bucket == "" || object == "" {
 		return nil, os.ErrInvalid
 	}
+	if err := obstor.CheckSFTPAccess(d.accessKey, bucket, object, obstor.SFTPActionGetObject); err != nil {
+		return nil, os.ErrPermission
+	}
 
 	objAPI, err := d.getObjectLayer()
 	if err != nil {
@@ -106,6 +109,9 @@ func (d *sftpDriver) Filewrite(r *xsftp.Request) (io.WriterAt, error) {
 	if bucket == "" || object == "" {
 		return nil, os.ErrInvalid
 	}
+	if err := obstor.CheckSFTPAccess(d.accessKey, bucket, object, obstor.SFTPActionPutObject); err != nil {
+		return nil, os.ErrPermission
+	}
 
 	return &sftpFileWriter{
 		bucket: bucket,
@@ -132,6 +138,15 @@ func (d *sftpDriver) Filecmd(r *xsftp.Request) error {
 		dstBucket, dstObject := parseSFTPPath(r.Target)
 		if srcBucket == "" || srcObject == "" || dstBucket == "" || dstObject == "" {
 			return os.ErrInvalid
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, srcBucket, srcObject, obstor.SFTPActionGetObject); err != nil {
+			return os.ErrPermission
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, dstBucket, dstObject, obstor.SFTPActionPutObject); err != nil {
+			return os.ErrPermission
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, srcBucket, srcObject, obstor.SFTPActionDeleteObject); err != nil {
+			return os.ErrPermission
 		}
 		// CopyObject requires PutObjReader which GetObjectInfo doesnt have
 		reader, err := objAPI.GetObjectNInfo(ctx, srcBucket, srcObject, nil, nil, obstor.ReadLock, obstor.ObjectOptions{})
@@ -162,10 +177,16 @@ func (d *sftpDriver) Filecmd(r *xsftp.Request) error {
 		}
 		if prefix == "" {
 			// Deleting a bucket.
+			if err := obstor.CheckSFTPAccess(d.accessKey, bucket, "", obstor.SFTPActionDeleteBucket); err != nil {
+				return os.ErrPermission
+			}
 			if err := objAPI.DeleteBucket(ctx, bucket, false); err != nil {
 				return sftpErrorMap(err)
 			}
 			return nil
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, bucket, prefix, obstor.SFTPActionDeleteObject); err != nil {
+			return os.ErrPermission
 		}
 		// Delete directory marker if it exists.
 		if !strings.HasSuffix(prefix, "/") {
@@ -181,7 +202,13 @@ func (d *sftpDriver) Filecmd(r *xsftp.Request) error {
 		}
 		if prefix == "" {
 			// Creating a bucket.
+			if err := obstor.CheckSFTPAccess(d.accessKey, bucket, "", obstor.SFTPActionCreateBucket); err != nil {
+				return os.ErrPermission
+			}
 			return sftpErrorMap(objAPI.MakeBucketWithLocation(ctx, bucket, obstor.BucketOptions{}))
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, bucket, prefix, obstor.SFTPActionPutObject); err != nil {
+			return os.ErrPermission
 		}
 		// Create a directory marker object.
 		if !strings.HasSuffix(prefix, "/") {
@@ -198,6 +225,9 @@ func (d *sftpDriver) Filecmd(r *xsftp.Request) error {
 		bucket, object := parseSFTPPath(r.Filepath)
 		if bucket == "" || object == "" {
 			return os.ErrInvalid
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, bucket, object, obstor.SFTPActionDeleteObject); err != nil {
+			return os.ErrPermission
 		}
 		_, err := objAPI.DeleteObject(ctx, bucket, object, obstor.ObjectOptions{})
 		return sftpErrorMap(err)
@@ -233,6 +263,9 @@ func (d *sftpDriver) Filelist(r *xsftp.Request) (xsftp.ListerAt, error) {
 			}
 			entries := make([]os.FileInfo, 0, len(buckets))
 			for _, b := range buckets {
+				if err := obstor.CheckSFTPAccess(d.accessKey, b.Name, "", obstor.SFTPActionListBucket); err != nil {
+					continue
+				}
 				entries = append(entries, &sftpFileInfo{
 					name:    b.Name,
 					size:    0,
@@ -242,6 +275,9 @@ func (d *sftpDriver) Filelist(r *xsftp.Request) (xsftp.ListerAt, error) {
 				})
 			}
 			return listerAt(entries), nil
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, bucket, "", obstor.SFTPActionListBucket); err != nil {
+			return nil, os.ErrPermission
 		}
 
 		// List objects in bucket with prefix.
@@ -295,6 +331,9 @@ func (d *sftpDriver) Filelist(r *xsftp.Request) (xsftp.ListerAt, error) {
 				modTime: time.Now(),
 				isDir:   true,
 			}}), nil
+		}
+		if err := obstor.CheckSFTPAccess(d.accessKey, bucket, prefix, obstor.SFTPActionListBucket); err != nil {
+			return nil, os.ErrPermission
 		}
 		if prefix == "" {
 			// Stat a bucket.

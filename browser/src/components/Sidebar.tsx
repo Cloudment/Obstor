@@ -67,9 +67,7 @@ export function Sidebar({
             <span className="icon-[fluent-emoji-high-contrast--lobster] text-black text-lg" />
           </div>
           <div>
-            <p className="font-display font-semibold text-sm text-text-primary leading-tight">
-              Obstor
-            </p>
+            <p className="font-display font-semibold text-sm leading-tight">Obstor</p>
             <p className="font-mono text-[10px] text-text-muted">{storageUsed} used</p>
           </div>
         </Link>
@@ -84,7 +82,7 @@ export function Sidebar({
                 placeholder="Filter buckets..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="w-full rounded-md border border-border bg-surface py-1.5 pr-3 pl-8 font-mono text-text-primary text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+                className="w-full rounded-md border border-border bg-surface py-1.5 pr-3 pl-8 font-mono text-xs outline-none transition-colors placeholder:text-text-muted focus:border-accent"
               />
             </div>
             <button
@@ -209,9 +207,7 @@ export function Sidebar({
                 <span className="icon-[lucide--alert-triangle] text-base text-danger" />
               </div>
               <div>
-                <h3 className="font-display font-semibold text-sm text-text-primary">
-                  Delete Bucket
-                </h3>
+                <h3 className="font-display font-semibold text-sm">Delete Bucket</h3>
                 <p className="font-mono text-[11px] text-text-muted">{deleteConfirm}</p>
               </div>
             </div>

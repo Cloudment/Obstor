@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useReducer, useRef } from "react";
-import { deleteObjectAction, getDownloadURL, getObjectChecksums, getShareLink, getUploadURL } from "@/lib/actions";
+import {
+  deleteObjectAction,
+  getDownloadURL,
+  getObjectChecksums,
+  getShareLink,
+  getUploadURL,
+} from "@/lib/actions";
 
 interface FileEntry {
   name: string;
@@ -134,7 +140,7 @@ function ObjectToolbar({
             value={filter}
             onChange={(e) => onFilterChange(e.target.value)}
             placeholder="Filter objects"
-            className="rounded-md border border-border bg-surface py-1.5 pr-3 pl-8 font-mono text-text-primary text-xs outline-none placeholder:text-text-muted focus:border-accent"
+            className="rounded-md border border-border bg-surface py-1.5 pr-3 pl-8 font-mono text-xs outline-none placeholder:text-text-muted focus:border-accent"
           />
         </div>
 
@@ -325,7 +331,7 @@ function ObjectTable({
             className="grid grid-cols-[auto_1fr_100px_160px_140px_100px] items-center gap-4 px-4 py-2.5 transition-colors hover:bg-surface"
           >
             <span className="h-3.5 w-3.5" />
-            <span className="flex items-center gap-2 truncate font-mono text-sm text-text-primary">
+            <span className="flex items-center gap-2 truncate font-mono text-sm">
               <span className="icon-[lucide--folder] text-accent text-sm" />
               {displayName(folder)}
             </span>
@@ -346,7 +352,7 @@ function ObjectTable({
                 onChange={() => onToggleSelect(file.name)}
                 className="h-3.5 w-3.5 accent-accent"
               />
-              <span className="flex items-center gap-2 truncate font-mono text-sm text-text-primary">
+              <span className="flex items-center gap-2 truncate font-mono text-sm">
                 <span className="icon-[lucide--file] text-sm text-text-muted" />
                 {displayName(file.name)}
               </span>
@@ -406,23 +412,45 @@ function ObjectTable({
             {hashDetails === file.name && (
               <div className="border-border border-t bg-surface px-4 py-3 pl-12">
                 {checksumsLoading === file.name ? (
-                  <span className="font-mono text-[11px] text-text-muted">Computing checksums...</span>
+                  <span className="font-mono text-[11px] text-text-muted">
+                    Computing checksums...
+                  </span>
                 ) : checksums[file.name] ? (
                   <div className="grid grid-cols-[60px_1fr] gap-x-3 gap-y-1.5">
                     {file.etag && (
                       <>
-                        <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">ETag</span>
-                        <span className="truncate font-mono text-[11px] text-text-secondary">{file.etag}</span>
+                        <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                          ETag
+                        </span>
+                        <span className="truncate font-mono text-[11px] text-text-secondary">
+                          {file.etag}
+                        </span>
                       </>
                     )}
-                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">MD5</span>
-                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].md5}</span>
-                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-1</span>
-                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha1}</span>
-                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-256</span>
-                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha256}</span>
-                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">SHA-512</span>
-                    <span className="truncate font-mono text-[11px] text-text-secondary">{checksums[file.name].sha512}</span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                      MD5
+                    </span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">
+                      {checksums[file.name].md5}
+                    </span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                      SHA-1
+                    </span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">
+                      {checksums[file.name].sha1}
+                    </span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                      SHA-256
+                    </span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">
+                      {checksums[file.name].sha256}
+                    </span>
+                    <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+                      SHA-512
+                    </span>
+                    <span className="truncate font-mono text-[11px] text-text-secondary">
+                      {checksums[file.name].sha512}
+                    </span>
                   </div>
                 ) : (
                   <span className="font-mono text-[11px] text-text-muted">Loading...</span>
@@ -451,7 +479,7 @@ function ShareDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-void/80 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-xl border border-border bg-surface p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-display font-semibold text-base text-text-primary">Share Object</h3>
+          <h3 className="font-display font-semibold text-base">Share Object</h3>
           <button
             type="button"
             onClick={onClose}
@@ -500,11 +528,11 @@ function DeleteDialog({
       <div className="w-full max-w-sm rounded-xl border border-border bg-surface p-6">
         <div className="mb-1 flex items-center gap-2">
           <span className="icon-[lucide--alert-triangle] text-base text-danger" />
-          <h3 className="font-display font-semibold text-base text-text-primary">Delete Object</h3>
+          <h3 className="font-display font-semibold text-base">Delete Object</h3>
         </div>
         <p className="mb-4 font-body text-sm text-text-secondary">
-          Are you sure you want to delete{" "}
-          <span className="font-mono text-text-primary">{displayName}</span>? This cannot be undone.
+          Are you sure you want to delete <span className="font-mono">{displayName}</span>? This
+          cannot be undone.
         </p>
         <div className="flex gap-2">
           <button
@@ -538,8 +566,17 @@ export function ObjectBrowser({ bucketName, prefix, folders, files }: Props) {
   const [state, dispatch] = useReducer(browserReducer, initialState);
 
   const {
-    sortField, sortAsc, selected, dragging, uploading, shareModal, deleteConfirm, filter,
-    hashDetails, checksums, checksumsLoading,
+    sortField,
+    sortAsc,
+    selected,
+    dragging,
+    uploading,
+    shareModal,
+    deleteConfirm,
+    filter,
+    hashDetails,
+    checksums,
+    checksumsLoading,
   } = state;
 
   // Sorting

@@ -275,3 +275,88 @@ func (args *PresignedPutArgs) ToKeyValue() KeyValueMap {
 	km.SetObject(args.ObjectName)
 	return km
 }
+
+// ToKeyValue implementation for ListCannedPoliciesArgs
+func (args *ListCannedPoliciesArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}
+
+// ToKeyValue implementation for GetCannedPolicyArgs
+func (args *GetCannedPolicyArgs) ToKeyValue() KeyValueMap {
+	return KeyValueMap{}
+}
+
+// ToKeyValue implementation for SetCannedPolicyArgs
+func (args *SetCannedPolicyArgs) ToKeyValue() KeyValueMap {
+	return KeyValueMap{}
+}
+
+// ToKeyValue implementation for DeleteCannedPolicyArgs
+func (args *DeleteCannedPolicyArgs) ToKeyValue() KeyValueMap {
+	return KeyValueMap{}
+}
+
+// ToKeyValue implementation for ListUsersArgs
+func (args *ListUsersArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}
+
+// ToKeyValue implementation for AddIAMUserArgs
+func (args *AddIAMUserArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetUsername(args.AccessKey)
+	return km
+}
+
+// ToKeyValue implementation for RemoveIAMUserArgs
+func (args *RemoveIAMUserArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetUsername(args.AccessKey)
+	return km
+}
+
+// ToKeyValue implementation for SetIAMUserStatusArgs
+func (args *SetIAMUserStatusArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetUsername(args.AccessKey)
+	return km
+}
+
+// ToKeyValue implementation for SetIAMUserPolicyArgs
+func (args *SetIAMUserPolicyArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetUsername(args.AccessKey)
+	return km
+}
+
+// ToKeyValue implementation for GetBucketPolicyDocArgs
+func (args *GetBucketPolicyDocArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}
+
+// ToKeyValue implementation for SetBucketPolicyDocArgs
+func (args *SetBucketPolicyDocArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}
+
+// ToKeyValue implementation for GetBucketTogglesArgs
+func (args *GetBucketTogglesArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}
+
+// ToKeyValue implementation for SetBucketTogglesArgs
+func (args *SetBucketTogglesArgs) ToKeyValue() KeyValueMap {
+	km := KeyValueMap{}
+	km.SetBucket(args.BucketName)
+	return km
+}

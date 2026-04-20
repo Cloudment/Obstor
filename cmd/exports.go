@@ -18,9 +18,11 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/cloudment/obstor/pkg/auth"
+	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	obstorpkg "github.com/cloudment/obstor/pkg/obstor"
 )
 
@@ -55,3 +57,39 @@ func GetActiveCred() auth.Credentials { return globalActiveCred }
 func GetIAMSys() *IAMSys              { return globalIAMSys }
 func GetCertsDir() *ConfigDir         { return globalCertsDir }
 func GetDomainNames() []string        { return globalDomainNames }
+
+// Enforce per bucket IAM policy
+func CheckSFTPAccess(accessKey, bucket, objectName string, action iampolicy.Action) error {
+	if bucket != "" && !IsBucketSFTPEnabled(bucket) {
+		return fmt.Errorf("SFTP access is disabled for bucket %q", bucket)
+	}
+	if accessKey == "" {
+		return fmt.Errorf("SFTP requires authenticated access")
+	}
+	// Root user / active cred is always allowed.
+	if accessKey == globalActiveCred.AccessKey {
+		return nil
+	}
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName: accessKey,
+		Action:      action,
+		BucketName:  bucket,
+		ObjectName:  objectName,
+		IsOwner:     false,
+	}) {
+		return fmt.Errorf("access denied: %s on %s/%s", action, bucket, objectName)
+	}
+	return nil
+}
+
+// IAM action constants exposed for use by the SFTP driver.
+var (
+	SFTPActionGetObject    iampolicy.Action = iampolicy.GetObjectAction
+	SFTPActionPutObject    iampolicy.Action = iampolicy.PutObjectAction
+	SFTPActionDeleteObject iampolicy.Action = iampolicy.DeleteObjectAction
+	SFTPActionListBucket   iampolicy.Action = iampolicy.ListBucketAction
+	SFTPActionGetBucket    iampolicy.Action = iampolicy.GetBucketLocationAction
+	SFTPActionCreateBucket iampolicy.Action = iampolicy.CreateBucketAction
+	SFTPActionDeleteBucket iampolicy.Action = iampolicy.DeleteBucketAction
+	SFTPActionListBuckets  iampolicy.Action = iampolicy.ListAllMyBucketsAction
+)
