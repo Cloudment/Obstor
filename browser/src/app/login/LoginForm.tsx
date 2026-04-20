@@ -32,7 +32,7 @@ export function LoginForm() {
           name="accessKey"
           type="text"
           required
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-text-muted focus:border-accent"
         />
       </div>
 
@@ -48,7 +48,7 @@ export function LoginForm() {
           name="secretKey"
           type="password"
           required
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-accent"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-text-muted focus:border-accent"
         />
       </div>
 

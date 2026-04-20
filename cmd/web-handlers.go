@@ -18,6 +18,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/sha1"
@@ -26,6 +27,7 @@ import (
 	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
@@ -44,6 +46,7 @@ import (
 	miniogo "github.com/minio/minio-go/v7"
 	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
+	"github.com/minio/minio-go/v7/pkg/tags"
 
 	"github.com/cloudment/obstor/cmd/config/dns"
 	"github.com/cloudment/obstor/cmd/config/identity/openid"
@@ -61,6 +64,7 @@ import (
 	"github.com/cloudment/obstor/pkg/hash"
 	iampolicy "github.com/cloudment/obstor/pkg/iam/policy"
 	"github.com/cloudment/obstor/pkg/ioutil"
+	"github.com/cloudment/obstor/pkg/madmin"
 	"github.com/cloudment/obstor/pkg/rpc/json2"
 )
 
@@ -143,8 +147,14 @@ func (web *webAPIHandlers) ServerInfo(r *http.Request, args *WebGenericArgs, rep
 
 // StorageInfoRep - contains storage usage statistics.
 type StorageInfoRep struct {
-	Used      uint64 `json:"used"`
-	UIVersion string `json:"uiVersion"`
+	Used         uint64 `json:"used"`
+	Total        uint64 `json:"total"`
+	Free         uint64 `json:"free"`
+	DisksOnline  int    `json:"disksOnline"`
+	DisksOffline int    `json:"disksOffline"`
+	BucketsCount uint64 `json:"bucketsCount"`
+	ObjectsCount uint64 `json:"objectsCount"`
+	UIVersion    string `json:"uiVersion"`
 }
 
 // StorageInfo - web call to gather storage usage statistics.
@@ -160,6 +170,20 @@ func (web *webAPIHandlers) StorageInfo(r *http.Request, args *WebGenericArgs, re
 	}
 	dataUsageInfo, _ := loadDataUsageFromBackend(ctx, objectAPI)
 	reply.Used = dataUsageInfo.ObjectsTotalSize
+	reply.BucketsCount = dataUsageInfo.BucketsCount
+	reply.ObjectsCount = dataUsageInfo.ObjectsTotalCount
+
+	storageInfo, _ := objectAPI.StorageInfo(ctx)
+	for _, disk := range storageInfo.Disks {
+		reply.Total += disk.TotalSpace
+		reply.Free += disk.AvailableSpace
+		if disk.State == madmin.DriveStateOk {
+			reply.DisksOnline++
+		} else {
+			reply.DisksOffline++
+		}
+	}
+
 	reply.UIVersion = Version
 	return nil
 }
@@ -2701,4 +2725,569 @@ func presignedPut(host, bucket, object string, creds auth.Credentials, region st
 	signature := getSignature(signingKey, stringToSign)
 
 	return ensureScheme(host) + s3utils.EncodePath(path) + "?" + queryStr + "&" + xhttp.AmzSignature + "=" + signature
+}
+
+// IAM admin helpers
+func webAdminAuth(r *http.Request, action iampolicy.AdminAction) (context.Context, error) {
+	claims, owner, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return nil, authErr
+	}
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName:     claims.AccessKey,
+		Action:          iampolicy.Action(action),
+		ConditionValues: getConditionValues(r, "", claims.AccessKey, claims.Map()),
+		IsOwner:         owner,
+		Claims:          claims.Map(),
+	}) {
+		return nil, errAccessDenied
+	}
+	return r.Context(), nil
+}
+
+func policyTargetsBucket(p iampolicy.Policy, bucketName string) bool {
+	arnPrefix := "arn:aws:s3:::" + bucketName
+	for _, st := range p.Statements {
+		for rs := range st.Resources {
+			s := rs.String()
+			if s == arnPrefix || strings.HasPrefix(s, arnPrefix+"/") || strings.HasPrefix(s, arnPrefix+"*") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func splitCSV(s string) []string {
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	out := parts[:0]
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+func anyPolicyTargetsBucket(policies []string, docs map[string]iampolicy.Policy, bucket string) bool {
+	for _, pn := range policies {
+		if doc, ok := docs[pn]; ok && policyTargetsBucket(doc, bucket) {
+			return true
+		}
+	}
+	return false
+}
+
+// Summary of a canned policy.
+type WebPolicySummary struct {
+	Name   string `json:"name"`
+	Policy string `json:"policy"`
+}
+
+// arn:aws:s3:::<bucket>* filtering
+type ListCannedPoliciesArgs struct {
+	BucketName string `json:"bucketName"`
+}
+
+type ListCannedPoliciesRep struct {
+	UIVersion string             `json:"uiVersion"`
+	Policies  []WebPolicySummary `json:"policies"`
+}
+
+// List filtered policies
+func (web *webAPIHandlers) ListCannedPolicies(r *http.Request, args *ListCannedPoliciesArgs, reply *ListCannedPoliciesRep) error {
+	ctx := newWebContext(r, args, "WebListCannedPolicies")
+	if _, err := webAdminAuth(r, iampolicy.ListUserPoliciesAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+
+	pols, err := globalIAMSys.ListPolicies()
+	if err != nil {
+		return toJSONError(ctx, err)
+	}
+
+	reply.Policies = []WebPolicySummary{}
+	for name, p := range pols {
+		if args.BucketName != "" && !policyTargetsBucket(p, args.BucketName) {
+			continue
+		}
+		buf, err := json.MarshalIndent(p, "", "  ")
+		if err != nil {
+			continue
+		}
+		reply.Policies = append(reply.Policies, WebPolicySummary{
+			Name:   name,
+			Policy: string(buf),
+		})
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// Policy args
+type GetCannedPolicyArgs struct {
+	Name string `json:"name"`
+}
+
+// Policy reply
+type GetCannedPolicyRep struct {
+	UIVersion string `json:"uiVersion"`
+	Name      string `json:"name"`
+	Policy    string `json:"policy"`
+}
+
+// Return requested policy json
+func (web *webAPIHandlers) GetCannedPolicy(r *http.Request, args *GetCannedPolicyArgs, reply *GetCannedPolicyRep) error {
+	ctx := newWebContext(r, args, "WebGetCannedPolicy")
+	if _, err := webAdminAuth(r, iampolicy.GetPolicyAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	p, err := globalIAMSys.InfoPolicy(args.Name)
+	if err != nil {
+		return toJSONError(ctx, err)
+	}
+	buf, err := json.MarshalIndent(p, "", "  ")
+	if err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.Name = args.Name
+	reply.Policy = string(buf)
+	reply.UIVersion = Version
+	return nil
+}
+
+// Policy args
+type SetCannedPolicyArgs struct {
+	Name   string `json:"name"`
+	Policy string `json:"policy"`
+}
+
+// Create/update json IAM policy
+func (web *webAPIHandlers) SetCannedPolicy(r *http.Request, args *SetCannedPolicyArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebSetCannedPolicy")
+	if _, err := webAdminAuth(r, iampolicy.CreatePolicyAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	if strings.TrimSpace(args.Name) == "" {
+		return toJSONError(ctx, errInvalidArgument)
+	}
+	p, err := iampolicy.ParseConfig(bytes.NewReader([]byte(args.Policy)))
+	if err != nil {
+		return toJSONError(ctx, err)
+	}
+	if err := globalIAMSys.SetPolicy(args.Name, *p); err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// Delete args
+type DeleteCannedPolicyArgs struct {
+	Name string `json:"name"`
+}
+
+func (web *webAPIHandlers) DeleteCannedPolicy(r *http.Request, args *DeleteCannedPolicyArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebDeleteCannedPolicy")
+	if _, err := webAdminAuth(r, iampolicy.DeletePolicyAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	if err := globalIAMSys.DeletePolicy(args.Name); err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// UI user summary
+type WebUser struct {
+	AccessKey string   `json:"accessKey"`
+	Status    string   `json:"status"`
+	Policies  []string `json:"policies"`
+}
+
+// List users attached to policy
+type ListUsersArgs struct {
+	BucketName string `json:"bucketName"`
+}
+
+// List reply
+type ListUsersRep struct {
+	UIVersion string    `json:"uiVersion"`
+	Users     []WebUser `json:"users"`
+}
+
+// List all regular users
+func (web *webAPIHandlers) ListIAMUsers(r *http.Request, args *ListUsersArgs, reply *ListUsersRep) error {
+	ctx := newWebContext(r, args, "WebListIAMUsers")
+	if _, err := webAdminAuth(r, iampolicy.ListUsersAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	users, err := globalIAMSys.ListUsers()
+	if err != nil {
+		return toJSONError(ctx, err)
+	}
+
+	var policyDocs map[string]iampolicy.Policy
+	if args.BucketName != "" {
+		policyDocs, _ = globalIAMSys.ListPolicies()
+	}
+
+	reply.Users = []WebUser{}
+	for ak, info := range users {
+		policies := splitCSV(info.PolicyName)
+		if policies == nil {
+			policies = []string{}
+		}
+		if args.BucketName != "" && !anyPolicyTargetsBucket(policies, policyDocs, args.BucketName) {
+			continue
+		}
+		reply.Users = append(reply.Users, WebUser{
+			AccessKey: ak,
+			Status:    string(info.Status),
+			Policies:  policies,
+		})
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// If SecretKey is empty, generate a random one
+type AddIAMUserArgs struct {
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+	Policy    string `json:"policy"`
+}
+
+// Return the created credentials
+type AddIAMUserRep struct {
+	UIVersion string `json:"uiVersion"`
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+}
+
+// Generate creds if either field is blank
+func (web *webAPIHandlers) AddIAMUser(r *http.Request, args *AddIAMUserArgs, reply *AddIAMUserRep) error {
+	ctx := newWebContext(r, args, "WebAddIAMUser")
+	if _, err := webAdminAuth(r, iampolicy.CreateUserAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+
+	ak := strings.TrimSpace(args.AccessKey)
+	sk := strings.TrimSpace(args.SecretKey)
+
+	if ak == "" || sk == "" {
+		cred, err := auth.GetNewCredentials()
+		if err != nil {
+			return toJSONError(ctx, err)
+		}
+		if ak == "" {
+			ak = cred.AccessKey
+		}
+		if sk == "" {
+			sk = cred.SecretKey
+		}
+	}
+
+	if isRootCredAccessKey(ak) {
+		return toJSONError(ctx, errAccessDenied)
+	}
+
+	if err := globalIAMSys.CreateUser(ak, madmin.UserInfo{
+		SecretKey: sk,
+		Status:    madmin.AccountEnabled,
+	}); err != nil {
+		return toJSONError(ctx, err)
+	}
+
+	if strings.TrimSpace(args.Policy) != "" {
+		if err := globalIAMSys.PolicyDBSet(ak, args.Policy, false); err != nil {
+			return toJSONError(ctx, err)
+		}
+	}
+
+	reply.AccessKey = ak
+	reply.SecretKey = sk
+	reply.UIVersion = Version
+	return nil
+}
+
+// Remove IAM user args
+type RemoveIAMUserArgs struct {
+	AccessKey string `json:"accessKey"`
+}
+
+// Delete a user.
+func (web *webAPIHandlers) RemoveIAMUser(r *http.Request, args *RemoveIAMUserArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebRemoveIAMUser")
+	if _, err := webAdminAuth(r, iampolicy.DeleteUserAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	if err := globalIAMSys.DeleteUser(args.AccessKey); err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// Set IAM user args
+type SetIAMUserStatusArgs struct {
+	AccessKey string `json:"accessKey"`
+	Enabled   bool   `json:"enabled"`
+}
+
+// Enable or disable a user
+func (web *webAPIHandlers) SetIAMUserStatus(r *http.Request, args *SetIAMUserStatusArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebSetIAMUserStatus")
+	if _, err := webAdminAuth(r, iampolicy.EnableUserAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	status := madmin.AccountDisabled
+	if args.Enabled {
+		status = madmin.AccountEnabled
+	}
+	if err := globalIAMSys.SetUserStatus(args.AccessKey, status); err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+// Replace policies attached to a user
+type SetIAMUserPolicyArgs struct {
+	AccessKey string `json:"accessKey"`
+	Policies  string `json:"policies"`
+}
+
+// Attach policies on a user
+func (web *webAPIHandlers) SetIAMUserPolicy(r *http.Request, args *SetIAMUserPolicyArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebSetIAMUserPolicy")
+	if _, err := webAdminAuth(r, iampolicy.AttachPolicyAdminAction); err != nil {
+		return toJSONError(ctx, err)
+	}
+	if err := globalIAMSys.PolicyDBSet(args.AccessKey, args.Policies, false); err != nil {
+		return toJSONError(ctx, err)
+	}
+	reply.UIVersion = Version
+	return nil
+}
+
+type GetBucketPolicyDocArgs struct {
+	BucketName string `json:"bucketName"`
+}
+
+type GetBucketPolicyDocRep struct {
+	UIVersion string `json:"uiVersion"`
+	Policy    string `json:"policy"` // raw JSON, empty string if none
+}
+
+// Return anonymous-access policy status
+func (web *webAPIHandlers) GetBucketPolicyDoc(r *http.Request, args *GetBucketPolicyDocArgs, reply *GetBucketPolicyDocRep) error {
+	ctx := newWebContext(r, args, "WebGetBucketPolicyDoc")
+	objectAPI := web.ObjectAPI()
+	if objectAPI == nil {
+		return toJSONError(ctx, errServerNotInitialized)
+	}
+	claims, owner, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName:     claims.AccessKey,
+		Action:          iampolicy.GetBucketPolicyAction,
+		BucketName:      args.BucketName,
+		ConditionValues: getConditionValues(r, "", claims.AccessKey, claims.Map()),
+		IsOwner:         owner,
+		Claims:          claims.Map(),
+	}) {
+		return toJSONError(ctx, errAccessDenied)
+	}
+	if isReservedOrInvalidBucket(args.BucketName, false) {
+		return toJSONError(ctx, errInvalidBucketName, args.BucketName)
+	}
+
+	bp, err := globalPolicySys.Get(args.BucketName)
+	if err != nil {
+		if _, ok := err.(BucketPolicyNotFound); !ok {
+			return toJSONError(ctx, err, args.BucketName)
+		}
+		reply.Policy = ""
+		reply.UIVersion = Version
+		return nil
+	}
+	buf, err := json.MarshalIndent(bp, "", "  ")
+	if err != nil {
+		return toJSONError(ctx, err, args.BucketName)
+	}
+	reply.Policy = string(buf)
+	reply.UIVersion = Version
+	return nil
+}
+
+// Pass empty Policy to clear.
+type SetBucketPolicyDocArgs struct {
+	BucketName string `json:"bucketName"`
+	Policy     string `json:"policy"`
+}
+
+// Set bucket's anonymous-access policy from raw JSON.
+func (web *webAPIHandlers) SetBucketPolicyDoc(r *http.Request, args *SetBucketPolicyDocArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebSetBucketPolicyDoc")
+	objectAPI := web.ObjectAPI()
+	if objectAPI == nil {
+		return toJSONError(ctx, errServerNotInitialized)
+	}
+	claims, owner, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName:     claims.AccessKey,
+		Action:          iampolicy.PutBucketPolicyAction,
+		BucketName:      args.BucketName,
+		ConditionValues: getConditionValues(r, "", claims.AccessKey, claims.Map()),
+		IsOwner:         owner,
+		Claims:          claims.Map(),
+	}) {
+		return toJSONError(ctx, errAccessDenied)
+	}
+	if isReservedOrInvalidBucket(args.BucketName, false) {
+		return toJSONError(ctx, errInvalidBucketName, args.BucketName)
+	}
+
+	reply.UIVersion = Version
+
+	trimmed := strings.TrimSpace(args.Policy)
+	if trimmed == "" || trimmed == "{}" {
+		return globalBucketMetadataSys.Update(args.BucketName, bucketPolicyConfig, nil)
+	}
+
+	bp, err := policy.ParseConfig(strings.NewReader(trimmed), args.BucketName)
+	if err != nil {
+		return toJSONError(ctx, err, args.BucketName)
+	}
+	configData, err := json.Marshal(bp)
+	if err != nil {
+		return toJSONError(ctx, err, args.BucketName)
+	}
+	return globalBucketMetadataSys.Update(args.BucketName, bucketPolicyConfig, configData)
+}
+
+// Per-bucket feature toggles
+const (
+	obstorTagS3Enabled   = "__obstor_s3_enabled"
+	obstorTagSFTPEnabled = "__obstor_sftp_enabled"
+)
+
+// Check if the feature toggle is enabled
+func bucketToggleOn(bucket, tagKey string, defaultOn bool) bool {
+	if bucket == "" {
+		return defaultOn
+	}
+	cfg, err := globalBucketMetadataSys.GetTaggingConfig(bucket)
+	if err != nil {
+		return defaultOn
+	}
+	m := cfg.ToMap()
+	v, ok := m[tagKey]
+	if !ok {
+		return defaultOn
+	}
+	return !strings.EqualFold(v, "false")
+}
+
+// Enable S3 by feature by default
+func IsBucketS3Enabled(bucket string) bool {
+	return bucketToggleOn(bucket, obstorTagS3Enabled, true)
+}
+
+// Disable SFTP by feature by default
+func IsBucketSFTPEnabled(bucket string) bool {
+	return bucketToggleOn(bucket, obstorTagSFTPEnabled, false)
+}
+
+// Update __obstor_* tags while preserving user-set tags.
+func writeBucketToggles(bucket string, s3Enabled, sftpEnabled bool) error {
+	m := map[string]string{}
+	if cfg, err := globalBucketMetadataSys.GetTaggingConfig(bucket); err == nil {
+		m = cfg.ToMap()
+	}
+	m[obstorTagS3Enabled] = boolToTagValue(s3Enabled)
+	m[obstorTagSFTPEnabled] = boolToTagValue(sftpEnabled)
+
+	t, err := tags.NewTags(m, false)
+	if err != nil {
+		return err
+	}
+	configData, err := xml.Marshal(t)
+	if err != nil {
+		return err
+	}
+	return globalBucketMetadataSys.Update(bucket, bucketTaggingConfig, configData)
+}
+
+func boolToTagValue(b bool) string {
+	if b {
+		return "true"
+	}
+	return "false"
+}
+
+type GetBucketTogglesArgs struct {
+	BucketName string `json:"bucketName"`
+}
+
+type GetBucketTogglesRep struct {
+	UIVersion   string `json:"uiVersion"`
+	S3Enabled   bool   `json:"s3Enabled"`
+	SFTPEnabled bool   `json:"sftpEnabled"`
+}
+
+// Feature toggles for the given bucket
+func (web *webAPIHandlers) GetBucketToggles(r *http.Request, args *GetBucketTogglesArgs, reply *GetBucketTogglesRep) error {
+	ctx := newWebContext(r, args, "WebGetBucketToggles")
+	if _, _, authErr := webRequestAuthenticate(r); authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+	reply.S3Enabled = IsBucketS3Enabled(args.BucketName)
+	reply.SFTPEnabled = IsBucketSFTPEnabled(args.BucketName)
+	reply.UIVersion = Version
+	return nil
+}
+
+type SetBucketTogglesArgs struct {
+	BucketName  string `json:"bucketName"`
+	S3Enabled   bool   `json:"s3Enabled"`
+	SFTPEnabled bool   `json:"sftpEnabled"`
+}
+
+// Per-bucket feature toggles as bucket tags.
+func (web *webAPIHandlers) SetBucketToggles(r *http.Request, args *SetBucketTogglesArgs, reply *WebGenericRep) error {
+	ctx := newWebContext(r, args, "WebSetBucketToggles")
+	claims, owner, authErr := webRequestAuthenticate(r)
+	if authErr != nil {
+		return toJSONError(ctx, authErr)
+	}
+	if !globalIAMSys.IsAllowed(iampolicy.Args{
+		AccountName:     claims.AccessKey,
+		Action:          iampolicy.PutBucketTaggingAction,
+		BucketName:      args.BucketName,
+		ConditionValues: getConditionValues(r, "", claims.AccessKey, claims.Map()),
+		IsOwner:         owner,
+		Claims:          claims.Map(),
+	}) {
+		return toJSONError(ctx, errAccessDenied)
+	}
+	if isReservedOrInvalidBucket(args.BucketName, false) {
+		return toJSONError(ctx, errInvalidBucketName, args.BucketName)
+	}
+	if err := writeBucketToggles(args.BucketName, args.S3Enabled, args.SFTPEnabled); err != nil {
+		return toJSONError(ctx, err, args.BucketName)
+	}
+	reply.UIVersion = Version
+	return nil
 }

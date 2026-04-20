@@ -306,6 +306,10 @@ func checkRequestAuthTypeWithVID(ctx context.Context, r *http.Request, action po
 // returns APIErrorCode if any to be replied to the client.
 // Additionally returns the accessKey used in the request, and if this request is by an admin.
 func checkRequestAuthTypeCredential(ctx context.Context, r *http.Request, action policy.Action, bucketName, objectName string) (cred auth.Credentials, owner bool, s3Err APIErrorCode) {
+	// Per-bucket S3 API feature toggle
+	if bucketName != "" && action != policy.CreateBucketAction && !IsBucketS3Enabled(bucketName) {
+		return cred, owner, ErrAccessDenied
+	}
 	switch getRequestAuthType(r) {
 	case authTypeUnknown:
 		return cred, owner, ErrSignatureVersionNotSupported
