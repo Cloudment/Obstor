@@ -29,7 +29,6 @@ import (
 	"testing"
 
 	obstor "github.com/cloudment/obstor/cmd"
-	_ "github.com/cloudment/obstor/cmd/gateway"
 )
 
 // TestRunMain takes arguments from APP_ARGS env variable and calls obstor.Main(args)
