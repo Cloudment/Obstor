@@ -16,7 +16,7 @@ ARG COMMIT=unknown
 COPY . .
 RUN go build -trimpath -ldflags "-s -w -X github.com/cloudment/obstor/cmd.Version=${VERSION} -X github.com/cloudment/obstor/cmd.ShortCommitID=${COMMIT}" -o /go/bin/obstor .
 
-FROM node:25-alpine AS node-builder
+FROM node:26-alpine AS node-builder
 
 ENV NEXT_TELEMETRY_DISABLED=1
 

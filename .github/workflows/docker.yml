@@ -26,9 +26,9 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: '25'
+          node-version: '26'
 
       - name: Build
         run: go build -trimpath --ldflags="-s -w" -o obstor
