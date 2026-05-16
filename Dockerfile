@@ -23,7 +23,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm install -g pnpm
 
 WORKDIR /app
-COPY browser/package.json browser/pnpm-lock.yaml ./
+COPY browser/package.json browser/pnpm-lock.yaml browser/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY browser/ .

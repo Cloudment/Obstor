@@ -64,7 +64,7 @@ func EncryptData(password string, data []byte) ([]byte, error) {
 
 	w, err := sio.EncryptWriter(&ciphertext, sio.Config{
 		Key:          key,
-		CipherSuites: []byte{sio.AES_256_GCM},
+		CipherSuites: []byte{sio.AES_GCM},
 		Nonce:        &nonce12,
 	})
 	if err != nil {
@@ -112,13 +112,13 @@ func DecryptData(password string, data io.Reader) ([]byte, error) {
 	switch id[0] {
 	case argon2idAESGCM:
 		key = argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
-		cipher = sio.AES_256_GCM
+		cipher = sio.AES_GCM
 	case argon2idChaCHa20Poly1305:
 		key = argon2.IDKey([]byte(password), salt[:], argon2idTime, argon2idMemory, argon2idThreads, 32)
 		cipher = sio.CHACHA20_POLY1305
 	case pbkdf2AESGCM:
 		key = pbkdf2.Key([]byte(password), salt[:], pbkdf2Cost, 32, sha256.New)
-		cipher = sio.AES_256_GCM
+		cipher = sio.AES_GCM
 	default:
 		return nil, errors.New("madmin: invalid encryption algorithm ID")
 	}

@@ -58,7 +58,7 @@ func DecryptBytes(KMS kms.KMS, ciphertext []byte, context kms.Context) ([]byte, 
 // The same context must be provided when decrypting the
 // ciphertext.
 func Encrypt(KMS kms.KMS, plaintext io.Reader, context kms.Context) (io.Reader, error) {
-	var cipherSuite = sio.AES_256_GCM
+	var cipherSuite = sio.AES_GCM
 
 	key, err := KMS.GenerateKey("", context)
 	if err != nil {

@@ -27,7 +27,7 @@ import (
 var enabled = true
 
 func cipherSuitesDARE() []byte {
-	return []byte{sio.AES_256_GCM}
+	return []byte{sio.AES_GCM}
 }
 
 func cipherSuitesTLS() []uint16 {
