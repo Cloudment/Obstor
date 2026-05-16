@@ -11,19 +11,19 @@
   "dependencies": {
     "framer-motion": "^12.38.0",
     "next": "^16.2.6",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.13",
-    "@iconify/json": "^2.2.468",
+    "@biomejs/biome": "^2.4.15",
+    "@iconify/json": "^2.2.473",
     "@iconify/tailwind4": "^1.2.3",
-    "@tailwindcss/postcss": "^4.2.4",
-    "@types/node": "^25.6.0",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^25.7.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "postcss": "^8.5.13",
-    "tailwindcss": "^4.2.4",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
   }
 }
